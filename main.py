@@ -1,7 +1,7 @@
-from create_agents import create_agent_objects
 from environment import TrafficEnvironment
-from trainer import Trainer
-from utils import get_json
+from services.create_agents import create_agent_objects
+from services.trainer import Trainer
+from services.utils import get_json
 
 
 params_file_path = "params.json"
