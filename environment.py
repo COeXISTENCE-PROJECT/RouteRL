@@ -1,6 +1,8 @@
 import pandas as pd
 import random
 
+from simulator import Simulator
+
 
 class TrafficEnvironment:
 
@@ -9,7 +11,9 @@ class TrafficEnvironment:
     """
 
     def __init__(self, agents):
+        simulator = Simulator()
         # Initialize network
+
         # Create demand
         # Create paths
         # Calculate free flows

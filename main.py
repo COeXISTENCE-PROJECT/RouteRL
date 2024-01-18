@@ -11,8 +11,8 @@ def main():
 
     params = get_json(params_file_path)
 
+    env = TrafficEnvironment()
     agents = create_agent_objects(params["agent_generation_parameters"])
-    env = TrafficEnvironment(agents)
     
     trainer = Trainer(params["training_parameters"])
     agents = trainer.train(env, agents)

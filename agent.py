@@ -31,16 +31,27 @@ class Agent(ABC):
 
 
 class HumanAgent(Agent):
-    def __init__(self, id, start_time, origin, destination, action_space_size):
+    def __init__(self, id, start_time, origin, destination, action_space_size, beta):
         super().__init__(id, start_time, origin, destination, action_space_size)
+        self.cost = [1e-14, 1e-14, 1e-14]
+        self.beta = beta
+        
 
     def learn(self):
         # Implement Garwon learning model
         pass
 
-    def pick_action(self):
-        # Implement decision making for humans
-        pass
+    def calculate_prob(self, utilities, n):    # implement the actual lenght on this part
+        prob = utilities[n] / sum(utilities)
+        return prob
+
+    def pick_action(self):  # the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
+        utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
+        prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
+        action = np.random.choice(list(range(len(self.cost))), p=prob_dist)    
+        return action
+    
+
 
 
 
