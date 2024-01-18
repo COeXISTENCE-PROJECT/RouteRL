@@ -1,6 +1,7 @@
 import pandas as pd
 import random
 
+from keychain import Keychain as kc
 from simulator import Simulator
 
 
@@ -13,7 +14,6 @@ class TrafficEnvironment:
     def __init__(self): # get params for simulator
         simulator = Simulator() # pass params for simulator
         # Initialize network
-        
         # Create demand
         # Create paths
         # Calculate free flows
@@ -22,10 +22,10 @@ class TrafficEnvironment:
     def reset(self):
         return None
 
-    def step(self, joint_action):
-        agent_ids = joint_action['id']
+    def step(self, joint_action):   # For now, returns random rewards
+        agent_ids = joint_action[kc.AGENT_ID]
         rewards = [-1 * random.uniform(20, 50) for i in range(len(agent_ids))]
-        joint_reward = pd.DataFrame({'id' : agent_ids, 'reward' : rewards})
+        joint_reward = pd.DataFrame({kc.AGENT_ID : agent_ids, kc.REWARD : rewards})
         return joint_reward, None, True
 
     def calculate_rewards():

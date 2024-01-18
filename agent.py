@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from keychain import Keychain as kc
+
 import numpy as np
 import random
 
@@ -11,14 +13,12 @@ class Agent(ABC):
     """
     
     # We assume no state space for now
-    def __init__(self, id, start_time, origin, destination, action_space_size):
+    def __init__(self, id, start_time, origin, destination):
         self.id = id
 
         self.start_time = start_time
         self.origin = origin
         self.destination = destination
-
-        self.action_space_size = action_space_size
 
     @abstractmethod
     def learn(self):    # Pass the applied action and reward once the episode ends, and it will remember the consequences
@@ -31,10 +31,15 @@ class Agent(ABC):
 
 
 class HumanAgent(Agent):
-    def __init__(self, id, start_time, origin, destination, action_space_size, beta):
-        super().__init__(id, start_time, origin, destination, action_space_size)
-        self.cost = [1e-14, 1e-14, 1e-14]
-        self.beta = beta
+
+    def __init__(self, id, start_time, origin, destination, params):
+        super().__init__(id, start_time, origin, destination)
+
+        learning_params = params[kc.HUMAN_AGENT_PARAMETERS]
+        self.action_space_size = learning_params[kc.ACTION_SPACE_SIZE]
+        self.beta = learning_params[kc.BETA]
+
+        self.cost = [kc.SMALL_BUT_NOT_ZERO, kc.SMALL_BUT_NOT_ZERO, kc.SMALL_BUT_NOT_ZERO]
         
 
     def learn(self):
@@ -45,7 +50,10 @@ class HumanAgent(Agent):
         prob = utilities[n] / sum(utilities)
         return prob
 
-    def pick_action(self):  # the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
+    def pick_action(self):  
+        """ 
+        the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
+        """
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
         prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
         action = np.random.choice(list(range(len(self.cost))), p=prob_dist)    
@@ -56,19 +64,24 @@ class HumanAgent(Agent):
 
 
 class MachineAgent(Agent):
-    def __init__(self, id, start_time, origin, destination, action_space_size, learning_params):
-        super().__init__(id, start_time, origin, destination, action_space_size)
 
-        min_alpha, max_alpha = learning_params["min_alpha"], learning_params["max_alpha"]
-        min_epsilon, max_epsilon = learning_params["min_epsilon"], learning_params["max_epsilon"]
-        min_eps_decay, max_eps_decay = learning_params["min_eps_decay"], learning_params["max_eps_decay"]
+    def __init__(self, id, start_time, origin, destination, params):
+        super().__init__(id, start_time, origin, destination)
+
+        learning_params = params[kc.MACHINE_AGENT_PARAMETERS]
+        self.action_space_size = learning_params[kc.ACTION_SPACE_SIZE]
+
+        min_alpha, max_alpha = learning_params[kc.MIN_ALPHA], learning_params[kc.MAX_ALPHA]
+        min_epsilon, max_epsilon = learning_params[kc.MIN_EPSILON], learning_params[kc.MAX_EPSILON]
+        min_eps_decay, max_eps_decay = learning_params[kc.MIN_EPS_DECAY], learning_params[kc.MAX_EPS_DECAY]
 
         self.epsilon = random.uniform(min_epsilon, max_epsilon)
         self.epsilon_decay_rate = random.uniform(min_eps_decay, max_eps_decay)
         self.alpha = random.uniform(min_alpha, max_alpha)
 
-        # Q-table assumes only one state, otherwise should be np.zeros((num_states, action_space_size)), also edit the rest of the class accordingly
-        self.q_table = np.zeros((action_space_size))    
+        # Q-table assumes only one state, otherwise should be np.zeros((num_states, action_space_size))
+        # Also edit the rest of the class accordingly
+        self.q_table = np.zeros((self.action_space_size))    
         
 
     def learn(self, action, reward, state, next_state):

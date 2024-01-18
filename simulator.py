@@ -1,23 +1,25 @@
-
 from bs4 import BeautifulSoup
 import networkx as nx
 import pandas as pd
 import traci
 import xml.etree.ElementTree as ET
 
+
 class Simulator:
+
     """
     The interface between traffic simulator (SUMO, HihgEnv, Flow) and the environment
     """
-    def __init__(self, connection_file_path, edge_file_path, route_file_path, 
-                 empty_route_1, empty_route_2, beta, nr_iterations):
-        self.connection_file_path = connection_file_path
-        self.edge_file_path = edge_file_path
-        self.route_file_path = route_file_path
-        self.empty_route_1 = empty_route_1
-        self.empty_route_2 = empty_route_2
-        self.beta = beta
-        self.nr_iterations = nr_iterations
+
+    def __init__(self): #, connection_file_path, edge_file_path, route_file_path, empty_route_1, empty_route_2, beta, nr_iterations):
+        #self.connection_file_path = connection_file_path
+        #self.edge_file_path = edge_file_path
+        #self.route_file_path = route_file_path
+        #self.empty_route_1 = empty_route_1
+        #self.empty_route_2 = empty_route_2
+        #self.beta = beta
+        #self.nr_iterations = nr_iterations
+        pass
 
 
     def read_joint_actions_df(self, joint_action_df):

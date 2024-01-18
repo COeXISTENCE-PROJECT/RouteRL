@@ -1,37 +1,37 @@
 {
 
-
     "agent_generation_parameters" :
     {
-        "agents_data_path": "agents_data.csv",
+        "agents_data_path" : "agents_data.csv",
         "agent_attributes" : ["id", "origin", "destination", "start_time", "agent_type"],
         "simulation_timesteps" : 3600,
         "agent_start_intervals" : 6,
-        "action_space_size" : 3,
 
         "agent_learning_parameters" :
         {
-            "min_alpha" : 0.2,
-            "max_alpha" : 0.5,
-            "min_epsilon" : 0.7,
-            "max_epsilon" : 0.99,
-            "min_eps_decay" : 0.9,
-            "max_eps_decay" : 0.99
+            "machine_agent_parameters" :
+            {
+                "min_alpha" : 0.2,
+                "max_alpha" : 0.5,
+                "min_epsilon" : 0.7,
+                "max_epsilon" : 0.99,
+                "min_eps_decay" : 0.9,
+                "max_eps_decay" : 0.99,
+                "action_space_size" : 3
+            },
+
+            "human_agent_parameters" :
+            {
+                "beta" : 0.2,
+                "action_space_size" : 3
+            }
         }
     },
 
 
     "training_parameters":
     {
-        "num_episodes" : 10,
-
-        "log_paths" : 
-        {
-            "reward_logs_path": "training_records/rewards/rewards_ep",
-            "action_logs_path": "training_records/actions/actions_ep",
-            "q_table_logs_path": "training_records/q_tables/q_tables_ep"
-        }
+        "num_episodes" : 10
     }
     
-
 }

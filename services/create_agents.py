@@ -1,7 +1,7 @@
 import pandas as pd
-import random
 
 from agent import MachineAgent, HumanAgent
+from keychain import Keychain as kc
 
 
 def create_agent_objects(params):
@@ -11,27 +11,27 @@ def create_agent_objects(params):
     """
 
     # Getting parameters
-    agents_data_path = params["agents_data_path"]
-    agent_attributes = params["agent_attributes"]
-    simulation_timesteps = params["simulation_timesteps"]
-    agent_start_intervals = params["agent_start_intervals"]
-    action_space_size = params["action_space_size"]
-    learning_params = params["agent_learning_parameters"]
+    simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]
+    agent_start_intervals = params[kc.AGENT_START_INTERVALS]
+    learning_params = params[kc.AGENT_LEARNING_PARAMETERS]
     
     # Generating agent data
-    agents_data_df = generate_agents_data(agent_attributes, simulation_timesteps, agent_start_intervals, agents_data_path)
+    agents_data_df = generate_agents_data(kc.AGENT_ATTRIBUTES, simulation_timesteps, agent_start_intervals, kc.AGENTS_DATA_PATH)
     agents = list() # Where we will store & return agents
     
     # Generating agent objects from generated agent data
-    for idx, row in agents_data_df.iterrows():
+    for _, row in agents_data_df.iterrows():
         row_dict = row.to_dict()
-        id, start_time, origin, destination = row_dict['id'], row_dict['start_time'], row_dict['origin'], row_dict['destination']
-        if row_dict['agent_type'] == 'm':
-            agents.append(MachineAgent(id, start_time, origin, destination, action_space_size, learning_params))
-        elif row_dict['agent_type'] == 'h':
-            agents.append(HumanAgent(id, start_time, origin, destination, action_space_size))
+
+        id, start_time = row_dict[kc.AGENT_ID], row_dict[kc.AGENT_START_TIME]
+        origin, destination = row_dict[kc.AGENT_ORIGIN], row_dict[kc.AGENT_DESTINATION]
+
+        if row_dict[kc.AGENT_TYPE] == kc.TYPE_MACHINE:
+            agents.append(MachineAgent(id, start_time, origin, destination, learning_params))
+        elif row_dict[kc.AGENT_TYPE] == kc.TYPE_HUMAN:
+            agents.append(HumanAgent(id, start_time, origin, destination, learning_params))
         else:
-            print('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict['agent_type'])
+            print('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_TYPE])
 
     print(f'[SUCCESS] Created agent objects (%d)' % (len(agents)))
     return agents
@@ -51,13 +51,13 @@ def generate_agents_data(agent_attributes, simulation_timesteps, agent_start_int
 
     for t in range(simulation_timesteps):
         if not t % agent_start_intervals:
-            agent_features = [id_counter, 0, 0, t, 'm']
+            agent_features = [id_counter, 0, 0, t, kc.TYPE_MACHINE]
             agent = {agent_attributes[i] : agent_features[i] for i in range(len(agent_features))}   # Agent that goes to 0 from 0
 
             agents_df.loc[id_counter] = agent
             id_counter += 1
 
-            agent_features = [id_counter, 1, 1, t, 'm']
+            agent_features = [id_counter, 1, 1, t, kc.TYPE_MACHINE]
             agent = {agent_attributes[i] : agent_features[i] for i in range(len(agent_features))}   # Agent that goes to 1 from 1
 
             agents_df.loc[id_counter] = agent
