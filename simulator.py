@@ -153,7 +153,7 @@ class Simulator:
         finally:
             traci.close()
 
-        df1,df2 = travel_time('tripinfo.xml',route_1_rou,route_2_rou,route_1_veh,route_2_veh)#ezt hogy azt adja ki
+        df1,df2 = None, None #travel_time('tripinfo.xml',route_1_rou,route_2_rou,route_1_veh,route_2_veh)#ezt hogy azt adja ki
 
         return df1,df2
     

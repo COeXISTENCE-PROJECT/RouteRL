@@ -10,10 +10,10 @@ class TrafficEnvironment:
     To be implemented
     """
 
-    def __init__(self, agents):
-        simulator = Simulator()
+    def __init__(self): # get params for simulator
+        simulator = Simulator() # pass params for simulator
         # Initialize network
-
+        
         # Create demand
         # Create paths
         # Calculate free flows
