@@ -54,6 +54,8 @@ class HumanAgent(Agent):
         """ 
         the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
         """
+        # create a .py file that implemented the action
+        # this way -> same logit for rooting and for action choice
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
         prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
         action = np.random.choice(list(range(len(self.cost))), p=prob_dist)    

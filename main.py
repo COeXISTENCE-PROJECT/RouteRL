@@ -8,8 +8,13 @@ def main():
 
     params = get_json(kc.PARAMS_PATH)
 
-    env = TrafficEnvironment() # pass some params for the simulation
     agents = create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS])
+    env = TrafficEnvironment(agents) # pass some params for the simulation
+
+    ####
+    # Dataframe for SUMO
+    # id (unique) | departure_time (timesteps / zeros) | human_mach (enum / (h, m))  
+    ####
     
     trainer = Trainer(params[kc.TRAINING_PARAMETERS])
     agents = trainer.train(env, agents)

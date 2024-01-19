@@ -11,12 +11,16 @@ class TrafficEnvironment:
     To be implemented
     """
 
-    def __init__(self): # get params for simulator
-        simulator = Simulator() # pass params for simulator
+    def __init__(self, agents): # get params for simulator
         # Initialize network
         # Create demand
         # Create paths
         # Calculate free flows
+        # done
+        simulator = Simulator() # pass params for simulator
+
+        #### create loop for agents
+        
         return None
 
     def reset(self):
