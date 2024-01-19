@@ -4,5 +4,3 @@ from .create_agents import generate_agents_data
 from .utils import get_json
 from .utils import make_dir
 from .utils import progress_bar
-
-print("inside init function")
