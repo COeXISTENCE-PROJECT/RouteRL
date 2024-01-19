@@ -1,8 +1,8 @@
 from environment import TrafficEnvironment
 from keychain import Keychain as kc
-from services.create_agents import create_agent_objects
-from services.trainer import Trainer
-from services.utils import get_json
+from services import Trainer
+from services import create_agent_objects
+from services import get_json
 
 def main():
 
