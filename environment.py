@@ -3,7 +3,7 @@ import random
 
 from keychain import Keychain as kc
 from simulator import Simulator
-
+from agent import Agent
 
 class TrafficEnvironment:
 
@@ -19,7 +19,10 @@ class TrafficEnvironment:
         # done
         simulator = Simulator() # pass params for simulator
 
-        #### create loop for agents
+        #### 
+        # Create 600 agents
+        print(agents)
+        
         
         return None
 
