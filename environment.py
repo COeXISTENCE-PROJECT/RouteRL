@@ -1,6 +1,5 @@
 import pandas as pd
 import random
-from prettytable import PrettyTable
 import numpy as np
 
 from keychain import Keychain as kc
@@ -20,7 +19,6 @@ class TrafficEnvironment:
         # Calculate free flows
         # done
         self.simulator = Simulator(agents, simulation_parameters)  # pass params for simulator, and only the number of agents
-        self.print_agents(agents, print_every=50)   # delete maybe
 
         print("[SUCCESS] Environment initiated!")
 
@@ -69,16 +67,3 @@ class TrafficEnvironment:
         average_travel_time = sumo_df['travel_times'].mean()
 
         return average_travel_time
-
-
-
-    def print_agents(self, agents, print_every=1): # Should this be even here?
-        table = PrettyTable()
-        table.field_names = kc.AGENT_ATTRIBUTES
-
-        for a in agents:
-            if not (a.id % print_every):
-                table.add_row([a.id, a.origin, a.destination, a.start_time, a.__class__.__name__])
-
-        if print_every > 1: print("--- Showing every %dth agent ---" % (print_every))
-        print(table)

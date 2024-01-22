@@ -1,4 +1,5 @@
 import pandas as pd
+from prettytable import PrettyTable
 
 from agent import MachineAgent, HumanAgent
 from keychain import Keychain as kc
@@ -34,6 +35,7 @@ def create_agent_objects(params):
             print('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_TYPE])
 
     print(f'[SUCCESS] Created agent objects (%d)' % (len(agents)))
+    print_agents(agents, print_every=50)
     return agents
 
 
@@ -67,3 +69,15 @@ def generate_agents_data(agent_attributes, simulation_timesteps, agent_start_int
     print('[SUCCESS] Generated agent data and saved to: ' + save_to)
 
     return agents_df
+
+
+def print_agents(agents, print_every=1):
+    table = PrettyTable()
+    table.field_names = kc.AGENT_ATTRIBUTES
+
+    for a in agents:
+        if not (a.id % print_every):
+            table.add_row([a.id, a.origin, a.destination, a.start_time, a.__class__.__name__])
+
+    if print_every > 1: print("--- Showing every %dth agent ---" % (print_every))
+    print(table)
