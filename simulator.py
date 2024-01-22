@@ -3,8 +3,8 @@ import networkx as nx
 import pandas as pd
 import traci
 import xml.etree.ElementTree as ET
-from human_learning.decision_models import logit
-from human_learning.learning_models import gawron
+from human_learning import logit
+from human_learning import gawron
 from services import remove_double_quotes
 import heapq
 from keychain import Keychain as kc
