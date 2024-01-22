@@ -337,24 +337,31 @@ class Simulator:
 
         return df1,df2
     
-    def routing(self, origin, destination, weight, route, beta):
+    def routing(self, origin, destination, weight, route):
         origin_1=origin
         route1=[origin]
         lent=nx.single_source_dijkstra_path_length(self.G, origin_1, weight = weight) 
 
         while origin_1!=destination:
             
+            ## checking the neighbors of the given node
             log_keys=list(self.G.neighbors(origin_1))
 
-            log_key = list(filter(lambda k: bool(list(self.G.neighbors(k))) or k==destination, log_keys))
+            # Filter out deadends except for the destination node.
+            # Deadends are nodes with no neighbors, except for the destination node.
 
-            log=list(map(lambda n: route1.append(n) if n == destination else 0.0000000001 if n in route1 else 0.01 if any(map(lambda sublist: n in sublist, route)) else lent[n], log_key))
+            # Check the number of neighbors for each node.
+            # If a node has zero neighbors (excluding the destination), filter it out.
+            log_key = list(filter(lambda k: bool(list(self.G.neighbors(k))) or k==destination, log_keys)) 
+
+            ## generates the values of the utilities
+            log = list(map(lambda n: route1.append(n) if n == destination else 0.0000000001 if n in route1 else 0.01 if any(map(lambda sublist: n in sublist, route)) else lent[n], log_key))
 
             if destination in route1:
                     break
 
             #time=time_generator(log)
-            choosen=logit(beta,log)
+            choosen=logit(self.beta, log)
             route1.append(log_key[choosen])
             origin_1=log_key[choosen]
         
