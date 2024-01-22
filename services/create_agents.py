@@ -12,12 +12,13 @@ def create_agent_objects(params):
     """
 
     # Getting parameters
+    agents_data_path = params[kc.AGENTS_DATA_PATH]
     simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]
     agent_start_intervals = params[kc.AGENT_START_INTERVALS]
     learning_params = params[kc.AGENT_LEARNING_PARAMETERS]
     
     # Generating agent data
-    agents_data_df = generate_agents_data(kc.AGENT_ATTRIBUTES, simulation_timesteps, agent_start_intervals, kc.AGENTS_DATA_PATH)
+    agents_data_df = generate_agents_data(kc.AGENT_ATTRIBUTES, simulation_timesteps, agent_start_intervals, agents_data_path)
     agents = list() # Where we will store & return agents
     
     # Generating agent objects from generated agent data

@@ -9,7 +9,6 @@ class Keychain:
 
     PARAMS_PATH = "params.json"
 
-    AGENTS_DATA_PATH = "agents_data.csv"
 
     RECORDS_PATH = "training_records"
     REWARDS_LOGS_PATH = "rewards"
@@ -25,7 +24,10 @@ class Keychain:
 
     AGENTS_GENERATION_PARAMETERS = "agent_generation_parameters"
     TRAINING_PARAMETERS = "training_parameters"
+    SIMULATION_PARAMETERS = "simulation_parameters"
 
+    # Agent generation
+    AGENTS_DATA_PATH = "agents_data_path"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
     AGENT_START_INTERVALS = "agent_start_intervals"
     ACTION_SPACE_SIZE = "action_space_size"
@@ -46,7 +48,6 @@ class Keychain:
     NUM_EPISODES = "num_episodes"
 
     # Simulation
-    SIMULATION_PARAMETERS = "simulation_parameters"
     SUMO_TYPE = "sumo_type"
     SUMO_CONFIG_PATH = "sumo_config_path"
     ORIGIN1 = "origin1"
