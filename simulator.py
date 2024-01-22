@@ -205,7 +205,8 @@ class Simulator:
         #### queue ordered by start_time
 
         sorted_rows = self.priority_queue_creation(joint_action)
-
+        sorted_df = pd.DataFrame(sorted_rows, columns=pd.DataFrame(joint_action).columns)
+        print(sorted_df)
 
         # Start SUMO with TraCI
         csv=pd.read_csv(csv)
