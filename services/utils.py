@@ -1,6 +1,19 @@
 import json
 import os
+import sys
 import time
+
+
+def confirm_env_variable(env_var, append=None):
+    if env_var in os.environ:
+        print("[CONFIRMED] Environment variable exists: %s" % env_var)
+        if append:
+            path = os.path.join(os.environ[env_var], append)
+            sys.path.append(path)
+            print("[SUCCESS] Added module directory: %s" % path)
+    else:
+        raise ImportError("Please declare the environment variable '%s'" % env_var)
+
 
 
 def get_json(file_path):    # Read json file, return as dict
@@ -8,7 +21,7 @@ def get_json(file_path):    # Read json file, return as dict
         with open(file_path, 'r') as file:
             json_data = json.load(file)
     except FileNotFoundError:
-        print(f"[EROR] Cannot locate: %s" % (file_path))
+        print(f"[ERROR] Cannot locate: %s" % (file_path))
         raise
     return json_data
 

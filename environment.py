@@ -47,5 +47,5 @@ class TrafficEnvironment:
             if not (a.id % print_every):
                 table.add_row([a.id, a.origin, a.destination, a.start_time, a.__class__.__name__])
 
-        if print_every > 1: print("--- Showing every %d agent ---" % (print_every))
+        if print_every > 1: print("--- Showing every %dth agent ---" % (print_every))
         print(table)

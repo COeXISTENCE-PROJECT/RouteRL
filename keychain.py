@@ -53,6 +53,8 @@ class Keychain:
     ####################### ELSE ##############################
 
     SMALL_BUT_NOT_ZERO = 1e-14
+
+    SUMO_HOME = "SUMO_HOME"
     
     # Agent attribute df column headers
     AGENT_ID = "id"
