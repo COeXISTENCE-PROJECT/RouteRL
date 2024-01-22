@@ -19,7 +19,7 @@ class Simulator:
     The interface between traffic simulator (SUMO, HihgEnv, Flow) and the environment
     """
 
-    def __init__(self, agents): #, connection_file_path, edge_file_path, route_file_path, empty_route_1, empty_route_2, beta, nr_iterations):
+    def __init__(self, agents, params): #, connection_file_path, edge_file_path, route_file_path, empty_route_1, empty_route_2, beta, nr_iterations):
         #self.connection_file_path = connection_file_path
         #self.edge_file_path = edge_file_path
         #self.route_file_path = route_file_path
@@ -27,10 +27,12 @@ class Simulator:
         #self.empty_route_2 = empty_route_2
         #self.beta = beta
         #self.nr_iterations = nr_iterations
-        self.sumo_type = 'sumo'
-        self.config = '../Network_and_config/csomor1.sumocfg'
-        self.simulation_length = 3600
-        self.beta = - 0.1
+
+
+        self.sumo_type = params[kc.SUMO_TYPE]
+        self.config = params[kc.SUMO_CONFIG_PATH]
+        self.simulation_length = params[kc.SIMULATION_TIMESTEPS]
+        self.beta = params[kc.BETA]
 
         # network x graph
         self.G = self.network('Network_and_config/csomor1.con.xml','Network_and_config/csomor1.edg.xml','Network_and_config/csomor1.rou.xml')# The network is build on a OSM map
@@ -39,8 +41,10 @@ class Simulator:
         ## beta ?
         ## put the parameters of origin and dest in the params
         number_of_paths = 3
-        self.route1 = self.find_best_paths('279952229#0','-115602933#2', 'time', -0.1, number_of_paths)#I selected two source and target randomly, but here we can define anything else
-        self.route2 = self.find_best_paths('115604053','-441496282#1', 'time', -0.1, number_of_paths)
+        origin1, origin2 = params[kc.ORIGIN1], params[kc.ORIGIN2]
+        destination1, destination2 = params[kc.DESTINATION1], params[kc.DESTINATION2]
+        self.route1 = self.find_best_paths(origin1, destination1, 'time', number_of_paths)
+        self.route2 = self.find_best_paths(origin2, destination2, 'time', number_of_paths)
 
         self.csv=pd.read_csv("agents_data.csv")
 
@@ -343,7 +347,7 @@ class Simulator:
     
 
 
-    def routing(self, origin, destination, weight, picked_nodes, beta):     # Maybe termination limit?
+    def routing(self, origin, destination, weight, picked_nodes):     # Maybe termination limit?
         current_node = origin
         path = [origin]
         distance_to_destination = nx.single_source_dijkstra_path_length(self.G, destination, weight = weight)  # was origin
@@ -373,7 +377,7 @@ class Simulator:
 
             if reached_to_destination: break
 
-            chosen_index = logit(beta, costs)
+            chosen_index = logit(self.beta, costs)
             chosen_node = options[chosen_index]
 
             path.append(chosen_node)
@@ -383,14 +387,14 @@ class Simulator:
 
 
 
-    def find_best_paths(self, origin, destination, weight, beta, number_of_paths):
+    def find_best_paths(self, origin, destination, weight, number_of_paths):
         paths = list()
         picked_nodes = set()
 
         for _ in range(number_of_paths):
 
-            path = self.routing(origin, destination, weight, picked_nodes, beta)
-            while not path: path = self.routing(origin, destination, weight, picked_nodes, beta)
+            path = self.routing(origin, destination, weight, picked_nodes)
+            while not path: path = self.routing(origin, destination, weight, picked_nodes)
 
             paths.append(path)
             picked_nodes.update(path)

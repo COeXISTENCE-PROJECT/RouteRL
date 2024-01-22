@@ -49,6 +49,10 @@ class Keychain:
     SIMULATION_PARAMETERS = "simulation_parameters"
     SUMO_TYPE = "sumo_type"
     SUMO_CONFIG_PATH = "sumo_config_path"
+    ORIGIN1 = "origin1"
+    ORIGIN2 = "origin2"
+    DESTINATION1 = "destination1"
+    DESTINATION2 = "destination2"
 
     ###########################################################
     

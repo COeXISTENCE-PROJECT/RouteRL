@@ -13,13 +13,13 @@ class TrafficEnvironment:
     To be implemented
     """
 
-    def __init__(self, agents): # get params for simulator
+    def __init__(self, agents, simulation_parameters): # get params for simulator
         # Initialize network
         # Create demand
         # Create paths
         # Calculate free flows
         # done
-        self.simulator = Simulator(agents)  # pass params for simulator, and only the number of agents
+        self.simulator = Simulator(agents, simulation_parameters)  # pass params for simulator, and only the number of agents
         self.print_agents(agents, print_every=50)   # delete maybe
 
         print("[SUCCESS] Environment initiated!")
