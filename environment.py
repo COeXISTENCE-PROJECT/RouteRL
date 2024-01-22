@@ -26,7 +26,7 @@ class TrafficEnvironment:
 
     def calculate_free_flow_time(self):
         free_flow_cost = self.simulator.calculate_free_flow_time()
-        print('Free-flow times: ', free_flow_cost)
+        print('[INFO] Free-flow times: ', free_flow_cost)
         return free_flow_cost
         
         
