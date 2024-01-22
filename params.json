@@ -31,7 +31,11 @@
     "simulation_parameters":
     {
         "sumo_type" : "sumo",
-        "sumo_config_path" : "../Network_and_config/csomor1.sumocfg",
+        "sumo_config_path" : "Network_and_config/csomor1.sumocfg",
+        "connection_file_path" : "Network_and_config/csomor1.con.xml",
+        "edge_file_path" : "Network_and_config/csomor1.edg.xml",
+        "route_file_path" : "Network_and_config/csomor1.rou.xml",
+        "number_of_paths" : 3,
         "simulation_timesteps" : 3600,
         "beta" : -0.1,
 

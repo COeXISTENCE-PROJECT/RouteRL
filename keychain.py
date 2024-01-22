@@ -50,6 +50,11 @@ class Keychain:
     # Simulation
     SUMO_TYPE = "sumo_type"
     SUMO_CONFIG_PATH = "sumo_config_path"
+    CONNECTION_FILE_PATH = "connection_file_path"
+    EDGE_FILE_PATH = "edge_file_path" 
+    ROUTE_FILE_PATH = "route_file_path"
+    
+    NUMBER_OF_PATHS = "number_of_paths"
     ORIGIN1 = "origin1"
     ORIGIN2 = "origin2"
     DESTINATION1 = "destination1"

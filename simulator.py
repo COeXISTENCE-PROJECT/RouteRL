@@ -31,20 +31,26 @@ class Simulator:
 
         self.sumo_type = params[kc.SUMO_TYPE]
         self.config = params[kc.SUMO_CONFIG_PATH]
+
+        self.number_of_paths = params[kc.NUMBER_OF_PATHS]
         self.simulation_length = params[kc.SIMULATION_TIMESTEPS]
         self.beta = params[kc.BETA]
 
         # network x graph
-        self.G = self.network('Network_and_config/csomor1.con.xml','Network_and_config/csomor1.edg.xml','Network_and_config/csomor1.rou.xml')# The network is build on a OSM map
+        connection_file = params[kc.CONNECTION_FILE_PATH]
+        edge_file = params[kc.EDGE_FILE_PATH]
+        route_file = params[kc.ROUTE_FILE_PATH]
+        self.G = self.network(connection_file, edge_file, route_file)
+        # The network is build on a OSM map
         
         # initialize the routes (like google maps) 
         ## beta ?
         ## put the parameters of origin and dest in the params
-        number_of_paths = 3
+        
         origin1, origin2 = params[kc.ORIGIN1], params[kc.ORIGIN2]
         destination1, destination2 = params[kc.DESTINATION1], params[kc.DESTINATION2]
-        self.route1 = self.find_best_paths(origin1, destination1, 'time', number_of_paths)
-        self.route2 = self.find_best_paths(origin2, destination2, 'time', number_of_paths)
+        self.route1 = self.find_best_paths(origin1, destination1, 'time')
+        self.route2 = self.find_best_paths(origin2, destination2, 'time')
 
         self.csv=pd.read_csv("agents_data.csv")
 
@@ -402,11 +408,11 @@ class Simulator:
 
 
 
-    def find_best_paths(self, origin, destination, weight, number_of_paths):
+    def find_best_paths(self, origin, destination, weight):
         paths = list()
         picked_nodes = set()
 
-        for _ in range(number_of_paths):
+        for _ in range(self.number_of_paths):
 
             path = self.routing(origin, destination, weight, picked_nodes)
             while not path: path = self.routing(origin, destination, weight, picked_nodes)
