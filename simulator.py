@@ -35,8 +35,9 @@ class Simulator:
         # initialize the routes (like google maps) 
         ## beta ?
         ## put the parameters of origin and dest in the params
-        self.route1 = self.iterate('279952229#0','-115602933#2', 'time', -0.1, 3)#I selected two source and target randomly, but here we can define anything else
-        self.route2 = self.iterate('115604053','-441496282#1', 'time', -0.1, 3)
+        number_of_paths = 3
+        self.route1 = self.fine_best_paths('279952229#0','-115602933#2', 'time', -0.1, number_of_paths)#I selected two source and target randomly, but here we can define anything else
+        self.route2 = self.fine_best_paths('115604053','-441496282#1', 'time', -0.1, number_of_paths)
 
         self.csv=pd.read_csv("agents_data.csv")
 
@@ -380,7 +381,7 @@ class Simulator:
 
 
 
-    def iterate(self, origin, destination, weight, beta, number_of_paths):
+    def fine_best_paths(self, origin, destination, weight, beta, number_of_paths):
         paths = list()
         picked_nodes = set()
 
