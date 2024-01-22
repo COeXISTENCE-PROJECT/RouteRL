@@ -49,8 +49,8 @@ class TrafficEnvironment:
 
         ###### random - will change
         sumo_df = pd.DataFrame({
-            'id': agent_ids,
-            'travel_times': np.random.uniform(low=1, high=100, size=len(agent_ids))
+            kc.AGENT_ID: agent_ids,
+            kc.TRAVEL_TIMES: np.random.uniform(low=1, high=100, size=len(agent_ids))
         })
 
         #### Calculate joint reward based on travel times returned by SUMO
