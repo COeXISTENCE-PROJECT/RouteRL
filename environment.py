@@ -1,5 +1,6 @@
 import pandas as pd
 import random
+from prettytable import PrettyTable
 
 from keychain import Keychain as kc
 from simulator import Simulator
@@ -21,7 +22,7 @@ class TrafficEnvironment:
 
         #### 
         # Create 600 agents
-        print(agents)
+        self.print_agents(agents, print_every=50)
         
         
         return None
@@ -35,5 +36,16 @@ class TrafficEnvironment:
         joint_reward = pd.DataFrame({kc.AGENT_ID : agent_ids, kc.REWARD : rewards})
         return joint_reward, None, True
 
-    def calculate_rewards():
+    def calculate_rewards(self):
         pass
+
+    def print_agents(self, agents, print_every=1): # Should this be even here?
+        table = PrettyTable()
+        table.field_names = kc.AGENT_ATTRIBUTES
+
+        for a in agents:
+            if not (a.id % print_every):
+                table.add_row([a.id, a.origin, a.destination, a.start_time, a.__class__.__name__])
+
+        if print_every > 1: print("--- Showing every %d agent ---" % (print_every))
+        print(table)
