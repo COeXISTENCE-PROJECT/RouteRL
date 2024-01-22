@@ -74,6 +74,9 @@ class Keychain:
     Q_TABLE = "q_table"
     EPSILON = "epsilon"
 
+    # SUMO df headers
+    TRAVEL_TIMES = "travel_times"
+
     # Agent type encodings
     TYPE_HUMAN = "h"
     TYPE_MACHINE = "m"
