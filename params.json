@@ -28,6 +28,14 @@
         }
     },
 
+    "sumo":
+    {
+        "sumo-type" : "sumo",
+        "config-path" : "../Network_and_config/csomor1.sumocfg",
+        "simulation_length" : 3600,
+        "beta" : -0.1
+    },
+
 
     "training_parameters":
     {

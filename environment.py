@@ -19,15 +19,19 @@ class TrafficEnvironment:
         # Create paths
         # Calculate free flows
         # done
-        self.simulator = Simulator() # pass params for simulator
+        self.simulator = Simulator(agents) # pass params for simulator
 
         #### 
         # Create 600 agents
         self.print_agents(agents, print_every=50)
-        
-        
-        return None
 
+    def calculate_free_flow_time(self):
+
+        free_flow_cost = self.simulator.calculate_free_flow_time()
+
+        return free_flow_cost
+        
+        
     def reset(self):
         return None
 
@@ -38,7 +42,7 @@ class TrafficEnvironment:
         #### Feed agents actions to SUMO and get travel times
         ####
 
-        #route_1_rou,route_1_veh,route_2_rou,route_2_veh,time_route1,time_route2,cost1,cost2,df1,df2 = self.simulator.run_simulation_iteration(time_route1, time_route2, route_1_rou, route_2_rou, route_1_veh, route_2_veh, cost1, cost2)
+        #df1,df2 = self.simulator.run_simulation_iteration(joint_action, "agent_data.csv")#the last number of is the length of the simulation in seconds
 
 
         ###### random - will change

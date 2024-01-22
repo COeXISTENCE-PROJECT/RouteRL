@@ -3,8 +3,11 @@ import networkx as nx
 import pandas as pd
 import traci
 import xml.etree.ElementTree as ET
-from Decision_model import logit
-from learning_model import gawron
+from human_learning.decision_models import logit
+from human_learning.learning_models import gawron
+import heapq
+from keychain import Keychain as kc
+
 
 
 class Simulator:
@@ -13,7 +16,7 @@ class Simulator:
     The interface between traffic simulator (SUMO, HihgEnv, Flow) and the environment
     """
 
-    def __init__(self): #, connection_file_path, edge_file_path, route_file_path, empty_route_1, empty_route_2, beta, nr_iterations):
+    def __init__(self, agents): #, connection_file_path, edge_file_path, route_file_path, empty_route_1, empty_route_2, beta, nr_iterations):
         #self.connection_file_path = connection_file_path
         #self.edge_file_path = edge_file_path
         #self.route_file_path = route_file_path
@@ -31,17 +34,22 @@ class Simulator:
         
         # initialize the routes (like google maps) 
         ## beta ?
-        self.route1 = self.iterate('279952229#0','-115602933#2', 'time',list(), -0.1,3)#I selected two source and target randomly, but here we can define anything else
+        ## put the parameters of origin and dest in the params
+        self.route1 = self.iterate('279952229#0','-115602933#2', 'time', list(), -0.1,3)#I selected two source and target randomly, but here we can define anything else
         self.route2 = self.iterate('115604053','-441496282#1', 'time', list(),-0.1,3)
 
         self.csv=pd.read_csv("agents_data.csv")
+
         csv1= self.csv[self.csv.origin==0]
         csv2= self.csv[self.csv.origin==1]
 
         # free flow travel time
         # maybe not for machines ???
-        self.cost1 = self.free_flow_time(self.route1, csv1) 
-        self.cost2 = self.free_flow_time(self.route2, csv2) 
+        """self.cost1 = self.free_flow_time(self.route1, csv1) 
+        self.cost2 = self.free_flow_time(self.route2, csv2) """
+
+        #self.free_flow_cost = self.free_flow_time(self.route1, csv1) + self.free_flow_time(self.route2, csv2) 
+        #print(self.cost1, self.cost2)
 
         ## Init returns None
         
@@ -70,23 +78,16 @@ class Simulator:
 
         return length
     
-    def free_flow_time(self, route, csv):
+    def calculate_free_flow_time(self):
         length=pd.DataFrame(self.G.edges(data=True))
 
         time=length[2].astype('str').str.split(':',expand=True)[1]
         length[2]=time.str.replace('}','',regex=True).astype('float')
 
-        in_time=self.free_flow_time_finder(route,length[0],length[1],length[2])
+        in_time1=self.free_flow_time_finder(self.route1,length[0],length[1],length[2])
+        in_time2=self.free_flow_time_finder(self.route2,length[0],length[1],length[2])
 
-        cost=[]
-
-        for _ in range(len(csv)):
-            cost.append(in_time)
-
-        column_names = [f"cost{i+1}" for i in range(len(cost[0]))]
-        cost_df = pd.DataFrame(cost, columns=column_names)
-
-        return cost_df
+        return in_time1 + in_time2
     
 
 
@@ -147,16 +148,35 @@ class Simulator:
     
         return Graph
     
-    def run_simulation_iteration(self, time_route1,time_route2,route_1_rou_,route_2_rou_,route_1_veh_,route_2_veh_,cost1,cost2):#This is the siulation where we use the values from the initial simulation to improve the initial solutions of te cars
+    def priority_comparator(self, item):
+        return item[kc.AGENT_START_TIME]
+    
+    def run_simulation_iteration(self, joint_action, csv):#This is the simulation where we use the values from the initial simulation to improve the initial solutions of te cars
+        #### joint action - columns{id, origin, destination, actions, start_time}
+        #### queue ordered by start_time
 
-        route_1,route_2= self.travel_time('tripinfo.xml',route_1_rou_,route_2_rou_,route_1_veh_,route_2_veh_)
+        print(joint_action, "\n\n")
 
-        time_route1= self.time_update(route_1,time_route1)
-        time_route2= self.time_update(route_2,time_route2)
+        # Use heapq to create a priority queue
+        """priority_queue = []
+
+        # Populate the priority queue with dataset elements
+        # Populate the priority queue with DataFrame rows
+        for index, row in joint_action.iterrows():
+            print(index, row)
+            heapq.heappush(priority_queue, (self.priority_comparator(row), row))"""
+            
+
 
         # Start SUMO with TraCI
+        csv=pd.read_csv(csv)
+        counter=csv.start_time.value_counts().sort_index() ### add the vehicles in a queue based on their start time
+        csv1=csv[csv.origin==0]
+        csv2=csv[csv.origin==1]
+        
         sumo_binary = self.sumo_type
         sumo_cmd = [sumo_binary, "-c", self.config]
+
         traci.start(sumo_cmd)
         route_1_rou=[]
         route_1_veh=[]
@@ -172,52 +192,45 @@ class Simulator:
                 traci.route.add(f"route2_{i}", self.route2[i])
 
             # Simulation loop
-            for _ in range(self.simulation_length):
+            for x in range(self.simulation_length):
                 traci.simulationStep()
-                #time_route1=time_route1
-                if _%60==0:
-                    time_route_1=list(time_route1.filter(like="cost").iloc[v])
-                    cost1_in=list(cost1.iloc[v])
-                    #route_1_1=pd.DataFrame(route_1.iloc[v]).T
-                    #time_route_1=time_upgrade(route_1_1,time_route1[v])
-                    cost1_1=self.gawron(0.2,time_route_1,cost1_in)
-                    #time_route1[v]=time_route_1
-                    cost1.iloc[v]=cost1_1
-                    j=logit(self.beta,cost1_1)
-                    #j=j.index(max(j))
-                    #time_route2=time_route2
-                    #route_2_1=pd.DataFrame(route_2.iloc[v]).T
-                    #time_route_2=time_upgrade(route_2_1,time_route2[v])
-                    #time_route2[v]=time_route_2
-                    time_route_2=list(time_route2.filter(like="cost").iloc[v])
-                    cost2_in=list(cost2.iloc[v])
-                    cost2_2=self.gawron(0.2,time_route_2,cost2_in)
-                    cost2.iloc[v]=cost2_2
-                    #time_route1[v]=time_route_1
-                    k=logit(self.beta,cost2_2)
-                    #k=k.index(max(k))
-                    vechicle_id1=time_route1.car[v]
-                    vechicle_id2=time_route2.car[v]
-                    #vechicle_id1=route_1.ID[v]
-                    #vechicle_id2=route_2.ID[v]
-                    traci.vehicle.add(vechicle_id1,f'route1_{j}')
-                    traci.vehicle.add(vechicle_id2,f'route2_{k}')
-                    traci.vehicle.setColor(vechicle_id2,(255,0,255))
-                    route_1_rou.append(j)
-                    route_1_veh.append(vechicle_id1)
-                    route_2_rou.append(k)
-                    route_2_veh.append(vechicle_id2)
-                    v+=1
-                    #Retrieve information using TraCI functions
-                    # For example, get vehicle positions, routes, travel times, etc.
+                for y in range(len(csv1)):
+                    if x==counter.index[y]:
+
+                        cost1_in=list(cost1.iloc[v])
+                        cost1_1=gawron(0.2,cost1_in,cost1_in)
+                        cost1.iloc[v]=cost1_1
+                        j=logit(self.beta,cost1_1) ## actions
+
+                        cost2_in=list(cost2.iloc[v])
+                        cost2_2=gawron(0.2,cost2_in,cost2_in)
+
+                        cost2.iloc[v]=cost2_2
+                        k=logit(self.beta,cost2_2) ##actions
+                        vechicle_id1=f"{csv1.id.iloc[v]}"
+                        vechicle_id2=f"{csv2.id.iloc[v]}"
+
+                        traci.vehicle.add(vechicle_id1,f'route1_{j}')
+                        traci.vehicle.add(vechicle_id2,f'route2_{k}')
+                        traci.vehicle.setColor(vechicle_id2,(255,0,255))
+
+                        route_1_rou.append(j)
+                        route_1_veh.append(vechicle_id1)
+                        route_2_rou.append(k)
+                        route_2_veh.append(vechicle_id2)
+                        v+=1
 
             # End of simulation
         finally:
             traci.close()
 
-        df1,df2=self.travel_time('tripinfo.xml',route_1_rou,route_2_rou,route_1_veh,route_2_veh)
+        route_1,route_2= self.travel_time('tripinfo.xml',route_1_rou,route_2_rou,csv1,csv2,cost1,cost2)
+        cost1= self.time_update(route_1,cost1)
+        time_route1=pd.merge(route_1,cost1,right_index=True,left_index=True)    
+        cost2= self.time_update(route_2,cost2)
+        time_route2=pd.merge(route_2,cost2,right_index=True,left_index=True)
 
-        return route_1_rou,route_1_veh,route_2_rou,route_2_veh,time_route1,time_route2,cost1,cost2,df1,df2
+        return time_route1,time_route2
 
     
 
