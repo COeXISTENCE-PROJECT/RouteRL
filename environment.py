@@ -19,7 +19,7 @@ class TrafficEnvironment:
         # Create paths
         # Calculate free flows
         # done
-        simulator = Simulator() # pass params for simulator
+        self.simulator = Simulator() # pass params for simulator
 
         #### 
         # Create 600 agents
@@ -37,6 +37,9 @@ class TrafficEnvironment:
         ####
         #### Feed agents actions to SUMO and get travel times
         ####
+
+        #route_1_rou,route_1_veh,route_2_rou,route_2_veh,time_route1,time_route2,cost1,cost2,df1,df2 = self.simulator.run_simulation_iteration(time_route1, time_route2, route_1_rou, route_2_rou, route_1_veh, route_2_veh, cost1, cost2)
+
 
         ###### random - will change
         sumo_df = pd.DataFrame({
