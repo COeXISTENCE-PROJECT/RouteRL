@@ -46,3 +46,8 @@ def progress_bar(start_time, progress, target):    # Just printing progress bar 
     elapsed_time = time.time() - start_time
     remaining_time = ((elapsed_time / progress_fraction) - elapsed_time) if progress_fraction else 0
     print(f'\rProgress: |%s| %.2f%%, ETA: %.2f seconds' % (bar, progress_fraction * 100, remaining_time), end='')
+
+
+def remove_double_quotes(text):
+    text = str(text).replace('"','')
+    return text

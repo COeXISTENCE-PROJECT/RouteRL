@@ -5,6 +5,7 @@ import traci
 import xml.etree.ElementTree as ET
 from human_learning.decision_models import logit
 from human_learning.learning_models import gawron
+from services import remove_double_quotes
 import heapq
 from keychain import Keychain as kc
 
@@ -103,8 +104,8 @@ class Simulator:
 
         id_name = pd.merge(from_db,id_db,right_index=True,left_index=True)
 
-        id_name['0_x']=[self.stringer(x) for x in id_name['0_x']]
-        id_name['0_y']=[self.stringer(x) for x in id_name['0_y']]
+        id_name['0_x']=[remove_double_quotes(x) for x in id_name['0_x']]
+        id_name['0_y']=[remove_double_quotes(x) for x in id_name['0_y']]
         id_name=id_name.rename(columns={'0_x':'Name','0_y':'ID'})
         
         # Route file
@@ -246,8 +247,8 @@ class Simulator:
 
         id_name = pd.merge(from_db,id_db,right_index=True,left_index=True)
 
-        id_name['0_x']=[self.stringer(x) for x in id_name['0_x']]
-        id_name['0_y']=[self.stringer(x) for x in id_name['0_y']]
+        id_name['0_x']=[remove_double_quotes(x) for x in id_name['0_x']]
+        id_name['0_y']=[remove_double_quotes(x) for x in id_name['0_y']]
         id_name=id_name.rename(columns={'0_x':'Name','0_y':'ID'})
         
         # Route file
@@ -368,8 +369,7 @@ class Simulator:
                 else:
                     costs.append(distance_to_destination[key])
 
-            if reached_to_destination:
-                    break
+            if reached_to_destination: break
 
             chosen_index = logit(beta, costs)
             chosen_node = options[chosen_index]
@@ -423,9 +423,6 @@ class Simulator:
     
 
 
-    def stringer(self, x):
-        x = str(x).replace('"','')
-        return x
     
     def read_xml_file(self, file_path, element_name, attribute_name, attribute_name_2):
         with open(file_path, 'r') as f:
