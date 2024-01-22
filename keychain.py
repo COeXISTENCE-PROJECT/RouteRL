@@ -45,6 +45,11 @@ class Keychain:
     # Training
     NUM_EPISODES = "num_episodes"
 
+    # Simulation
+    SIMULATION_PARAMETERS = "simulation_parameters"
+    SUMO_TYPE = "sumo_type"
+    SUMO_CONFIG_PATH = "sumo_config_path"
+
     ###########################################################
     
     
