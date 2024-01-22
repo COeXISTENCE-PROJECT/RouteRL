@@ -4,10 +4,10 @@ import networkx as nx
 import pandas as pd
 import traci
 import xml.etree.ElementTree as ET
+
+
 from human_learning import logit
 from human_learning import gawron
-from services import remove_double_quotes
-import heapq
 from keychain import Keychain as kc
 from services import remove_double_quotes
 
