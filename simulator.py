@@ -1,13 +1,15 @@
 from bs4 import BeautifulSoup
+import heapq
 import networkx as nx
 import pandas as pd
 import traci
 import xml.etree.ElementTree as ET
+
+
 from human_learning import logit
 from human_learning import gawron
-from services import remove_double_quotes
-import heapq
 from keychain import Keychain as kc
+from services import remove_double_quotes
 
 
 
@@ -462,7 +464,7 @@ class Simulator:
 
         return from_db, to_db
     
-    def replace(times, zeros):
+    def replace(self, times, zeros):
 
         for x in range(len(times)):
             for y in range(len(zeros)):

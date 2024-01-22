@@ -19,7 +19,7 @@ Next Improvement:
 def main():
 
     agents = create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS])
-    env = TrafficEnvironment(agents) # pass some params for the simulation
+    env = TrafficEnvironment(agents, params[kc.SIMULATION_PARAMETERS]) # pass some params for the simulation
 
     free_flow_cost = env.calculate_free_flow_time()
     print(free_flow_cost)
