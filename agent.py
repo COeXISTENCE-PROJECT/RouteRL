@@ -23,12 +23,12 @@ class Agent(ABC):
         self.destination = destination
 
     @abstractmethod
-    def learn(self, action, reward, state, next_state):    # Pass the applied action and reward once the episode ends, and it will remember the consequences
-        raise NotImplementedError
+    def act(self, state):  # Pick action according to your knowledge, or randomly
+        pass
 
     @abstractmethod
-    def pick_action(self, state):  # Pick action according to your knowledge, or randomly
-        raise NotImplementedError
+    def learn(self, action, reward, state, next_state):    # Pass the applied action and reward once the episode ends, and it will remember the consequences
+        pass
 
 
 
@@ -43,14 +43,9 @@ class HumanAgent(Agent):
         self.beta = learning_params[kc.BETA]
 
         self.cost = [kc.SMALL_BUT_NOT_ZERO, kc.SMALL_BUT_NOT_ZERO, kc.SMALL_BUT_NOT_ZERO]
-        
-
-    def learn(self, action, reward, state, next_state):
-        # Implement Garwon learning model
-        pass
 
 
-    def pick_action(self, state):  
+    def act(self, state):  
         """ 
         the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
         """
@@ -59,14 +54,18 @@ class HumanAgent(Agent):
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
         prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
         action = np.random.choice(list(range(len(self.cost))), p=prob_dist)    
-        return action
-    
+        return action        
+
+
+    def learn(self, action, reward, state, next_state):
+        # Implement Garwon learning model
+        pass
+
 
     def calculate_prob(self, utilities, n):    # implement the actual lenght on this part
         prob = utilities[n] / sum(utilities)
         return prob
     
-
 
 
 
@@ -89,19 +88,19 @@ class MachineAgent(Agent):
         # Q-table assumes only one state, otherwise should be np.zeros((num_states, action_space_size))
         # Also edit the rest of the class accordingly
         self.q_table = np.zeros((self.action_space_size))    
-        
+
+
+    def act(self, state):
+        if np.random.rand() < self.epsilon:    # Explore
+            return np.random.choice(self.action_space_size)
+        else:    # Exploit
+            return np.argmax(self.q_table)
+                
 
     def learn(self, action, reward, state, next_state):
         prev_knowledge = self.q_table[action]
         self.q_table[action] = prev_knowledge + (self.alpha * (reward - prev_knowledge))
         self.decay_epsilon()
-
-
-    def pick_action(self, state):
-        if np.random.rand() < self.epsilon:    # Explore
-            return np.random.choice(self.action_space_size)
-        else:    # Exploit
-            return np.argmax(self.q_table)
 
 
     def decay_epsilon(self):    # Slowly become deterministic

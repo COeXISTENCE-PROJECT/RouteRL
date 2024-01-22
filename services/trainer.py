@@ -23,7 +23,7 @@ class Trainer:
                                 kc.AGENT_DESTINATION : list(), kc.AGENT_START_TIME : list()}
 
                 for agent in agents:    # Every agent picks action
-                    action = agent.pick_action(state)
+                    action = agent.act(state)
                     joint_action = self.add_action_to_joint_action(agent, action, joint_action)
                 
                 joint_action_df = pd.DataFrame(joint_action)
