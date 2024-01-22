@@ -26,7 +26,7 @@ class Simulator:
         #self.beta = beta
         #self.nr_iterations = nr_iterations
         self.sumo_type = 'sumo'
-        self.config = '../Network_and_config/csomor1.sumocfg'
+        self.config = 'Network_and_config/csomor1.sumocfg'
         self.simulation_length = 3600
         self.beta = - 0.1
 
@@ -47,8 +47,9 @@ class Simulator:
 
         # free flow travel time
         # maybe not for machines ???
-        """self.cost1 = self.free_flow_time(self.route1, csv1) 
-        self.cost2 = self.free_flow_time(self.route2, csv2) """
+        ###old version - must go, just needed to run_simulatio
+        #self.cost1 = self.free_flow_time(self.route1, csv1) 
+        #self.cost2 = self.free_flow_time(self.route2, csv2)
 
         #self.free_flow_cost = self.free_flow_time(self.route1, csv1) + self.free_flow_time(self.route2, csv2) 
         #print(self.cost1, self.cost2)
@@ -90,6 +91,20 @@ class Simulator:
         in_time2=self.free_flow_time_finder(self.route2,length[0],length[1],length[2])
 
         return in_time1 + in_time2
+    
+    ###old version - added only to run simulation because of cost1/cost2
+    def free_flow_time(self, route,csv):
+        length=pd.DataFrame(self.G.edges(data=True))
+        time=length[2].astype('str').str.split(':',expand=True)[1]
+        length[2]=time.str.replace('}','',regex=True).astype('float')
+        in_time=self.free_flow_time_finder(route,length[0],length[1],length[2])
+        cost=[]
+        for _ in range(len(csv)):
+            cost.append(in_time)
+        column_names = [f"cost{i+1}" for i in range(len(cost[0]))]
+        cost_df = pd.DataFrame(cost, columns=column_names)
+
+        return cost_df
     
 
 
@@ -157,7 +172,7 @@ class Simulator:
         #### joint action - columns{id, origin, destination, actions, start_time}
         #### queue ordered by start_time
 
-        print(joint_action, "\n\n")
+        print("type of joint action is: ", type(joint_action), "\n\n")
 
         # Use heapq to create a priority queue
         """priority_queue = []
@@ -199,15 +214,15 @@ class Simulator:
                 for y in range(len(csv1)):
                     if x==counter.index[y]:
 
-                        cost1_in=list(cost1.iloc[v])
+                        cost1_in=list(self.cost1.iloc[v])
                         cost1_1=gawron(0.2,cost1_in,cost1_in)
-                        cost1.iloc[v]=cost1_1
+                        self.cost1.iloc[v]=cost1_1
                         j=logit(self.beta,cost1_1) ## actions
 
-                        cost2_in=list(cost2.iloc[v])
+                        cost2_in=list(self.cost2.iloc[v])
                         cost2_2=gawron(0.2,cost2_in,cost2_in)
 
-                        cost2.iloc[v]=cost2_2
+                        self.cost2.iloc[v]=cost2_2
                         k=logit(self.beta,cost2_2) ##actions
                         vechicle_id1=f"{csv1.id.iloc[v]}"
                         vechicle_id2=f"{csv2.id.iloc[v]}"
@@ -226,11 +241,11 @@ class Simulator:
         finally:
             traci.close()
 
-        route_1,route_2= self.travel_time('tripinfo.xml',route_1_rou,route_2_rou,csv1,csv2,cost1,cost2)
-        cost1= self.time_update(route_1,cost1)
-        time_route1=pd.merge(route_1,cost1,right_index=True,left_index=True)    
-        cost2= self.time_update(route_2,cost2)
-        time_route2=pd.merge(route_2,cost2,right_index=True,left_index=True)
+        route_1,route_2= self.travel_time('tripinfo.xml',route_1_rou,route_2_rou,csv1,csv2,self.cost1,self.cost2)
+        self.cost1= self.time_update(route_1,self.cost1)
+        time_route1=pd.merge(route_1,self.cost1,right_index=True,left_index=True)    
+        self.cost2= self.time_update(route_2,self.cost2)
+        time_route2=pd.merge(route_2,self.cost2,right_index=True,left_index=True)
 
         return time_route1,time_route2
 
