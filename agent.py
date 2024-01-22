@@ -23,11 +23,11 @@ class Agent(ABC):
         self.destination = destination
 
     @abstractmethod
-    def learn(self):    # Pass the applied action and reward once the episode ends, and it will remember the consequences
+    def learn(self, action, reward, state, next_state):    # Pass the applied action and reward once the episode ends, and it will remember the consequences
         pass
 
     @abstractmethod
-    def pick_action(self):  # Pick action according to your knowledge, or randomly
+    def pick_action(self, state):  # Pick action according to your knowledge, or randomly
         pass
 
 
@@ -49,9 +49,6 @@ class HumanAgent(Agent):
         # Implement Garwon learning model
         pass
 
-    def calculate_prob(self, utilities, n):    # implement the actual lenght on this part
-        prob = utilities[n] / sum(utilities)
-        return prob
 
     def pick_action(self, state):  
         """ 
@@ -63,6 +60,11 @@ class HumanAgent(Agent):
         prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
         action = np.random.choice(list(range(len(self.cost))), p=prob_dist)    
         return action
+    
+
+    def calculate_prob(self, utilities, n):    # implement the actual lenght on this part
+        prob = utilities[n] / sum(utilities)
+        return prob
     
 
 
