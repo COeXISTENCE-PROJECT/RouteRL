@@ -62,8 +62,8 @@ class Simulator:
         # free flow travel time
         # maybe not for machines ???
         ###old version - must go, just needed to run_simulatio
-        #self.cost1 = self.free_flow_time(self.route1, csv1) 
-        #self.cost2 = self.free_flow_time(self.route2, csv2)
+        self.cost1 = self.free_flow_time(self.route1, csv1) 
+        self.cost2 = self.free_flow_time(self.route2, csv2)
 
         #self.free_flow_cost = self.free_flow_time(self.route1, csv1) + self.free_flow_time(self.route2, csv2) 
         #print(self.cost1, self.cost2)
@@ -183,7 +183,6 @@ class Simulator:
         #### joint action - columns{id, origin, destination, actions, start_time}
         #### queue ordered by start_time
 
-        print("type of joint action is: ", type(joint_action), "\n\n")
         df = pd.DataFrame(joint_action)
 
         # Use heapq to create a priority queue
@@ -331,51 +330,6 @@ class Simulator:
         Graph = nx.from_pandas_edgelist(final, 'From', 'To', ['time'], create_using=nx.DiGraph())
         
         return Graph
-
-
-
-
-    def run_simulation_initial(self, sumo_type, config, route1, route2, j, k, simulation_length):
-        # This is the initial simulation. This create the initial travel times and all the later used variables
-        # Start SUMO with TraCI
-        sumo_binary = sumo_type
-        sumo_cmd = [sumo_binary, "-c", config]
-        traci.start(sumo_cmd)
-        route_1_rou=[]
-        route_1_veh=[]
-        route_2_rou=[]
-        route_2_veh=[]
-
-        try:
-            # Set up demand (routes), the route creation for the simulation
-            for i in range(len(route1)):
-                traci.route.add(f"route1_{i}", route1[i])
-            for i in range(len(route2)):
-                traci.route.add(f"route2_{i}", route2[i])
-
-            # Simulation loop
-            for _ in range(simulation_length):#the simulation itself, 3600 timesteps
-                traci.simulationStep()
-                if _%6==0:
-                    vechicle_id1=f"vehicle1_{_}"
-                    vechicle_id2=f"vehicle2_{_}"
-                    traci.vehicle.add(vechicle_id1,f'route1_{j}')
-                    traci.vehicle.add(vechicle_id2,f'route2_{k}')
-                    traci.vehicle.setColor(vechicle_id2,(255,0,255))
-                    route_1_rou.append(j)
-                    route_1_veh.append(vechicle_id1)
-                    route_2_rou.append(k)
-                    route_2_veh.append(vechicle_id2)
-                    # Retrieve information using TraCI functions
-                    # For example, get vehicle positions, routes, travel times, etc.
-
-                # End of simulation
-        finally:
-            traci.close()
-
-        df1,df2 = None, None #travel_time('tripinfo.xml',route_1_rou,route_2_rou,route_1_veh,route_2_veh)#ezt hogy azt adja ki
-
-        return df1,df2
     
 
 
