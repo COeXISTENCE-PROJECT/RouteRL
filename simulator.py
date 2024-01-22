@@ -35,8 +35,8 @@ class Simulator:
         # initialize the routes (like google maps) 
         ## beta ?
         ## put the parameters of origin and dest in the params
-        self.route1 = self.iterate('279952229#0','-115602933#2', 'time', list(), -0.1,3)#I selected two source and target randomly, but here we can define anything else
-        self.route2 = self.iterate('115604053','-441496282#1', 'time', list(),-0.1,3)
+        self.route1 = self.iterate('279952229#0','-115602933#2', 'time', -0.1, 3)#I selected two source and target randomly, but here we can define anything else
+        self.route2 = self.iterate('115604053','-441496282#1', 'time', -0.1, 3)
 
         self.csv=pd.read_csv("agents_data.csv")
 
@@ -337,39 +337,64 @@ class Simulator:
 
         return df1,df2
     
-    def routing(self, origin, destination, weight, route, beta):
-        origin_1=origin
-        route1=[origin]
-        lent=nx.single_source_dijkstra_path_length(self.G, origin_1, weight = weight) 
 
-        while origin_1!=destination:
+
+    def routing(self, origin, destination, weight, picked_nodes, beta):     # Maybe termination limit?
+        current_node = origin
+        path = [origin]
+        distance_to_destination = nx.single_source_dijkstra_path_length(self.G, destination, weight = weight)  # was origin
+
+        while current_node != destination:
             
-            log_keys=list(self.G.neighbors(origin_1))
+            reached_to_destination = False
+            all_neighbors = list(self.G.neighbors(current_node))
 
-            log_key = list(filter(lambda k: bool(list(self.G.neighbors(k))) or k==destination, log_keys))
+            options = list()
+            for key in all_neighbors:
+                if (key == destination) or (list(self.G.neighbors(key)) and (not key in path)):     # if key is destination or a non-visited non-deadend
+                    options.append(key)
 
-            log=list(map(lambda n: route1.append(n) if n == destination else 0.0000000001 if n in route1 else 0.01 if any(map(lambda sublist: n in sublist, route)) else lent[n], log_key))
+            if not options: return None   # if we filtered out all possible nodes, terminate
 
-            if destination in route1:
+            costs = list()
+            for key in options:
+                if key == destination:
+                    path.append(key)
+                    reached_to_destination = True
+                    break
+                elif key in picked_nodes:   # Please think about this!
+                    costs.append(distance_to_destination[key] * 3)  # if we saw this node in any previous path, discourage
+                else:
+                    costs.append(distance_to_destination[key])
+
+            if reached_to_destination:
                     break
 
-            #time=time_generator(log)
-            choosen=logit(beta,log)
-            route1.append(log_key[choosen])
-            origin_1=log_key[choosen]
+            chosen_index = logit(beta, costs)
+            chosen_node = options[chosen_index]
+
+            path.append(chosen_node)
+            current_node = chosen_node
         
-        return route1
+        return path
 
 
-    def iterate(self, origin, destination, weight, route, beta, n):
-        paths=[]
 
-        for i in range(n):
-            paths.append(self.routing(origin, destination, weight, route, beta))
-            route=paths
+    def iterate(self, origin, destination, weight, beta, number_of_paths):
+        paths = list()
+        picked_nodes = set()
+
+        for _ in range(number_of_paths):
+
+            path = self.routing(origin, destination, weight, picked_nodes, beta)
+            while not path: path = self.routing(origin, destination, weight, picked_nodes, beta)
+
+            paths.append(path)
+            picked_nodes.update(path)
 
         return paths
     
+
 
     def travel_time(self, file_path,route_1_rou,route_2_rou,csv1,csv2,cost1,cost2):
         id=pd.DataFrame(pd.read_xml(file_path).id).rename(columns={'id':'car_id'})

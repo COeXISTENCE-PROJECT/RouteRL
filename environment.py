@@ -19,11 +19,12 @@ class TrafficEnvironment:
         # Create paths
         # Calculate free flows
         # done
-        self.simulator = Simulator(agents) # pass params for simulator
+        self.simulator = Simulator(agents)  # pass params for simulator, and only the number of agents
+        self.print_agents(agents, print_every=50)   # delete maybe
 
-        #### 
-        # Create 600 agents
-        self.print_agents(agents, print_every=50)
+        print("[SUCCESS] Environment initiated!")
+
+
 
     def calculate_free_flow_time(self):
 
@@ -32,8 +33,11 @@ class TrafficEnvironment:
         return free_flow_cost
         
         
+
     def reset(self):
         return None
+
+
 
     def step(self, joint_action):   # For now, returns random rewards
         agent_ids = joint_action[kc.AGENT_ID]
@@ -59,10 +63,14 @@ class TrafficEnvironment:
 
         return joint_reward, None, True
 
+
+
     def calculate_rewards(self, sumo_df):
         average_travel_time = sumo_df['travel_times'].mean()
 
         return average_travel_time
+
+
 
     def print_agents(self, agents, print_every=1): # Should this be even here?
         table = PrettyTable()
