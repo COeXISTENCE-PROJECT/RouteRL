@@ -10,7 +10,7 @@
     </input>
     <output>
         <summary-output value="summary.xml"/>
-        <tripinfo-output value="../SUMO_learning_humans/tripinfo.xml"/>
+        <tripinfo-output value="tripinfo.xml"/>
     </output>
 
 </configuration>
