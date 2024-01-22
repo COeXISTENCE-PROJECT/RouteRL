@@ -4,6 +4,8 @@ import networkx as nx
 import pandas as pd
 import traci
 import xml.etree.ElementTree as ET
+from queue import PriorityQueue
+
 
 
 from human_learning import logit
@@ -171,24 +173,33 @@ class Simulator:
     
         return Graph
     
-    def priority_comparator(self, item):
-        return item[kc.AGENT_START_TIME]
+    def priority_queue_creation(self, joint_action):
+        #### joint action - columns{id, origin, destination, actions, start_time}
+        #### queue ordered by start_time
+
+        print("type of joint action is: ", type(joint_action), "\n\n")
+        df = pd.DataFrame(joint_action)
+
+        # Use heapq to create a priority queue
+        priority_queue = PriorityQueue()
+
+        # Iterate over the DataFrame and enqueue rows based on the sorting column
+        for _, row in df.iterrows():
+            priority_queue.put((row["start_time"], tuple(row)))
+
+        sorted_rows = []
+        while not priority_queue.empty():
+            _, row = priority_queue.get()
+            #print("row is: ", row, "\n")
+            sorted_rows.append(row)
+
+        return sorted_rows
     
     def run_simulation_iteration(self, joint_action, csv):#This is the simulation where we use the values from the initial simulation to improve the initial solutions of te cars
         #### joint action - columns{id, origin, destination, actions, start_time}
         #### queue ordered by start_time
 
-        print("type of joint action is: ", type(joint_action), "\n\n")
-
-        # Use heapq to create a priority queue
-        """priority_queue = []
-
-        # Populate the priority queue with dataset elements
-        # Populate the priority queue with DataFrame rows
-        for index, row in joint_action.iterrows():
-            print(index, row)
-            heapq.heappush(priority_queue, (self.priority_comparator(row), row))"""
-            
+        sorted_rows = self.priority_queue_creation(joint_action)
 
 
         # Start SUMO with TraCI

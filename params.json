@@ -31,7 +31,7 @@
     "simulation_parameters":
     {
         "sumo_type" : "sumo",
-        "sumo_config_path" : "../Network_and_config/csomor1.sumocfg",
+        "sumo_config_path" : "Network_and_config/csomor1.sumocfg",
         "simulation_timesteps" : 3600,
         "beta" : -0.1,
 
