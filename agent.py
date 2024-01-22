@@ -5,6 +5,8 @@ import numpy as np
 import random
 
 
+
+
 class Agent(ABC):
 
     """
@@ -30,6 +32,7 @@ class Agent(ABC):
 
 
 
+
 class HumanAgent(Agent):
 
     def __init__(self, id, start_time, origin, destination, params):
@@ -42,7 +45,7 @@ class HumanAgent(Agent):
         self.cost = [kc.SMALL_BUT_NOT_ZERO, kc.SMALL_BUT_NOT_ZERO, kc.SMALL_BUT_NOT_ZERO]
         
 
-    def learn(self):
+    def learn(self, action, reward, state, next_state):
         # Implement Garwon learning model
         pass
 
@@ -50,7 +53,7 @@ class HumanAgent(Agent):
         prob = utilities[n] / sum(utilities)
         return prob
 
-    def pick_action(self):  
+    def pick_action(self, state):  
         """ 
         the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
         """
