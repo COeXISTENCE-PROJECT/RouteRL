@@ -49,7 +49,8 @@ class Trainer:
             state = env.reset()
             progress_bar(start_time, ep+1, self.num_episodes)
 
-        print('\n[COMPLETE] Training completed!')
+        print("\n[COMPLETE] Training completed in: %s" % (time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(time.time() - start_time))))
+
         return agents
     
 
