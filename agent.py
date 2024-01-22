@@ -24,11 +24,11 @@ class Agent(ABC):
 
     @abstractmethod
     def learn(self, action, reward, state, next_state):    # Pass the applied action and reward once the episode ends, and it will remember the consequences
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def pick_action(self, state):  # Pick action according to your knowledge, or randomly
-        pass
+        raise NotImplementedError
 
 
 
