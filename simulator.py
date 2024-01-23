@@ -74,9 +74,8 @@ class Simulator:
             # Call find_best_paths for each combination of origin and destination
             paths = self.find_best_paths(origin, destination, 'time')
             # Store the result in the self.routes dictionary
-            self.routes[(origin, destination)] = paths
-                
-        self.print_paths(self.routes)
+            self.routes[(origin, destination)] = paths   
+        self.save_paths(self.routes)
         #print("Different paths: ", self.routes.keys(), "\n")
 
         ## WIll be remoced soon
@@ -100,7 +99,7 @@ class Simulator:
 
         ## Init returns None
         
-    def print_paths(self, routes):
+    def save_paths(self, routes):
         path_attributes = ["origin", "destination", "path"]
         path_save_path = "paths.csv"
 
