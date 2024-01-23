@@ -93,6 +93,5 @@ def cursed_path_generator(G, origin, destination, weight, avoid_nodes, beta):
 
 def node_to_abs_id(node_id):
     if node_id[0]=="-":
-        print("Turned node_id from %s to %s" % (node_id, node_id[1:]))
         node_id = node_id[1:]
     return node_id
