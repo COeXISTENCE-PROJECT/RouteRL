@@ -11,6 +11,7 @@ from queue import PriorityQueue
 from human_learning import logit
 from human_learning import gawron
 from keychain import Keychain as kc
+from services import path_generator
 from services import remove_double_quotes
 
 
@@ -333,43 +334,7 @@ class Simulator:
     
 
 
-    def routing(self, origin, destination, weight, picked_nodes):     # Maybe termination limit?
-        current_node = origin
-        path = [origin]
-        distance_to_destination = nx.single_source_dijkstra_path_length(self.G, destination, weight = weight)  # was origin
 
-        while current_node != destination:
-            
-            reached_to_destination = False
-            all_neighbors = list(self.G.neighbors(current_node))
-
-            options = list()
-            for key in all_neighbors:
-                if (key == destination) or (list(self.G.neighbors(key)) and (not key in path)):     # if key is destination or a non-visited non-deadend
-                    options.append(key)
-
-            if not options: return None   # if we filtered out all possible nodes, terminate
-
-            costs = list()
-            for key in options:
-                if key == destination:
-                    path.append(key)
-                    reached_to_destination = True
-                    break
-                elif key in picked_nodes:   # Please think about this!
-                    costs.append(distance_to_destination[key] * 3)  # if we saw this node in any previous path, discourage
-                else:
-                    costs.append(distance_to_destination[key])
-
-            if reached_to_destination: break
-
-            chosen_index = logit(self.beta, costs)
-            chosen_node = options[chosen_index]
-
-            path.append(chosen_node)
-            current_node = chosen_node
-        
-        return path
 
 
 
@@ -378,10 +343,9 @@ class Simulator:
         picked_nodes = set()
 
         for _ in range(self.number_of_paths):
-
-            path = self.routing(origin, destination, weight, picked_nodes)
-            while not path: path = self.routing(origin, destination, weight, picked_nodes)
-
+            path = path_generator(self.G, origin, destination, weight, picked_nodes, self.beta)
+            #path = self.routing(origin, destination, weight, picked_nodes)
+            #while not path: path = self.routing(origin, destination, weight, picked_nodes)
             paths.append(path)
             picked_nodes.update(path)
 
