@@ -5,12 +5,12 @@ from human_learning import logit
 
 
 
-def path_generator(G, origin, destination, weight, avoid_nodes, beta):
+def path_generator(network, origin, destination, weight, avoid_nodes, beta):
 
     path = list()   # our path
     visited_nodes_abs_names = set()     # visited node memory
 
-    distance_to_destination = nx.single_source_dijkstra_path_length(G, destination, weight = weight)    # heuristic
+    distance_to_destination = nx.single_source_dijkstra_path_length(network, destination, weight = weight)    # heuristic
     
     reached_to_destination = False
     current_node = origin   # we start from the origin
@@ -21,17 +21,17 @@ def path_generator(G, origin, destination, weight, avoid_nodes, beta):
         visited_nodes_abs_names.add(abs_node_id(current_node))
         
         # Find reachable nodes
-        all_neighbors = list(G.neighbors(current_node))
+        all_neighbors = list(network.neighbors(current_node))
 
         # Find reacheble AND feasible nodes
         options = list()
         for node in all_neighbors:
-            if (node == destination) or (list(G.neighbors(node)) and (not abs_node_id(node) in visited_nodes_abs_names)):     
+            if (node == destination) or (list(network.neighbors(node)) and (not abs_node_id(node) in visited_nodes_abs_names)):     
                 # if node is (destination) or (non-visited, non-deadend)
                 options.append(node)
 
         # if we see no feasible node
-        if not options: return path_generator(G, origin, destination, weight, avoid_nodes, beta)   # Restart
+        if not options: return path_generator(network, origin, destination, weight, avoid_nodes, beta)   # Restart
 
         # For each node, find how likely it should be to pick it
         costs = list()
@@ -56,13 +56,13 @@ def path_generator(G, origin, destination, weight, avoid_nodes, beta):
 
 
 
-def cursed_path_generator(G, origin, destination, weight, avoid_nodes, beta):
+def cursed_path_generator(network, origin, destination, weight, avoid_nodes, beta):
     
     path = list()   # Our path
     visited_nodes_abs_names = set()     # Visited node memory
     cursed_nodes = set()    # Nodes that LEAD TO deadend
 
-    distance_to_destination = nx.single_source_dijkstra_path_length(G, destination, weight = weight)    # Our heuristic
+    distance_to_destination = nx.single_source_dijkstra_path_length(network, destination, weight = weight)    # Our heuristic
     
     reached_to_destination = False
     current_node = origin   # We start from the origin
@@ -73,12 +73,12 @@ def cursed_path_generator(G, origin, destination, weight, avoid_nodes, beta):
         visited_nodes_abs_names.add(abs_node_id(current_node))
         
         # Find reachable nodes
-        all_neighbors = list(G.neighbors(current_node))
+        all_neighbors = list(network.neighbors(current_node))
 
         # Find reacheble AND feasible nodes
         options = list()
         for node in all_neighbors:
-            if (node == destination) or (list(G.neighbors(node)) and (not abs_node_id(node) in visited_nodes_abs_names) and (node not in cursed_nodes)):     
+            if (node == destination) or (list(network.neighbors(node)) and (not abs_node_id(node) in visited_nodes_abs_names) and (node not in cursed_nodes)):     
                 # if node is (destination) or (non-deadend, non-visited, non-cursed)
                 options.append(node)
 
