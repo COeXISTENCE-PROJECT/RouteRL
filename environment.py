@@ -12,20 +12,20 @@ class TrafficEnvironment:
     To be implemented
     """
 
-    def __init__(self, agents, simulation_parameters): # get params for simulator
+    def __init__(self, simulation_parameters): # get params for simulator
         # Initialize network
         # Create demand
         # Create paths
         # Calculate free flows
         # done
-        self.simulator = Simulator(agents, simulation_parameters)  # pass params for simulator, and only the number of agents
+        self.simulator = Simulator(simulation_parameters)  # pass params for simulator, and only the number of agents
 
         print("[SUCCESS] Environment initiated!")
 
 
 
-    def calculate_free_flow_time(self):
-        free_flow_cost = self.simulator.calculate_free_flow_time()
+    def calculate_free_flow_times(self):
+        free_flow_cost = self.simulator.calculate_free_flow_times()
         print('[INFO] Free-flow times: ', free_flow_cost)
         return free_flow_cost
         

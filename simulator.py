@@ -25,7 +25,7 @@ class Simulator:
     The interface between traffic simulator (SUMO, HihgEnv, Flow) and the environment
     """
 
-    def __init__(self, agents, params): #, connection_file_path, edge_file_path, route_file_path, empty_route_1, empty_route_2, beta, nr_iterations):
+    def __init__(self, params): #, connection_file_path, edge_file_path, route_file_path, empty_route_1, empty_route_2, beta, nr_iterations):
         #self.connection_file_path = connection_file_path
         #self.edge_file_path = edge_file_path
         #self.route_file_path = route_file_path
@@ -134,7 +134,7 @@ class Simulator:
 
         return length
     
-    def calculate_free_flow_time(self):
+    def calculate_free_flow_times(self):
         in_time_list = []
         length = pd.DataFrame(self.G.edges(data = True))
 

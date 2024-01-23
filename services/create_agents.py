@@ -5,7 +5,7 @@ from agent import MachineAgent, HumanAgent
 from keychain import Keychain as kc
 
 
-def create_agent_objects(params):
+def create_agent_objects(params, initial_knowledge):
 
     """
     Generates agent objects
