@@ -12,6 +12,7 @@ from human_learning import logit
 from human_learning import gawron
 from keychain import Keychain as kc
 from services import path_generator
+from services import cursed_path_generator
 from services import remove_double_quotes
 
 
@@ -346,8 +347,7 @@ class Simulator:
 
         for _ in range(self.number_of_paths):
             path = path_generator(self.G, origin, destination, weight, picked_nodes, self.beta)
-            #path = self.routing(origin, destination, weight, picked_nodes)
-            #while not path: path = self.routing(origin, destination, weight, picked_nodes)
+            #path = cursed_path_generator(self.G, origin, destination, weight, picked_nodes, self.beta)
             paths.append(path)
             picked_nodes.update(path)
 
