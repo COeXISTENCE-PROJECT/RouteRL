@@ -3,3 +3,5 @@ training_records/
 __pycache__/
 summary.xml
 tripinfo.xml
+agents.csv
+paths.csv

@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import heapq
 import networkx as nx
 import pandas as pd
+from prettytable import PrettyTable
 import traci
 import xml.etree.ElementTree as ET
 from queue import PriorityQueue
@@ -13,6 +14,7 @@ from human_learning import gawron
 from keychain import Keychain as kc
 from services import path_generator
 from services import cursed_path_generator
+from services import list_to_string
 from services import remove_double_quotes
 
 
@@ -45,7 +47,7 @@ class Simulator:
         edge_file = params[kc.EDGE_FILE_PATH]
         route_file = params[kc.ROUTE_FILE_PATH]
         self.G = self.network(connection_file, edge_file, route_file)
-        self.routes = {}
+        self.routes = dict()
         # The network is build on a OSM map
         
         # initialize the routes (like google maps) 
@@ -67,14 +69,15 @@ class Simulator:
             # Store the result in the self.routes dictionary
             self.routes[(origin, destination)] = result """
         
+        
         for origin, destination in zip(origins, destinations):
             # Call find_best_paths for each combination of origin and destination
-            result = self.find_best_paths(origin, destination, 'time')
-            
+            paths = self.find_best_paths(origin, destination, 'time')
             # Store the result in the self.routes dictionary
-            self.routes[(origin, destination)] = result
-
-        print("DIfferent paths: ", self.routes.keys(), "\n")
+            self.routes[(origin, destination)] = paths
+                
+        self.print_paths(self.routes)
+        #print("Different paths: ", self.routes.keys(), "\n")
 
         ## WIll be remoced soon
         self.route1 = self.find_best_paths(origin1, destination1, 'time') ### self.routes
@@ -97,7 +100,18 @@ class Simulator:
 
         ## Init returns None
         
+    def print_paths(self, routes):
+        path_attributes = ["origin", "destination", "path"]
+        path_save_path = "paths.csv"
 
+        paths_df = pd.DataFrame(columns=path_attributes)
+
+        for od, paths in routes.items():
+            for path in paths:
+                paths_df.loc[len(paths_df)] = [od[0], od[1], list_to_string(path, "-> ")]
+
+        paths_df.to_csv(path_save_path, index=True)
+        print("[SUCCESS] Generated & saved paths to: %s" % path_save_path)
 
     def read_joint_actions_df(self, joint_action_df):
         pass

@@ -51,3 +51,14 @@ def progress_bar(start_time, progress, target):    # Just printing progress bar 
 def remove_double_quotes(text):
     text = str(text).replace('"','')
     return text
+
+def list_to_string(from_list, separator=', '):
+    out_str = ""
+    first_time = True
+    for item in from_list:
+        if first_time:
+            out_str = str(item)
+            first_time = False
+        else:
+            out_str = "%s%s%s" % (out_str, separator, item)
+    return out_str
