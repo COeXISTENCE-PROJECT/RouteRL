@@ -5,6 +5,8 @@ from human_learning import logit
 def path_generator(G, origin, destination, weight, avoid_nodes, beta):
     current_node = origin
     path = [origin]
+    visited_nodes_abs_names = set()
+    visited_nodes_abs_names.add(node_to_abs_id(origin))
     distance_to_destination = nx.single_source_dijkstra_path_length(G, destination, weight = weight)  # was origin
     reached_to_destination = False
 
@@ -14,7 +16,7 @@ def path_generator(G, origin, destination, weight, avoid_nodes, beta):
 
         options = list()
         for node in all_neighbors:
-            if (node == destination) or (list(G.neighbors(node)) and (not node in path)):     # if node is destination or a non-visited non-deadend
+            if (node == destination) or (list(G.neighbors(node)) and (not node in path) and (not node_to_abs_id(node) in visited_nodes_abs_names)):     # if node is destination or a non-visited non-deadend
                 options.append(node)
 
         if not options: return path_generator(G, origin, destination, weight, avoid_nodes, beta)   # if we filtered out all possible nodes, restart
@@ -37,6 +39,7 @@ def path_generator(G, origin, destination, weight, avoid_nodes, beta):
             chosen_node = options[chosen_index]
 
             path.append(chosen_node)
+            visited_nodes_abs_names.add(node_to_abs_id(chosen_node))
             current_node = chosen_node
     
     return path
@@ -86,3 +89,10 @@ def cursed_path_generator(G, origin, destination, weight, avoid_nodes, beta):
             current_node = chosen_node
     
     return path
+
+
+def node_to_abs_id(node_id):
+    if node_id[0]=="-":
+        print("Turned node_id from %s to %s" % (node_id, node_id[1:]))
+        node_id = node_id[1:]
+    return node_id
