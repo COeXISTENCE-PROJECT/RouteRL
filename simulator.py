@@ -73,11 +73,11 @@ class Simulator:
             # Store the result in the self.routes dictionary
             self.routes[(origin, destination)] = result
 
-        print(self.routes.keys())
+        print("DIfferent paths: ", self.routes.keys(), "\n")
 
 
-        self.route1 = self.find_best_paths(origin1, destination1, 'time') ### self.routes
-        self.route2 = self.find_best_paths(origin2, destination2, 'time') ## dict and items ->od combinations
+        """self.route1 = self.find_best_paths(origin1, destination1, 'time') ### self.routes
+        self.route2 = self.find_best_paths(origin2, destination2, 'time') ## dict and items ->od combinations"""
 
 
         self.csv=pd.read_csv("agents_data.csv")
