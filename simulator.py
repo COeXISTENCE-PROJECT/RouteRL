@@ -75,8 +75,10 @@ class Simulator:
 
         print(self.routes.keys())
 
+
         self.route1 = self.find_best_paths(origin1, destination1, 'time') ### self.routes
         self.route2 = self.find_best_paths(origin2, destination2, 'time') ## dict and items ->od combinations
+
 
         self.csv=pd.read_csv("agents_data.csv")
 
@@ -120,15 +122,26 @@ class Simulator:
         return length
     
     def calculate_free_flow_time(self):
-        length=pd.DataFrame(self.G.edges(data=True))
+        in_time_list = []
+        length = pd.DataFrame(self.G.edges(data = True))
 
-        time=length[2].astype('str').str.split(':',expand=True)[1]
-        length[2]=time.str.replace('}','',regex=True).astype('float')
+        time = length[2].astype('str').str.split(':',expand=True)[1]
+        length[2] = time.str.replace('}','',regex=True).astype('float')
 
-        in_time1=self.free_flow_time_finder(self.route1,length[0],length[1],length[2])
-        in_time2=self.free_flow_time_finder(self.route2,length[0],length[1],length[2])
+        # Loop through the values in self.routes
+        for route in self.routes.values():
 
-        return in_time1 + in_time2
+            # Call free_flow_time_finder for each route
+            in_time = self.free_flow_time_finder(route, length[0], length[1], length[2])
+            
+            # Append the in_time value to the list
+            in_time_list.append(in_time)
+
+        ### OLD Version
+        """in_time1=self.free_flow_time_finder(self.route1,length[0],length[1],length[2])
+        in_time2=self.free_flow_time_finder(self.route2,length[0],length[1],length[2])"""
+
+        return in_time_list
     
     ###old version - added only to run simulation because of cost1/cost2
     def free_flow_time(self, route,csv):
