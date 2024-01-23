@@ -76,7 +76,7 @@ class Simulator:
         print("DIfferent paths: ", self.routes.keys(), "\n")
 
 
-        """self.route1 = self.find_best_paths(origin1, destination1, 'time') ### self.routes
+        self.route1 = self.find_best_paths(origin1, destination1, 'time') ### self.routes
         self.route2 = self.find_best_paths(origin2, destination2, 'time') ## dict and items ->od combinations"""
 
 
@@ -250,6 +250,8 @@ class Simulator:
         counter=csv.start_time.value_counts().sort_index() ### add the vehicles in a queue based on their start time
         csv1=csv[csv.origin==0]
         csv2=csv[csv.origin==1]
+
+        #print(csv1)
         
         sumo_binary = self.sumo_type
         sumo_cmd = [sumo_binary, "-c", self.config]
