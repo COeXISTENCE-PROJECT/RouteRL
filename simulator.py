@@ -76,7 +76,6 @@ class Simulator:
             # Store the result in the self.routes dictionary
             self.routes[(origin, destination)] = paths   
         self.save_paths(self.routes)
-        #print("Different paths: ", self.routes.keys(), "\n")
 
         ## WIll be remoced soon
         self.route1 = self.find_best_paths(origin1, destination1, 'time') ### self.routes
@@ -110,7 +109,7 @@ class Simulator:
                 paths_df.loc[len(paths_df)] = [od[0], od[1], list_to_string(path, "-> ")]
 
         paths_df.to_csv(path_save_path, index=True)
-        print("[SUCCESS] Generated & saved paths to: %s" % path_save_path)
+        print("[SUCCESS] Generated & saved %d paths to: %s" % (len(paths_df), path_save_path))
 
     def read_joint_actions_df(self, joint_action_df):
         pass

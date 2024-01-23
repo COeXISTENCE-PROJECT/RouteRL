@@ -16,9 +16,10 @@ def create_agent_objects(params):
     simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]
     agent_start_intervals = params[kc.AGENT_START_INTERVALS]
     learning_params = params[kc.AGENT_LEARNING_PARAMETERS]
+    agent_attributes = params[kc.AGENT_ATTRIBUTES]
     
     # Generating agent data
-    agents_data_df = generate_agents_data(kc.AGENT_ATTRIBUTES, simulation_timesteps, agent_start_intervals, agents_data_path)
+    agents_data_df = generate_agents_data(agent_attributes, simulation_timesteps, agent_start_intervals, agents_data_path)
     agents = list() # Where we will store & return agents
     
     # Generating agent objects from generated agent data
@@ -36,7 +37,7 @@ def create_agent_objects(params):
             print('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_TYPE])
 
     print(f'[SUCCESS] Created agent objects (%d)' % (len(agents)))
-    print_agents(agents, print_every=50)
+    print_agents(agents, agent_attributes, print_every=50)
     return agents
 
 
@@ -72,9 +73,9 @@ def generate_agents_data(agent_attributes, simulation_timesteps, agent_start_int
     return agents_df
 
 
-def print_agents(agents, print_every=1):
+def print_agents(agents, agent_attributes, print_every=1):
     table = PrettyTable()
-    table.field_names = kc.AGENT_ATTRIBUTES
+    table.field_names = agent_attributes
 
     for a in agents:
         if not (a.id % print_every):

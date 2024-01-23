@@ -77,7 +77,7 @@ class Keychain:
     AGENT_DESTINATION = "destination"
     AGENT_START_TIME = "start_time"
     AGENT_TYPE = "agent_type"
-    AGENT_ATTRIBUTES = [AGENT_ID, AGENT_ORIGIN, AGENT_DESTINATION, AGENT_START_TIME, AGENT_TYPE]
+    AGENT_ATTRIBUTES = "agent_attributes"
 
     # Joint action df column headers
     ACTION = "action"
