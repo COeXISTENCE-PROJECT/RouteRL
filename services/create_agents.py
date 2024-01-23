@@ -17,6 +17,9 @@ def create_agent_objects(params, initial_knowledge):
     agent_start_intervals = params[kc.AGENT_START_INTERVALS]
     learning_params = params[kc.AGENT_LEARNING_PARAMETERS]
     agent_attributes = params[kc.AGENT_ATTRIBUTES]
+
+    # For machines, we will have nothingness, in the same dimension of initial knowledge
+    blank_initial_knowledge = forget_knowledge(initial_knowledge)
     
     # Generating agent data
     agents_data_df = generate_agents_data(agent_attributes, simulation_timesteps, agent_start_intervals, agents_data_path)
@@ -30,9 +33,9 @@ def create_agent_objects(params, initial_knowledge):
         origin, destination = row_dict[kc.AGENT_ORIGIN], row_dict[kc.AGENT_DESTINATION]
 
         if row_dict[kc.AGENT_TYPE] == kc.TYPE_MACHINE:
-            agents.append(MachineAgent(id, start_time, origin, destination, learning_params))
+            agents.append(MachineAgent(id, start_time, origin, destination, learning_params, blank_initial_knowledge))
         elif row_dict[kc.AGENT_TYPE] == kc.TYPE_HUMAN:
-            agents.append(HumanAgent(id, start_time, origin, destination, learning_params))
+            agents.append(HumanAgent(id, start_time, origin, destination, learning_params, initial_knowledge))
         else:
             print('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_TYPE])
 
@@ -83,3 +86,7 @@ def print_agents(agents, agent_attributes, print_every=1):
 
     if print_every > 1: print("--- Showing every %dth agent ---" % (print_every))
     print(table)
+
+
+def forget_knowledge(knowledge):
+    return knowledge

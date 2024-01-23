@@ -35,7 +35,7 @@ class Agent(ABC):
 
 class HumanAgent(Agent):
 
-    def __init__(self, id, start_time, origin, destination, params):
+    def __init__(self, id, start_time, origin, destination, params, initial_knowledge):
         super().__init__(id, start_time, origin, destination)
 
         learning_params = params[kc.HUMAN_AGENT_PARAMETERS]
@@ -71,7 +71,7 @@ class HumanAgent(Agent):
 
 class MachineAgent(Agent):
 
-    def __init__(self, id, start_time, origin, destination, params):
+    def __init__(self, id, start_time, origin, destination, params, initial_knowledge):
         super().__init__(id, start_time, origin, destination)
 
         learning_params = params[kc.MACHINE_AGENT_PARAMETERS]
@@ -87,7 +87,8 @@ class MachineAgent(Agent):
 
         # Q-table assumes only one state, otherwise should be np.zeros((num_states, action_space_size))
         # Also edit the rest of the class accordingly
-        self.q_table = np.zeros((self.action_space_size))    
+        self.q_table = np.zeros((self.action_space_size))
+        #self.q_table = initial_knowledge
 
 
     def act(self, state):
