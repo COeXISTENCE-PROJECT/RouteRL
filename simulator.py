@@ -44,6 +44,7 @@ class Simulator:
         edge_file = params[kc.EDGE_FILE_PATH]
         route_file = params[kc.ROUTE_FILE_PATH]
         self.G = self.network(connection_file, edge_file, route_file)
+        self.routes = {}
         # The network is build on a OSM map
         
         # initialize the routes (like google maps) 
@@ -52,6 +53,28 @@ class Simulator:
         
         origin1, origin2 = params[kc.ORIGIN1], params[kc.ORIGIN2]
         destination1, destination2 = params[kc.DESTINATION1], params[kc.DESTINATION2]
+
+        origins = [origin1, origin2]
+        destinations = [destination1, destination2]
+
+        ### case that all the origins are connected with all the destinations
+        """
+        for origin, destination in itertools.product(origins, destinations):
+            # Call find_best_paths for each combination of origin and destination
+            result = self.find_best_paths(origin, destination, 'time')
+            
+            # Store the result in the self.routes dictionary
+            self.routes[(origin, destination)] = result """
+        
+        for origin, destination in zip(origins, destinations):
+            # Call find_best_paths for each combination of origin and destination
+            result = self.find_best_paths(origin, destination, 'time')
+            
+            # Store the result in the self.routes dictionary
+            self.routes[(origin, destination)] = result
+
+        print(self.routes.keys())
+
         self.route1 = self.find_best_paths(origin1, destination1, 'time') ### self.routes
         self.route2 = self.find_best_paths(origin2, destination2, 'time') ## dict and items ->od combinations
 
