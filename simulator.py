@@ -52,8 +52,8 @@ class Simulator:
         
         origin1, origin2 = params[kc.ORIGIN1], params[kc.ORIGIN2]
         destination1, destination2 = params[kc.DESTINATION1], params[kc.DESTINATION2]
-        self.route1 = self.find_best_paths(origin1, destination1, 'time')
-        self.route2 = self.find_best_paths(origin2, destination2, 'time')
+        self.route1 = self.find_best_paths(origin1, destination1, 'time') ### self.routes
+        self.route2 = self.find_best_paths(origin2, destination2, 'time') ## dict and items ->od combinations
 
         self.csv=pd.read_csv("agents_data.csv")
 
@@ -206,7 +206,8 @@ class Simulator:
         #### queue ordered by start_time
 
         sorted_rows = self.priority_queue_creation(joint_action)
-
+        sorted_df = pd.DataFrame(sorted_rows, columns=pd.DataFrame(joint_action).columns)
+        print(sorted_df)
 
         # Start SUMO with TraCI
         csv=pd.read_csv(csv)
@@ -264,6 +265,7 @@ class Simulator:
         finally:
             traci.close()
 
+        
         route_1,route_2= self.travel_time('tripinfo.xml',route_1_rou,route_2_rou,csv1,csv2,self.cost1,self.cost2)
         self.cost1= self.time_update(route_1,self.cost1)
         time_route1=pd.merge(route_1,self.cost1,right_index=True,left_index=True)    
