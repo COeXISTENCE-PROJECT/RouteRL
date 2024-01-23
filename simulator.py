@@ -75,7 +75,7 @@ class Simulator:
 
         print("DIfferent paths: ", self.routes.keys(), "\n")
 
-
+        ## WIll be remoced soon
         self.route1 = self.find_best_paths(origin1, destination1, 'time') ### self.routes
         self.route2 = self.find_best_paths(origin2, destination2, 'time') ## dict and items ->od combinations"""
 
@@ -241,9 +241,19 @@ class Simulator:
         #### joint action - columns{id, origin, destination, actions, start_time}
         #### queue ordered by start_time
 
-        sorted_rows = self.priority_queue_creation(joint_action)
-        sorted_df = pd.DataFrame(sorted_rows, columns=pd.DataFrame(joint_action).columns)
-        print(sorted_df)
+        sorted_rows_based_on_start_time = self.priority_queue_creation(joint_action)
+        sorted_df = pd.DataFrame(sorted_rows_based_on_start_time, columns=pd.DataFrame(joint_action).columns)
+        #print(sorted_df)
+
+        # Count the occurrences of each unique pair of origin and destination
+        number_of_agents_in_each_od_pair = sorted_df.groupby(['origin', 'destination']).size().reset_index(name='count')
+
+        # Display the counts
+        print(number_of_agents_in_each_od_pair)
+
+        ### for now it is 600/value of vehicles on path 0
+        number_of_agents = number_of_agents_in_each_od_pair.iloc[0]['count']
+        print("number of agents is: ", number_of_agents)
 
         # Start SUMO with TraCI
         csv=pd.read_csv(csv)
@@ -251,7 +261,7 @@ class Simulator:
         csv1=csv[csv.origin==0]
         csv2=csv[csv.origin==1]
 
-        #print(csv1)
+        print(csv1)
         
         sumo_binary = self.sumo_type
         sumo_cmd = [sumo_binary, "-c", self.config]
@@ -273,7 +283,7 @@ class Simulator:
             # Simulation loop
             for x in range(self.simulation_length):
                 traci.simulationStep()
-                for y in range(len(csv1)):
+                for y in range(number_of_agents):
                     if x==counter.index[y]:
 
                         cost1_in=list(self.cost1.iloc[v])
@@ -299,7 +309,7 @@ class Simulator:
                         route_2_veh.append(vechicle_id2)
                         v+=1
 
-            # End of simulation
+        # End of simulation
         finally:
             traci.close()
 
