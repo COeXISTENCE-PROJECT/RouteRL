@@ -39,7 +39,7 @@ class TrafficEnvironment:
 
 
 
-    def step(self, joint_action):   # For now, returns random rewards
+    def step(self, joint_action):
         agent_ids = joint_action[kc.AGENT_ID]
 
         ####
@@ -48,7 +48,6 @@ class TrafficEnvironment:
         simulation_length = 3600
 
         sumo_df = self.simulator.run_simulation_iteration(simulation_length, joint_action)
-        #print(sumo_df)
 
         #### Calculate joint reward based on travel times returned by SUMO
         joint_reward = self.calculate_rewards(sumo_df)
@@ -57,7 +56,6 @@ class TrafficEnvironment:
         joint_reward = pd.DataFrame({kc.AGENT_ID : agent_ids, kc.REWARD : rewards})
 
         return joint_reward, None, True
-
 
 
     def calculate_rewards(self, sumo_df):
