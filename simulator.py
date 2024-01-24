@@ -81,22 +81,6 @@ class Simulator:
         self.route1 = self.find_best_paths(origin1, destination1, 'time') ### self.routes
         self.route2 = self.find_best_paths(origin2, destination2, 'time') ## dict and items ->od combinations"""
 
-
-        self.csv=pd.read_csv("agents_data.csv")
-
-        csv1= self.csv[self.csv.origin==0]
-        csv2= self.csv[self.csv.origin==1]
-
-        # free flow travel time
-        # maybe not for machines ???
-        ###old version - must go, just needed to run_simulatio
-        self.cost1 = self.free_flow_time(self.route1, csv1) 
-        self.cost2 = self.free_flow_time(self.route2, csv2)
-
-        #self.free_flow_cost = self.free_flow_time(self.route1, csv1) + self.free_flow_time(self.route2, csv2) 
-        #print(self.cost1, self.cost2)
-
-        ## Init returns None
         
     def save_paths(self, routes):
         path_attributes = ["origin", "destination", "path"]
@@ -155,21 +139,6 @@ class Simulator:
         in_time2=self.free_flow_time_finder(self.route2,length[0],length[1],length[2])"""
 
         return in_time_list
-    
-    ###old version - added only to run simulation because of cost1/cost2
-    def free_flow_time(self, route,csv):
-        length=pd.DataFrame(self.G.edges(data=True))
-        time=length[2].astype('str').str.split(':',expand=True)[1]
-        length[2]=time.str.replace('}','',regex=True).astype('float')
-        in_time=self.free_flow_time_finder(route,length[0],length[1],length[2])
-        cost=[]
-        for _ in range(len(csv)):
-            cost.append(in_time)
-        column_names = [f"cost{i+1}" for i in range(len(cost[0]))]
-        cost_df = pd.DataFrame(cost, columns=column_names)
-
-        return cost_df
-    
 
 
     def network(self, connection_file, edge_file, route_file):
@@ -250,7 +219,7 @@ class Simulator:
 
         return sorted_rows
     
-    def run_simulation_iteration(self, simulation_length, joint_action, csv):#This is the simulation where we use the values from the initial simulation to improve the initial solutions of te cars
+    def run_simulation_iteration(self, simulation_length, joint_action):#This is the simulation where we use the values from the initial simulation to improve the initial solutions of te cars
         #### joint action - columns{id, origin, destination, actions, start_time}
         #### queue ordered by start_time
 
@@ -353,10 +322,6 @@ class Simulator:
         Graph = nx.from_pandas_edgelist(final, 'From', 'To', ['time'], create_using=nx.DiGraph())
         
         return Graph
-    
-
-
-
 
 
 
@@ -371,34 +336,6 @@ class Simulator:
             picked_nodes.update(path)
 
         return paths
-    
-
-
-    def travel_time(self, file_path,route_1_rou,route_2_rou,csv1,csv2,cost1,cost2):
-        id=pd.DataFrame(pd.read_xml(file_path).id).rename(columns={'id':'car_id'})
-
-        dur=pd.read_xml(file_path).rename(columns={'duration':'cost'}).cost/60
-
-        time=pd.merge(id,dur,right_index=True,left_index=True)
-        route_1=pd.merge(csv1,time,left_on='id',right_on='car_id',how='left')
-
-        route_1=route_1.drop(columns='car_id')
-        route_2=pd.merge(csv2,time,left_on='id',right_on='car_id',how='left')
-
-        route_2=route_2.drop(columns='car_id')
-
-        rou1=pd.DataFrame(route_1_rou).rename(columns={0:'route_id'})
-        rou2=pd.DataFrame(route_2_rou).rename(columns={0:'route_id'})
-
-        route_1=pd.merge(route_1,rou1,right_index=True,left_index=True)
-        route_2=pd.merge(route_2,rou2,right_index=True,left_index=True)
-
-        route_1=self.replace(route_1,cost1)
-        route_2=self.replace(route_2,cost2)
-
-        return route_1,route_2
-    
-
 
     
     def read_xml_file(self, file_path, element_name, attribute_name, attribute_name_2):

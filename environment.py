@@ -44,14 +44,8 @@ class TrafficEnvironment:
         ####
         simulation_length = 3600
 
-        df1,df2 = self.simulator.run_simulation_iteration(simulation_length, joint_action, "agents_data.csv")#the last number of is the length of the simulation in seconds
-
-
-        ###### random - will change
-        sumo_df = pd.DataFrame({
-            kc.AGENT_ID: agent_ids,
-            kc.TRAVEL_TIMES: np.random.uniform(low=1, high=100, size=len(agent_ids))
-        })
+        sumo_df = self.simulator.run_simulation_iteration(simulation_length, joint_action)
+        #print(sumo_df)
 
         #### Calculate joint reward based on travel times returned by SUMO
         joint_reward = self.calculate_rewards(sumo_df)
@@ -64,6 +58,6 @@ class TrafficEnvironment:
 
 
     def calculate_rewards(self, sumo_df):
-        average_travel_time = sumo_df['travel_times'].mean()
+        average_travel_time = sumo_df['cost'].mean()
 
         return average_travel_time
