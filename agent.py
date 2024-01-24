@@ -44,7 +44,6 @@ class HumanAgent(Agent):
         self.alpha = learning_params[kc.ALPHA]
 
         self.cost = initial_knowledge[(origin, destination)]
-        print("I am a human agent with ID: %d, going from %d to %d. My initial knowledge is: ", self.cost)
 
 
     def act(self, state):  
