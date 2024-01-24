@@ -42,9 +42,9 @@ class TrafficEnvironment:
         ####
         #### Feed agents actions to SUMO and get travel times
         ####
-        simulation_length = 100
+        simulation_length = 3600
 
-        #df1,df2 = self.simulator.run_simulation_iteration(simulation_length, joint_action, "agents_data.csv")#the last number of is the length of the simulation in seconds
+        df1,df2 = self.simulator.run_simulation_iteration(simulation_length, joint_action, "agents_data.csv")#the last number of is the length of the simulation in seconds
 
 
         ###### random - will change

@@ -256,31 +256,21 @@ class Simulator:
 
         sorted_rows_based_on_start_time = self.priority_queue_creation(joint_action)
         sorted_df = pd.DataFrame(sorted_rows_based_on_start_time, columns=pd.DataFrame(joint_action).columns)
-        print(sorted_df)
-
-        #for index, row in sorted_df.iterrows():
-        #    print("index is: ", index, "row is: ", row)
+        #print(sorted_df)
 
         # Count the occurrences of each unique pair of origin and destination
         number_of_agents_in_each_od_pair = sorted_df.groupby(['origin', 'destination']).size().reset_index(name='count')
 
-        # Display the counts
-        print(number_of_agents_in_each_od_pair)
+        # Display the number of agents in each od pair
+        #print(number_of_agents_in_each_od_pair)
 
         ### for now it is 600/value of vehicles on path 0
         number_of_agents = number_of_agents_in_each_od_pair.iloc[0]['count']
-        print("number of agents is: ", number_of_agents)
 
         # Start SUMO with TraCI
-        csv=pd.read_csv(csv)
-        counter=pd.read_csv("agents_data.csv").start_time.value_counts().sort_index()
-        csv1=csv[csv.origin==0]
-        csv2=csv[csv.origin==1]
         sumo_binary = self.sumo_type
         sumo_cmd = [sumo_binary, "-c", self.config]
         traci.start(sumo_cmd)
-        v=0
-        print("\n", counter, "\n")
 
         try:
 
@@ -288,91 +278,21 @@ class Simulator:
             for x in range(simulation_length):
                 traci.simulationStep()
 
-                #for y in range(len(csv1)):
                 for index, row in sorted_df.iterrows():
-                    #print("index is: ", index, "row is: ", row)
-                    #print("\n\n\nrow[action] is : ", row["action"], "row[id] is: ", row['id'], "\n\n\n")
 
-                    if x == counter.index[index]:
+                    if x == row["start_time"]:
                         j = row["action"]
                         vechicle_id=f"{row['id']}"
                         traci.vehicle.add(vechicle_id, f'{j}')
-                        v+=1
 
             # End of simulation
         finally:
             traci.close()
 
-        duration=pd.read_xml('tripinfo.xml').duration
-        reward=duration.reset_index().rename(columns={"duration":"cost"})
+        duration = pd.read_xml('Network_and_config/tripinfo.xml').duration
+        reward = duration.reset_index().rename(columns={"duration":"cost"})
 
         return reward
-        """csv=pd.read_csv(csv)
-        counter=csv.start_time.value_counts().sort_index() ### add the vehicles in a queue based on their start time
-        csv1=csv[csv.origin==0]
-        csv2=csv[csv.origin==1]
-
-        print(csv1)
-        
-        sumo_binary = self.sumo_type
-        sumo_cmd = [sumo_binary, "-c", self.config]
-
-        traci.start(sumo_cmd)
-        route_1_rou=[]
-        route_1_veh=[]
-        route_2_rou=[]
-        route_2_veh=[]
-        v=0
-
-        try:
-            # Set up demand (routes)
-            for i in range(len(self.route1)):
-                traci.route.add(f"route1_{i}", self.route1[i])
-            for i in range(len(self.route2)):
-                traci.route.add(f"route2_{i}", self.route2[i])
-
-            # Simulation loop
-            for x in range(self.simulation_length):
-                traci.simulationStep()
-                for y in range(number_of_agents):
-                    if x==counter.index[y]:
-
-                        cost1_in=list(self.cost1.iloc[v])
-                        cost1_1=gawron(0.2,cost1_in,cost1_in)
-                        self.cost1.iloc[v]=cost1_1
-                        j=logit(self.beta,cost1_1) ## actions
-
-                        cost2_in=list(self.cost2.iloc[v])
-                        cost2_2=gawron(0.2,cost2_in,cost2_in)
-
-                        self.cost2.iloc[v]=cost2_2
-                        k=logit(self.beta,cost2_2) ##actions
-                        vechicle_id1=f"{csv1.id.iloc[v]}"
-                        vechicle_id2=f"{csv2.id.iloc[v]}"
-
-                        traci.vehicle.add(vechicle_id1,f'route1_{j}')
-                        traci.vehicle.add(vechicle_id2,f'route2_{k}')
-                        traci.vehicle.setColor(vechicle_id2,(255,0,255))
-
-                        route_1_rou.append(j)
-                        route_1_veh.append(vechicle_id1)
-                        route_2_rou.append(k)
-                        route_2_veh.append(vechicle_id2)
-                        v+=1
-
-        # End of simulation
-        finally:
-            traci.close()
-
-        
-        route_1,route_2= self.travel_time('tripinfo.xml',route_1_rou,route_2_rou,csv1,csv2,self.cost1,self.cost2)
-        self.cost1= self.time_update(route_1,self.cost1)
-        time_route1=pd.merge(route_1,self.cost1,right_index=True,left_index=True)    
-        self.cost2= self.time_update(route_2,self.cost2)
-        time_route2=pd.merge(route_2,self.cost2,right_index=True,left_index=True)
-
-        return time_route1,time_route2"""
-
     
 
     def create_network_from_xml(self, connection_file, edge_file, route_file):
