@@ -10,14 +10,17 @@ class Trainer:
     def __init__(self, params):
 
         self.num_episodes = params[kc.NUM_EPISODES]
+        self.log_every = params[kc.LOG_EVERY]
 
 
     def train(self, env, agents):
-        state = env.reset()
         start_time = time.time()
 
         for ep in range(self.num_episodes):    # Until we simulate num_episode episodes
+
+            state = env.reset()
             done = False
+
             while not done:     # Until episode concludes
                 joint_action = {kc.AGENT_ID : list(), kc.ACTION : list(), kc.AGENT_ORIGIN : list(), 
                                 kc.AGENT_DESTINATION : list(), kc.AGENT_START_TIME : list()}
@@ -34,20 +37,19 @@ class Trainer:
                     reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
                     agent.learn(action, reward, state, next_state)
                 
+                if not (ep % self.log_every):
                 ########## Save training records
-                q_tab_df = pd.DataFrame({kc.AGENT_ID: [a.id for a in agents], kc.EPSILON: [f'%.2f' % (a.epsilon) for a in agents], 
-                                       kc.Q_TABLE: [f"%.2f  %.2f  %.2f" % (a.q_table[0], a.q_table[1], a.q_table[2]) for a in agents]})
+                    q_tab_df = pd.DataFrame({kc.AGENT_ID: [a.id for a in agents], kc.EPSILON: [f'%.2f' % (a.epsilon) for a in agents], 
+                                        kc.Q_TABLE: [f"%.2f  %.2f  %.2f" % (a.q_table[0], a.q_table[1], a.q_table[2]) for a in agents]})
 
-                joint_reward_df.to_csv(make_dir(kc.RECORDS_PATH, kc.REWARDS_LOGS_PATH, f"rewards_ep%d.csv" % (ep)), index = False)
-                joint_action_df.to_csv(make_dir(kc.RECORDS_PATH, kc.ACTIONS_LOGS_PATH, f"actions_ep%d.csv" % (ep)), index = False)
-                q_tab_df.to_csv(make_dir(kc.RECORDS_PATH, kc.Q_TABLES_LOG_PATH, f"q_tables_ep%d.csv" % (ep)), index = False)
+                    joint_reward_df.to_csv(make_dir(kc.RECORDS_PATH, kc.REWARDS_LOGS_PATH, f"rewards_ep%d.csv" % (ep)), index = False)
+                    joint_action_df.to_csv(make_dir(kc.RECORDS_PATH, kc.ACTIONS_LOGS_PATH, f"actions_ep%d.csv" % (ep)), index = False)
+                    q_tab_df.to_csv(make_dir(kc.RECORDS_PATH, kc.Q_TABLES_LOG_PATH, f"q_tables_ep%d.csv" % (ep)), index = False)
                 ##########
 
-                del joint_action, joint_reward_df, joint_action_df, q_tab_df
                 state = next_state
-            
-            state = env.reset()
-            show_progress("Training", start_time, ep+1, self.num_episodes, end_line='\n')
+
+            show_progress("TRAINING", start_time, ep+1, self.num_episodes, end_line='\n')
 
         print("\n[COMPLETE] Training completed in: %s" % (time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(time.time() - start_time))))
 

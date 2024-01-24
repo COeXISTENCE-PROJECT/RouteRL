@@ -47,6 +47,7 @@ class Keychain:
 
     # Training
     NUM_EPISODES = "num_episodes"
+    LOG_EVERY = "log_every"
 
     # Simulation
     SUMO_TYPE = "sumo_type"

@@ -46,7 +46,7 @@ def show_progress_bar(name_of_operation, start_time, progress, target, end_line=
     elapsed_time = time.time() - start_time
     remaining_time = ((elapsed_time / progress_fraction) - elapsed_time) if progress_fraction else 0
     remaining_time = time.strftime("%H:%M:%S", time.gmtime(remaining_time))
-    print(f'\r%s Progress: |%s| %.2f%%, ETA: %s' % (name_of_operation, bar, progress_fraction * 100, remaining_time), end=end_line)
+    print(f'\r[%s PROGRESS]: |%s| %.2f%%, ETA: %s' % (name_of_operation.upper(), bar, progress_fraction * 100, remaining_time), end=end_line)
 
 
 
@@ -55,7 +55,7 @@ def show_progress(name_of_operation, start_time, progress, target, end_line=''):
     elapsed_time = time.time() - start_time
     remaining_time = ((elapsed_time / progress_fraction) - elapsed_time) if progress_fraction else 0
     remaining_time = time.strftime("%H:%M:%S", time.gmtime(remaining_time))
-    print(f'\r%s Progress: %.2f%%, ETA: %s' % (name_of_operation, progress_fraction * 100, remaining_time), end=end_line)
+    print(f'\r[%s PROGRESS]: %.2f%%, ETA: %s' % (name_of_operation.upper(), progress_fraction * 100, remaining_time), end=end_line)
 
 
 def remove_double_quotes(text):
