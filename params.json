@@ -48,7 +48,7 @@
 
     "training_parameters":
     {
-        "num_episodes" : 3
+        "num_episodes" : 10
     }
     
 }

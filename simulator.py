@@ -273,17 +273,18 @@ class Simulator:
         traci.start(sumo_cmd)
 
         try:
-
             # Simulation loop
             for x in range(simulation_length):
                 traci.simulationStep()
 
-                for index, row in sorted_df.iterrows():
+                # Collect vehicles to be added
+                vehicles_to_add = sorted_df[sorted_df["start_time"] == x]
 
-                    if x == row["start_time"]:
-                        j = row["action"]
-                        vechicle_id=f"{row['id']}"
-                        traci.vehicle.add(vechicle_id, f'{j}')
+                # Bulk vehicle addition
+                for index, row in vehicles_to_add.iterrows():
+                    j = row["action"]
+                    vehicle_id = f"{row['id']}"
+                    traci.vehicle.add(vehicle_id, f'{j}')
 
             # End of simulation
         finally:
