@@ -7,6 +7,7 @@
 
     <input>
         <net-file value="csomor1.net.xml"/>
+        <route-files value='test.rou.xml'/>
     </input>
     <output>
         <summary-output value="summary.xml"/>

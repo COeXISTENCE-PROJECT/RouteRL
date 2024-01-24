@@ -250,13 +250,16 @@ class Simulator:
 
         return sorted_rows
     
-    def run_simulation_iteration(self, joint_action, csv):#This is the simulation where we use the values from the initial simulation to improve the initial solutions of te cars
+    def run_simulation_iteration(self, simulation_length, joint_action, csv):#This is the simulation where we use the values from the initial simulation to improve the initial solutions of te cars
         #### joint action - columns{id, origin, destination, actions, start_time}
         #### queue ordered by start_time
 
         sorted_rows_based_on_start_time = self.priority_queue_creation(joint_action)
         sorted_df = pd.DataFrame(sorted_rows_based_on_start_time, columns=pd.DataFrame(joint_action).columns)
-        #print(sorted_df)
+        print(sorted_df)
+
+        #for index, row in sorted_df.iterrows():
+        #    print("index is: ", index, "row is: ", row)
 
         # Count the occurrences of each unique pair of origin and destination
         number_of_agents_in_each_od_pair = sorted_df.groupby(['origin', 'destination']).size().reset_index(name='count')
@@ -270,6 +273,41 @@ class Simulator:
 
         # Start SUMO with TraCI
         csv=pd.read_csv(csv)
+        counter=pd.read_csv("agents_data.csv").start_time.value_counts().sort_index()
+        csv1=csv[csv.origin==0]
+        csv2=csv[csv.origin==1]
+        sumo_binary = self.sumo_type
+        sumo_cmd = [sumo_binary, "-c", self.config]
+        traci.start(sumo_cmd)
+        v=0
+        print("\n", counter, "\n")
+
+        try:
+
+            # Simulation loop
+            for x in range(simulation_length):
+                traci.simulationStep()
+
+                #for y in range(len(csv1)):
+                for index, row in sorted_df.iterrows():
+                    #print("index is: ", index, "row is: ", row)
+                    #print("\n\n\nrow[action] is : ", row["action"], "row[id] is: ", row['id'], "\n\n\n")
+
+                    if x == counter.index[index]:
+                        j = row["action"]
+                        vechicle_id=f"{row['id']}"
+                        traci.vehicle.add(vechicle_id, f'{j}')
+                        v+=1
+
+            # End of simulation
+        finally:
+            traci.close()
+
+        duration=pd.read_xml('tripinfo.xml').duration
+        reward=duration.reset_index().rename(columns={"duration":"cost"})
+
+        return reward
+        """csv=pd.read_csv(csv)
         counter=csv.start_time.value_counts().sort_index() ### add the vehicles in a queue based on their start time
         csv1=csv[csv.origin==0]
         csv2=csv[csv.origin==1]
@@ -333,7 +371,7 @@ class Simulator:
         self.cost2= self.time_update(route_2,self.cost2)
         time_route2=pd.merge(route_2,self.cost2,right_index=True,left_index=True)
 
-        return time_route1,time_route2
+        return time_route1,time_route2"""
 
     
 
