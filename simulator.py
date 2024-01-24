@@ -83,6 +83,7 @@ class Simulator:
 
         
     def save_paths(self, routes):
+
         path_attributes = ["origin", "destination", "path"]
         path_save_path = "paths.csv"
 
@@ -91,6 +92,15 @@ class Simulator:
         for od, paths in routes.items():
             for path in paths:
                 paths_df.loc[len(paths_df)] = [od[0], od[1], list_to_string(path, "-> ")]
+        
+        with open("Network_and_config/route.rou.xml", "w") as rou:
+            print("""<routes>""", file=rou)
+            for od, paths in routes.items():
+                    for path in paths:
+                        print(f'<route id="{1}" edges="',file=rou)
+                        print(list_to_string(path,separator=' '),file=rou)
+                        print('" />',file=rou)
+            print("</routes>", file=rou)
 
         paths_df.to_csv(path_save_path, index=True)
         print("[SUCCESS] Generated & saved %d paths to: %s" % (len(paths_df), path_save_path))
