@@ -33,14 +33,14 @@ class Trainer:
                 joint_reward_df, next_state, done = env.step(joint_action_df)
                 
                 for agent in agents:    # Every agent learns from received rewards
-                    action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION]
-                    reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
+                    action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION].iloc[0]
+                    reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD].iloc[0]
                     agent.learn(action, reward, state, next_state)
                 
                 if not (ep % self.log_every):
                 ########## Save training records
-                    q_tab_df = pd.DataFrame({kc.AGENT_ID: [a.id for a in agents], kc.EPSILON: [f'%.2f' % (a.epsilon) for a in agents], 
-                                        kc.Q_TABLE: [f"%.2f  %.2f  %.2f" % (a.q_table[0], a.q_table[1], a.q_table[2]) for a in agents]})
+                    q_tab_df = pd.DataFrame({kc.AGENT_ID: [a.id for a in agents], kc.EPSILON: [f'%.2f' % (getattr(a, 'epsilon', -1)) for a in agents], 
+                                        kc.Q_TABLE: [f"%.2f  %.2f  %.2f" % (getattr(a, 'q-table[0]', 1), getattr(a, 'q-table[1]', 1), getattr(a, 'q-table[2]', 1)) for a in agents]})
 
                     joint_reward_df.to_csv(make_dir(kc.RECORDS_PATH, kc.REWARDS_LOGS_PATH, f"rewards_ep%d.csv" % (ep)), index = False)
                     joint_action_df.to_csv(make_dir(kc.RECORDS_PATH, kc.ACTIONS_LOGS_PATH, f"actions_ep%d.csv" % (ep)), index = False)

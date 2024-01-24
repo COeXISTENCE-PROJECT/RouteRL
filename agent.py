@@ -21,7 +21,6 @@ class Agent(ABC):
         self.start_time = start_time
         self.origin = origin
         self.destination = destination
-        #self.alpha=kc.alpha
 
     @abstractmethod
     def act(self, state):  # Pick action according to your knowledge, or randomly
@@ -42,8 +41,10 @@ class HumanAgent(Agent):
         learning_params = params[kc.HUMAN_AGENT_PARAMETERS]
         self.action_space_size = learning_params[kc.ACTION_SPACE_SIZE]
         self.beta = learning_params[kc.BETA]
+        self.alpha = learning_params[kc.ALPHA]
 
-        self.cost = [kc.SMALL_BUT_NOT_ZERO, kc.SMALL_BUT_NOT_ZERO, kc.SMALL_BUT_NOT_ZERO]
+        self.cost = initial_knowledge[(origin, destination)]
+        print("I am a human agent with ID: %d, going from %d to %d. My initial knowledge is: ", self.cost)
 
 
     def act(self, state):  
@@ -60,10 +61,7 @@ class HumanAgent(Agent):
 
     def learn(self, action, reward, state, next_state):
         # Implement Garwon learning model
-
-        self.initial_knowledge[action]=(1-self.alpha)*self.initial_knowledge[action]+self.alpha*reward
-
-        pass
+        self.cost[action] = (1-self.alpha) * self.cost[action] + self.alpha * reward
 
 
     def calculate_prob(self, utilities, n):    # implement the actual lenght on this part
@@ -75,7 +73,7 @@ class HumanAgent(Agent):
 
 class MachineAgent(Agent):
 
-    def __init__(self, id, start_time, origin, destination, params, initial_knowledge):
+    def __init__(self, id, start_time, origin, destination, params):
         super().__init__(id, start_time, origin, destination)
 
         learning_params = params[kc.MACHINE_AGENT_PARAMETERS]

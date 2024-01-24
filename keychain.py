@@ -44,6 +44,7 @@ class Keychain:
     GAMMA = "gamma"
 
     BETA = "beta"
+    ALPHA = "alpha"
 
     # Training
     NUM_EPISODES = "num_episodes"

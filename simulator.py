@@ -54,11 +54,11 @@ class Simulator:
         ## beta ?
         ## put the parameters of origin and dest in the params
         
-        origin1, origin2 = params[kc.ORIGIN1], params[kc.ORIGIN2]
-        destination1, destination2 = params[kc.DESTINATION1], params[kc.DESTINATION2]
+        self.origin1, self.origin2 = params[kc.ORIGIN1], params[kc.ORIGIN2]
+        self.destination1, self.destination2 = params[kc.DESTINATION1], params[kc.DESTINATION2]
 
-        origins = [origin1, origin2]
-        destinations = [destination1, destination2]
+        origins = [self.origin1, self.origin2]
+        destinations = [self.destination1, self.destination2]
 
         ### case that all the origins are connected with all the destinations
         """
@@ -78,8 +78,8 @@ class Simulator:
         self.save_paths(self.routes)
 
         ## WIll be remoced soon
-        self.route1 = self.find_best_paths(origin1, destination1, 'time') ### self.routes
-        self.route2 = self.find_best_paths(origin2, destination2, 'time') ## dict and items ->od combinations"""
+        self.route1 = self.find_best_paths(self.origin1, self.destination1, 'time') ### self.routes
+        self.route2 = self.find_best_paths(self.origin2, self.destination2, 'time') ## dict and items ->od combinations"""
 
         
     def save_paths(self, routes):
@@ -129,26 +129,33 @@ class Simulator:
         return length
     
     def calculate_free_flow_times(self):
-        in_time_list = []
+        free_flows_dict = dict()
+        for od in self.routes.keys():
+            origin = 0 if od[0] == self.origin1 else 1
+            destination = 0 if od[1] == self.destination1 else 1
+            free_flows_dict[(origin, destination)] = list()
+
         length = pd.DataFrame(self.G.edges(data = True))
 
         time = length[2].astype('str').str.split(':',expand=True)[1]
         length[2] = time.str.replace('}','',regex=True).astype('float')
 
         # Loop through the values in self.routes
-        for route in self.routes.values():
+        for od, route in self.routes.items():
 
             # Call free_flow_time_finder for each route
-            in_time = self.free_flow_time_finder(route, length[0], length[1], length[2])
+            free_flow = self.free_flow_time_finder(route, length[0], length[1], length[2])
             
             # Append the in_time value to the list
-            in_time_list.append(in_time)
+            origin = 0 if od[0] == self.origin1 else 1
+            destination = 0 if od[1] == self.destination1 else 1
+            free_flows_dict[(origin, destination)] = free_flow
 
         ### OLD Version
         """in_time1=self.free_flow_time_finder(self.route1,length[0],length[1],length[2])
         in_time2=self.free_flow_time_finder(self.route2,length[0],length[1],length[2])"""
 
-        return in_time_list
+        return free_flows_dict
 
 
     def network(self, connection_file, edge_file, route_file):
