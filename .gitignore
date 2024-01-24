@@ -1,8 +1,8 @@
 .DS_Store
 training_records/
 __pycache__/
-summary.xml
-tripinfo.xml
+Network_and_config/summary.xml
+Network_and_config/tripinfo.xml
 agents.csv
 paths.csv
-route.rou.xml
+Network_and_config/route.rou.xml
