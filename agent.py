@@ -21,6 +21,7 @@ class Agent(ABC):
         self.start_time = start_time
         self.origin = origin
         self.destination = destination
+        #self.alpha=kc.alpha
 
     @abstractmethod
     def act(self, state):  # Pick action according to your knowledge, or randomly
@@ -59,6 +60,9 @@ class HumanAgent(Agent):
 
     def learn(self, action, reward, state, next_state):
         # Implement Garwon learning model
+
+        self.initial_knowledge[action]=(1-self.alpha)*self.initial_knowledge[action]+self.alpha*reward
+
         pass
 
 

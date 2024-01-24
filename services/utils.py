@@ -38,14 +38,24 @@ def make_dir(dir1, dir2, filename):    # Make dir if not exists, make full path
 
 
 
-def progress_bar(start_time, progress, target):    # Just printing progress bar with ETA
+def show_progress_bar(name_of_operation, start_time, progress, target, end_line=''):    # Just printing progress bar with ETA
     bar_length = 50
     progress_fraction = progress / target
     filled_length = int(bar_length * progress_fraction)
     bar = 'X' * filled_length + '-' * (bar_length - filled_length)
     elapsed_time = time.time() - start_time
     remaining_time = ((elapsed_time / progress_fraction) - elapsed_time) if progress_fraction else 0
-    print(f'\rProgress: |%s| %.2f%%, ETA: %.2f seconds' % (bar, progress_fraction * 100, remaining_time), end='')
+    remaining_time = time.strftime("%H:%M:%S", time.gmtime(remaining_time))
+    print(f'\r[%s PROGRESS]: |%s| %.2f%%, ETA: %s' % (name_of_operation.upper(), bar, progress_fraction * 100, remaining_time), end=end_line)
+
+
+
+def show_progress(name_of_operation, start_time, progress, target, end_line=''):    # Just printing progress bar with ETA
+    progress_fraction = progress / target
+    elapsed_time = time.time() - start_time
+    remaining_time = ((elapsed_time / progress_fraction) - elapsed_time) if progress_fraction else 0
+    remaining_time = time.strftime("%H:%M:%S", time.gmtime(remaining_time))
+    print(f'\r[%s PROGRESS]: %.2f%%, ETA: %s' % (name_of_operation.upper(), progress_fraction * 100, remaining_time), end=end_line)
 
 
 def remove_double_quotes(text):

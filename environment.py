@@ -60,7 +60,6 @@ class TrafficEnvironment:
 
     def calculate_rewards(self, sumo_df):
         average_travel_time = -1 * sumo_df['cost'].mean()
-
         self.reward_table.append(average_travel_time)
 
         return average_travel_time
