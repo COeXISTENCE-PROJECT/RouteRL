@@ -12,7 +12,7 @@ class Trainer:
         self.num_episodes = params[kc.NUM_EPISODES]
 
 
-    def train(self, env, agents, free_flow_cost):
+    def train(self, env, agents):
         state = env.reset()
         start_time = time.time()
 
