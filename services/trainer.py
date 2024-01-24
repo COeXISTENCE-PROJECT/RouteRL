@@ -1,3 +1,4 @@
+import concurrent.futures
 import pandas as pd
 import time
 
@@ -11,6 +12,11 @@ class Trainer:
 
         self.num_episodes = params[kc.NUM_EPISODES]
         self.log_every = params[kc.LOG_EVERY]
+
+    def learn_agent(agent, joint_action_df, joint_reward_df, state, next_state):
+        action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION]
+        reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
+        agent.learn(action, reward, state, next_state)
 
 
     def train(self, env, agents):
@@ -31,11 +37,33 @@ class Trainer:
                 
                 joint_action_df = pd.DataFrame(joint_action)
                 joint_reward_df, next_state, done = env.step(joint_action_df)
+
+                # Parallelized version
+                start_time = time.time()
+
+                # Assuming `agents` is a list of Agent objects
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    futures = [executor.submit(self.learn_agent, agent, joint_action_df, joint_reward_df, state, next_state) for agent in agents]
+
+                    # Wait for all futures to complete
+                    concurrent.futures.wait(futures)
+
+                parallel_time = time.time() - start_time
+
+
+                # Original sequential version
+                start_time = time.time()
                 
                 for agent in agents:    # Every agent learns from received rewards
                     action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION]
                     reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
                     agent.learn(action, reward, state, next_state)
+
+                sequential_time = time.time() - start_time
+
+                print(f"Sequential Time: {sequential_time} seconds")
+                print(f"Parallel Time: {parallel_time} seconds")        
+
                 
                 if not (ep % self.log_every):
                 ########## Save training records
