@@ -2,4 +2,4 @@ UML Class and Sequence Diagrams are [HERE](https://miro.com/app/board/uXjVN4vGqS
 
 Learning results:
 
-![Alt text](learning)
+![Alt text](learning.png)
