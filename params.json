@@ -17,7 +17,8 @@
                 "max_epsilon" : 0.99,
                 "min_eps_decay" : 0.9,
                 "max_eps_decay" : 0.99,
-                "action_space_size" : 3
+                "action_space_size" : 3,
+                "gamma" : 0.95
             },
 
             "human_agent_parameters" :

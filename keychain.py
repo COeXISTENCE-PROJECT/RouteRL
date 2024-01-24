@@ -41,6 +41,7 @@ class Keychain:
     MAX_EPSILON = "max_epsilon"
     MIN_EPS_DECAY = "min_eps_decay"
     MAX_EPS_DECAY = "max_eps_decay"
+    GAMMA = "gamma"
 
     BETA = "beta"
 

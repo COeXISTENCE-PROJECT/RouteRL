@@ -88,6 +88,7 @@ class MachineAgent(Agent):
         self.epsilon = random.uniform(min_epsilon, max_epsilon)
         self.epsilon_decay_rate = random.uniform(min_eps_decay, max_eps_decay)
         self.alpha = random.uniform(min_alpha, max_alpha)
+        self.gamma = learning_params[kc.GAMMA]
 
         # Q-table assumes only one state, otherwise should be np.zeros((num_states, action_space_size))
         # Also edit the rest of the class accordingly
@@ -98,13 +99,13 @@ class MachineAgent(Agent):
     def act(self, state):
         if np.random.rand() < self.epsilon:    # Explore
             return np.random.choice(self.action_space_size)
-        else:    # Exploit"""
+        else:    # Exploit
             return np.argmax(self.q_table)
                 
 
     def learn(self, action, reward, state, next_state):
         prev_knowledge = self.q_table[action]
-        self.q_table[action] = prev_knowledge + (self.alpha * (reward - prev_knowledge))
+        self.q_table[action] = prev_knowledge + (self.alpha * (reward + (self.gamma * np.argmax(self.q_table)) - prev_knowledge))
         self.decay_epsilon()
 
 
