@@ -94,14 +94,13 @@ class MachineAgent(Agent):
     def act(self, state):
         if np.random.rand() < self.epsilon:    # Explore
             return np.random.choice(self.action_space_size)
-        else:    # Exploit
+        else:    # Exploit"""
             return np.argmax(self.q_table)
                 
 
     def learn(self, action, reward, state, next_state):
         prev_knowledge = self.q_table[action]
         self.q_table[action] = prev_knowledge + (self.alpha * (reward - prev_knowledge))
-        #print(self.q_table)
         self.decay_epsilon()
 
 
