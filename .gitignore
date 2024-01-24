@@ -3,6 +3,6 @@ training_records/
 __pycache__/
 Network_and_config/summary.xml
 Network_and_config/tripinfo.xml
-agents.csv
+agents_data.csv
 paths.csv
 Network_and_config/route.rou.xml
