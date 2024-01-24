@@ -1,6 +1,8 @@
 import pandas as pd
 import random
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 from keychain import Keychain as kc
 from simulator import Simulator
@@ -19,6 +21,7 @@ class TrafficEnvironment:
         # Calculate free flows
         # done
         self.simulator = Simulator(simulation_parameters)  # pass params for simulator, and only the number of agents
+        self.reward_table = []
 
         print("[SUCCESS] Environment initiated!")
 
@@ -58,6 +61,17 @@ class TrafficEnvironment:
 
 
     def calculate_rewards(self, sumo_df):
-        average_travel_time = sumo_df['cost'].mean()
+        average_travel_time = -1 * sumo_df['cost'].mean()
+
+        self.reward_table.append(average_travel_time)
 
         return average_travel_time
+    
+    def plot_rewards(self):
+
+        # Plotting
+        plt.plot(self.reward_table)
+        plt.xlabel('Episode')
+        plt.ylabel('Reward')
+        plt.title('Reward Table Over Episodes')
+        plt.show()

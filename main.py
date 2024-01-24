@@ -23,6 +23,7 @@ def main():
 
     trainer = Trainer(params[kc.TRAINING_PARAMETERS])
     agents = trainer.train(env, agents)
+    env.plot_rewards()
 
 
 main()
