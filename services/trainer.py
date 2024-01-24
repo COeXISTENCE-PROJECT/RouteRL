@@ -39,7 +39,7 @@ class Trainer:
                 joint_reward_df, next_state, done = env.step(joint_action_df)
 
                 # Parallelized version
-                start_time = time.time()
+                par_start_time = time.time()
 
                 # Assuming `agents` is a list of Agent objects
                 with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -48,18 +48,18 @@ class Trainer:
                     # Wait for all futures to complete
                     concurrent.futures.wait(futures)
 
-                parallel_time = time.time() - start_time
+                parallel_time = time.time() - par_start_time
 
 
                 # Original sequential version
-                start_time = time.time()
+                par_start_time = time.time()
                 
                 for agent in agents:    # Every agent learns from received rewards
                     action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION].iloc[0]
                     reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD].iloc[0]
                     agent.learn(action, reward, state, next_state)
 
-                sequential_time = time.time() - start_time
+                sequential_time = time.time() - par_start_time
 
                 print(f"Sequential Time: {sequential_time} seconds")
                 print(f"Parallel Time: {parallel_time} seconds")        
