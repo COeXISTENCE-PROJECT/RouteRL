@@ -38,6 +38,8 @@ class Trainer:
                 joint_action_df = pd.DataFrame(joint_action)
                 joint_reward_df, next_state, done = env.step(joint_action_df)
 
+                print(joint_action_df["action"])
+
                 # Parallelized version
                 #par_start_time = time.time()
 
@@ -63,6 +65,8 @@ class Trainer:
 
                 print(f"Sequential Time: {sequential_time} seconds")
                 print(f"Parallel Time: {parallel_time} seconds")      """
+
+                #next_state = 
 
                 
                 if not (ep % self.log_every):

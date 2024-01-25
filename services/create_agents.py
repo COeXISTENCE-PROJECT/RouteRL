@@ -12,8 +12,6 @@ def create_agent_objects(params, initial_knowledge):
     Generates agent objects
     """
 
-    
-
     # Getting parameters
     agents_data_path = params[kc.AGENTS_DATA_PATH]
     simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]

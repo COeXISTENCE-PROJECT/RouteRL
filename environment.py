@@ -50,7 +50,8 @@ class TrafficEnvironment(gym.Env): ##inherit from gym
         #remove=traci.vehicle.getIDList()
         #for i in range(len(remove)):
         #    traci.vehicle.remove(remove[i],3)
-        return None
+        
+        return [0, 0, 0]
 
 
 
@@ -93,5 +94,7 @@ class TrafficEnvironment(gym.Env): ##inherit from gym
     def encode(state, ts_id):
         """Encode the state of the traffic signal into a hashable object."""
 
+        ## state can be the number of vehicles in each path
+
         # tuples are hashable and can be used as key in python dictionary
-        return tuple(None)
+        return tuple(0)
