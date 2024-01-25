@@ -1,5 +1,7 @@
 import pandas as pd
 import gymnasium as gym
+from gymnasium.spaces import Box
+from gymnasium.spaces import Discrete
 import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,6 +27,9 @@ class TrafficEnvironment(gym.Env): ##inherit from gym
         # done
         self.simulator = Simulator(simulation_parameters)  # pass params for simulator, and only the number of agents
         self.reward_table = []
+        self.observation_space = Box(low=0, high=1, shape=(3,), dtype=float)
+
+        self.action_space = Discrete(3)
 
         print("[SUCCESS] Environment initiated!")
 

@@ -7,8 +7,15 @@ from services import Trainer
 from services import create_agent_objects
 from services import confirm_env_variable
 from services import get_json
-#from stable_baselines3 import DQN
-#from stable_baselines3.common.vec_env import DummyVecEnv
+from stable_baselines3 import DQN
+from stable_baselines3.common.vec_env import DummyVecEnv
+
+import ray
+from ray import tune
+from ray.rllib.algorithms.ppo import PPOConfig
+from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
+from ray.tune.registry import register_env
+
 
 
 
@@ -36,8 +43,22 @@ def main():
     gym_multi_agent_env = DummyVecEnv([lambda: MultiAgentEnvWrapper(env)])"""
 
 
-
     #model = DQN('MlpPolicy', env, verbose=1)
+    #model.learn(total_timesteps=25000)
+
+    """register_env(
+        env_name,
+        lambda _: ParallelPettingZooEnv(
+            sumo_rl.parallel_env(
+                net_file="nets/4x4-Lucas/4x4.net.xml",
+                route_file="nets/4x4-Lucas/4x4c1c2c1c2.rou.xml",
+                out_csv_name="outputs/4x4grid/ppo",
+                use_gui=False,
+                num_seconds=80000,
+            )
+        ),
+    )"""
+
 
     ## env.trainer
     trainer = Trainer(params[kc.TRAINING_PARAMETERS])
