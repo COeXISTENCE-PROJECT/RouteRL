@@ -51,8 +51,8 @@ class Trainer:
                 parallel_time = time.time() - par_start_time
 
 
-                # Original sequential version
-                """par_start_time = time.time()
+                """# Original sequential version
+                par_start_time = time.time()
                 
                 for agent in agents:    # Every agent learns from received rewards
                     action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION].iloc[0]
@@ -62,7 +62,7 @@ class Trainer:
                 sequential_time = time.time() - par_start_time
 
                 print(f"Sequential Time: {sequential_time} seconds")
-                print(f"Parallel Time: {parallel_time} seconds")"""        
+                print(f"Parallel Time: {parallel_time} seconds")   """   
 
                 
                 if not (ep % self.log_every):
