@@ -67,12 +67,8 @@ class Trainer:
                 
                 if not (ep % self.log_every):
                 ########## Save training records
-                    q_tab_df = pd.DataFrame({kc.AGENT_ID: [a.id for a in agents], kc.EPSILON: [f'%.2f' % (getattr(a, 'epsilon', -1)) for a in agents], 
-                                        kc.Q_TABLE: [f"%.2f  %.2f  %.2f" % (getattr(a, 'q-table[0]', 1), getattr(a, 'q-table[1]', 1), getattr(a, 'q-table[2]', 1)) for a in agents]})
-
                     joint_reward_df.to_csv(make_dir(kc.RECORDS_PATH, kc.REWARDS_LOGS_PATH, f"rewards_ep%d.csv" % (ep)), index = False)
                     joint_action_df.to_csv(make_dir(kc.RECORDS_PATH, kc.ACTIONS_LOGS_PATH, f"actions_ep%d.csv" % (ep)), index = False)
-                    q_tab_df.to_csv(make_dir(kc.RECORDS_PATH, kc.Q_TABLES_LOG_PATH, f"q_tables_ep%d.csv" % (ep)), index = False)
                 ##########
 
                 state = next_state
