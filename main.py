@@ -10,11 +10,11 @@ from services import get_json
 from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env import DummyVecEnv
 
-import ray
-from ray import tune
-from ray.rllib.algorithms.ppo import PPOConfig
-from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
-from ray.tune.registry import register_env
+#import ray
+#from ray import tune
+#from ray.rllib.algorithms.ppo import PPOConfig
+#from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
+#from ray.tune.registry import register_env
 
 
 
@@ -32,6 +32,9 @@ Next Improvement:
 
 def main():
 
+    #sumo_binary = self.sumo_type
+    #sumo_cmd = [sumo_binary, "-c", self.config]
+    #traci.start(sumo_cmd)
     env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS]) # pass some params for the simulation
     ### agents - dict 
     # env.agents
@@ -64,6 +67,7 @@ def main():
     trainer = Trainer(params[kc.TRAINING_PARAMETERS])
     agents = trainer.train(env, agents)
     env.plot_rewards()
+    #traci.close()
 
 
 main()

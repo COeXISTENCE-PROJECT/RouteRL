@@ -3,6 +3,7 @@ import gymnasium as gym
 from gymnasium.spaces import Box
 from gymnasium.spaces import Discrete
 import random
+import traci
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -43,6 +44,9 @@ class TrafficEnvironment(gym.Env): ##inherit from gym
         
 
     def reset(self):
+        #remove=traci.vehicle.getIDList()
+        #for i in range(len(remove)):
+        #    traci.vehicle.remove(remove[i],3)
         return None
 
 

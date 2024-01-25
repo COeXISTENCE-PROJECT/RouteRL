@@ -243,6 +243,10 @@ class Simulator:
         #### joint action - columns{id, origin, destination, actions, start_time}
         #### queue ordered by start_time
 
+
+        depart_id=[]
+        depart_cost=[]
+
         ###sort in pandas maybe ?
         sorted_rows_based_on_start_time = self.priority_queue_creation(joint_action)
         sorted_df = pd.DataFrame(sorted_rows_based_on_start_time, columns=pd.DataFrame(joint_action).columns)
@@ -267,6 +271,13 @@ class Simulator:
         for timesteps in range(simulation_length):
             traci.simulationStep()
 
+            #departed=traci.simulation.getArrivedIDList()
+            #for value in departed:
+            #    if value:
+            #        value_as_int = int(value)
+            #        depart_id.append(x)
+            #        depart_cost.append(value_as_int)
+
             # Collect vehicles to be added
             #vehicles_to_add = sorted_df[sorted_df["start_time"] == x]
 
@@ -281,6 +292,11 @@ class Simulator:
 
         ### sort by id
         ### divide duration with 60
+                
+        #depart=pd.DataFrame(depart_id)
+        #reward=pd.merge(depart,pd.DataFrame(depart_cost),right_index=True,left_index=True)
+        #reward=reward.rename(columns={'0_x':'car_id','0_y':'cost'})
+                
         duration = pd.read_xml('Network_and_config/tripinfo.xml').duration
         reward = duration.reset_index().rename(columns={"duration":"cost"})
         ### function that maps output from sumo to reward
