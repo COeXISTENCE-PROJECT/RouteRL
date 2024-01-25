@@ -1,4 +1,5 @@
 import pandas as pd
+import gymnasium as gym
 import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,7 +11,7 @@ from keychain import Keychain as kc
 from simulator import Simulator
 from agent import Agent
 
-class TrafficEnvironment:
+class TrafficEnvironment(gym.Env): ##inherit from gym
 
     """
     To be implemented
@@ -47,7 +48,7 @@ class TrafficEnvironment:
         ####
         #### Feed agents actions to SUMO and get travel times
         ####
-        simulation_length = 3600
+        simulation_length = 3600 ### fix it
 
         sumo_df = self.simulator.run_simulation_iteration(simulation_length, joint_action)
 
@@ -61,6 +62,7 @@ class TrafficEnvironment:
 
 
     def calculate_rewards(self, sumo_df):
+        ### sychronize names
         average_travel_time = -1 * sumo_df['cost'].mean()
         self.reward_table.append(average_travel_time)
 
@@ -69,7 +71,7 @@ class TrafficEnvironment:
     def plot_rewards(self):
 
         # Plotting
-        print(self.reward_table)
+        #print(self.reward_table)
         plt.plot(self.reward_table)
         plt.xlabel('Episode')
         plt.ylabel('Reward')

@@ -26,17 +26,20 @@ Next Improvement:
 def main():
 
     env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS]) # pass some params for the simulation
+    ### agents - dict 
+    # env.agents
     agents = create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS], env.calculate_free_flow_times())
 
     # Wrap your multi-agent environment with the Gym wrapper
     """gym_multi_agent_env = MultiAgentEnvWrapper(env)
 
-    gym_multi_agent_env = DummyVecEnv([lambda: MultiAgentEnvWrapper(env)])
+    gym_multi_agent_env = DummyVecEnv([lambda: MultiAgentEnvWrapper(env)])"""
 
 
 
-    model = DQN('MlpPolicy', env, verbose=1)"""
+    #model = DQN('MlpPolicy', env, verbose=1)
 
+    ## env.trainer
     trainer = Trainer(params[kc.TRAINING_PARAMETERS])
     agents = trainer.train(env, agents)
     env.plot_rewards()

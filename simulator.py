@@ -3,6 +3,7 @@ import heapq
 import networkx as nx
 import pandas as pd
 from prettytable import PrettyTable
+import time
 import traci
 import xml.etree.ElementTree as ET
 from queue import PriorityQueue
@@ -76,6 +77,8 @@ class Simulator:
             # Store the result in the self.routes dictionary
             self.routes[(origin, destination)] = paths   
         self.save_paths(self.routes)
+
+        #print(self.routes)
 
         ## WIll be remoced soon
         self.route1 = self.find_best_paths(self.origin1, self.destination1, 'time') ### self.routes
@@ -240,6 +243,7 @@ class Simulator:
         #### joint action - columns{id, origin, destination, actions, start_time}
         #### queue ordered by start_time
 
+        ###sort in pandas maybe ?
         sorted_rows_based_on_start_time = self.priority_queue_creation(joint_action)
         sorted_df = pd.DataFrame(sorted_rows_based_on_start_time, columns=pd.DataFrame(joint_action).columns)
         #print(sorted_df)
@@ -256,28 +260,30 @@ class Simulator:
         # Start SUMO with TraCI
         sumo_binary = self.sumo_type
         sumo_cmd = [sumo_binary, "-c", self.config]
-        traci.start(sumo_cmd)
+        traci.start(sumo_cmd) ## take this out of the function!!
 
-        try:
-            # Simulation loop
-            for x in range(simulation_length):
-                traci.simulationStep()
 
-                # Collect vehicles to be added
-                vehicles_to_add = sorted_df[sorted_df["start_time"] == x]
+        # Simulation loop
+        for timesteps in range(simulation_length):
+            traci.simulationStep()
 
-                # Bulk vehicle addition
-                for index, row in vehicles_to_add.iterrows():
-                    j = row["action"]
-                    vehicle_id = f"{row['id']}"
-                    traci.vehicle.add(vehicle_id, f'{j}')
+            # Collect vehicles to be added
+            #vehicles_to_add = sorted_df[sorted_df["start_time"] == x]
 
-            # End of simulation
-        finally:
-            traci.close()
+            # Iterate through vehicles to add
+            for index, row in sorted_df[sorted_df["start_time"] == timesteps].iterrows():
+                action = row["action"]
+                vehicle_id = f"{row['id']}"
+                traci.vehicle.add(vehicle_id, f'{action}')
 
+        # End of simulation
+        traci.close()
+
+        ### sort by id
+        ### divide duration with 60
         duration = pd.read_xml('Network_and_config/tripinfo.xml').duration
         reward = duration.reset_index().rename(columns={"duration":"cost"})
+        ### function that maps output from sumo to reward
 
         return reward
     
