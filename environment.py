@@ -2,6 +2,8 @@ import pandas as pd
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 
 from keychain import Keychain as kc
@@ -67,6 +69,7 @@ class TrafficEnvironment:
     def plot_rewards(self):
 
         # Plotting
+        print(self.reward_table)
         plt.plot(self.reward_table)
         plt.xlabel('Episode')
         plt.ylabel('Reward')
