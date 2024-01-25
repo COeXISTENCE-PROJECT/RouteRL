@@ -3,6 +3,7 @@ from MultiAgentWrapper import MultiAgentEnvWrapper
 
 #import gymnasium as gym
 from keychain import Keychain as kc
+import os
 from services import Trainer
 from services import create_agent_objects
 from services import confirm_env_variable
@@ -37,6 +38,8 @@ def main():
     # env.agents
     agents = create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS], env.calculate_free_flow_times())
 
+    env.create_agents(agents)
+
     # Wrap your multi-agent environment with the Gym wrapper
     """gym_multi_agent_env = MultiAgentEnvWrapper(env)
 
@@ -47,16 +50,42 @@ def main():
     #model.learn(total_timesteps=25000)
 
     """register_env(
-        env_name,
+        env,
         lambda _: ParallelPettingZooEnv(
-            sumo_rl.parallel_env(
-                net_file="nets/4x4-Lucas/4x4.net.xml",
-                route_file="nets/4x4-Lucas/4x4c1c2c1c2.rou.xml",
-                out_csv_name="outputs/4x4grid/ppo",
-                use_gui=False,
-                num_seconds=80000,
+            (TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])
             )
         ),
+    )
+
+    config = (
+        PPOConfig()
+        .environment(env, disable_env_checking=True)
+        .rollouts(num_rollout_workers=4, rollout_fragment_length=128)
+        .training(
+            train_batch_size=512,
+            lr=2e-5,
+            gamma=0.95,
+            lambda_=0.9,
+            use_gae=True,
+            clip_param=0.4,
+            grad_clip=None,
+            entropy_coeff=0.1,
+            vf_loss_coeff=0.25,
+            sgd_minibatch_size=64,
+            num_sgd_iter=10,
+        )
+        .debugging(log_level="ERROR")
+        .framework(framework="torch")
+        .resources(num_gpus=int(os.environ.get("RLLIB_NUM_GPUS", "0")))
+    )
+
+    tune.run(
+        "PPO",
+        name="PPO",
+        stop={"timesteps_total": 100000},
+        checkpoint_freq=10,
+        local_dir="~/ray_results/",
+        config=config.to_dict(),
     )"""
 
 

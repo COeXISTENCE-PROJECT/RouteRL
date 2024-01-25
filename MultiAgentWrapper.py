@@ -41,10 +41,11 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.seed()
         self.env = TrafficEnvironment(**self._kwargs)
 
-        self.agents = self.env.ts_ids
-        self.possible_agents = self.env.ts_ids
+        self.agents = self.env.agents
+        self.possible_agents = self.env.agents
         self._agent_selector = agent_selector(self.agents)
         self.agent_selection = self._agent_selector.reset()
+        
         # spaces
         self.action_spaces = {a: self.env.action_spaces(a) for a in self.agents}
         self.observation_spaces = {a: self.env.observation_spaces(a) for a in self.agents}

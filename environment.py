@@ -30,6 +30,7 @@ class TrafficEnvironment(gym.Env): ##inherit from gym
         self.observation_space = Box(low=0, high=1, shape=(3,), dtype=float)
 
         self.action_space = Discrete(3)
+        self.agents = []
 
         print("[SUCCESS] Environment initiated!")
 
@@ -39,7 +40,9 @@ class TrafficEnvironment(gym.Env): ##inherit from gym
         free_flow_cost = self.simulator.calculate_free_flow_times()
         print('[INFO] Free-flow times: ', free_flow_cost)
         return free_flow_cost
-        
+    
+    def create_agents(self, agents):
+        self.agents = agents        
         
 
     def reset(self):
@@ -82,3 +85,9 @@ class TrafficEnvironment(gym.Env): ##inherit from gym
         plt.ylabel('Reward')
         plt.title('Reward Table Over Episodes')
         plt.show()
+
+    def encode(state, ts_id):
+        """Encode the state of the traffic signal into a hashable object."""
+
+        # tuples are hashable and can be used as key in python dictionary
+        return tuple(None)
