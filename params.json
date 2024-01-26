@@ -45,12 +45,6 @@
         "simulation_timesteps" : 3600,
         "beta" : -0.1,
 
-        "origin1" : "279952229#0",
-        "origin2" : "115604053",
-        "destination1" : "-115602933#2",
-        "destination2" : "-441496282#1",
-        "ONUR_COMMENT" : "Let's get rid of 4 above",
-
         "origins" : ["279952229#0", "115604053"],
         "destinations" : ["-115602933#2", "-441496282#1"]
     },

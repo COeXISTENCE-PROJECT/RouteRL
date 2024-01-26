@@ -3,7 +3,8 @@ import pandas as pd
 import time
 
 from keychain import Keychain as kc
-from services.utils import make_dir, show_progress, show_progress_bar
+from services.utils import make_dir
+from services.utils import show_progress, show_progress_bar
 
 
 class Trainer:
@@ -45,7 +46,7 @@ class Trainer:
 
                 state = next_state
 
-            show_progress("TRAINING", start_time, ep+1, self.num_episodes, end_line='\n')
+            show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes, end_line='\n')
 
         print("\n[COMPLETE] Training completed in: %s" % (time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(time.time() - start_time))))
 

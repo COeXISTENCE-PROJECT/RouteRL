@@ -61,12 +61,6 @@ class Keychain:
     PATHS_SAVE_PATH = "paths_save_path"
     NUMBER_OF_PATHS = "number_of_paths"
 
-    ORIGIN1 = "origin1"
-    ORIGIN2 = "origin2"
-    DESTINATION1 = "destination1"
-    DESTINATION2 = "destination2"
-    # Let's get rid of 4 above
-
     ORIGINS = "origins"
     DESTINATIONS = "destinations"
 

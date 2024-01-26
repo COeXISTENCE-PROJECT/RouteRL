@@ -34,9 +34,6 @@ class Simulator:
 
         # NX graph, built on a OSM map
         self.G = self.generate_network(params[kc.CONNECTION_FILE_PATH], params[kc.EDGE_FILE_PATH], params[kc.ROUTE_FILE_PATH])
-        
-        self.origin1, self.origin2 = params[kc.ORIGIN1], params[kc.ORIGIN2]
-        self.destination1, self.destination2 = params[kc.DESTINATION1], params[kc.DESTINATION2]
 
         # We keep origins and dests as dict {origin_id : origin_code}
         # Such as (0 : "279952229#0") and (1 : "279952229#0")

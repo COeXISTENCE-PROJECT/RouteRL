@@ -14,7 +14,7 @@ params = get_params(kc.PARAMS_PATH)
 def main():
 
 
-    env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])  # pass some params for the simulation
+    env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])
     agents = create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS], env.calculate_free_flow_times())
 
     trainer = Trainer(params[kc.TRAINING_PARAMETERS])
