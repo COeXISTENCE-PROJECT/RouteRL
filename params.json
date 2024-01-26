@@ -4,7 +4,7 @@
     {
         "agents_data_path" : "agents_data.csv",
         "agent_attributes" : ["id", "origin", "destination", "start_time", "agent_type"],
-        "simulation_timesteps" : 3600,
+        "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",
         "agent_start_intervals" : 6,
 
         "agent_learning_parameters" :

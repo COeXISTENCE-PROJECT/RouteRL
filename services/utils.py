@@ -13,17 +13,37 @@ def confirm_env_variable(env_var, append=None):
             print("[SUCCESS] Added module directory: %s" % path)
     else:
         raise ImportError("Please declare the environment variable '%s'" % env_var)
+    
+
+
+def get_params(file_path):      # Read params.json, resolve dependencies
+    params = read_json(file_path)
+    resolve_param_dependencies(params)
+    return params
+    
+
+
+def resolve_param_dependencies(params):    # Resolving dependent parameters in params.json
+    for category, settings in params.items():
+        for key, value in settings.items():
+            if isinstance(value, str) and value.startswith("${") and value.endswith("}"):
+                path = value[2:-1].split('.')   # Extract the reference path
+                ref_value = params
+                for step in path:
+                    ref_value = ref_value.get(step, {})
+                if not isinstance(ref_value, dict):     # Ensure it's not a nested structure
+                    settings[key] = ref_value
 
 
 
-def get_json(file_path):    # Read json file, return as dict
+def read_json(file_path):    # Read json file, return as dict
     try:
         with open(file_path, 'r') as file:
-            json_data = json.load(file)
+            file_data = json.load(file)
     except FileNotFoundError:
         print(f"[ERROR] Cannot locate: %s" % (file_path))
         raise
-    return json_data
+    return file_data
 
 
 
@@ -58,9 +78,12 @@ def show_progress(name_of_operation, start_time, progress, target, end_line=''):
     print(f'\r[%s PROGRESS]: %.2f%%, ETA: %s' % (name_of_operation.upper(), progress_fraction * 100, remaining_time), end=end_line)
 
 
+
 def remove_double_quotes(text):
     text = str(text).replace('"','')
     return text
+
+
 
 def list_to_string(from_list, separator=', '):
     out_str = ""
