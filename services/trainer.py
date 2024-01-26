@@ -10,7 +10,6 @@ from services.utils import show_progress, show_progress_bar
 class Trainer:
 
     def __init__(self, params):
-
         self.num_episodes = params[kc.NUM_EPISODES]
         self.log_every = params[kc.LOG_EVERY]
 
@@ -19,10 +18,8 @@ class Trainer:
         start_time = time.time()
 
         for ep in range(self.num_episodes):    # Until we simulate num_episode episodes
-
             state = env.reset()
             done = False
-
             while not done:     # Until episode concludes
                 joint_action = {kc.AGENT_ID : list(), kc.ACTION : list(), kc.AGENT_ORIGIN : list(), 
                                 kc.AGENT_DESTINATION : list(), kc.AGENT_START_TIME : list()}
@@ -49,7 +46,8 @@ class Trainer:
             show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes, end_line='\n')
 
         print("\n[COMPLETE] Training completed in: %s" % (time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(time.time() - start_time))))
-
+        env.plot_rewards()
+        
         return agents
     
 
