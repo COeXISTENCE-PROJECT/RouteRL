@@ -35,17 +35,18 @@ class TrafficEnvironment(gymnasium.Env):
         return free_flow_cost
         
 
-    def reset(self, seed):
+    def reset(self, seed=None):
         #super().reset()
 
         #if seed is not None:
         #    self.sumo_seed = seed
 
-        return tuple(np.array([0]), None)
+        return np.array([0]), {}
 
 
 
     def step(self, joint_action):
+        
 
         agent_ids = joint_action[kc.AGENT_ID]
         sumo_df = self.simulator.run_simulation_iteration(joint_action)
