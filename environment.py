@@ -97,4 +97,4 @@ class TrafficEnvironment(gym.Env): ##inherit from gym
         ## state can be the number of vehicles in each path
 
         # tuples are hashable and can be used as key in python dictionary
-        return tuple(0)
+        return state

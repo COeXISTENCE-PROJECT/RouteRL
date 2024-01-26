@@ -34,6 +34,9 @@ class Trainer:
                 for agent in agents:    # Every agent picks action
                     action = agent.act(state)
                     joint_action = self.add_action_to_joint_action(agent, action, joint_action)
+
+                ### pass here the whole dataframe - not joint action anymore
+                ### create for each od pair the number of vehicles on each path
                 
                 joint_action_df = pd.DataFrame(joint_action)
                 joint_reward_df, next_state, done = env.step(joint_action_df)
