@@ -13,11 +13,6 @@ class Trainer:
         self.num_episodes = params[kc.NUM_EPISODES]
         self.log_every = params[kc.LOG_EVERY]
 
-    def learn_agent(agent, joint_action_df, joint_reward_df, state, next_state):
-        action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION]
-        reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
-        agent.learn(action, reward, state, next_state)
-
 
     def train(self, env, agents):
         start_time = time.time()
@@ -38,33 +33,10 @@ class Trainer:
                 joint_action_df = pd.DataFrame(joint_action)
                 joint_reward_df, next_state, done = env.step(joint_action_df)
 
-                # Parallelized version
-                #par_start_time = time.time()
-
-                # Assuming `agents` is a list of Agent objects
                 with concurrent.futures.ThreadPoolExecutor() as executor:
                     futures = [executor.submit(self.learn_agent, agent, joint_action_df, joint_reward_df, state, next_state) for agent in agents]
-
-                    # Wait for all futures to complete
                     concurrent.futures.wait(futures)
 
-                """parallel_time = time.time() - par_start_time
-
-
-                # Original sequential version
-                par_start_time = time.time()
-                
-                for agent in agents:    # Every agent learns from received rewards
-                    action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION].iloc[0]
-                    reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD].iloc[0]
-                    agent.learn(action, reward, state, next_state)
-
-                sequential_time = time.time() - par_start_time
-
-                print(f"Sequential Time: {sequential_time} seconds")
-                print(f"Parallel Time: {parallel_time} seconds")      """
-
-                
                 if not (ep % self.log_every):
                 ########## Save training records
                     joint_reward_df.to_csv(make_dir(kc.RECORDS_PATH, kc.REWARDS_LOGS_PATH, f"rewards_ep%d.csv" % (ep)), index = False)
@@ -80,10 +52,13 @@ class Trainer:
         return agents
     
 
-    def add_action_to_joint_action(self, agent, action, joint_action):
-        """
-        Add individual action to joint action
-        """
+    def learn_agent(agent, joint_action_df, joint_reward_df, state, next_state):
+        action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION]
+        reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
+        agent.learn(action, reward, state, next_state)
+    
+
+    def add_action_to_joint_action(self, agent, action, joint_action):  # Add individual action to joint action
         joint_action[kc.AGENT_ID].append(agent.id)
         joint_action[kc.AGENT_ORIGIN].append(agent.origin)
         joint_action[kc.AGENT_DESTINATION].append(agent.destination)
