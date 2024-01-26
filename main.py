@@ -13,6 +13,7 @@ params = get_json(kc.PARAMS_PATH)
 
 
 def main():
+    'test'
 
 
     env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])  # pass some params for the simulation
