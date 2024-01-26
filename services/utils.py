@@ -18,10 +18,8 @@ def confirm_env_variable(env_var, append=None):
 
 def get_params(file_path):      # Read params.json, resolve dependencies
     params = read_json(file_path)
-    resolve_param_dependencies(params)
+    params = resolve_param_dependencies(params)
     return params
-    
-
 
 def resolve_param_dependencies(params):    # Resolving dependent parameters in params.json
     for category, settings in params.items():
@@ -32,7 +30,8 @@ def resolve_param_dependencies(params):    # Resolving dependent parameters in p
                 for step in path:
                     ref_value = ref_value.get(step, {})
                 if not isinstance(ref_value, dict):     # Ensure it's not a nested structure
-                    settings[key] = ref_value
+                    params[category][key] = ref_value
+    return params
 
 
 

@@ -24,117 +24,97 @@ class Simulator:
 
         self.sumo_type = params[kc.SUMO_TYPE]
         self.config = params[kc.SUMO_CONFIG_PATH]
+        self.routes_xml_save_path = params[kc.ROUTES_XML_SAVE_PATH]
 
         self.number_of_paths = params[kc.NUMBER_OF_PATHS]
+        self.paths_save_path = params[kc.PATHS_SAVE_PATH]
+
         self.simulation_length = params[kc.SIMULATION_TIMESTEPS]
         self.beta = params[kc.BETA]
 
-        connection_file = params[kc.CONNECTION_FILE_PATH]
-        edge_file = params[kc.EDGE_FILE_PATH]
-        route_file = params[kc.ROUTE_FILE_PATH]
-
-        self.G = self.network(connection_file, edge_file, route_file)   # network x graph
-        # The network is build on a OSM map
-
-        self.routes = dict()
+        # NX graph, built on a OSM map
+        self.G = self.generate_network(params[kc.CONNECTION_FILE_PATH], params[kc.EDGE_FILE_PATH], params[kc.ROUTE_FILE_PATH])
         
         self.origin1, self.origin2 = params[kc.ORIGIN1], params[kc.ORIGIN2]
         self.destination1, self.destination2 = params[kc.DESTINATION1], params[kc.DESTINATION2]
 
-        origins = [self.origin1, self.origin2]
-        destinations = [self.destination1, self.destination2]
+        # We keep origins and dests as dict {origin_id : origin_code}
+        # Such as (0 : "279952229#0") and (1 : "279952229#0")
+        # Keys are what agents know, values are what we use in SUMO
+        self.origins = {i : origin for i, origin in enumerate(params[kc.ORIGINS])}
+        self.destinations = {i : dest for i, dest in enumerate(params[kc.DESTINATIONS])}
 
-        ### case that all the origins are connected with all the destinations
-        """
-        for origin, destination in itertools.product(origins, destinations):
-            # Call find_best_paths for each combination of origin and destination
-            result = self.find_best_paths(origin, destination, 'time')
-            
-            # Store the result in the self.routes dictionary
-            self.routes[(origin, destination)] = result """
-        
-        
-        for origin, destination in zip(origins, destinations):
-            # Call find_best_paths for each combination of origin and destination
-            paths = self.find_best_paths(origin, destination, 'time')
-            # Store the result in the self.routes dictionary
-            self.routes[(origin, destination)] = paths   
+        # We keep routes as dict {(origin_id, dest_id) : [list of nodes]}
+        # Such as ((0,0) : [list of nodes]) and ((1,0) : [list of nodes])
+        # In list of nodes, we use SUMO simulation ids of nodes
+        self.routes = self.create_routes( self.origins, self.destinations)
         self.save_paths(self.routes)
 
         
+
     def save_paths(self, routes):
-
-        path_attributes = ["origin", "destination", "path"]
-        path_save_path = "paths.csv"
-
-        paths_df = pd.DataFrame(columns=path_attributes)
-
+        # csv file, for us
+        paths_df = pd.DataFrame(columns = ["origin", "destination", "path"])
         for od, paths in routes.items():
             for path in paths:
                 paths_df.loc[len(paths_df)] = [od[0], od[1], list_to_string(path, "-> ")]
+        paths_df.to_csv(self.paths_save_path, index=True)
+        print("[SUCCESS] Generated & saved %d paths to: %s" % (len(paths_df), self.paths_save_path))
         
-        with open("Network_and_config/route.rou.xml", "w") as rou:
+        # XML file, for sumo
+        with open(self.routes_xml_save_path, "w") as rou:
             print("""<routes>""", file=rou)
             for od, paths in routes.items():
-                    for path in paths:
-                        print(f'<route id="{1}" edges="',file=rou)
+                    for idx, path in enumerate(paths):
+                        print(f'<route id="{od[0]}_{od[0]}_{idx}" edges="',file=rou)
                         print(list_to_string(path,separator=' '),file=rou)
                         print('" />',file=rou)
             print("</routes>", file=rou)
-
-        paths_df.to_csv(path_save_path, index=True)
-        print("[SUCCESS] Generated & saved %d paths to: %s" % (len(paths_df), path_save_path))
+        
 
 
-    def create_routes(self):
-        # Will create action space (routes)
-        pass
+    def create_routes(self, origins, destinations):
+        routes = dict()
+        for origin_id, origin_sim_code in origins.items():
+            for dest_id, dest_sim_code in destinations.items():
+                route = self.find_best_paths(origin_sim_code, dest_sim_code, 'time')
+                routes[(origin_id, dest_id)] = route
+        return routes
+
 
 
     def free_flow_time_finder(self, x, y, z, l):
         length=[]
-
         for route in range(len(x)):
             rou=[]
-
             for i in range(len(x[route])):
                 if i < len(x[route]) - 1:
                     for k in range(len(y)):
                         if x[route][i] == y[k] and x[route][i + 1] == z[k]:
                             rou.append(l[k])
-
             length.append(sum(rou))
-
         return length
     
 
+
     def calculate_free_flow_times(self):
-        free_flows_dict = dict()
-        for od in self.routes.keys():
-            origin = 0 if od[0] == self.origin1 else 1
-            destination = 0 if od[1] == self.destination1 else 1
-            free_flows_dict[(origin, destination)] = list()
-
         length = pd.DataFrame(self.G.edges(data = True))
-
         time = length[2].astype('str').str.split(':',expand=True)[1]
         length[2] = time.str.replace('}','',regex=True).astype('float')
 
+        free_flows_dict = dict()
         # Loop through the values in self.routes
         for od, route in self.routes.items():
-
             # Call free_flow_time_finder for each route
             free_flow = self.free_flow_time_finder(route, length[0], length[1], length[2])
-            
-            # Append the in_time value to the list
-            origin = 0 if od[0] == self.origin1 else 1
-            destination = 0 if od[1] == self.destination1 else 1
-            free_flows_dict[(origin, destination)] = free_flow
+            # Append the free_flow value to the list
+            free_flows_dict[od] = free_flow
 
         return free_flows_dict
 
 
-    def network(self, connection_file, edge_file, route_file):
+
+    def generate_network(self, connection_file, edge_file, route_file):
         # Connection file
         from_db, to_db = self.read_xml_file(connection_file, 'connection', 'from', 'to')
         from_to = pd.merge(from_db,to_db,left_index=True,right_index=True)
@@ -158,7 +138,6 @@ class Simulator:
         rou = Bs_data_rou.find_all('edge', {'to': True})
 
         empty = [str(rou[x]) for x in range(len(rou))]
-
 
         id=[]
         length=[]
@@ -192,6 +171,20 @@ class Simulator:
         return Graph
     
 
+
+    def find_best_paths(self, origin, destination, weight):
+        paths = list()
+        picked_nodes = set()
+
+        for _ in range(self.number_of_paths):
+            path = path_generator(self.G, origin, destination, weight, picked_nodes, self.beta)
+            paths.append(path)
+            picked_nodes.update(path)
+
+        return paths
+    
+
+
     def priority_queue_creation(self, joint_action):
         #### joint action - columns{id, origin, destination, actions, start_time}
         #### queue ordered by start_time
@@ -213,6 +206,7 @@ class Simulator:
 
         return sorted_rows
     
+
 
     def run_simulation_iteration(self, joint_action):
 
@@ -241,6 +235,7 @@ class Simulator:
 
         return reward
     
+
 
     def create_network_from_xml(self, connection_file, edge_file, route_file):
         # Connection file
@@ -300,18 +295,6 @@ class Simulator:
         
         return Graph
 
-
-
-    def find_best_paths(self, origin, destination, weight):
-        paths = list()
-        picked_nodes = set()
-
-        for _ in range(self.number_of_paths):
-            path = path_generator(self.G, origin, destination, weight, picked_nodes, self.beta)
-            paths.append(path)
-            picked_nodes.update(path)
-
-        return paths
 
     
     def read_xml_file(self, file_path, element_name, attribute_name, attribute_name_2):
