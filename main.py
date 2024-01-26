@@ -10,6 +10,8 @@ from services import confirm_env_variable
 from services import get_json
 from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env import DummyVecEnv
+from stable_baselines3.common.env_checker import check_env
+
 
 import ray
 from ray import tune
@@ -18,42 +20,39 @@ from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
 from ray.tune.registry import register_env
 
 
-
-
 confirm_env_variable(kc.SUMO_HOME, append="tools")
 params = get_json(kc.PARAMS_PATH)
 
-"""
-Next Improvement:
-1. First, determine number of agents first (read from params.json)
-2. Pass this to simulator
-3. Calculate the freeflow travel times
-4. Only then generate agents, by also using freeflow information for initial knowledge for human agents
-"""
 
 def main():
 
-    #sumo_binary = self.sumo_type
-    #sumo_cmd = [sumo_binary, "-c", self.config]
-    #traci.start(sumo_cmd)
-    env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS]) # pass some params for the simulation
-    ### agents - dict 
-    # env.agents
+    env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])
+
     agents = create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS], env.calculate_free_flow_times())
 
     env.create_agents(agents)
 
-    # Wrap your multi-agent environment with the Gym wrapper
-    """gym_multi_agent_env = MultiAgentEnvWrapper(env)
+    check_env(env)
 
-    gym_multi_agent_env = DummyVecEnv([lambda: MultiAgentEnvWrapper(env)])"""
+    model = DQN(
+        env=env,
+        policy="MlpPolicy",
+        learning_rate=0.001,
+        learning_starts=0,
+        train_freq=1,
+        target_update_interval=500,
+        exploration_initial_eps=0.05,
+        exploration_final_eps=0.01,
+        verbose=1,
+    )
 
+    model.learn(total_timesteps=100000)
 
-    #model = DQN('MlpPolicy', env, verbose=1)
-    #model.learn(total_timesteps=25000)
+    ### Multiple agents
+    """ray.init()
 
-    """register_env(
-        env,
+    register_env(
+        "lalala",
         lambda _: ParallelPettingZooEnv(
             (TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])
             )
@@ -82,19 +81,20 @@ def main():
         .resources(num_gpus=int(os.environ.get("RLLIB_NUM_GPUS", "0")))
     )
 
+
     tune.run(
         "PPO",
         name="PPO",
         stop={"timesteps_total": 100000},
         checkpoint_freq=10,
-        local_dir="~/ray_results/",
+        local_dir=os.path.join(os.getcwd(), "ray_results"),
         config=config.to_dict(),
     )"""
 
 
     ## env.trainer
-    trainer = Trainer(params[kc.TRAINING_PARAMETERS])
-    agents = trainer.train(env, agents)
+    #trainer = Trainer(params[kc.TRAINING_PARAMETERS])
+    #agents = trainer.train(env, agents)
     #env.plot_rewards()
     
 

@@ -5,6 +5,9 @@ from gymnasium.spaces import Discrete
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from typing import Optional
+
+
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 
@@ -18,6 +21,11 @@ class TrafficEnvironment(gym.Env):
         self.simulator = Simulator(simulation_parameters)
         self.reward_table = []
         print("[SUCCESS] Environment initiated!")
+        
+        self.observation_space = Box(low=0, high=1, shape=(1,), dtype=float)
+
+        self.action_space = Discrete(3)
+        self.sumo_seed
 
 
 
@@ -27,8 +35,13 @@ class TrafficEnvironment(gym.Env):
         return free_flow_cost
         
 
-    def reset(self):
-        return None
+    def reset(self, seed: Optional[int] = None):
+        super().reset(seed=seed)
+
+        if seed is not None:
+            self.sumo_seed = seed
+
+        return tuple(np.array([0]), None)
 
 
 
@@ -43,7 +56,7 @@ class TrafficEnvironment(gym.Env):
         rewards = [joint_reward for i in range(len(agent_ids))]
         joint_reward = pd.DataFrame({kc.AGENT_ID : agent_ids, kc.REWARD : rewards})
 
-        return joint_reward, None, True
+        return joint_reward, 1, True
 
 
     def calculate_rewards(self, sumo_df):

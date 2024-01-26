@@ -43,7 +43,9 @@ class Trainer:
                     joint_action_df.to_csv(make_dir(kc.RECORDS_PATH, kc.ACTIONS_LOGS_PATH, f"actions_ep%d.csv" % (ep)), index = False)
                 ##########
 
-                state = next_state
+                #state = next_state
+                #the simulation will start again so state = 0
+                state = 0
 
             show_progress("TRAINING", start_time, ep+1, self.num_episodes, end_line='\n')
 
