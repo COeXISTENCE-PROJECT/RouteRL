@@ -1,5 +1,5 @@
 import pandas as pd
-import gymnasium as gym
+import gymnasium
 from gymnasium.spaces import Box
 from gymnasium.spaces import Discrete
 import numpy as np
@@ -15,7 +15,7 @@ from keychain import Keychain as kc
 from simulator import Simulator
 from agent import Agent
 
-class TrafficEnvironment(gym.Env):
+class TrafficEnvironment(gymnasium.Env):
 
     def __init__(self, simulation_parameters):
         self.simulator = Simulator(simulation_parameters)
@@ -25,7 +25,7 @@ class TrafficEnvironment(gym.Env):
         self.observation_space = Box(low=0, high=1, shape=(1,), dtype=float)
 
         self.action_space = Discrete(3)
-        self.sumo_seed
+        #self.sumo_seed
 
 
 
@@ -35,11 +35,11 @@ class TrafficEnvironment(gym.Env):
         return free_flow_cost
         
 
-    def reset(self, seed: Optional[int] = None):
-        super().reset(seed=seed)
+    def reset(self, seed):
+        #super().reset()
 
-        if seed is not None:
-            self.sumo_seed = seed
+        #if seed is not None:
+        #    self.sumo_seed = seed
 
         return tuple(np.array([0]), None)
 
