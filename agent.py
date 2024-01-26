@@ -5,8 +5,6 @@ import numpy as np
 import random
 
 
-
-
 class Agent(ABC):
 
     """
@@ -14,7 +12,6 @@ class Agent(ABC):
     It is not to be instantiated, but to provide a blueprint for all types of agents
     """
     
-    # We assume no state space for now
     def __init__(self, id, start_time, origin, destination):
         self.id = id
 
@@ -23,11 +20,13 @@ class Agent(ABC):
         self.destination = destination
 
     @abstractmethod
-    def act(self, state):  # Pick action according to your knowledge, or randomly
+    def act(self, state):  
+        # Pick action according to your knowledge, or randomly
         pass
 
     @abstractmethod
-    def learn(self, action, reward, state, next_state):    # Pass the applied action and reward once the episode ends, and it will remember the consequences
+    def learn(self, action, reward, state, next_state):
+        # Pass the applied action and reward once the episode ends, and it will remember the consequences
         pass
 
 
@@ -50,8 +49,6 @@ class HumanAgent(Agent):
         """ 
         the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
         """
-        # create a .py file that implemented the action
-        # this way -> same logit for rooting and for action choice
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
         prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
         action = np.random.choice(list(range(len(self.cost))), p=prob_dist)    
@@ -59,11 +56,10 @@ class HumanAgent(Agent):
 
 
     def learn(self, action, reward, state, next_state):
-        # Implement Garwon learning model
         self.cost[action] = (1-self.alpha) * self.cost[action] + self.alpha * reward
 
 
-    def calculate_prob(self, utilities, n):    # implement the actual lenght on this part
+    def calculate_prob(self, utilities, n):
         prob = utilities[n] / sum(utilities)
         return prob
     
@@ -88,7 +84,6 @@ class MachineAgent(Agent):
         self.gamma = learning_params[kc.GAMMA]
 
         # Q-table assumes only one state, otherwise should be np.zeros((num_states, action_space_size))
-        # Also edit the rest of the class accordingly
         self.q_table = np.zeros((self.action_space_size))
         #self.q_table = initial_knowledge
 

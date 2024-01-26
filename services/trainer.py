@@ -13,11 +13,6 @@ class Trainer:
         self.num_episodes = params[kc.NUM_EPISODES]
         self.log_every = params[kc.LOG_EVERY]
 
-    def learn_agent(agent, joint_action_df, joint_reward_df, state, next_state):
-        action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION]
-        reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
-        agent.learn(action, reward, state, next_state)
-
 
     def train(self, env, agents):
         start_time = time.time()
@@ -49,8 +44,6 @@ class Trainer:
                 # Assuming `agents` is a list of Agent objects
                 with concurrent.futures.ThreadPoolExecutor() as executor:
                     futures = [executor.submit(self.learn_agent, agent, joint_action_df, joint_reward_df, state, next_state) for agent in agents]
-
-                    # Wait for all futures to complete
                     concurrent.futures.wait(futures)
 
                 """parallel_time = time.time() - par_start_time
@@ -87,10 +80,13 @@ class Trainer:
         return agents
     
 
-    def add_action_to_joint_action(self, agent, action, joint_action):
-        """
-        Add individual action to joint action
-        """
+    def learn_agent(agent, joint_action_df, joint_reward_df, state, next_state):
+        action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION]
+        reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
+        agent.learn(action, reward, state, next_state)
+    
+
+    def add_action_to_joint_action(self, agent, action, joint_action):  # Add individual action to joint action
         joint_action[kc.AGENT_ID].append(agent.id)
         joint_action[kc.AGENT_ORIGIN].append(agent.origin)
         joint_action[kc.AGENT_DESTINATION].append(agent.destination)

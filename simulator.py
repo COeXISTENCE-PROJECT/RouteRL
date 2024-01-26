@@ -1,17 +1,11 @@
 from bs4 import BeautifulSoup
-import heapq
 import networkx as nx
 import pandas as pd
-from prettytable import PrettyTable
-import time
 import traci
 import xml.etree.ElementTree as ET
 from queue import PriorityQueue
 
 
-
-from human_learning import logit
-from human_learning import gawron
 from keychain import Keychain as kc
 from services import path_generator
 from services import cursed_path_generator
@@ -26,15 +20,7 @@ class Simulator:
     The interface between traffic simulator (SUMO, HihgEnv, Flow) and the environment
     """
 
-    def __init__(self, params): #, connection_file_path, edge_file_path, route_file_path, empty_route_1, empty_route_2, beta, nr_iterations):
-        #self.connection_file_path = connection_file_path
-        #self.edge_file_path = edge_file_path
-        #self.route_file_path = route_file_path
-        #self.empty_route_1 = empty_route_1
-        #self.empty_route_2 = empty_route_2
-        #self.beta = beta
-        #self.nr_iterations = nr_iterations
-
+    def __init__(self, params):
 
         self.sumo_type = params[kc.SUMO_TYPE]
         self.config = params[kc.SUMO_CONFIG_PATH]
@@ -43,17 +29,14 @@ class Simulator:
         self.simulation_length = params[kc.SIMULATION_TIMESTEPS]
         self.beta = params[kc.BETA]
 
-        # network x graph
         connection_file = params[kc.CONNECTION_FILE_PATH]
         edge_file = params[kc.EDGE_FILE_PATH]
         route_file = params[kc.ROUTE_FILE_PATH]
-        self.G = self.network(connection_file, edge_file, route_file)
-        self.routes = dict()
+
+        self.G = self.network(connection_file, edge_file, route_file)   # network x graph
         # The network is build on a OSM map
-        
-        # initialize the routes (like google maps) 
-        ## beta ?
-        ## put the parameters of origin and dest in the params
+
+        self.routes = dict()
         
         self.origin1, self.origin2 = params[kc.ORIGIN1], params[kc.ORIGIN2]
         self.destination1, self.destination2 = params[kc.DESTINATION1], params[kc.DESTINATION2]
@@ -77,12 +60,6 @@ class Simulator:
             # Store the result in the self.routes dictionary
             self.routes[(origin, destination)] = paths   
         self.save_paths(self.routes)
-
-        #print(self.routes)
-
-        ## WIll be remoced soon
-        self.route1 = self.find_best_paths(self.origin1, self.destination1, 'time') ### self.routes
-        self.route2 = self.find_best_paths(self.origin2, self.destination2, 'time') ## dict and items ->od combinations"""
 
         
     def save_paths(self, routes):
@@ -108,12 +85,11 @@ class Simulator:
         paths_df.to_csv(path_save_path, index=True)
         print("[SUCCESS] Generated & saved %d paths to: %s" % (len(paths_df), path_save_path))
 
-    def read_joint_actions_df(self, joint_action_df):
-        pass
 
     def create_routes(self):
         # Will create action space (routes)
         pass
+
 
     def free_flow_time_finder(self, x, y, z, l):
         length=[]
@@ -131,6 +107,7 @@ class Simulator:
 
         return length
     
+
     def calculate_free_flow_times(self):
         free_flows_dict = dict()
         for od in self.routes.keys():
@@ -153,10 +130,6 @@ class Simulator:
             origin = 0 if od[0] == self.origin1 else 1
             destination = 0 if od[1] == self.destination1 else 1
             free_flows_dict[(origin, destination)] = free_flow
-
-        ### OLD Version
-        """in_time1=self.free_flow_time_finder(self.route1,length[0],length[1],length[2])
-        in_time2=self.free_flow_time_finder(self.route2,length[0],length[1],length[2])"""
 
         return free_flows_dict
 
@@ -218,6 +191,7 @@ class Simulator:
     
         return Graph
     
+
     def priority_queue_creation(self, joint_action):
         #### joint action - columns{id, origin, destination, actions, start_time}
         #### queue ordered by start_time
@@ -239,67 +213,31 @@ class Simulator:
 
         return sorted_rows
     
-    def run_simulation_iteration(self, simulation_length, joint_action):#This is the simulation where we use the values from the initial simulation to improve the initial solutions of te cars
-        #### joint action - columns{id, origin, destination, actions, start_time}
-        #### queue ordered by start_time
 
+    def run_simulation_iteration(self, joint_action):
 
-        depart_id=[]
-        depart_cost=[]
-
-        ###sort in pandas maybe ?
         sorted_rows_based_on_start_time = self.priority_queue_creation(joint_action)
         sorted_df = pd.DataFrame(sorted_rows_based_on_start_time, columns=pd.DataFrame(joint_action).columns)
-        #print(sorted_df)
-
-        # Count the occurrences of each unique pair of origin and destination
-        number_of_agents_in_each_od_pair = sorted_df.groupby(['origin', 'destination']).size().reset_index(name='count')
-
-        # Display the number of agents in each od pair
-        #print(number_of_agents_in_each_od_pair)
-
-        ### for now it is 600/value of vehicles on path 0
-        number_of_agents = number_of_agents_in_each_od_pair.iloc[0]['count']
 
         # Start SUMO with TraCI
         sumo_binary = self.sumo_type
         sumo_cmd = [sumo_binary, "-c", self.config]
-        traci.start(sumo_cmd) ## take this out of the function!!
 
+        traci.start(sumo_cmd)
 
         # Simulation loop
-        for timesteps in range(simulation_length):
+        for timesteps in range(self.simulation_length):
             traci.simulationStep()
 
-            #departed=traci.simulation.getArrivedIDList()
-            #for value in departed:
-            #    if value:
-            #        value_as_int = int(value)
-            #        depart_id.append(x)
-            #        depart_cost.append(value_as_int)
-
-            # Collect vehicles to be added
-            #vehicles_to_add = sorted_df[sorted_df["start_time"] == x]
-
-            # Iterate through vehicles to add
-            for index, row in sorted_df[sorted_df["start_time"] == timesteps].iterrows():
+            for _, row in sorted_df[sorted_df["start_time"] == timesteps].iterrows():
                 action = row["action"]
                 vehicle_id = f"{row['id']}"
                 traci.vehicle.add(vehicle_id, f'{action}')
 
-        # End of simulation
         traci.close()
-
-        ### sort by id
-        ### divide duration with 60
-                
-        #depart=pd.DataFrame(depart_id)
-        #reward=pd.merge(depart,pd.DataFrame(depart_cost),right_index=True,left_index=True)
-        #reward=reward.rename(columns={'0_x':'car_id','0_y':'cost'})
                 
         duration = pd.read_xml('Network_and_config/tripinfo.xml').duration
         reward = duration.reset_index().rename(columns={"duration":"cost"})
-        ### function that maps output from sumo to reward
 
         return reward
     
@@ -370,7 +308,6 @@ class Simulator:
 
         for _ in range(self.number_of_paths):
             path = path_generator(self.G, origin, destination, weight, picked_nodes, self.beta)
-            #path = cursed_path_generator(self.G, origin, destination, weight, picked_nodes, self.beta)
             paths.append(path)
             picked_nodes.update(path)
 
@@ -399,12 +336,3 @@ class Simulator:
         to_db=pd.DataFrame(to_)
 
         return from_db, to_db
-    
-    def replace(self, times, zeros):
-
-        for x in range(len(times)):
-            for y in range(len(zeros)):
-
-                if pd.isna(times.cost[y]) and times.index[x]==zeros.index[y]:
-                        times.at[x,'cost']=zeros.iloc[:,times.route_id[x]][y]
-        return times
