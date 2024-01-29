@@ -30,8 +30,6 @@ def main():
 
     agents = create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS], env.calculate_free_flow_times())
 
-    env.create_agents(agents)
-
     check_env(env)
 
     model = DQN(
@@ -46,7 +44,7 @@ def main():
         verbose=1,
     )
 
-    model.learn(total_timesteps=100000)
+    model.learn(total_timesteps=10)
 
     ### Multiple agents
     """ray.init()
@@ -93,9 +91,9 @@ def main():
 
 
     ## env.trainer
-    #trainer = Trainer(params[kc.TRAINING_PARAMETERS])
-    #agents = trainer.train(env, agents)
-    #env.plot_rewards()
+    """trainer = Trainer(params[kc.TRAINING_PARAMETERS])
+    agents = trainer.train(env, agents)
+    env.plot_rewards()"""
     
 
 main()

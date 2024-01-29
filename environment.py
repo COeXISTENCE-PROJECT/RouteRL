@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from typing import Optional
+from keychain import Keychain as kc
 
 
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
@@ -25,7 +26,6 @@ class TrafficEnvironment(gymnasium.Env):
         self.observation_space = Box(low=0, high=1, shape=(1,), dtype=float)
 
         self.action_space = Discrete(3)
-        #self.sumo_seed
 
 
 
@@ -36,28 +36,31 @@ class TrafficEnvironment(gymnasium.Env):
         
 
     def reset(self, seed=None):
-        #super().reset()
-
-        #if seed is not None:
-        #    self.sumo_seed = seed
 
         return np.array([0]), {}
 
 
 
     def step(self, joint_action):
-        
 
-        agent_ids = joint_action[kc.AGENT_ID]
+        agent_ids = 0
+
+        
+        #agent_ids = joint_action[kc.AGENT_ID]
+        #print("agent ids is: ", agent_ids)
         sumo_df = self.simulator.run_simulation_iteration(joint_action)
 
         #### Calculate joint reward based on travel times returned by SUMO
         joint_reward = self.calculate_rewards(sumo_df)
+        print("reward is: ", joint_reward)
+        print("\n\n")
 
-        rewards = [joint_reward for i in range(len(agent_ids))]
-        joint_reward = pd.DataFrame({kc.AGENT_ID : agent_ids, kc.REWARD : rewards})
+        #rewards = [joint_reward for i in range(len(sumo_df))]
+        #joint_reward = pd.DataFrame({kc.AGENT_ID : agent_ids, kc.REWARD : rewards})
+        sample_observation = np.random.uniform(low=0, high=1, size=(1,))
 
-        return joint_reward, 1, True
+
+        return sample_observation, joint_reward, True, True, {}
 
 
     def calculate_rewards(self, sumo_df):
@@ -81,6 +84,3 @@ class TrafficEnvironment(gymnasium.Env):
 
         # tuples are hashable and can be used as key in python dictionary
         return state
-    
-    def create_agents(self, agents):
-        self.agents = agents  

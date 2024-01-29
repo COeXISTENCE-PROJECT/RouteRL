@@ -216,23 +216,29 @@ class Simulator:
 
     def run_simulation_iteration(self, joint_action):
 
-        sorted_rows_based_on_start_time = self.priority_queue_creation(joint_action)
-        sorted_df = pd.DataFrame(sorted_rows_based_on_start_time, columns=pd.DataFrame(joint_action).columns)
+        
+        #sorted_rows_based_on_start_time = self.priority_queue_creation(joint_action)
+        print("action is: ", joint_action)
+        #sorted_df = pd.DataFrame(joint_action, columns=pd.DataFrame(joint_action).columns)
 
         # Start SUMO with TraCI
         sumo_binary = self.sumo_type
         sumo_cmd = [sumo_binary, "-c", self.config]
 
         traci.start(sumo_cmd)
+        i = 0
 
         # Simulation loop
         for timesteps in range(self.simulation_length):
             traci.simulationStep()
 
-            for _, row in sorted_df[sorted_df["start_time"] == timesteps].iterrows():
-                action = row["action"]
-                vehicle_id = f"{row['id']}"
-                traci.vehicle.add(vehicle_id, f'{action}')
+            """for _, row in sorted_df[sorted_df["start_time"] == timesteps].iterrows():
+            action = row["action"]
+            vehicle_id = f"{row['id']}"
+            traci.vehicle.add(vehicle_id, f'{action}')"""
+            if(i == 0):
+                traci.vehicle.add(0, f'{joint_action}')
+                i = 1
 
         traci.close()
                 
