@@ -118,7 +118,7 @@ def main():
     alg_name = "DQN"
     ModelCatalog.register_custom_model("pa_model", TorchModelV2)
 
-    def env_creator():
+    def env_creator(): ### add here the env config
         env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])
         return env
 
@@ -140,12 +140,12 @@ def main():
             dueling=False,
             model={"custom_model": "pa_model"},
             optimizer={
-            "adam": {
-                "lr": 0.01,  # learning rate
-                "momentum": 0.9,  # momentum (if applicable)
-                # Add other optimizer parameters as needed
+                "adam": {
+                    "lr": 0.01,  # learning rate
+                    "momentum": 0.9,  # momentum (if applicable)
+                    # Add other optimizer parameters as needed
+                }
             }
-        }
         )
         .multi_agent(
             policies={
@@ -182,8 +182,6 @@ def main():
         checkpoint_freq=10,
         config=config.to_dict(),
     )
-
-    
 
     
     
