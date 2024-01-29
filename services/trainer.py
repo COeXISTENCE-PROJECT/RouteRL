@@ -36,6 +36,12 @@ class Trainer:
                 with concurrent.futures.ThreadPoolExecutor() as executor:
                     futures = [executor.submit(self.learn_agent, agent, joint_action_df, joint_reward_df, state, next_state) for agent in agents]
                     concurrent.futures.wait(futures)
+                
+                """for agent in agents:    # Every agent picks action
+                    action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION]
+                    reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
+                    #print(action)
+                    agent.learn(action, reward, state, next_state)"""
 
                 if not (ep % self.log_every):
                 ########## Save training records
@@ -53,6 +59,7 @@ class Trainer:
     
 
     def learn_agent(agent, joint_action_df, joint_reward_df, state, next_state):
+        print('test')
         action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION]
         reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
         agent.learn(action, reward, state, next_state)

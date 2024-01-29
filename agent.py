@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from keychain import Keychain as kc
 
 import numpy as np
+import pandas as pd
 import random
 
 
@@ -42,21 +43,31 @@ class HumanAgent(Agent):
         self.beta = learning_params[kc.BETA]
         self.alpha = learning_params[kc.ALPHA]
 
-        self.cost = initial_knowledge[(origin, destination)]
+        self.cost = np.array(initial_knowledge[(origin, destination)])
 
 
     def act(self, state):  
         """ 
         the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
         """
+        #print(self.cost)
+        #print(self.id)
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
         prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
-        action = np.random.choice(list(range(len(self.cost))), p=prob_dist)    
+        #print(prob_dist)
+        action = np.random.choice(list(range(len(self.cost))), p=prob_dist)
+        #print('new: ',action)    
         return action        
 
 
     def learn(self, action, reward, state, next_state):
-        self.cost[action] = (1-self.alpha) * self.cost[action] + self.alpha * reward
+        action_in=pd.DataFrame(action).action.values[0]
+        reward_in=pd.DataFrame(reward).reward.values[0]
+        #print(action)
+        #print("gawron",self.cost[action_in])
+        #self.cost[action_in]=(1-self.alpha) * self.cost[action_in] + self.alpha * reward_in
+        self.cost[action]=(1-self.alpha) * self.cost[action] + self.alpha * reward_in
+        print(self.cost)
 
 
     def calculate_prob(self, utilities, n):

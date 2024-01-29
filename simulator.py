@@ -240,8 +240,9 @@ class Simulator:
             for value in departed:
                 if value:
                     value_as_int = int(value)
-                    depart_id.append(timesteps)
-                    depart_cost.append(value_as_int)
+                    depart_id.append(value_as_int)
+                    start=sorted_df[sorted_df.id==value_as_int].start_time.values
+                    depart_cost.append(timesteps-start)
 
             for _, row in sorted_df[sorted_df["start_time"] == timesteps].iterrows():
                 action = row["action"]
