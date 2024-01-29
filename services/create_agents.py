@@ -36,7 +36,7 @@ def create_agent_objects(params, initial_knowledge):
             agents.append(HumanAgent(id, start_time, origin, destination, learning_params, initial_knowledge))
         else:
             print('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_TYPE])
-
+        break ##I added it
     print(f'[SUCCESS] Created agent objects (%d)' % (len(agents)))
     print_agents(agents, agent_attributes, print_every=50)
     return agents

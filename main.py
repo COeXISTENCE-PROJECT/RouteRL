@@ -19,83 +19,169 @@ from ray.rllib.algorithms.ppo import PPOConfig
 from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
 from ray.tune.registry import register_env
 
+from pettingzoo.test import parallel_api_test
+
+import os
+
+import ray
+from gymnasium.spaces import Box, Discrete
+from ray import tune
+from ray.rllib.algorithms.dqn import DQNConfig
+from ray.rllib.algorithms.dqn.dqn_torch_model import DQNTorchModel
+from ray.rllib.env import PettingZooEnv
+from ray.rllib.models import ModelCatalog
+from ray.rllib.models.torch.fcnet import FullyConnectedNetwork as TorchFC
+from ray.rllib.utils.framework import try_import_torch
+from ray.rllib.utils.torch_utils import FLOAT_MAX
+from ray.tune.registry import register_env
+
+from pettingzoo.classic import leduc_holdem_v4
+
+from ray.rllib.algorithms.ppo import PPOConfig
+from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
+from ray.rllib.models import ModelCatalog
+from ray.rllib.models.torch.torch_modelv2 import TorchModelV2
+from ray.tune.registry import register_env
+from torch import nn
+import gymnasium as gym
+
+torch, nn = try_import_torch()
+
+
 
 confirm_env_variable(kc.SUMO_HOME, append="tools")
 params = get_json(kc.PARAMS_PATH)
 
+class TorchMaskedActions(DQNTorchModel):
+    """PyTorch version of above ParametricActionsModel."""
+
+    def __init__(
+        self,
+        obs_space: Box,
+        action_space: gym.spaces.Discrete,
+        num_outputs,
+        model_config,
+        name,
+        **kw,
+    ):
+        DQNTorchModel.__init__(
+            self, obs_space, action_space, num_outputs, model_config, name, **kw
+        )
+
+        obs_len = obs_space.shape[0] - action_space.n
+
+        orig_obs_space = Box(
+            low=0, high=1, shape=(1,), dtype=float
+        )
+        self.action_embed_model = TorchFC(
+            orig_obs_space,
+            action_space,
+            action_space.n,
+            model_config,
+            name + "_action_embed",
+        )
+
+    def forward(self, input_dict, state, seq_lens):
+        print("\n\n\n\n\n input_dict", input_dict["obs"], "\n\n\n\n\n")
+        # Extract the available actions tensor from the observation.
+        action_mask = input_dict["obs"]
+
+        # Compute the predicted action embedding
+        action_logits, _ = self.action_embed_model(
+            {"obs": input_dict["obs"]}
+        )
+        # turns probit action mask into logit action mask
+        inf_mask = torch.clamp(torch.log(action_mask), -1e10, FLOAT_MAX)
+
+        return action_logits + inf_mask, state
+
+    def value_function(self):
+        return self.action_embed_model.value_function()
 
 def main():
 
     env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])
 
-    agents = create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS], env.calculate_free_flow_times())
+    #agents = create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS], env.calculate_free_flow_times())
 
-    env.create_agents(agents)
+    def env_creator():
+        env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])
+        return env
 
-    check_env(env)
+    parallel_api_test(env, num_cycles=1_000_000)
 
-    model = DQN(
-        env=env,
-        policy="MlpPolicy",
-        learning_rate=0.001,
-        learning_starts=0,
-        train_freq=1,
-        target_update_interval=500,
-        exploration_initial_eps=0.05,
-        exploration_final_eps=0.01,
-        verbose=1,
-    )
+    ray.init()
 
-    model.learn(total_timesteps=100000)
 
-    ### Multiple agents
-    """ray.init()
+    alg_name = "DQN"
+    ModelCatalog.register_custom_model("pa_model", TorchModelV2)
 
-    register_env(
-        "lalala",
-        lambda _: ParallelPettingZooEnv(
-            (TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])
-            )
-        ),
-    )
+    def env_creator():
+        env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])
+        return env
+
+    register_env("TrafficEnvironment", lambda config: PettingZooEnv(env_creator()))
+
+    test_env = PettingZooEnv(env_creator())
+    obs_space = test_env.observation_space
+    act_space = gym.spaces.Discrete(3)
+
+    print("act_space is: ", act_space, "\n\n\n")
 
     config = (
-        PPOConfig()
-        .environment(env, disable_env_checking=True)
-        .rollouts(num_rollout_workers=4, rollout_fragment_length=128)
+        DQNConfig()
+        .environment(env="TrafficEnvironment")
+        .rollouts(num_rollout_workers=1, rollout_fragment_length=30)
         .training(
-            train_batch_size=512,
-            lr=2e-5,
-            gamma=0.95,
-            lambda_=0.9,
-            use_gae=True,
-            clip_param=0.4,
-            grad_clip=None,
-            entropy_coeff=0.1,
-            vf_loss_coeff=0.25,
-            sgd_minibatch_size=64,
-            num_sgd_iter=10,
+            train_batch_size=200,
+            hiddens=[],
+            dueling=False,
+            model={"custom_model": "pa_model"},
+            optimizer={
+            "adam": {
+                "lr": 0.01,  # learning rate
+                "momentum": 0.9,  # momentum (if applicable)
+                # Add other optimizer parameters as needed
+            }
+        }
         )
-        .debugging(log_level="ERROR")
-        .framework(framework="torch")
+        .multi_agent(
+            policies={
+                "player_0": (None, obs_space, act_space, {}),
+                "player_1": (None, obs_space, act_space, {}),
+            },
+            policy_mapping_fn=(lambda agent_id, *args, **kwargs: agent_id),
+        )
         .resources(num_gpus=int(os.environ.get("RLLIB_NUM_GPUS", "0")))
+        .debugging(
+            log_level="DEBUG"
+        )  # TODO: change to ERROR to match pistonball example
+        .framework(framework="torch")
+        .exploration(
+            exploration_config={
+                # The Exploration class to use.
+                "type": "EpsilonGreedy",
+                # Config for the Exploration class' constructor:
+                "initial_epsilon": 0.1,
+                "final_epsilon": 0.0,
+                "epsilon_timesteps": 100000,  # Timesteps over which to anneal epsilon.
+            }
+        )
     )
+
+    config.environment(disable_env_checking=True)
+
 
 
     tune.run(
-        "PPO",
-        name="PPO",
-        stop={"timesteps_total": 100000},
+        alg_name,
+        name="DQN",
+        stop={"timesteps_total": 10000000 if not os.environ.get("CI") else 50000},
         checkpoint_freq=10,
-        local_dir=os.path.join(os.getcwd(), "ray_results"),
         config=config.to_dict(),
-    )"""
+    )
 
-
-    ## env.trainer
-    #trainer = Trainer(params[kc.TRAINING_PARAMETERS])
-    #agents = trainer.train(env, agents)
-    #env.plot_rewards()
+    
     
 
 main()
