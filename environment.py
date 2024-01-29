@@ -86,20 +86,12 @@ class TrafficEnvironment(ParallelEnv):
 
     def step(self, joint_action):
 
-        agent_ids = 0
-
-        
-        #agent_ids = joint_action[kc.AGENT_ID]
-        #print("agent ids is: ", agent_ids)
         sumo_df = self.simulator.run_simulation_iteration(joint_action)
 
         #### Calculate joint reward based on travel times returned by SUMO
         joint_reward = self.calculate_rewards(sumo_df)
         print("reward is: ", joint_reward)
         print("\n\n")
-
-        #rewards = [joint_reward for i in range(len(sumo_df))]
-        #joint_reward = pd.DataFrame({kc.AGENT_ID : agent_ids, kc.REWARD : rewards})
 
         sample_observation = {
             a: () for a in self.agents

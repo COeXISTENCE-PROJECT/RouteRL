@@ -239,15 +239,6 @@ class Simulator:
 
                 i = 1
 
-
-            """for _, row in sorted_df[sorted_df["start_time"] == timesteps].iterrows():
-            action = row["action"]
-            vehicle_id = f"{row['id']}"
-            traci.vehicle.add(vehicle_id, f'{action}')
-            if(i == 0):
-                traci.vehicle.add(0, f'{joint_action}')
-                i = 1"""
-
         traci.close()
                 
         duration = pd.read_xml('Network_and_config/tripinfo.xml').duration
