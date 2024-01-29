@@ -113,6 +113,8 @@ def main():
     ray.init()
 
 
+
+
     alg_name = "DQN"
     ModelCatalog.register_custom_model("pa_model", TorchModelV2)
 
@@ -180,6 +182,8 @@ def main():
         checkpoint_freq=10,
         config=config.to_dict(),
     )
+
+    
 
     
     
