@@ -6,6 +6,8 @@ from services import create_agent_objects
 from services import confirm_env_variable
 from services import get_json
 
+from Sumo_controller import Sumo
+
 
 
 confirm_env_variable(kc.SUMO_HOME, append="tools")
@@ -13,8 +15,9 @@ params = get_json(kc.PARAMS_PATH)
 
 
 def main():
-    'test'
 
+    Sumo_sim=Sumo(params)
+    Sumo_sim.Sumo_start()
 
     env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])  # pass some params for the simulation
 
@@ -24,6 +27,9 @@ def main():
 
     trainer = Trainer(params[kc.TRAINING_PARAMETERS])
     agents = trainer.train(env, agents)
+
+    Sumo_sim.Sumo_stop()
+
     env.plot_rewards()
 
 

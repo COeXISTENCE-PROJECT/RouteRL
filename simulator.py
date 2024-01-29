@@ -22,8 +22,8 @@ class Simulator:
 
     def __init__(self, params):
 
-        self.sumo_type = params[kc.SUMO_TYPE]
-        self.config = params[kc.SUMO_CONFIG_PATH]
+        #self.sumo_type = params[kc.SUMO_TYPE]
+        #self.config = params[kc.SUMO_CONFIG_PATH]
 
         self.number_of_paths = params[kc.NUMBER_OF_PATHS]
         self.simulation_length = params[kc.SIMULATION_TIMESTEPS]
@@ -216,28 +216,42 @@ class Simulator:
 
     def run_simulation_iteration(self, joint_action):
 
+        depart_id=[]
+        depart_cost=[]
+
         sorted_rows_based_on_start_time = self.priority_queue_creation(joint_action)
         sorted_df = pd.DataFrame(sorted_rows_based_on_start_time, columns=pd.DataFrame(joint_action).columns)
-
-        # Start SUMO with TraCI
-        sumo_binary = self.sumo_type
-        sumo_cmd = [sumo_binary, "-c", self.config]
-
-        traci.start(sumo_cmd)
 
         # Simulation loop
         for timesteps in range(self.simulation_length):
             traci.simulationStep()
+        
+            if timesteps==self.simulation_length-1:
+                remove=traci.vehicle.getIDList()
+                routes=traci.route.getIDList()
+
+                for route in routes:
+                    traci.simulation.clearPending(routeID=route)
+                for i in remove:
+                    traci.vehicle.remove(i,3)
+
+
+            departed=traci.simulation.getArrivedIDList()
+            for value in departed:
+                if value:
+                    value_as_int = int(value)
+                    depart_id.append(timesteps)
+                    depart_cost.append(value_as_int)
 
             for _, row in sorted_df[sorted_df["start_time"] == timesteps].iterrows():
                 action = row["action"]
                 vehicle_id = f"{row['id']}"
                 traci.vehicle.add(vehicle_id, f'{action}')
 
-        traci.close()
-                
-        duration = pd.read_xml('Network_and_config/tripinfo.xml').duration
-        reward = duration.reset_index().rename(columns={"duration":"cost"})
+
+        depart=pd.DataFrame(depart_id)
+        reward=pd.merge(depart,pd.DataFrame(depart_cost),right_index=True,left_index=True)
+        reward=reward.rename(columns={'0_x':'car_id','0_y':'cost'})
 
         return reward
     

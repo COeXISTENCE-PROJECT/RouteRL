@@ -5,6 +5,7 @@ from gymnasium.spaces import Discrete
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import traci
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 
@@ -19,15 +20,18 @@ class TrafficEnvironment(gym.Env):
         self.reward_table = []
         print("[SUCCESS] Environment initiated!")
 
-
-
     def calculate_free_flow_times(self):
         free_flow_cost = self.simulator.calculate_free_flow_times()
         print('[INFO] Free-flow times: ', free_flow_cost)
         return free_flow_cost
+    
+
+    def create_agents(self, agents):
+        self.agents = agents 
         
 
     def reset(self):
+        
         return None
 
 
