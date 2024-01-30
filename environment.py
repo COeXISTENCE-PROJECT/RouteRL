@@ -13,6 +13,8 @@ from services import create_agent_objects
 from services import confirm_env_variable
 from services import get_json
 import functools
+from ray.rllib.env.multi_agent_env import MultiAgentEnv
+
 
 
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
@@ -43,6 +45,7 @@ class TrafficEnvironment(ParallelEnv):
         }
 
         #self.action_space = gym.spaces.Space
+        self.agent_selection = 0 ## in the pistoball.py it is a number
 
         self.render_mode = render_mode
 
@@ -53,7 +56,8 @@ class TrafficEnvironment(ParallelEnv):
         at any time after reset() is called.
         """
         # observation of one agent is the previous state of the other
-        return np.array(self.observations[agent])
+        #print("\n\n\n\nself.observation_spaces[agent]", self.observation_spaces.get(agent), "\n\n\n\n\n")
+        return 0 #np.array(self.observation_spaces[agent])
 
     def close(self):
         """
@@ -78,13 +82,15 @@ class TrafficEnvironment(ParallelEnv):
         }
 
         # Get dummy infos. Necessary for proper parallel_to_aec conversion
-        infos = {a: {} for a in self.agents}
+        infos = {a: "tarara"  for a in self.agents}
 
-        return observations, infos
+        return [observations, infos]
 
 
 
     def step(self, joint_action):
+
+        self.agent_selection = 0
 
         sumo_df = self.simulator.run_simulation_iteration(joint_action)
 
@@ -94,24 +100,27 @@ class TrafficEnvironment(ParallelEnv):
         print("\n\n")
 
         sample_observation = {
-            a: () for a in self.agents
+            a: () for a in self.possible_agents
         }
 
         reward = {
-            rew: {joint_reward} for rew in self.agents
+            rew: {joint_reward} for rew in self.possible_agents
         }
 
         terminated = {
-            terminated: {True} for terminated in self.agents
+            terminated: {True} for terminated in self.possible_agents
         }
 
         truncated = {
-            truncated: {True} for truncated in self.agents
+            truncated: {True} for truncated in self.possible_agents
         }
 
-        info = {
-            info: {True} for info in self.agents
-        }
+        """infos = {
+            infos: {infos} for infos in self.agents
+        }"""
+
+        info = {a: 0.12 for a in self.possible_agents} ##to provlima den einai edo alla sto set_last_info
+        print("\n\n\n\n\n\n", info, "\n\n\n\n\n\n")
 
         if any(terminated.values()) or all(truncated.values()):
             self.agents = []

@@ -64,9 +64,12 @@ class TorchMaskedActions(DQNTorchModel):
         name,
         **kw,
     ):
+        print("\n\n\n\n inside init \n\n\n\n")
         DQNTorchModel.__init__(
             self, obs_space, action_space, num_outputs, model_config, name, **kw
         )
+
+        print("\n\n\n\n after DQNTorchModel \n\n\n\n")
 
         obs_len = obs_space.shape[0] - action_space.n
 
@@ -93,6 +96,8 @@ class TorchMaskedActions(DQNTorchModel):
         # turns probit action mask into logit action mask
         inf_mask = torch.clamp(torch.log(action_mask), -1e10, FLOAT_MAX)
 
+        print("\n\n before completing forward \n\n")
+
         return action_logits + inf_mask, state
 
     def value_function(self):
@@ -104,31 +109,20 @@ def main():
 
     #agents = create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS], env.calculate_free_flow_times())
 
-    def env_creator():
-        env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])
-        return env
-
     parallel_api_test(env, num_cycles=1_000_000)
 
     ray.init()
 
 
-
-
     alg_name = "DQN"
-    ModelCatalog.register_custom_model("pa_model", TorchModelV2)
+    ModelCatalog.register_custom_model("pa_model", TorchMaskedActions)
 
-    def env_creator(): ### add here the env config
+    def env_creator(args): ### add here the env config
         env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])
         return env
 
-    register_env("TrafficEnvironment", lambda config: PettingZooEnv(env_creator()))
+    register_env("TrafficEnvironment", lambda config: PettingZooEnv(env_creator(config)))
 
-    test_env = PettingZooEnv(env_creator())
-    obs_space = test_env.observation_space
-    act_space = gym.spaces.Discrete(3)
-
-    print("act_space is: ", act_space, "\n\n\n")
 
     config = (
         DQNConfig()
@@ -142,15 +136,13 @@ def main():
             optimizer={
                 "adam": {
                     "lr": 0.01,  # learning rate
-                    "momentum": 0.9,  # momentum (if applicable)
-                    # Add other optimizer parameters as needed
                 }
             }
         )
         .multi_agent(
-            policies={
-                "player_0": (None, obs_space, act_space, {}),
-                "player_1": (None, obs_space, act_space, {}),
+            policies={              # observation space                         # action space
+                "player_0": (None, Box(low=0, high=1, shape=(1,), dtype=float), gym.spaces.Discrete(3), {}),
+                "player_1": (None, Box(low=0, high=1, shape=(1,), dtype=float), gym.spaces.Discrete(3), {}),
             },
             policy_mapping_fn=(lambda agent_id, *args, **kwargs: agent_id),
         )
