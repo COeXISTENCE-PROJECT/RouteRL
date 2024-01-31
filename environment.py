@@ -14,6 +14,7 @@ from services import confirm_env_variable
 from services import get_json
 import functools
 from ray.rllib.env.multi_agent_env import MultiAgentEnv
+from ray.rllib.env.vector_env import VectorEnv
 
 
 
@@ -27,6 +28,8 @@ from keychain import Keychain as kc
 from simulator import Simulator
 from agent import Agent
 
+
+## link https://pettingzoo.farama.org/tutorials/custom_environment/1-project-structure/
 class TrafficEnvironment(ParallelEnv):
 
     def __init__(self, simulation_parameters, render_mode=None):
@@ -35,6 +38,7 @@ class TrafficEnvironment(ParallelEnv):
         print("[SUCCESS] Environment initiated!")
 
         self.possible_agents = ["agent1", "agent2"] #create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS], 0)
+        self.agents = self.possible_agents
 
         self.observation_spaces = {
             agent: Box(low=0, high=1, shape=(1,), dtype=float) for agent in self.possible_agents
@@ -78,62 +82,54 @@ class TrafficEnvironment(ParallelEnv):
         self.agents = copy(self.possible_agents)
 
         observations = {
-            a: () for a in self.agents
+            a: (0) for a in self.agents
         }
 
         # Get dummy infos. Necessary for proper parallel_to_aec conversion
-        infos = {a: "tarara"  for a in self.agents}
+        infos = {a: {}  for a in self.agents}
 
-        return [observations, infos]
+        return [observations, infos] # for the parallel_api_test [observations, infos]
 
 
 
     def step(self, joint_action):
 
         self.agent_selection = 0
+        
 
         sumo_df = self.simulator.run_simulation_iteration(joint_action)
+        costs = sumo_df['cost'].values
 
-        #### Calculate joint reward based on travel times returned by SUMO
-        joint_reward = self.calculate_rewards(sumo_df)
-        print("reward is: ", joint_reward)
-        print("\n\n")
+        rewards = {}
+
+        # Iterate over the possible_agents list
+        for agent_name in self.possible_agents:
+            # Assign the corresponding reward for each agent
+            # If you want to assign the same reward to all agents, you can replace `costs[i]` with a single value
+            rewards[agent_name] = costs[len(rewards)] if len(rewards) < len(costs) else None
 
         sample_observation = {
             a: () for a in self.possible_agents
-        }
-
-        reward = {
-            rew: {joint_reward} for rew in self.possible_agents
         }
 
         terminated = {
             terminated: {True} for terminated in self.possible_agents
         }
 
+        #terminated['__all__'] = True
+
         truncated = {
-            truncated: {True} for truncated in self.possible_agents
+            truncated: {False} for truncated in self.possible_agents
         }
 
-        """infos = {
-            infos: {infos} for infos in self.agents
-        }"""
-
-        info = {a: 0.12 for a in self.possible_agents} ##to provlima den einai edo alla sto set_last_info
+        info = {a: {} for a in self.agents} ##to provlima den einai edo alla sto set_last_info
         print("\n\n\n\n\n\n", info, "\n\n\n\n\n\n")
 
         if any(terminated.values()) or all(truncated.values()):
             self.agents = []
 
 
-        return sample_observation, reward, terminated, truncated, info
-
-
-    def calculate_rewards(self, sumo_df):
-        ### sychronize names
-        average_reward = -1 * sumo_df['cost'].mean()
-        self.reward_table.append(average_reward)
-        return average_reward
+        return sample_observation, rewards, terminated, truncated, info ##for rllib not the truncated
     
 
     def plot_rewards(self):

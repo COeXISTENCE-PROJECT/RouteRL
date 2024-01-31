@@ -20,6 +20,7 @@ from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
 from ray.tune.registry import register_env
 
 from pettingzoo.test import parallel_api_test
+from pettingzoo.test import seed_test, parallel_seed_test
 
 import os
 
@@ -42,8 +43,11 @@ from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
 from ray.rllib.models import ModelCatalog
 from ray.rllib.models.torch.torch_modelv2 import TorchModelV2
 from ray.tune.registry import register_env
+from ray.rllib.policy.policy import PolicySpec
 from torch import nn
 import gymnasium as gym
+from pettingzoo.utils.conversions import parallel_wrapper_fn
+from pettingzoo.test import test_save_obs
 
 torch, nn = try_import_torch()
 
@@ -111,7 +115,7 @@ def main():
 
     parallel_api_test(env, num_cycles=1_000_000)
 
-    ray.init()
+    """ray.init()
 
 
     alg_name = "DQN"
@@ -120,11 +124,43 @@ def main():
     def env_creator(args): ### add here the env config
         env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])
         return env
+    
 
-    register_env("TrafficEnvironment", lambda config: PettingZooEnv(env_creator(config)))
-
+    register_env("TrafficEnvironment", lambda config: ParallelPettingZooEnv(env_creator(config)))
 
     config = (
+        PPOConfig()
+        .environment(env="TrafficEnvironment", disable_env_checking=True)
+        .rollouts(num_rollout_workers=2, rollout_fragment_length=128)
+        .training(
+            train_batch_size=512,
+            lr=2e-5,
+            gamma=0.95,
+            lambda_=0.9,
+            use_gae=True,
+            clip_param=0.4,
+            grad_clip=None,
+            entropy_coeff=0.1,
+            vf_loss_coeff=0.25,
+            sgd_minibatch_size=64,
+            num_sgd_iter=10,
+        )
+        .debugging(log_level="ERROR")
+        .framework(framework="torch")
+        .resources(num_gpus=int(os.environ.get("RLLIB_NUM_GPUS", "0")))
+    )
+
+    tune.run(
+        "PPO",
+        name="PPO",
+        stop={"timesteps_total": 100000},
+        checkpoint_freq=10,
+        local_dir="~/ray_results/" + "TrafficEnvironment",
+        config=config.to_dict(),
+    )"""
+
+
+    """config = (
         DQNConfig()
         .environment(env="TrafficEnvironment")
         .rollouts(num_rollout_workers=1, rollout_fragment_length=30)
@@ -141,10 +177,10 @@ def main():
         )
         .multi_agent(
             policies={              # observation space                         # action space
-                "player_0": (None, Box(low=0, high=1, shape=(1,), dtype=float), gym.spaces.Discrete(3), {}),
-                "player_1": (None, Box(low=0, high=1, shape=(1,), dtype=float), gym.spaces.Discrete(3), {}),
+                "pol1": PolicySpec(None, gym.spaces.Box(low=0, high=1, shape=(1,), dtype=float), gym.spaces.Discrete(3), {"lr": 0.0001}),
+                "pol2": PolicySpec(None, gym.spaces.Box(low=0, high=1, shape=(1,), dtype=float), gym.spaces.Discrete(3), {}),
             },
-            policy_mapping_fn=(lambda agent_id, *args, **kwargs: agent_id),
+            policy_mapping_fn=(lambda agent_id, *args, **kwargs: agent_id), # each policy maps to the specific agent
         )
         .resources(num_gpus=int(os.environ.get("RLLIB_NUM_GPUS", "0")))
         .debugging(
@@ -173,7 +209,7 @@ def main():
         stop={"timesteps_total": 10000000 if not os.environ.get("CI") else 50000},
         checkpoint_freq=10,
         config=config.to_dict(),
-    )
+    )"""
 
     
     

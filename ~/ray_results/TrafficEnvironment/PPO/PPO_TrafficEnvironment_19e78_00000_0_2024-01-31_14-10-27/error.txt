@@ -1,0 +1,63 @@
+Failure # 1 (occurred at 2024-01-31_14-10-39)
+The actor died because of an error raised in its creation task, [36mray::PPO.__init__()[39m (pid=10512, ip=127.0.0.1, actor_id=76988870df6c226811c19cb101000000, repr=PPO)
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\rllib\evaluation\worker_set.py", line 229, in _setup
+    self.add_workers(
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\rllib\evaluation\worker_set.py", line 616, in add_workers
+    raise result.get()
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\rllib\utils\actor_manager.py", line 487, in __fetch_result
+    result = ray.get(r)
+             ^^^^^^^^^^
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\_private\auto_init_hook.py", line 22, in auto_init_wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\_private\client_mode_hook.py", line 103, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\_private\worker.py", line 2626, in get
+    raise value
+ray.exceptions.RayActorError: The actor died because of an error raised in its creation task, [36mray::RolloutWorker.__init__()[39m (pid=1116, ip=127.0.0.1, actor_id=235c70ed0b166b580c3f87d801000000, repr=<ray.rllib.evaluation.rollout_worker.RolloutWorker object at 0x0000019D831CA450>)
+  File "python\ray\_raylet.pyx", line 1813, in ray._raylet.execute_task
+  File "python\ray\_raylet.pyx", line 1754, in ray._raylet.execute_task.function_executor
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\_private\function_manager.py", line 726, in actor_method_executor
+    return method(__ray_actor, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\util\tracing\tracing_helper.py", line 467, in _resume_span
+    return method(self, *_args, **_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\rllib\evaluation\rollout_worker.py", line 407, in __init__
+    self.env = env_creator(copy.deepcopy(self.env_context))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anastasia\Documents\Milestone-One-Petting-Zoo\main.py", line 128, in <lambda>
+    register_env("TrafficEnvironment", lambda config: ParallelPettingZooEnv(env_creator(config)))
+                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\rllib\env\wrappers\pettingzoo_env.py", line 195, in __init__
+    self.par_env.reset()
+    ^^^^^^^^^^^^^^^^^^
+AttributeError: 'function' object has no attribute 'reset'
+
+During handling of the above exception, another exception occurred:
+
+[36mray::PPO.__init__()[39m (pid=10512, ip=127.0.0.1, actor_id=76988870df6c226811c19cb101000000, repr=PPO)
+  File "python\ray\_raylet.pyx", line 1807, in ray._raylet.execute_task
+  File "python\ray\_raylet.pyx", line 1908, in ray._raylet.execute_task
+  File "python\ray\_raylet.pyx", line 1813, in ray._raylet.execute_task
+  File "python\ray\_raylet.pyx", line 1754, in ray._raylet.execute_task.function_executor
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\_private\function_manager.py", line 726, in actor_method_executor
+    return method(__ray_actor, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\util\tracing\tracing_helper.py", line 467, in _resume_span
+    return method(self, *_args, **_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\rllib\algorithms\algorithm.py", line 516, in __init__
+    super().__init__(
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\tune\trainable\trainable.py", line 161, in __init__
+    self.setup(copy.deepcopy(self.config))
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\util\tracing\tracing_helper.py", line 467, in _resume_span
+    return method(self, *_args, **_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\rllib\algorithms\algorithm.py", line 638, in setup
+    self.workers = WorkerSet(
+                   ^^^^^^^^^^
+  File "C:\Users\Anastasia\anaconda3\Lib\site-packages\ray\rllib\evaluation\worker_set.py", line 181, in __init__
+    raise e.args[0].args[2]
+AttributeError: 'function' object has no attribute 'reset'
