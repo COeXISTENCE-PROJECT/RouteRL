@@ -217,7 +217,7 @@ class Simulator:
     def run_simulation_iteration(self, joint_action):
 
 
-        print("joint_action is: ", joint_action)
+        print("joint_action is: ", joint_action, "\n")
 
         # Start SUMO with TraCI
         sumo_binary = self.sumo_type
@@ -233,7 +233,6 @@ class Simulator:
             if(i == 0):
 
                 for agent, action in joint_action.items():
-                    print(f"{agent}'s action: {action}")
                     vehicle_id = f"{agent}"
                     traci.vehicle.add(vehicle_id, f'{action}')
 

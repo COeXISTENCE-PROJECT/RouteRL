@@ -15,6 +15,10 @@ from services import get_json
 import functools
 from ray.rllib.env.multi_agent_env import MultiAgentEnv
 from ray.rllib.env.vector_env import VectorEnv
+import torch.nn as nn
+import torch.optim as optim
+from supersuit import color_reduction_v0, frame_stack_v1, resize_v1
+from torch.distributions.categorical import Categorical
 
 
 
@@ -96,7 +100,6 @@ class TrafficEnvironment(ParallelEnv):
 
         self.agent_selection = 0
         
-
         sumo_df = self.simulator.run_simulation_iteration(joint_action)
         costs = sumo_df['cost'].values
 
@@ -116,14 +119,12 @@ class TrafficEnvironment(ParallelEnv):
             terminated: {True} for terminated in self.possible_agents
         }
 
-        #terminated['__all__'] = True
-
         truncated = {
             truncated: {False} for truncated in self.possible_agents
         }
 
         info = {a: {} for a in self.agents} ##to provlima den einai edo alla sto set_last_info
-        print("\n\n\n\n\n\n", info, "\n\n\n\n\n\n")
+        #print("\n\n\n\n\n\n", info, "\n\n\n\n\n\n")
 
         if any(terminated.values()) or all(truncated.values()):
             self.agents = []
@@ -149,4 +150,4 @@ class TrafficEnvironment(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
-        return gym.spaces.Discrete(3)
+        return Discrete(3)

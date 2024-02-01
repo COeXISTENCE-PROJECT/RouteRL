@@ -11,8 +11,6 @@ from services import get_json
 from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.env_checker import check_env
-
-
 import ray
 from ray import tune
 from ray.rllib.algorithms.ppo import PPOConfig
@@ -21,7 +19,7 @@ from ray.tune.registry import register_env
 
 from pettingzoo.test import parallel_api_test
 from pettingzoo.test import seed_test, parallel_seed_test
-
+import numpy as np
 import os
 
 import ray
@@ -48,6 +46,12 @@ from torch import nn
 import gymnasium as gym
 from pettingzoo.utils.conversions import parallel_wrapper_fn
 from pettingzoo.test import test_save_obs
+from torch.distributions.categorical import Categorical
+import torch.optim as optim
+from stable_baselines3 import PPO
+from stable_baselines3.ppo import MlpPolicy
+import supersuit as ss
+import glob
 
 torch, nn = try_import_torch()
 
@@ -56,9 +60,7 @@ torch, nn = try_import_torch()
 confirm_env_variable(kc.SUMO_HOME, append="tools")
 params = get_json(kc.PARAMS_PATH)
 
-class TorchMaskedActions(DQNTorchModel):
-    """PyTorch version of above ParametricActionsModel."""
-
+"""class TorchMaskedActions(DQNTorchModel):
     def __init__(
         self,
         obs_space: Box,
@@ -105,7 +107,45 @@ class TorchMaskedActions(DQNTorchModel):
         return action_logits + inf_mask, state
 
     def value_function(self):
-        return self.action_embed_model.value_function()
+        return self.action_embed_model.value_function()"""
+
+### CleanRL
+class Agent(nn.Module):
+    def __init__(self, obs_size, n_actions, hidden_size=128):
+        super().__init__()
+
+        self.network = nn.Sequential(
+            self._layer_init(nn.Linear(obs_size, 32)),
+            nn.ReLU(),
+            self._layer_init(nn.Linear(32, 64)),
+            nn.ReLU(),
+            self._layer_init(nn.Linear(64, 128)),
+            nn.ReLU(),
+        )
+        self.actor = self._layer_init(nn.Linear(128, n_actions), std=0.01)
+        self.critic = self._layer_init(nn.Linear(128, 1))
+
+
+    def _layer_init(self, layer, std=np.sqrt(2), bias_const=0.0):
+        torch.nn.init.orthogonal_(layer.weight, std)
+        torch.nn.init.constant_(layer.bias, bias_const)
+        return layer
+
+    def get_value(self, x):
+        return self.critic(self.network(x))
+
+    def get_action_and_value(self, x, action=None):      
+        hidden = self.network(x)
+        logits = self.actor(hidden)
+        probs = Categorical(logits=logits)
+
+        if action is None:
+            action = probs.sample()
+
+        return action, probs.log_prob(action), probs.entropy(), self.critic(hidden)
+        
+
+
 
 def main():
 
@@ -114,6 +154,76 @@ def main():
     #agents = create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS], env.calculate_free_flow_times())
 
     parallel_api_test(env, num_cycles=1_000_000)
+
+
+    ##### CleanRL
+    device = "cpu"
+    num_agents = len(env.possible_agents)
+    num_actions = env.action_space(env.possible_agents[0]).n
+    observation_size = env.observation_space(env.possible_agents[0]).shape
+
+
+    #LEARNER SETUP 
+    agent = Agent(0, num_actions).to(device)
+    optimizer = optim.Adam(agent.parameters(), lr=0.001, eps=1e-5)
+
+    print(agent, optimizer)
+
+    #ALGO LOGIC: EPISODE STORAGE
+    end_step = 0
+    max_cycles = 125
+    total_episodic_return = 0
+    rb_obs = torch.zeros((max_cycles, num_agents)).to(device)
+    rb_actions = torch.zeros((max_cycles, num_agents)).to(device)
+    rb_logprobs = torch.zeros((max_cycles, num_agents)).to(device)
+    rb_rewards = torch.zeros((max_cycles, num_agents)).to(device)
+    rb_terms = torch.zeros((max_cycles, num_agents)).to(device)
+    rb_values = torch.zeros((max_cycles, num_agents)).to(device)
+
+    print("\nGoing towards training logic\n")
+    #TRAINING LOGIC
+    # train for n number of episodes
+    total_episodes = 2
+    for episode in range(total_episodes):
+        # collect an episode
+        with torch.no_grad():
+            # collect observations and convert to batch of torch tensors
+            next_obs, info = env.reset(seed=None)
+            # reset the episodic return
+            total_episodic_return = 0
+
+            print("\n Going inside the loop\n")
+            # each episode has num_steps
+            for step in range(0, max_cycles):
+                # rollover the observation
+                obs = next_obs #batchify_obs(next_obs, device)
+
+                # get action from the agent
+                print(obs)
+                x = torch.tensor([[1.0, 2.0, 3.0, 4.0]])
+                actions, logprobs, _, values = agent.get_action_and_value(x)
+
+                # execute the environment and log data
+                next_obs, rewards, terms, truncs, infos = env.step(actions)
+
+                # add to episode storage
+                rb_obs[step] = obs
+                rb_rewards[step] = rewards
+                rb_terms[step] = terms
+                rb_actions[step] = actions
+                rb_logprobs[step] = logprobs
+                rb_values[step] = values.flatten()
+
+                # compute episodic return
+                total_episodic_return += rb_rewards[step].cpu().numpy()
+                print("total_episodic return is: ", total_episodic_return)
+
+                # if we reach termination or truncation, end
+                if any([terms[a] for a in terms]) or any([truncs[a] for a in truncs]):
+                    end_step = step
+                    break
+
+
 
     """ray.init()
 
