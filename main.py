@@ -52,6 +52,11 @@ from stable_baselines3 import PPO
 from stable_baselines3.ppo import MlpPolicy
 import supersuit as ss
 import glob
+from pettingzoo.utils.conversions import parallel_wrapper_fn
+from pettingzoo.sisl import waterworld_v4
+from pettingzoo.utils import parallel_to_aec, wrappers
+import multiprocessing
+
 
 torch, nn = try_import_torch()
 
@@ -143,9 +148,85 @@ class Agent(nn.Module):
             action = probs.sample()
 
         return action, probs.log_prob(action), probs.entropy(), self.critic(hidden)
-        
 
 
+
+### Stable baselines
+def train_butterfly_supersuit(
+    env, steps: int = 10_000, seed: int | None = 0, **env_kwargs):
+    # Train a single model to play as each agent in a cooperative Parallel environment
+    print("\n\n\n Inside train_butterfly\n\n\n")
+    #env = env_fn.parallel_env(**env_kwargs)
+
+    #env.reset(seed=seed)
+
+    print(f"Starting training on {str(env.metadata['name'])}.")
+
+    env = ss.pettingzoo_env_to_vec_env_v1(env)
+
+    print("\n\n\nbefore concat\n\n\n")
+
+    env = ss.concat_vec_envs_v1(env, 4, num_cpus=0, base_class="stable_baselines3")
+
+    model = PPO(
+        "MlpPolicy",
+        env,
+        verbose=3,
+        learning_rate=1e-3,
+    )
+
+    print("\n\n\n after model = PPO\n\n\n")
+
+
+    model.learn(total_timesteps=10)
+
+    print(f"Finished training on {str(env.unwrapped.metadata['name'])}.")
+
+    env.close()
+
+
+def eval(env_fn, num_games: int = 100, render_mode: str | None = None, **env_kwargs):
+    # Evaluate a trained agent vs a random agent
+    env = env_fn.env(render_mode=render_mode, **env_kwargs)
+
+    print(
+        f"\nStarting evaluation on {str(env.metadata['name'])} (num_games={num_games}, render_mode={render_mode})"
+    )
+
+    try:
+        latest_policy = max(
+            glob.glob(f"{env.metadata['name']}*.zip"), key=os.path.getctime
+        )
+    except ValueError:
+        print("Policy not found.")
+        exit(0)
+
+    model = PPO.load(latest_policy)
+
+    rewards = {agent: 0 for agent in env.possible_agents}
+
+    # Note: We train using the Parallel API but evaluate using the AEC API
+    # SB3 models are designed for single-agent settings, we get around this by using he same model for every agent
+    for i in range(num_games):
+        env.reset(seed=i)
+
+        for agent in env.agent_iter():
+            obs, reward, termination, truncation, info = env.last()
+
+            for a in env.agents:
+                rewards[a] += env.rewards[a]
+            if termination or truncation:
+                break
+            else:
+                act = model.predict(obs, deterministic=True)[0]
+
+            env.step(act)
+    env.close()
+
+    avg_reward = sum(rewards.values()) / len(rewards.values())
+    print("Rewards: ", rewards)
+    print(f"Avg reward: {avg_reward}")
+    return avg_reward
 
 def main():
 
@@ -154,10 +235,23 @@ def main():
     #agents = create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS], env.calculate_free_flow_times())
 
     parallel_api_test(env, num_cycles=1_000_000)
+    #parallel_env = parallel_wrapper_fn(env)
+    #parallel_env = env.parallel_env(render_mode="human")
+
+    env_kwargs = {}
+
+    train_butterfly_supersuit(env, steps=100, seed=0, **env_kwargs)
+
+    """model = PPO(
+        'MlpPolicy',
+        env,
+        verbose=3,
+        batch_size=256,
+    )"""
 
 
     ##### CleanRL
-    device = "cpu"
+    """device = "cpu"
     num_agents = len(env.possible_agents)
     num_actions = env.action_space(env.possible_agents[0]).n
     observation_size = env.observation_space(env.possible_agents[0]).shape
@@ -221,7 +315,7 @@ def main():
                 # if we reach termination or truncation, end
                 if any([terms[a] for a in terms]) or any([truncs[a] for a in truncs]):
                     end_step = step
-                    break
+                    break"""
 
 
 

@@ -35,6 +35,11 @@ from agent import Agent
 
 ## link https://pettingzoo.farama.org/tutorials/custom_environment/1-project-structure/
 class TrafficEnvironment(ParallelEnv):
+    metadata = {
+        "render_modes": ["human"],
+        "name": "traffic_environment",
+        "is_parallelizable": True,
+    }
 
     def __init__(self, simulation_parameters, render_mode=None):
         self.simulator = Simulator(simulation_parameters)
@@ -86,7 +91,7 @@ class TrafficEnvironment(ParallelEnv):
         self.agents = copy(self.possible_agents)
 
         observations = {
-            a: (0) for a in self.agents
+            a: (Box(low=0, high=1, shape=(1,), dtype=float).sample()) for a in self.agents
         }
 
         # Get dummy infos. Necessary for proper parallel_to_aec conversion
@@ -103,6 +108,8 @@ class TrafficEnvironment(ParallelEnv):
         sumo_df = self.simulator.run_simulation_iteration(joint_action)
         costs = sumo_df['cost'].values
 
+        print("costs is: ", costs, "\n\n")
+
         rewards = {}
 
         # Iterate over the possible_agents list
@@ -111,8 +118,10 @@ class TrafficEnvironment(ParallelEnv):
             # If you want to assign the same reward to all agents, you can replace `costs[i]` with a single value
             rewards[agent_name] = costs[len(rewards)] if len(rewards) < len(costs) else None
 
+        print("typeof rewards", type(rewards), "\n\n")
+
         sample_observation = {
-            a: () for a in self.possible_agents
+            a: (Box(low=0, high=1, shape=(1,), dtype=float).sample()) for a in self.possible_agents
         }
 
         terminated = {
@@ -120,17 +129,17 @@ class TrafficEnvironment(ParallelEnv):
         }
 
         truncated = {
-            truncated: {False} for truncated in self.possible_agents
+            truncated: {True} for truncated in self.possible_agents
         }
 
-        info = {a: {} for a in self.agents} ##to provlima den einai edo alla sto set_last_info
-        #print("\n\n\n\n\n\n", info, "\n\n\n\n\n\n")
+        info = {a: {} for a in self.agents} 
 
         if any(terminated.values()) or all(truncated.values()):
             self.agents = []
 
+        print("\n\nbefore the return\n\n")
 
-        return sample_observation, rewards, terminated, truncated, info ##for rllib not the truncated
+        return [sample_observation, rewards, terminated, truncated, info] ##for rllib not the truncated
     
 
     def plot_rewards(self):
