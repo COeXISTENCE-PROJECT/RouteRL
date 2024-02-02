@@ -97,6 +97,9 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
 
 def main():
 
+    Sumo_sim=Sumo(params)
+    Sumo_sim.Sumo_start()
+
     env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])
     
     parallel_api_test(env, num_cycles=1_000_000)
@@ -105,6 +108,6 @@ def main():
     env_kwargs = {}
     train_butterfly_supersuit(env, steps=100, seed=0, **env_kwargs)    
 
-    print("Going to eval")    
+    Sumo_sim.Sumo_stop()  
 
 main()
