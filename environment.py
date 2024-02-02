@@ -13,14 +13,7 @@ from services import create_agent_objects
 from services import confirm_env_variable
 from services import get_json
 import functools
-from ray.rllib.env.multi_agent_env import MultiAgentEnv
-from ray.rllib.env.vector_env import VectorEnv
-import torch.nn as nn
-import torch.optim as optim
-from supersuit import color_reduction_v0, frame_stack_v1, resize_v1
 from torch.distributions.categorical import Categorical
-
-
 
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
@@ -30,7 +23,6 @@ params = get_json(kc.PARAMS_PATH)
 
 from keychain import Keychain as kc
 from simulator import Simulator
-from agent import Agent
 
 
 ## link https://pettingzoo.farama.org/tutorials/custom_environment/1-project-structure/
@@ -46,8 +38,8 @@ class TrafficEnvironment(ParallelEnv):
         self.reward_table = []
         print("[SUCCESS] Environment initiated!")
 
-        self.possible_agents = ["1", "2"] 
-        #expanded_agents = [str(i) for i in range(1, 601)]
+        #self.possible_agents = ["1", "2"] 
+        self.possible_agents = [str(i) for i in range(1, 601)]
 
         self.agents = self.possible_agents
 
@@ -59,16 +51,16 @@ class TrafficEnvironment(ParallelEnv):
             agent: gym.spaces.Discrete(3) for agent in self.possible_agents
         }
 
-        self.start_times = [0, 6]
+        ### Create start_time table
+        step_size = 6
 
-        self.agent_name_mapping = dict(
-            zip(self.possible_agents, list(range(len(self.possible_agents))))
-        )
+        self.start_times = [i * step_size for i in range(len(self.possible_agents))]
 
-        #self.action_space = gym.spaces.Space
-        self.agent_selection = 0 ## in the pistoball.py it is a number
+        #self.start_times = [0, 6]
 
         self.render_mode = render_mode
+
+
 
     def observe(self, agent):
         """
@@ -84,7 +76,8 @@ class TrafficEnvironment(ParallelEnv):
         or any other environment data which should not be kept around after the
         user is no longer using the environment.
         """
-        pass
+        print("Reward table is: ", self.reward_table)
+        self.plot_rewards()
 
 
     def calculate_free_flow_times(self):
@@ -100,10 +93,9 @@ class TrafficEnvironment(ParallelEnv):
             a: Box(low=0, high=1, shape=(1,), dtype=float).sample() for a in self.agents
         }
 
-        # Get dummy infos. Necessary for proper parallel_to_aec conversion
         infos = {a: {}  for a in self.agents}
 
-        return observations, infos # for the parallel_api_test [observations, infos]
+        return observations, infos
 
 
 
@@ -112,23 +104,32 @@ class TrafficEnvironment(ParallelEnv):
         if not joint_action:
             self.agents = []
             return {}, {}, {}, {}, {}
-
-        #self.agent_selection = 0
         
+
+        ### Interact with SUMO to get travel times
         sumo_df = self.simulator.run_simulation_iteration(joint_action, self.start_times)
         
         costs = sumo_df['cost'].values
 
-        print("\n\ncosts are: ", costs, "\n\n")
 
+        ### Individual reward to each agent
         rewards = {}
 
-        # Iterate over the possible_agents list
-        for agent_name in self.possible_agents:
-            # Assign the corresponding reward for each agent
-            # If you want to assign the same reward to all agents, you can replace `costs[i]` with a single value
-            rewards[agent_name] = costs[len(rewards)] if len(rewards) < len(costs) else None
+        """for agent_name in self.possible_agents:
+            rewards[agent_name] = costs[len(rewards)] if len(rewards) < len(costs) else None"""
 
+
+        ### Joint reward for all agents
+        joint_reward = self.calculate_rewards(sumo_df)
+
+        print("\n\njoint_reward is: ", joint_reward, "\n\n")
+
+        for agent_name in self.possible_agents:
+            rewards[agent_name] = joint_reward
+
+        #print("\n\n", rewards, "\n\n")
+
+        ### Return variables
         sample_observation = {
             a: (Box(low=0, high=1, shape=(1,), dtype=float).sample()) for a in self.possible_agents
         }
@@ -146,18 +147,24 @@ class TrafficEnvironment(ParallelEnv):
         if any(terminated.values()) or all(truncated.values()):
             self.agents = []
 
-        return [sample_observation, rewards, terminated, truncated, info] ##for rllib not the truncated
+        return sample_observation, rewards, terminated, truncated, info
     
 
     def plot_rewards(self):
-        plt.plot(self.reward_table)
-        plt.xlabel('Episode')
-        plt.ylabel('Reward')
-        plt.title('Reward Table Over Episodes')
+        plt.figure(figsize=(10, 6)) 
+        plt.plot(self.reward_table, color='blue', linestyle='-', marker='o', markersize=4)  
+        plt.xlabel('Episode', fontsize=12) 
+        plt.ylabel('Reward', fontsize=12) 
+        plt.title('Reward Table Over Episodes', fontsize=14)  
+        plt.grid(True, linestyle='--', alpha=0.7)  
+        plt.tight_layout() 
         plt.show()
 
-    def create_agents(self, agents):
-        self.possible_agents = agents
+    def calculate_rewards(self, sumo_df):
+        average_reward = -1 * sumo_df['cost'].mean()
+        self.reward_table.append(average_reward)
+        return average_reward
+
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
