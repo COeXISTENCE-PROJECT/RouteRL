@@ -37,7 +37,7 @@ from agent import Agent
 class TrafficEnvironment(ParallelEnv):
     metadata = {
         "render_modes": ["human"],
-        "name": "traffic_environment",
+        "name": "TrafficEnvironment",
         "is_parallelizable": True,
     }
 
@@ -57,6 +57,10 @@ class TrafficEnvironment(ParallelEnv):
             agent: gym.spaces.Discrete(3) for agent in self.possible_agents
         }
 
+        self.agent_name_mapping = dict(
+            zip(self.possible_agents, list(range(len(self.possible_agents))))
+        )
+
         #self.action_space = gym.spaces.Space
         self.agent_selection = 0 ## in the pistoball.py it is a number
 
@@ -68,9 +72,7 @@ class TrafficEnvironment(ParallelEnv):
         should return a sane observation (though not necessarily the most up to date possible)
         at any time after reset() is called.
         """
-        # observation of one agent is the previous state of the other
-        #print("\n\n\n\nself.observation_spaces[agent]", self.observation_spaces.get(agent), "\n\n\n\n\n")
-        return 0 #np.array(self.observation_spaces[agent])
+        return Box(low=0, high=1, shape=(1,), dtype=float).sample() 
 
     def close(self):
         """
@@ -91,19 +93,23 @@ class TrafficEnvironment(ParallelEnv):
         self.agents = copy(self.possible_agents)
 
         observations = {
-            a: (Box(low=0, high=1, shape=(1,), dtype=float).sample()) for a in self.agents
+            a: Box(low=0, high=1, shape=(1,), dtype=float).sample() for a in self.agents
         }
 
         # Get dummy infos. Necessary for proper parallel_to_aec conversion
         infos = {a: {}  for a in self.agents}
 
-        return [observations, infos] # for the parallel_api_test [observations, infos]
+        return observations, infos # for the parallel_api_test [observations, infos]
 
 
 
     def step(self, joint_action):
 
-        self.agent_selection = 0
+        if not joint_action:
+            self.agents = []
+            return {}, {}, {}, {}, {}
+
+        #self.agent_selection = 0
         
         sumo_df = self.simulator.run_simulation_iteration(joint_action)
         costs = sumo_df['cost'].values
@@ -118,26 +124,22 @@ class TrafficEnvironment(ParallelEnv):
             # If you want to assign the same reward to all agents, you can replace `costs[i]` with a single value
             rewards[agent_name] = costs[len(rewards)] if len(rewards) < len(costs) else None
 
-        print("typeof rewards", type(rewards), "\n\n")
-
         sample_observation = {
             a: (Box(low=0, high=1, shape=(1,), dtype=float).sample()) for a in self.possible_agents
         }
 
         terminated = {
-            terminated: {True} for terminated in self.possible_agents
+            terminated: True for terminated in self.possible_agents
         }
 
         truncated = {
-            truncated: {True} for truncated in self.possible_agents
+            truncated: 1 for truncated in self.possible_agents
         }
 
         info = {a: {} for a in self.agents} 
 
         if any(terminated.values()) or all(truncated.values()):
             self.agents = []
-
-        print("\n\nbefore the return\n\n")
 
         return [sample_observation, rewards, terminated, truncated, info] ##for rllib not the truncated
     
