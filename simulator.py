@@ -214,34 +214,53 @@ class Simulator:
         return sorted_rows
     
 
-    def run_simulation_iteration(self, joint_action):
+    def run_simulation_iteration(self, joint_action, start_times):
 
+        agents_info = []
 
-        print("joint_action is: ", joint_action, "\n")
+        # Create a dataframe with id, action and start_time
+        for agent, action in joint_action.items():
 
-        # Start SUMO with TraCI
-        sumo_binary = self.sumo_type
-        sumo_cmd = [sumo_binary, "-c", self.config]
+            action_index = list(joint_action.keys()).index(agent)
+            
+            agents_info.append({'id': agent, 'action': action, 'start_time': start_times[action_index]})
 
-        traci.start(sumo_cmd)
-        i = 0
+        
+        agents_info = pd.DataFrame(agents_info)
+        depart_id=[]
+        depart_cost=[]
 
         # Simulation loop
         for timesteps in range(self.simulation_length):
             traci.simulationStep()
 
-            if(i == 0):
+            if timesteps==self.simulation_length-1:
+                remove=traci.vehicle.getIDList()
+                routes=traci.route.getIDList()
 
-                for agent, action in joint_action.items():
-                    vehicle_id = f"{agent}"
-                    traci.vehicle.add(vehicle_id, f'{action}')
+                for route in routes:
+                        traci.simulation.clearPending(routeID=route)
 
-                i = 1
+                for i in remove:
+                        traci.vehicle.remove(i,3)
 
-        traci.close()
-                
-        duration = pd.read_xml('Network_and_config/tripinfo.xml').duration
-        reward = duration.reset_index().rename(columns={"duration":"cost"})
+            departed=traci.simulation.getArrivedIDList()
+            for value in departed:
+                if value:
+                    value_as_int = int(value)
+                    depart_id.append(value_as_int)
+                    start = agents_info[agents_info.id==str(value_as_int)].start_time.values
+                    depart_cost.append(timesteps - start)
+
+
+            for _, row in agents_info[agents_info["start_time"] == timesteps].iterrows():
+                action = row["action"]
+                vehicle_id = f"{row['id']}"
+                traci.vehicle.add(vehicle_id, f'{action}')
+
+        depart=pd.DataFrame(depart_id)
+        reward=pd.merge(depart,pd.DataFrame(depart_cost),right_index=True,left_index=True)
+        reward=reward.rename(columns={'0_x':'car_id','0_y':'cost'})
 
         return reward
     

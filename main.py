@@ -1,9 +1,5 @@
 from environment import TrafficEnvironment
-from MultiAgentWrapper import MultiAgentEnvWrapper
-
-#import gymnasium as gym
 from keychain import Keychain as kc
-import os
 from services import Trainer
 from services import create_agent_objects
 from services import confirm_env_variable
@@ -11,46 +7,15 @@ from services import get_json
 from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.env_checker import check_env
-import ray
-from ray import tune
-from ray.rllib.algorithms.ppo import PPOConfig
-from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
-from ray.tune.registry import register_env
-
 from pettingzoo.test import parallel_api_test
-from pettingzoo.test import seed_test, parallel_seed_test
 import numpy as np
 import os
-
-import ray
 from gymnasium.spaces import Box, Discrete
-from ray import tune
-from ray.rllib.algorithms.dqn import DQNConfig
-from ray.rllib.algorithms.dqn.dqn_torch_model import DQNTorchModel
-from ray.rllib.env import PettingZooEnv
-from ray.rllib.models import ModelCatalog
-from ray.rllib.models.torch.fcnet import FullyConnectedNetwork as TorchFC
-from ray.rllib.utils.framework import try_import_torch
-from ray.rllib.utils.torch_utils import FLOAT_MAX
-from ray.tune.registry import register_env
-
-from pettingzoo.classic import leduc_holdem_v4
-
-from ray.rllib.algorithms.ppo import PPOConfig
-from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
-from ray.rllib.models import ModelCatalog
-from ray.rllib.models.torch.torch_modelv2 import TorchModelV2
-from ray.tune.registry import register_env
-from ray.rllib.policy.policy import PolicySpec
-from torch import nn
 import gymnasium as gym
-from pettingzoo.utils.conversions import parallel_wrapper_fn
 from pettingzoo.test import test_save_obs
-from torch.distributions.categorical import Categorical
-import torch.optim as optim
 from stable_baselines3 import PPO
-from stable_baselines3.ppo import MlpPolicy
 import supersuit as ss
+from Sumo_controller import Sumo
 
 confirm_env_variable(kc.SUMO_HOME, append="tools")
 params = get_json(kc.PARAMS_PATH)

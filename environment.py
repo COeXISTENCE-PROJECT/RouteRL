@@ -46,7 +46,9 @@ class TrafficEnvironment(ParallelEnv):
         self.reward_table = []
         print("[SUCCESS] Environment initiated!")
 
-        self.possible_agents = ["agent1", "agent2"] #create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS], 0)
+        self.possible_agents = ["1", "2"] 
+        #expanded_agents = [str(i) for i in range(1, 601)]
+
         self.agents = self.possible_agents
 
         self.observation_spaces = {
@@ -56,6 +58,8 @@ class TrafficEnvironment(ParallelEnv):
         self.action_spaces = {
             agent: gym.spaces.Discrete(3) for agent in self.possible_agents
         }
+
+        self.start_times = [0, 6]
 
         self.agent_name_mapping = dict(
             zip(self.possible_agents, list(range(len(self.possible_agents))))
@@ -111,10 +115,11 @@ class TrafficEnvironment(ParallelEnv):
 
         #self.agent_selection = 0
         
-        sumo_df = self.simulator.run_simulation_iteration(joint_action)
+        sumo_df = self.simulator.run_simulation_iteration(joint_action, self.start_times)
+        
         costs = sumo_df['cost'].values
 
-        print("costs is: ", costs, "\n\n")
+        print("\n\ncosts are: ", costs, "\n\n")
 
         rewards = {}
 
