@@ -5,6 +5,10 @@ import time
 from keychain import Keychain as kc
 from services.utils import make_dir, show_progress, show_progress_bar
 
+############ zoltan's request [1]
+from agent import HumanAgent
+############
+
 
 class Trainer:
 
@@ -17,6 +21,10 @@ class Trainer:
     def train(self, env, agents):
 
         start_time = time.time()
+
+        ############ zoltan's request [2]
+        one_human_cost_log = {key:list() for key in ['episode', 'cost0', 'cost1', 'cost2']}
+        ############
 
         for ep in range(self.num_episodes):    # Until we simulate num_episode episodes
 
@@ -49,11 +57,26 @@ class Trainer:
                     joint_action_df.to_csv(make_dir(kc.RECORDS_PATH, kc.ACTIONS_LOGS_PATH, f"actions_ep%d.csv" % (ep)), index = False)
                 ##########
 
+                ############ zoltan's request [3]
+                for agent in agents:
+                    if isinstance(agent, HumanAgent):
+                        one_human_cost_log['episode'].append(ep)
+                        one_human_cost_log['cost0'].append(agent.cost[0])
+                        one_human_cost_log['cost1'].append(agent.cost[1])
+                        one_human_cost_log['cost2'].append(agent.cost[2])
+                        break
+                ############
+
                 state = next_state
 
             show_progress("TRAINING", start_time, ep+1, self.num_episodes, end_line='\n')
 
         print("\n[COMPLETE] Training completed in: %s" % (time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(time.time() - start_time))))
+
+        ############ zoltan's request [4]
+        one_human_cost_log_df = pd.DataFrame(one_human_cost_log)
+        print(one_human_cost_log_df)
+        ############
 
         return agents
     
