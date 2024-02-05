@@ -81,6 +81,7 @@ class Trainer:
 
         ############ zoltan's request [4/4]
         one_human_cost_log_df = pd.DataFrame(one_human_cost_log)
+        one_human_cost_log_df.to_csv('one_reward.csv',index=False)
         print(one_human_cost_log_df)
         ############
 
