@@ -80,7 +80,7 @@ class Trainer:
 
         ############ zoltan's request [4/4]
         one_human_cost_log_df = pd.DataFrame(one_human_cost_log)
-        df_to_prettytable(one_human_cost_log_df, "HUMAN #{human_to_watch.id} EXPERIENCE")
+        df_to_prettytable(one_human_cost_log_df, f"HUMAN #{human_to_watch.id} EXPERIENCE")
         ############
 
         return agents
