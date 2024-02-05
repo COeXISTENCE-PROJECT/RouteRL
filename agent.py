@@ -92,7 +92,7 @@ class MachineAgent(Agent):
         if np.random.rand() < self.epsilon:    # Explore
             return np.random.choice(self.action_space_size)
         else:    # Exploit
-            return np.argmax(self.q_table)
+            return np.argmin(self.q_table)
                 
 
     def learn(self, action, reward, state, next_state):

@@ -81,10 +81,9 @@ class Trainer:
         return agents
     
 
-    def learn_agent(agent, joint_action_df, joint_reward_df, state, next_state):
-        print('test', agent)
-        action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION]
-        reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
+    def learn_agent(self, agent, joint_action_df, joint_reward_df, state, next_state):
+        action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION].item()
+        reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD].item()
         agent.learn(action, reward, state, next_state)
     
 

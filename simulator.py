@@ -63,7 +63,7 @@ class Simulator:
             print("""<routes>""", file=rou)
             for od, paths in routes.items():
                     for idx, path in enumerate(paths):
-                        print(f'<route id="{od[0]}_{od[0]}_{idx}" edges="',file=rou)
+                        print(f'<route id="{od[0]}_{od[1]}_{idx}" edges="',file=rou)
                         print(list_to_string(path,separator=' '),file=rou)
                         print('" />',file=rou)
             print("</routes>", file=rou)
@@ -247,7 +247,7 @@ class Simulator:
                 dest=row['destination']
                 traci.vehicle.add(vehicle_id, f'{ori}_{dest}_{action}')
                 self.route_counter.append(f'{ori}_{dest}_{action}')
-
+        
 
         reward = pd.merge(pd.DataFrame(depart_id),pd.DataFrame(depart_time),right_index=True,left_index=True)
         reward = reward.rename(columns={'0_x':'car_id','0_y':'depart_time'})
