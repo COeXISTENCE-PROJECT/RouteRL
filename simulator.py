@@ -44,7 +44,7 @@ class Simulator:
         # We keep routes as dict {(origin_id, dest_id) : [list of nodes]}
         # Such as ((0,0) : [list of nodes]) and ((1,0) : [list of nodes])
         # In list of nodes, we use SUMO simulation ids of nodes
-        self.routes = self.create_routes( self.origins, self.destinations)
+        self.routes = self.create_routes(self.origins, self.destinations)
         self.save_paths(self.routes)
 
         
@@ -66,7 +66,6 @@ class Simulator:
                         print(f'<route id="{od[0]}_{od[0]}_{idx}" edges="',file=rou)
                         print(list_to_string(path,separator=' '),file=rou)
                         print('" />',file=rou)
-                        i+=1
             print("</routes>", file=rou)
         
 
