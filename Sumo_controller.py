@@ -1,7 +1,7 @@
 from keychain import Keychain as kc
 import traci
 
-class Sumo:
+class Sumo_controll:
 
     def __init__(self,params):
         self.sumo_type = params[kc.SIMULATION_PARAMETERS][kc.SUMO_TYPE]

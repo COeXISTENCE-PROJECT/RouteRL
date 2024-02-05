@@ -37,12 +37,18 @@ class Simulator:
         # The network is build on a OSM map
 
         self.routes = dict()
+
+        self.names=[]
         
         self.origin1, self.origin2 = params[kc.ORIGIN1], params[kc.ORIGIN2]
         self.destination1, self.destination2 = params[kc.DESTINATION1], params[kc.DESTINATION2]
 
-        origins = [self.origin1, self.origin2]
-        destinations = [self.destination1, self.destination2]
+        #origins = [self.origin1, self.origin2]
+        #destinations = [self.destination1, self.destination2]
+        origins=params[kc.ORIGIN]
+        destinations=params[kc.DESTINATION]
+
+        self.route_counter=[]
 
         ### case that all the origins are connected with all the destinations
         """
@@ -58,14 +64,19 @@ class Simulator:
             # Call find_best_paths for each combination of origin and destination
             paths = self.find_best_paths(origin, destination, 'time')
             # Store the result in the self.routes dictionary
-            self.routes[(origin, destination)] = paths   
-        self.save_paths(self.routes)
+            self.routes[(origin,destination)] = paths   
+        self.save_paths(self.routes, params)
 
         
-    def save_paths(self, routes):
+    def save_paths(self, routes, params):
 
         path_attributes = ["origin", "destination", "path"]
         path_save_path = "paths.csv"
+        
+        origins=params[kc.ORIGIN]
+        destinations=params[kc.DESTINATION]
+        origin_df=pd.DataFrame(origins, columns=['origins'])
+        destination_df=pd.DataFrame(destinations, columns=['destinations'])
 
         paths_df = pd.DataFrame(columns=path_attributes)
 
@@ -76,10 +87,16 @@ class Simulator:
         with open("Network_and_config/route.rou.xml", "w") as rou:
             print("""<routes>""", file=rou)
             for od, paths in routes.items():
+                    list(od)[0]
+                    ori=origin_df[origin_df['origins']==list(od)[0]].index.values[0]
+                    dest=destination_df[destination_df['destinations']==list(od)[1]].index.values[0]
+                    i=0
                     for path in paths:
-                        print(f'<route id="{1}" edges="',file=rou)
+                        print(f'<route id="{ori}_{dest}_{i}" edges="',file=rou)
+                        self.names.append(f'{ori}_{dest}_{i}')
                         print(list_to_string(path,separator=' '),file=rou)
                         print('" />',file=rou)
+                        i+=1
             print("</routes>", file=rou)
 
         paths_df.to_csv(path_save_path, index=True)
@@ -103,7 +120,8 @@ class Simulator:
                         if x[route][i] == y[k] and x[route][i + 1] == z[k]:
                             rou.append(l[k])
 
-            length.append(sum(rou))
+            #length.append(sum(rou))
+            length.append(0)
 
         return length
     
@@ -216,17 +234,18 @@ class Simulator:
 
     def run_simulation_iteration(self, joint_action):
 
-        depart_id=[]
-        depart_cost=[]
+        depart_id = []
+        depart_cost = []
+        self.route_counter = []
 
         sorted_rows_based_on_start_time = self.priority_queue_creation(joint_action)
         sorted_df = pd.DataFrame(sorted_rows_based_on_start_time, columns=pd.DataFrame(joint_action).columns)
 
         # Simulation loop
-        for timesteps in range(self.simulation_length):
+        for timestep in range(self.simulation_length):
             traci.simulationStep()
         
-            if timesteps==self.simulation_length-1:
+            if timestep==self.simulation_length-1:
                 remove=traci.vehicle.getIDList()
                 routes=traci.route.getIDList()
 
@@ -236,18 +255,21 @@ class Simulator:
                     traci.vehicle.remove(i,3)
 
 
-            departed=traci.simulation.getArrivedIDList()
+            departed=traci.simulation.getArrivedIDList()  # just collect this and time and calculate at the end
             for value in departed:
                 if value:
                     value_as_int = int(value)
                     depart_id.append(value_as_int)
                     start=sorted_df[sorted_df.id==value_as_int].start_time.values
-                    depart_cost.append(timesteps-start)
+                    depart_cost.append((timestep-start)/60)
 
-            for _, row in sorted_df[sorted_df["start_time"] == timesteps].iterrows():
+            for _, row in sorted_df[sorted_df["start_time"] == timestep].iterrows():
                 action = row["action"]
                 vehicle_id = f"{row['id']}"
-                traci.vehicle.add(vehicle_id, f'{action}')
+                ori=row['origin']
+                dest=row['destination']
+                traci.vehicle.add(vehicle_id, f'{ori}_{dest}_{action}')
+                self.route_counter.append(f'{ori}_{dest}_{action}')
 
 
         depart=pd.DataFrame(depart_id)

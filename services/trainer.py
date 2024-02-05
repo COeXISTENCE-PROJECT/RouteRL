@@ -15,6 +15,7 @@ class Trainer:
 
 
     def train(self, env, agents):
+
         start_time = time.time()
 
         for ep in range(self.num_episodes):    # Until we simulate num_episode episodes
@@ -33,15 +34,14 @@ class Trainer:
                 joint_action_df = pd.DataFrame(joint_action)
                 joint_reward_df, next_state, done = env.step(joint_action_df)
 
-                with concurrent.futures.ThreadPoolExecutor() as executor:
+                """with concurrent.futures.ThreadPoolExecutor() as executor:
                     futures = [executor.submit(self.learn_agent, agent, joint_action_df, joint_reward_df, state, next_state) for agent in agents]
-                    concurrent.futures.wait(futures)
+                    concurrent.futures.wait(futures)"""
                 
-                """for agent in agents:    # Every agent picks action
+                for agent in agents:    # Every agent picks action
                     action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION]
                     reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
-                    #print(action)
-                    agent.learn(action, reward, state, next_state)"""
+                    agent.learn(action, reward, state, next_state)
 
                 if not (ep % self.log_every):
                 ########## Save training records
@@ -59,7 +59,7 @@ class Trainer:
     
 
     def learn_agent(agent, joint_action_df, joint_reward_df, state, next_state):
-        print('test')
+        print('test', agent)
         action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION]
         reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
         agent.learn(action, reward, state, next_state)

@@ -61,17 +61,14 @@ class HumanAgent(Agent):
 
 
     def learn(self, action, reward, state, next_state):
-        action_in=pd.DataFrame(action).action.values[0]
-        reward_in=pd.DataFrame(reward).reward.values[0]
-        #print(action)
-        #print("gawron",self.cost[action_in])
-        #self.cost[action_in]=(1-self.alpha) * self.cost[action_in] + self.alpha * reward_in
-        self.cost[action]=(1-self.alpha) * self.cost[action] + self.alpha * reward_in
-        print(self.cost)
+
+        self.cost[action]=(1-self.alpha) * self.cost[action] + self.alpha * reward
 
 
     def calculate_prob(self, utilities, n):
+
         prob = utilities[n] / sum(utilities)
+        
         return prob
     
 

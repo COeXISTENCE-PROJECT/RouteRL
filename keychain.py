@@ -60,8 +60,10 @@ class Keychain:
     NUMBER_OF_PATHS = "number_of_paths"
     ORIGIN1 = "origin1"
     ORIGIN2 = "origin2"
+    ORIGIN = "origin"
     DESTINATION1 = "destination1"
     DESTINATION2 = "destination2"
+    DESTINATION = "destination"
 
     ###########################################################
     

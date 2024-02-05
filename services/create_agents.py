@@ -64,7 +64,7 @@ def generate_agents_data(agent_attributes, simulation_timesteps, agent_start_int
             agents_df.loc[id_counter] = agent
             id_counter += 1
 
-            agent_type = kc.TYPE_MACHINE if random.randint(0,10) > 5 else kc.TYPE_HUMAN
+            #agent_type = kc.TYPE_MACHINE if random.randint(0,10) > 5 else kc.TYPE_HUMAN
             agent_features = [id_counter, 1, 1, t, agent_type]
             agent = {agent_attributes[i] : agent_features[i] for i in range(len(agent_features))}   # Agent that goes to 1 from 1
 

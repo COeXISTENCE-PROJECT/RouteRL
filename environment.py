@@ -5,7 +5,6 @@ from gymnasium.spaces import Discrete
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-import traci
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 
@@ -15,9 +14,13 @@ from agent import Agent
 
 class TrafficEnvironment(gym.Env):
 
-    def __init__(self, simulation_parameters):
+    def __init__(self, simulation_parameters, agents_data_path):
         self.simulator = Simulator(simulation_parameters)
         self.reward_table = []
+        self.flow=[]
+        self.agents_data_path=agents_data_path
+        #self.printer = pd.DataFrame(np.zeros((1,len(self.simulator.names))),columns=self.simulator.names)
+        #self.agent_data=pd.read_csv(agents_data_path)
         print("[SUCCESS] Environment initiated!")
 
     def calculate_free_flow_times(self):
@@ -41,10 +44,15 @@ class TrafficEnvironment(gym.Env):
         agent_ids = joint_action[kc.AGENT_ID]
         sumo_df = self.simulator.run_simulation_iteration(joint_action)
 
+        data=pd.DataFrame(self.simulator.route_counter,columns=['route_id']).value_counts().values
+        self.flow.append(data)
+
+
         #### Calculate joint reward based on travel times returned by SUMO
         joint_reward = self.calculate_rewards(sumo_df)
 
-        rewards = [joint_reward for i in range(len(agent_ids))]
+        #rewards = [joint_reward for i in range(len(agent_ids))]
+        rewards = joint_reward.values.tolist()
         joint_reward = pd.DataFrame({kc.AGENT_ID : agent_ids, kc.REWARD : rewards})
 
         return joint_reward, None, True
@@ -52,14 +60,27 @@ class TrafficEnvironment(gym.Env):
 
     def calculate_rewards(self, sumo_df):
         ### sychronize names
-        average_reward = -1 * sumo_df['cost'].mean()
+        agent_data=pd.read_csv(self.agents_data_path)
+        real_reward = pd.merge(sumo_df,agent_data,left_on='car_id',right_on='id',how='right')
+        real_reward = real_reward.fillna(np.inf)
+        real_reward = real_reward.cost
+        average_reward = real_reward.mean() 
+        #average_reward = 1 * sumo_df['cost'].mean()
         self.reward_table.append(average_reward)
-        return average_reward
+        return real_reward
     
 
     def plot_rewards(self):
-        plt.plot(self.reward_table)
-        plt.xlabel('Episode')
-        plt.ylabel('Reward')
-        plt.title('Reward Table Over Episodes')
+        printer=pd.DataFrame(self.flow,columns=self.simulator.names)
+        plt.plot(printer)
+        plt.xlabel('Index')
+        plt.ylabel('Values')
+        plt.title('Line Plot for Each Column')
+        plt.legend(printer.columns)
+        #plt.ylim(0, 100)
+
+        #plt.plot(self.reward_table
+        #plt.xlabel('Episode')
+        #plt.ylabel('Reward')
+        #plt.title('Reward Table Over Episodes')
         plt.show()
