@@ -231,14 +231,28 @@ class Simulator:
         return sorted_rows
     
 
-    def run_simulation_iteration(self, joint_action, start_times):
+    def run_simulation_iteration(self, joint_action, start_times, od_pairs):
 
         agents_info = []
 
-        # Create a dataframe with id, action and start_time
+        updated_actions = {}
+        i = 0
+        
+        ## Create actions in the format origin_destination_action
         for agent, action in joint_action.items():
+            if 0 <= action < len(od_pairs):
+                updated_actions[agent] = f"{od_pairs[i]}_{action}"
 
-            action_index = list(joint_action.keys()).index(agent)
+            else:
+                updated_actions[agent] = "Invalid action"
+
+            i = i + 1
+
+
+        # Create a dataframe with id, action and start_time
+        for agent, action in updated_actions.items():
+
+            action_index = list(updated_actions.keys()).index(agent)
             
             agents_info.append({'id': agent, 'action': action, 'start_time': start_times[action_index]})
 
@@ -246,7 +260,8 @@ class Simulator:
         agents_info = pd.DataFrame(agents_info)
         depart_id=[]
         depart_cost=[]
-
+        
+        
         # Simulation loop
         for timesteps in range(self.simulation_length):
             traci.simulationStep()

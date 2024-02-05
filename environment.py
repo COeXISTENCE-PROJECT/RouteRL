@@ -60,6 +60,15 @@ class TrafficEnvironment(ParallelEnv):
 
         self.render_mode = render_mode
 
+        self.od_pairs = []
+        number_of_agents = len(self.possible_agents)
+
+        for i in range(number_of_agents):
+            if i < number_of_agents // 2:
+                self.od_pairs.append("0_0")
+            else:
+                self.od_pairs.append("1_1")
+
 
 
     def observe(self, agent):
@@ -107,7 +116,7 @@ class TrafficEnvironment(ParallelEnv):
         
 
         ### Interact with SUMO to get travel times
-        sumo_df = self.simulator.run_simulation_iteration(joint_action, self.start_times)
+        sumo_df = self.simulator.run_simulation_iteration(joint_action, self.start_times, self.od_pairs)
         
         costs = sumo_df['cost'].values
 
