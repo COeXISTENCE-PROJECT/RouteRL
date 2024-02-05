@@ -6,7 +6,9 @@ from keychain import Keychain as kc
 from services.utils import make_dir, show_progress, show_progress_bar
 
 ############ zoltan's request [1/4]
+import random
 from agent import HumanAgent
+from services.utils import list_to_string, df_to_prettytable
 ############
 
 
@@ -23,7 +25,10 @@ class Trainer:
         start_time = time.time()
 
         ############ zoltan's request [2/4]
-        one_human_cost_log = {key:list() for key in ['episode', 'agent_id', 'cost0', 'cost1', 'cost2']}
+        one_human_cost_log = {key:list() for key in ['episode', 'agent_id', 'action', 'reward', 'cost_table']}
+        human_to_watch = random.choice(agents)
+        while not isinstance(human_to_watch, HumanAgent):
+            human_to_watch = random.choice(agents) 
         ############
 
         for ep in range(self.num_episodes):    # Until we simulate num_episode episodes
@@ -58,14 +63,13 @@ class Trainer:
                 ##########
 
                 ############ zoltan's request [3/4]
-                for agent in agents:
-                    if isinstance(agent, HumanAgent):
-                        one_human_cost_log['episode'].append(ep)
-                        one_human_cost_log['agent_id'].append(agent.id)
-                        one_human_cost_log['cost0'].append(agent.cost[0])
-                        one_human_cost_log['cost1'].append(agent.cost[1])
-                        one_human_cost_log['cost2'].append(agent.cost[2])
-                        break
+                reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == human_to_watch.id, kc.REWARD].item()
+                action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == human_to_watch.id, kc.ACTION].item()
+                one_human_cost_log['episode'].append(ep)
+                one_human_cost_log['agent_id'].append(human_to_watch.id)
+                one_human_cost_log['action'].append(action)
+                one_human_cost_log['reward'].append("%.3f" % reward)
+                one_human_cost_log['cost_table'].append(list_to_string(human_to_watch.cost))
                 ############
 
                 state = next_state
@@ -76,7 +80,7 @@ class Trainer:
 
         ############ zoltan's request [4/4]
         one_human_cost_log_df = pd.DataFrame(one_human_cost_log)
-        print(one_human_cost_log_df)
+        df_to_prettytable(one_human_cost_log_df, "HUMAN #{human_to_watch.id} EXPERIENCE")
         ############
 
         return agents
