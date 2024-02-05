@@ -1,17 +1,19 @@
-import pandas as pd
 import gymnasium as gym
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+import pandas as pd
+
 from gymnasium.spaces import Box
 from gymnasium.spaces import Discrete
-import numpy as np
-import matplotlib.pyplot as plt
-import os
 from prettytable import PrettyTable
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-
 
 from keychain import Keychain as kc
 from simulator import Simulator
-from agent import Agent
+
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+
+
 
 class TrafficEnvironment(gym.Env):
 
@@ -20,8 +22,6 @@ class TrafficEnvironment(gym.Env):
         self.reward_table = []
         self.flow=[]
         self.agents_data_path=agents_data_path
-        #self.printer = pd.DataFrame(np.zeros((1,len(self.simulator.names))),columns=self.simulator.names)
-        #self.agent_data=pd.read_csv(agents_data_path)
         print("[SUCCESS] Environment initiated!")
 
     def calculate_free_flow_times(self):
@@ -31,7 +31,6 @@ class TrafficEnvironment(gym.Env):
         
 
     def reset(self):
-        
         return None
 
 
@@ -43,7 +42,6 @@ class TrafficEnvironment(gym.Env):
 
         data=pd.DataFrame(self.simulator.route_counter,columns=['route_id']).value_counts().values
         self.flow.append(data)
-
 
         #### Calculate joint reward based on travel times returned by SUMO
         joint_reward = self.calculate_rewards(sumo_df)

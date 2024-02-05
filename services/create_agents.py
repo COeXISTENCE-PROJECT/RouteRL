@@ -1,6 +1,6 @@
 import pandas as pd
-import random
 from prettytable import PrettyTable
+import random
 
 from agent import MachineAgent, HumanAgent
 from keychain import Keychain as kc

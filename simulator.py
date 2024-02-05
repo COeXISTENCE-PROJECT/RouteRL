@@ -1,10 +1,10 @@
-from bs4 import BeautifulSoup
 import networkx as nx
 import pandas as pd
 import traci
 import xml.etree.ElementTree as ET
-from queue import PriorityQueue
 
+from bs4 import BeautifulSoup
+from queue import PriorityQueue
 
 from keychain import Keychain as kc
 from services import path_generator

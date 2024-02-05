@@ -1,10 +1,10 @@
-from abc import ABC, abstractmethod
-from keychain import Keychain as kc
-
 import numpy as np
 import pandas as pd
 import random
 
+from abc import ABC, abstractmethod
+
+from keychain import Keychain as kc
 
 class Agent(ABC):
 
@@ -42,7 +42,7 @@ class HumanAgent(Agent):
         self.beta = learning_params[kc.BETA]
         self.alpha = learning_params[kc.ALPHA]
 
-        self.cost = np.array(initial_knowledge[(origin, destination)],dtype=float)
+        self.cost = np.array(initial_knowledge[(origin, destination)], dtype=float)
 
 
     def act(self, state):  
@@ -60,14 +60,11 @@ class HumanAgent(Agent):
 
 
     def learn(self, action, reward, state, next_state):
-
         self.cost[action]=(1-self.alpha) * self.cost[action] + self.alpha * reward
 
 
     def calculate_prob(self, utilities, n):
-
         prob = utilities[n] / sum(utilities)
-        
         return prob
     
 
