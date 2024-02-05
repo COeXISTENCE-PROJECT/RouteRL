@@ -21,4 +21,4 @@ def main():
     agents = trainer.train(env, agents)
 
 
-main()
+main() # put in the if __name__ == "__main__":
