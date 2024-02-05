@@ -24,6 +24,7 @@ class TrafficEnvironment(gym.Env):
         self.agents_data_path=agents_data_path
         print("[SUCCESS] Environment initiated!")
 
+
     def calculate_free_flow_times(self):
         free_flow_times = self.simulator.calculate_free_flow_times()
         self.print_free_flow_times(free_flow_times)
@@ -32,7 +33,6 @@ class TrafficEnvironment(gym.Env):
 
     def reset(self):
         return None
-
 
 
     def step(self, joint_action):
