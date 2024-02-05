@@ -5,6 +5,7 @@ from gymnasium.spaces import Discrete
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from prettytable import PrettyTable
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 
@@ -24,13 +25,9 @@ class TrafficEnvironment(gym.Env):
         print("[SUCCESS] Environment initiated!")
 
     def calculate_free_flow_times(self):
-        free_flow_cost = self.simulator.calculate_free_flow_times()
-        print('[INFO] Free-flow times: ', free_flow_cost)
-        return free_flow_cost
-    
-
-    def create_agents(self, agents):
-        self.agents = agents 
+        free_flow_times = self.simulator.calculate_free_flow_times()
+        self.print_free_flow_times(free_flow_times)
+        return free_flow_times
         
 
     def reset(self):
@@ -89,3 +86,17 @@ class TrafficEnvironment(gym.Env):
         #plt.ylabel('Reward')
         #plt.title('Reward Table Over Episodes')
         plt.show()
+
+
+
+    def print_free_flow_times(self, free_flow_times):
+        table = PrettyTable()
+        table.field_names = ["Origin", "Destination", "Index", "FF Time"]
+
+        for od, times in free_flow_times.items():
+            for idx, time in enumerate(times):
+                table.add_row([od[0], od[1], idx, "%.3f"%time])
+            table.add_row(["----", "----", "----", "----"])
+
+        print("------ Free flow travel times ------")
+        print(table)

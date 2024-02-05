@@ -39,7 +39,6 @@ class HumanAgent(Agent):
         super().__init__(id, start_time, origin, destination)
 
         learning_params = params[kc.HUMAN_AGENT_PARAMETERS]
-        self.action_space_size = learning_params[kc.ACTION_SPACE_SIZE]
         self.beta = learning_params[kc.BETA]
         self.alpha = learning_params[kc.ALPHA]
 
@@ -76,11 +75,10 @@ class HumanAgent(Agent):
 
 class MachineAgent(Agent):
 
-    def __init__(self, id, start_time, origin, destination, params):
+    def __init__(self, id, start_time, origin, destination, params, action_space_size):
         super().__init__(id, start_time, origin, destination)
 
         learning_params = params[kc.MACHINE_AGENT_PARAMETERS]
-        self.action_space_size = learning_params[kc.ACTION_SPACE_SIZE]
 
         min_alpha, max_alpha = learning_params[kc.MIN_ALPHA], learning_params[kc.MAX_ALPHA]
         min_epsilon, max_epsilon = learning_params[kc.MIN_EPSILON], learning_params[kc.MAX_EPSILON]
@@ -91,8 +89,9 @@ class MachineAgent(Agent):
         self.alpha = random.uniform(min_alpha, max_alpha)
         self.gamma = learning_params[kc.GAMMA]
 
+        self.action_space_size = action_space_size
         # Q-table assumes only one state, otherwise should be np.zeros((num_states, action_space_size))
-        self.q_table = np.zeros((self.action_space_size))
+        self.q_table = np.zeros((action_space_size))
         #self.q_table = initial_knowledge
 
 
