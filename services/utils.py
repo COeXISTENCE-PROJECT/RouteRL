@@ -3,6 +3,7 @@ import os
 import sys
 import time
 
+from prettytable import PrettyTable
 
 def confirm_env_variable(env_var, append=None):
     if env_var in os.environ:
@@ -71,4 +72,13 @@ def list_to_string(from_list, separator=', '):
             first_time = False
         else:
             out_str = "%s%s%s" % (out_str, separator, item)
+
     return out_str
+
+def df_to_prettytable(df, header_message="DATA"):
+    table = PrettyTable()
+    table.field_names = df.columns.tolist()
+    for _, row in df.iterrows():
+        table.add_row(row.tolist())
+    print(f"##### {header_message} #####")
+    print(table)

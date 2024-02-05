@@ -62,7 +62,7 @@ class TrafficEnvironment(gym.Env):
         ### sychronize names
         agent_data=pd.read_csv(self.agents_data_path)
         real_reward = pd.merge(sumo_df,agent_data,left_on='car_id',right_on='id',how='right')
-        real_reward = real_reward.fillna(np.inf)
+        real_reward = real_reward.fillna(10000000000)
         real_reward = real_reward.cost
         average_reward = real_reward.mean() 
         #average_reward = 1 * sumo_df['cost'].mean()
@@ -71,12 +71,17 @@ class TrafficEnvironment(gym.Env):
     
 
     def plot_rewards(self):
+        fig, axs = plt.subplots(2, 1)
         printer=pd.DataFrame(self.flow,columns=self.simulator.names)
-        plt.plot(printer)
-        plt.xlabel('Index')
-        plt.ylabel('Values')
-        plt.title('Line Plot for Each Column')
-        plt.legend(printer.columns)
+        learning=pd.read_csv('one_reward.csv').cost_table.str.split(',',expand=True)
+        axs[0].plot(printer)
+        #plt.xlabel('Index')
+        #plt.ylabel('Values')
+        #plt.title('Line Plot for Each Column')
+        axs[0].legend(printer.columns)
+        for i in range(len(learning.columns)):
+            axs[1].plot(learning[i])
+        axs[1].legend(learning.columns)
         #plt.ylim(0, 100)
 
         #plt.plot(self.reward_table

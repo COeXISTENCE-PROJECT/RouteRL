@@ -120,8 +120,8 @@ class Simulator:
                         if x[route][i] == y[k] and x[route][i + 1] == z[k]:
                             rou.append(l[k])
 
-            #length.append(sum(rou))
-            length.append(0)
+            length.append(sum(rou))
+            #length.append(0)
 
         return length
     
@@ -236,6 +236,7 @@ class Simulator:
 
         depart_id = []
         depart_cost = []
+        depart_time = []
         self.route_counter = []
 
         sorted_rows_based_on_start_time = self.priority_queue_creation(joint_action)
@@ -256,12 +257,14 @@ class Simulator:
 
 
             departed=traci.simulation.getArrivedIDList()  # just collect this and time and calculate at the end
+
             for value in departed:
                 if value:
                     value_as_int = int(value)
                     depart_id.append(value_as_int)
-                    start=sorted_df[sorted_df.id==value_as_int].start_time.values
-                    depart_cost.append((timestep-start)/60)
+                    depart_time.append(timestep)
+                    #start=sorted_df[sorted_df.id==value_as_int].start_time.values
+                    #depart_cost.append((timestep-start)/60)
 
             for _, row in sorted_df[sorted_df["start_time"] == timestep].iterrows():
                 action = row["action"]
@@ -272,9 +275,11 @@ class Simulator:
                 self.route_counter.append(f'{ori}_{dest}_{action}')
 
 
-        depart=pd.DataFrame(depart_id)
-        reward=pd.merge(depart,pd.DataFrame(depart_cost),right_index=True,left_index=True)
-        reward=reward.rename(columns={'0_x':'car_id','0_y':'cost'})
+        reward = pd.merge(pd.DataFrame(depart_id),pd.DataFrame(depart_time),right_index=True,left_index=True)
+        reward = reward.rename(columns={'0_x':'car_id','0_y':'depart_time'})
+        reward = pd.merge(left = reward,right = sorted_df, right_on='id', left_on = 'car_id')
+        reward['cost'] = (reward.depart_time - reward.start_time)/60
+        reward = reward.drop(columns=['depart_time','id','action','origin','destination','start_time'])
 
         return reward
     

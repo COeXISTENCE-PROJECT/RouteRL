@@ -43,7 +43,7 @@ class HumanAgent(Agent):
         self.beta = learning_params[kc.BETA]
         self.alpha = learning_params[kc.ALPHA]
 
-        self.cost = np.array(initial_knowledge[(origin, destination)])
+        self.cost = np.array(initial_knowledge[(origin, destination)],dtype=float)
 
 
     def act(self, state):  
