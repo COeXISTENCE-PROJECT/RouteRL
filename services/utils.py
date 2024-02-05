@@ -80,5 +80,5 @@ def df_to_prettytable(df, header_message="DATA"):
     table.field_names = df.columns.tolist()
     for _, row in df.iterrows():
         table.add_row(row.tolist())
-        print(f"##### {header_message} #####")
+    print(f"##### {header_message} #####")
     print(table)
