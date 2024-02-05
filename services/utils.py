@@ -97,10 +97,11 @@ def list_to_string(from_list, separator=', '):
 
     return out_str
 
-def df_to_prettytable(df, header_message="DATA"):
+def df_to_prettytable(df, header_message="DATA", print_every=1):
     table = PrettyTable()
     table.field_names = df.columns.tolist()
-    for _, row in df.iterrows():
-        table.add_row(row.tolist())
+    for index, row in df.iterrows():
+        if not (index % print_every):
+            table.add_row(row.tolist())
     print(f"##### {header_message} #####")
     print(table)

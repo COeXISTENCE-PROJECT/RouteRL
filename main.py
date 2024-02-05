@@ -16,13 +16,13 @@ def main():
     env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS],params[kc.AGENTS_GENERATION_PARAMETERS][kc.AGENTS_DATA_PATH])  # pass some params for the simulation
     agents = create_agent_objects(params[kc.AGENTS_GENERATION_PARAMETERS], env.calculate_free_flow_times())
 
-    Sumo_sim=SumoController(params)
-    Sumo_sim.sumo_start()
+    sumo_ctrl=SumoController(params)
+    sumo_ctrl.sumo_start()
 
     trainer = Trainer(params[kc.TRAINING_PARAMETERS])
     agents = trainer.train(env, agents)
 
-    Sumo_sim.sumo_stop()
+    sumo_ctrl.sumo_stop()
 
 
 if __name__ == "__main__":

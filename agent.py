@@ -42,20 +42,16 @@ class HumanAgent(Agent):
         self.beta = learning_params[kc.BETA]
         self.alpha = learning_params[kc.ALPHA]
 
-        self.cost = np.array(initial_knowledge[(origin, destination)], dtype=float)
+        self.cost = np.array(initial_knowledge, dtype=float)
 
 
     def act(self, state):  
         """ 
         the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
         """
-        #print(self.cost)
-        #print(self.id)
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
         prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
-        #print(prob_dist)
-        action = np.random.choice(list(range(len(self.cost))), p=prob_dist)
-        #print('new: ',action)    
+        action = np.random.choice(list(range(len(self.cost))), p=prob_dist) 
         return action        
 
 
