@@ -23,7 +23,7 @@
 
             "human_agent_parameters" :
             {
-                "beta" : 0.2,
+                "beta" : -0.2,
                 "alpha" : 0.2,
                 "action_space_size" : 3
             }
@@ -44,14 +44,16 @@
         "origin1" : "279952229#0",
         "origin2" : "115604053",
         "destination1" : "-115602933#2",
-        "destination2" : "-441496282#1"
+        "destination2" : "-441496282#1",
+        "origin" : ["279952229#0", "115604053"],
+        "destination" : ["-115602933#2", "-441496282#1"]
     },
 
 
     "training_parameters":
     {
-        "num_episodes" : 10,
-        "log_every" : 5
+        "num_episodes" : 50,
+        "log_every" : 500
     }
     
 }

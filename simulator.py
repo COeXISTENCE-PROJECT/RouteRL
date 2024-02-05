@@ -22,8 +22,8 @@ class Simulator:
 
     def __init__(self, params):
 
-        self.sumo_type = params[kc.SUMO_TYPE]
-        self.config = params[kc.SUMO_CONFIG_PATH]
+        #self.sumo_type = params[kc.SUMO_TYPE]
+        #self.config = params[kc.SUMO_CONFIG_PATH]
 
         self.number_of_paths = params[kc.NUMBER_OF_PATHS]
         self.simulation_length = params[kc.SIMULATION_TIMESTEPS]
@@ -37,12 +37,18 @@ class Simulator:
         # The network is build on a OSM map
 
         self.routes = dict()
+
+        self.names=[]
         
         self.origin1, self.origin2 = params[kc.ORIGIN1], params[kc.ORIGIN2]
         self.destination1, self.destination2 = params[kc.DESTINATION1], params[kc.DESTINATION2]
 
-        origins = [self.origin1, self.origin2]
-        destinations = [self.destination1, self.destination2]
+        #origins = [self.origin1, self.origin2]
+        #destinations = [self.destination1, self.destination2]
+        origins=params[kc.ORIGIN]
+        destinations=params[kc.DESTINATION]
+
+        self.route_counter=[]
 
         ### case that all the origins are connected with all the destinations
         """
@@ -58,14 +64,19 @@ class Simulator:
             # Call find_best_paths for each combination of origin and destination
             paths = self.find_best_paths(origin, destination, 'time')
             # Store the result in the self.routes dictionary
-            self.routes[(origin, destination)] = paths   
-        self.save_paths(self.routes)
+            self.routes[(origin,destination)] = paths   
+        self.save_paths(self.routes, params)
 
         
-    def save_paths(self, routes):
+    def save_paths(self, routes, params):
 
         path_attributes = ["origin", "destination", "path"]
         path_save_path = "paths.csv"
+        
+        origins=params[kc.ORIGIN]
+        destinations=params[kc.DESTINATION]
+        origin_df=pd.DataFrame(origins, columns=['origins'])
+        destination_df=pd.DataFrame(destinations, columns=['destinations'])
 
         paths_df = pd.DataFrame(columns=path_attributes)
 
@@ -76,10 +87,16 @@ class Simulator:
         with open("Network_and_config/route.rou.xml", "w") as rou:
             print("""<routes>""", file=rou)
             for od, paths in routes.items():
+                    list(od)[0]
+                    ori=origin_df[origin_df['origins']==list(od)[0]].index.values[0]
+                    dest=destination_df[destination_df['destinations']==list(od)[1]].index.values[0]
+                    i=0
                     for path in paths:
-                        print(f'<route id="{1}" edges="',file=rou)
+                        print(f'<route id="{ori}_{dest}_{i}" edges="',file=rou)
+                        self.names.append(f'{ori}_{dest}_{i}')
                         print(list_to_string(path,separator=' '),file=rou)
                         print('" />',file=rou)
+                        i+=1
             print("</routes>", file=rou)
 
         paths_df.to_csv(path_save_path, index=True)
