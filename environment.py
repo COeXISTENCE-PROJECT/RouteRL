@@ -161,7 +161,7 @@ class TrafficEnvironment(ParallelEnv):
 
     def plot_rewards(self):
         plt.figure(figsize=(10, 6)) 
-        plt.plot(self.reward_table, color='blue', linestyle='-', marker='o', markersize=4)  
+        plt.plot(self.reward_table, color='blue', linestyle='-')  
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Reward', fontsize=12) 
         plt.title('Reward Table Over Episodes', fontsize=14)  
