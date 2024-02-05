@@ -3,7 +3,6 @@ import os
 import sys
 import time
 
-from prettytable import PrettyTable
 
 def confirm_env_variable(env_var, append=None):
     if env_var in os.environ:

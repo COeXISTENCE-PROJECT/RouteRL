@@ -63,13 +63,14 @@ class Trainer:
                 ##########
 
                 ############ zoltan's request [3/4]
-                reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == human_to_watch.id, kc.REWARD].item()
-                action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == human_to_watch.id, kc.ACTION].item()
-                one_human_cost_log['episode'].append(ep)
-                one_human_cost_log['agent_id'].append(human_to_watch.id)
-                one_human_cost_log['action'].append(action)
-                one_human_cost_log['reward'].append("%.3f" % reward)
-                one_human_cost_log['cost_table'].append(list_to_string(human_to_watch.cost))
+                for agent in agents:
+                    if isinstance(agent, HumanAgent):
+                        one_human_cost_log['episode'].append(ep)
+                        one_human_cost_log['agent_id'].append(agent.id)
+                        one_human_cost_log['cost0'].append(agent.cost[0])
+                        one_human_cost_log['cost1'].append(agent.cost[1])
+                        one_human_cost_log['cost2'].append(agent.cost[2])
+                        break
                 ############
 
                 state = next_state
@@ -80,8 +81,7 @@ class Trainer:
 
         ############ zoltan's request [4/4]
         one_human_cost_log_df = pd.DataFrame(one_human_cost_log)
-        one_human_cost_log_df.to_csv('one_reward.csv',index=False)
-        df_to_prettytable(one_human_cost_log_df, f"HUMAN #{human_to_watch.id} EXPERIENCE")
+        print(one_human_cost_log_df)
         ############
 
         return agents
