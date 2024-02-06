@@ -67,7 +67,7 @@ class Trainer:
 
                 state = next_state
 
-            show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes, end_line='\n')
+            show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes)
 
         print("\n[COMPLETE] Training completed in: %s" % (time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(time.time() - start_time))))
 
