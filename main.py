@@ -31,7 +31,7 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
 
     env = ss.pettingzoo_env_to_vec_env_v1(env)
 
-    env = ss.concat_vec_envs_v1(env, 1, num_cpus=0, base_class="stable_baselines3")
+    env = ss.concat_vec_envs_v1(env, 1, num_cpus=2, base_class="stable_baselines3")
 
     model = PPO(
         "MlpPolicy",
@@ -57,12 +57,9 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
         verbose=1,
     )"""
 
-    model.learn(total_timesteps=400000)
+    model.learn(total_timesteps=1800000)
 
     print(f"[SUCCESS] Finished training on {str(env.unwrapped.metadata['name'])}.")
-
-    #env.plot_rewards()
-    #print(env.reward_table)
 
     env.close()
 

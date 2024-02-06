@@ -127,11 +127,11 @@ class TrafficEnvironment(ParallelEnv):
         # each agent tries to minimize each one travel time
         i = 0
         for agent_name in self.possible_agents:
-            rewards[agent_name] = costs[i]
+            rewards[agent_name] = -1 * costs[i]
             
 
             if(i == 500):
-                self.reward_table.append(costs[i])
+                self.reward_table.append(-1 * costs[i])
 
             i = i + 1
 
