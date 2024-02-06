@@ -3,7 +3,8 @@ import pandas as pd
 import time
 
 from keychain import Keychain as kc
-from services.utils import make_dir, show_progress, show_progress_bar
+from services.utils import make_dir
+from services.utils import show_progress, show_progress_bar
 
 ############ zoltan's request [1/4]
 import random
@@ -15,7 +16,6 @@ from services.utils import list_to_string, df_to_prettytable
 class Trainer:
 
     def __init__(self, params):
-
         self.num_episodes = params[kc.NUM_EPISODES]
         self.log_every = params[kc.LOG_EVERY]
 
@@ -32,10 +32,8 @@ class Trainer:
         ############
 
         for ep in range(self.num_episodes):    # Until we simulate num_episode episodes
-
             state = env.reset()
             done = False
-
             while not done:     # Until episode concludes
                 joint_action = {kc.AGENT_ID : list(), kc.ACTION : list(), kc.AGENT_ORIGIN : list(), 
                                 kc.AGENT_DESTINATION : list(), kc.AGENT_START_TIME : list()}
@@ -47,14 +45,9 @@ class Trainer:
                 joint_action_df = pd.DataFrame(joint_action)
                 joint_reward_df, next_state, done = env.step(joint_action_df)
 
-                """with concurrent.futures.ThreadPoolExecutor() as executor:
+                with concurrent.futures.ThreadPoolExecutor() as executor:
                     futures = [executor.submit(self.learn_agent, agent, joint_action_df, joint_reward_df, state, next_state) for agent in agents]
-                    concurrent.futures.wait(futures)"""
-                
-                for agent in agents:    # Every agent picks action
-                    action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION]
-                    reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
-                    agent.learn(action, reward, state, next_state)
+                    concurrent.futures.wait(futures)
 
                 if not (ep % self.log_every):
                 ########## Save training records
@@ -74,23 +67,25 @@ class Trainer:
 
                 state = next_state
 
-            show_progress("TRAINING", start_time, ep+1, self.num_episodes, end_line='\n')
+            show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes, end_line='\n')
 
         print("\n[COMPLETE] Training completed in: %s" % (time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(time.time() - start_time))))
 
         ############ zoltan's request [4/4]
         one_human_cost_log_df = pd.DataFrame(one_human_cost_log)
-        one_human_cost_log_df.to_csv('one_reward.csv',index=False)
+        one_human_cost_log_df.to_csv(kc.ONE_AGENT_EXPERIENCE_LOG_PATH,index=False)
         df_to_prettytable(one_human_cost_log_df, "HUMAN #{human_to_watch.id} EXPERIENCE")
         ############
-
+        
+        env.plot_rewards()
+        env.plot_one_agent()
+        
         return agents
     
 
-    def learn_agent(agent, joint_action_df, joint_reward_df, state, next_state):
-        print('test', agent)
-        action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION]
-        reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD]
+    def learn_agent(self, agent, joint_action_df, joint_reward_df, state, next_state):
+        action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION].item()
+        reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD].item()
         agent.learn(action, reward, state, next_state)
     
 

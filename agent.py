@@ -1,9 +1,10 @@
-from abc import ABC, abstractmethod
-from keychain import Keychain as kc
-
 import numpy as np
 import pandas as pd
 import random
+
+from abc import ABC, abstractmethod
+
+from keychain import Keychain as kc
 
 
 class Agent(ABC):
@@ -39,36 +40,28 @@ class HumanAgent(Agent):
         super().__init__(id, start_time, origin, destination)
 
         learning_params = params[kc.HUMAN_AGENT_PARAMETERS]
-        self.action_space_size = learning_params[kc.ACTION_SPACE_SIZE]
         self.beta = learning_params[kc.BETA]
         self.alpha = learning_params[kc.ALPHA]
 
-        self.cost = np.array(initial_knowledge[(origin, destination)],dtype=float)
+        self.cost = np.array(initial_knowledge, dtype=float)
 
 
     def act(self, state):  
         """ 
         the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
         """
-        #print(self.cost)
-        #print(self.id)
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
         prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
-        #print(prob_dist)
-        action = np.random.choice(list(range(len(self.cost))), p=prob_dist)
-        #print('new: ',action)    
+        action = np.random.choice(list(range(len(self.cost))), p=prob_dist) 
         return action        
 
 
     def learn(self, action, reward, state, next_state):
-
         self.cost[action]=(1-self.alpha) * self.cost[action] + self.alpha * reward
 
 
     def calculate_prob(self, utilities, n):
-
         prob = utilities[n] / sum(utilities)
-        
         return prob
     
 
@@ -76,11 +69,10 @@ class HumanAgent(Agent):
 
 class MachineAgent(Agent):
 
-    def __init__(self, id, start_time, origin, destination, params):
+    def __init__(self, id, start_time, origin, destination, params, action_space_size):
         super().__init__(id, start_time, origin, destination)
 
         learning_params = params[kc.MACHINE_AGENT_PARAMETERS]
-        self.action_space_size = learning_params[kc.ACTION_SPACE_SIZE]
 
         min_alpha, max_alpha = learning_params[kc.MIN_ALPHA], learning_params[kc.MAX_ALPHA]
         min_epsilon, max_epsilon = learning_params[kc.MIN_EPSILON], learning_params[kc.MAX_EPSILON]
@@ -91,8 +83,9 @@ class MachineAgent(Agent):
         self.alpha = random.uniform(min_alpha, max_alpha)
         self.gamma = learning_params[kc.GAMMA]
 
+        self.action_space_size = action_space_size
         # Q-table assumes only one state, otherwise should be np.zeros((num_states, action_space_size))
-        self.q_table = np.zeros((self.action_space_size))
+        self.q_table = np.zeros((action_space_size))
         #self.q_table = initial_knowledge
 
 
@@ -100,7 +93,7 @@ class MachineAgent(Agent):
         if np.random.rand() < self.epsilon:    # Explore
             return np.random.choice(self.action_space_size)
         else:    # Exploit
-            return np.argmax(self.q_table)
+            return np.argmin(self.q_table)
                 
 
     def learn(self, action, reward, state, next_state):

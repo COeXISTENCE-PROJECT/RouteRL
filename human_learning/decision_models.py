@@ -5,11 +5,7 @@ def model(length,n):    # implement the actual lenght on this part
     return summa
 
 def logit(beta,time):   #the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
-
-    Utility=list(map(lambda x: np.exp(x*beta) ,time))
-
-    summa = [model(Utility, j) for j in range(len(time))]
-
+    utility=list(map(lambda x: np.exp(x*beta) ,time))
+    summa = [model(utility, j) for j in range(len(time))]
     i=np.random.choice(list(range(len(time))),p=summa)    
-
     return i

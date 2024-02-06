@@ -14,6 +14,7 @@ class Keychain:
     REWARDS_LOGS_PATH = "rewards"
     ACTIONS_LOGS_PATH = "actions"
     Q_TABLES_LOG_PATH = "q_tables"
+    ONE_AGENT_EXPERIENCE_LOG_PATH = "one_reward.csv"
     
     ###########################################################
     
@@ -28,10 +29,10 @@ class Keychain:
 
     # Agent generation
     AGENTS_DATA_PATH = "agents_data_path"
+    NUM_AGENTS = "num_agents"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
-    AGENT_START_INTERVALS = "agent_start_intervals"
+
     ACTION_SPACE_SIZE = "action_space_size"
-    AGENT_LEARNING_PARAMETERS = "agent_learning_parameters"
     MACHINE_AGENT_PARAMETERS = "machine_agent_parameters"
     HUMAN_AGENT_PARAMETERS = "human_agent_parameters"
 
@@ -56,14 +57,13 @@ class Keychain:
     CONNECTION_FILE_PATH = "connection_file_path"
     EDGE_FILE_PATH = "edge_file_path" 
     ROUTE_FILE_PATH = "route_file_path"
+    ROUTES_XML_SAVE_PATH = "routes_xml_save_path"
     
+    PATHS_SAVE_PATH = "paths_save_path"
     NUMBER_OF_PATHS = "number_of_paths"
-    ORIGIN1 = "origin1"
-    ORIGIN2 = "origin2"
-    ORIGIN = "origin"
-    DESTINATION1 = "destination1"
-    DESTINATION2 = "destination2"
-    DESTINATION = "destination"
+
+    ORIGINS = "origins"
+    DESTINATIONS = "destinations"
 
     ###########################################################
     

@@ -5,6 +5,7 @@ import time
 
 from prettytable import PrettyTable
 
+
 def confirm_env_variable(env_var, append=None):
     if env_var in os.environ:
         print("[CONFIRMED] Environment variable exists: %s" % env_var)
@@ -14,17 +15,36 @@ def confirm_env_variable(env_var, append=None):
             print("[SUCCESS] Added module directory: %s" % path)
     else:
         raise ImportError("Please declare the environment variable '%s'" % env_var)
+    
+
+
+def get_params(file_path):      # Read params.json, resolve dependencies
+    params = read_json(file_path)
+    params = resolve_param_dependencies(params)
+    return params
+
+def resolve_param_dependencies(params):    # Resolving dependent parameters in params.json
+    for category, settings in params.items():
+        for key, value in settings.items():
+            if isinstance(value, str) and value.startswith("${") and value.endswith("}"):
+                path = value[2:-1].split('.')   # Extract the reference path
+                ref_value = params
+                for step in path:
+                    ref_value = ref_value.get(step, {})
+                if not isinstance(ref_value, dict):     # Ensure it's not a nested structure
+                    params[category][key] = ref_value
+    return params
 
 
 
-def get_json(file_path):    # Read json file, return as dict
+def read_json(file_path):    # Read json file, return as dict
     try:
         with open(file_path, 'r') as file:
-            json_data = json.load(file)
+            file_data = json.load(file)
     except FileNotFoundError:
         print(f"[ERROR] Cannot locate: %s" % (file_path))
         raise
-    return json_data
+    return file_data
 
 
 
@@ -59,9 +79,12 @@ def show_progress(name_of_operation, start_time, progress, target, end_line=''):
     print(f'\r[%s PROGRESS]: %.2f%%, ETA: %s' % (name_of_operation.upper(), progress_fraction * 100, remaining_time), end=end_line)
 
 
+
 def remove_double_quotes(text):
     text = str(text).replace('"','')
     return text
+
+
 
 def list_to_string(from_list, separator=', '):
     out_str = ""
@@ -75,10 +98,12 @@ def list_to_string(from_list, separator=', '):
 
     return out_str
 
-def df_to_prettytable(df, header_message="DATA"):
+
+def df_to_prettytable(df, header_message="DATA", print_every=1):
     table = PrettyTable()
     table.field_names = df.columns.tolist()
-    for _, row in df.iterrows():
-        table.add_row(row.tolist())
+    for index, row in df.iterrows():
+        if not (index % print_every):
+            table.add_row(row.tolist())
     print(f"##### {header_message} #####")
     print(table)
