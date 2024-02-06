@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
+import traci
 
 from prettytable import PrettyTable
 
@@ -17,6 +18,7 @@ class TrafficEnvironment(gym.Env):
 
     def __init__(self, simulation_parameters, agents_data_path):
         self.simulator = Simulator(simulation_parameters)
+        self.parameter = simulation_parameters
         self.reward_table = list()
         self.route_flows = list()
         self.all_selected_routes = set()
@@ -31,6 +33,7 @@ class TrafficEnvironment(gym.Env):
         
 
     def reset(self):
+        traci.load(['-c', self.parameter[kc.SUMO_CONFIG_PATH]])
         return None
 
 

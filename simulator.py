@@ -210,7 +210,7 @@ class Simulator:
     def run_simulation_iteration(self, joint_action):
 
         depart_id = []
-        depart_cost = []
+        #depart_cost = []
         depart_time = []
         self.selected_routes = list()
 
@@ -218,10 +218,62 @@ class Simulator:
         sorted_df = pd.DataFrame(sorted_rows_based_on_start_time, columns=pd.DataFrame(joint_action).columns)
 
         # Simulation loop
+
         for timestep in range(self.simulation_length):
             traci.simulationStep()
         
             if timestep==self.simulation_length-1:
+                while traci.simulation.getMinExpectedNumber()>0:
+                    traci.simulationStep()
+                    timestep=traci.simulation.getTime()
+                    departed=traci.simulation.getArrivedIDList()
+                    for value in departed:
+                        if value:
+                            value_as_int = int(value)
+                            depart_id.append(value_as_int)
+                            depart_time.append(timestep)
+                #print(traci.simulation.getMinExpectedNumber())
+                #remove=traci.vehicle.getIDList()
+                #routes=traci.route.getIDList()
+
+                #for route in routes:
+                #    traci.simulation.clearPending(routeID=route)
+                #for i in remove:
+                #    traci.vehicle.remove(i,3)
+            else:
+
+                departed=traci.simulation.getArrivedIDList()  # just collect this and time and calculate at the end
+
+                for value in departed:
+                    if value:
+                        value_as_int = int(value)
+                        depart_id.append(value_as_int)
+                        depart_time.append(timestep)
+                        #start=sorted_df[sorted_df.id==value_as_int].start_time.values
+                        #depart_cost.append((timestep-start)/60)
+
+                for _, row in sorted_df[sorted_df["start_time"] == timestep].iterrows():
+                    agent_action = row["action"]
+                    vehicle_id = f"{row['id']}"
+                    ori=row['origin']
+                    dest=row['destination']
+                    sumo_action = f'{ori}_{dest}_{agent_action}'
+                    traci.vehicle.add(vehicle_id, sumo_action)
+                    self.selected_routes.append(sumo_action)
+        
+
+        reward = pd.merge(pd.DataFrame(depart_id),pd.DataFrame(depart_time),right_index=True,left_index=True)
+        reward = reward.rename(columns={'0_x':'car_id','0_y':'depart_time'})
+        reward.to_csv('heh.csv',index=False)
+        reward = pd.merge(left = reward,right = sorted_df, right_on='id', left_on = 'car_id')
+        reward['cost'] = (reward.depart_time - reward.start_time)/60
+        reward = reward.drop(columns=['depart_time','id','action','origin','destination','start_time'])
+
+        """for timestep in range(self.simulation_length):
+            traci.simulationStep()
+        
+            if timestep==self.simulation_length-1:
+                print(traci.simulation.getMinExpectedNumber())
                 remove=traci.vehicle.getIDList()
                 routes=traci.route.getIDList()
 
@@ -255,7 +307,7 @@ class Simulator:
         reward = reward.rename(columns={'0_x':'car_id','0_y':'depart_time'})
         reward = pd.merge(left = reward,right = sorted_df, right_on='id', left_on = 'car_id')
         reward['cost'] = (reward.depart_time - reward.start_time)/60
-        reward = reward.drop(columns=['depart_time','id','action','origin','destination','start_time'])
+        reward = reward.drop(columns=['depart_time','id','action','origin','destination','start_time'])"""
 
         return reward
     
