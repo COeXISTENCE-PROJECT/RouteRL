@@ -1,10 +1,11 @@
-from bs4 import BeautifulSoup
 import networkx as nx
 import pandas as pd
 import traci
 import xml.etree.ElementTree as ET
-from queue import PriorityQueue
 
+from bs4 import BeautifulSoup
+from collections import Counter
+from queue import PriorityQueue
 
 from keychain import Keychain as kc
 from services import path_generator
@@ -22,8 +23,8 @@ class Simulator:
 
     def __init__(self, params):
 
-        self.sumo_type = params[kc.SUMO_TYPE]
-        self.config = params[kc.SUMO_CONFIG_PATH]
+        #self.sumo_type = params[kc.SUMO_TYPE]
+        #self.config = params[kc.SUMO_CONFIG_PATH]
         self.routes_xml_save_path = params[kc.ROUTES_XML_SAVE_PATH]
 
         self.number_of_paths = params[kc.NUMBER_OF_PATHS]
@@ -44,7 +45,7 @@ class Simulator:
         # We keep routes as dict {(origin_id, dest_id) : [list of nodes]}
         # Such as ((0,0) : [list of nodes]) and ((1,0) : [list of nodes])
         # In list of nodes, we use SUMO simulation ids of nodes
-        self.routes = self.create_routes( self.origins, self.destinations)
+        self.routes = self.create_routes(self.origins, self.destinations)
         self.save_paths(self.routes)
 
         
@@ -63,7 +64,7 @@ class Simulator:
             print("""<routes>""", file=rou)
             for od, paths in routes.items():
                     for idx, path in enumerate(paths):
-                        print(f'<route id="{od[0]}_{od[0]}_{idx}" edges="',file=rou)
+                        print(f'<route id="{od[0]}_{od[1]}_{idx}" edges="',file=rou)
                         print(list_to_string(path,separator=' '),file=rou)
                         print('" />',file=rou)
             print("</routes>", file=rou)
@@ -90,6 +91,7 @@ class Simulator:
                         if x[route][i] == y[k] and x[route][i + 1] == z[k]:
                             rou.append(l[k])
             length.append(sum(rou))
+            #length.append(0)
         return length
     
 
@@ -207,28 +209,53 @@ class Simulator:
 
     def run_simulation_iteration(self, joint_action):
 
+        depart_id = []
+        depart_cost = []
+        depart_time = []
+        self.selected_routes = list()
+
         sorted_rows_based_on_start_time = self.priority_queue_creation(joint_action)
         sorted_df = pd.DataFrame(sorted_rows_based_on_start_time, columns=pd.DataFrame(joint_action).columns)
 
-        # Start SUMO with TraCI
-        sumo_binary = self.sumo_type
-        sumo_cmd = [sumo_binary, "-c", self.config]
-
-        traci.start(sumo_cmd)
-
         # Simulation loop
-        for timesteps in range(self.simulation_length):
+        for timestep in range(self.simulation_length):
             traci.simulationStep()
+        
+            if timestep==self.simulation_length-1:
+                remove=traci.vehicle.getIDList()
+                routes=traci.route.getIDList()
 
-            for _, row in sorted_df[sorted_df["start_time"] == timesteps].iterrows():
-                action = row["action"]
+                for route in routes:
+                    traci.simulation.clearPending(routeID=route)
+                for i in remove:
+                    traci.vehicle.remove(i,3)
+
+
+            departed=traci.simulation.getArrivedIDList()  # just collect this and time and calculate at the end
+
+            for value in departed:
+                if value:
+                    value_as_int = int(value)
+                    depart_id.append(value_as_int)
+                    depart_time.append(timestep)
+                    #start=sorted_df[sorted_df.id==value_as_int].start_time.values
+                    #depart_cost.append((timestep-start)/60)
+
+            for _, row in sorted_df[sorted_df["start_time"] == timestep].iterrows():
+                agent_action = row["action"]
                 vehicle_id = f"{row['id']}"
-                traci.vehicle.add(vehicle_id, f'{action}')
+                ori=row['origin']
+                dest=row['destination']
+                sumo_action = f'{ori}_{dest}_{agent_action}'
+                traci.vehicle.add(vehicle_id, sumo_action)
+                self.selected_routes.append(sumo_action)
+        
 
-        traci.close()
-                
-        duration = pd.read_xml('Network_and_config/tripinfo.xml').duration
-        reward = duration.reset_index().rename(columns={"duration":"cost"})
+        reward = pd.merge(pd.DataFrame(depart_id),pd.DataFrame(depart_time),right_index=True,left_index=True)
+        reward = reward.rename(columns={'0_x':'car_id','0_y':'depart_time'})
+        reward = pd.merge(left = reward,right = sorted_df, right_on='id', left_on = 'car_id')
+        reward['cost'] = (reward.depart_time - reward.start_time)/60
+        reward = reward.drop(columns=['depart_time','id','action','origin','destination','start_time'])
 
         return reward
     

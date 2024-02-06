@@ -1,8 +1,10 @@
-from abc import ABC, abstractmethod
-from keychain import Keychain as kc
-
 import numpy as np
+import pandas as pd
 import random
+
+from abc import ABC, abstractmethod
+
+from keychain import Keychain as kc
 
 
 class Agent(ABC):
@@ -41,7 +43,7 @@ class HumanAgent(Agent):
         self.beta = learning_params[kc.BETA]
         self.alpha = learning_params[kc.ALPHA]
 
-        self.cost = initial_knowledge
+        self.cost = np.array(initial_knowledge, dtype=float)
 
 
     def act(self, state):  
@@ -50,12 +52,12 @@ class HumanAgent(Agent):
         """
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
         prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
-        action = np.random.choice(list(range(len(self.cost))), p=prob_dist)    
+        action = np.random.choice(list(range(len(self.cost))), p=prob_dist) 
         return action        
 
 
     def learn(self, action, reward, state, next_state):
-        self.cost[action] = (1-self.alpha) * self.cost[action] + self.alpha * reward
+        self.cost[action]=(1-self.alpha) * self.cost[action] + self.alpha * reward
 
 
     def calculate_prob(self, utilities, n):
@@ -91,7 +93,7 @@ class MachineAgent(Agent):
         if np.random.rand() < self.epsilon:    # Explore
             return np.random.choice(self.action_space_size)
         else:    # Exploit
-            return np.argmax(self.q_table)
+            return np.argmin(self.q_table)
                 
 
     def learn(self, action, reward, state, next_state):

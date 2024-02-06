@@ -25,7 +25,7 @@
 
         "human_agent_parameters" :
         {
-            "beta" : 0.2,
+            "beta" : -0.2,
             "alpha" : 0.2
         }
     },
@@ -52,8 +52,8 @@
 
     "training_parameters":
     {
-        "num_episodes" : 10,
-        "log_every" : 5
+        "num_episodes" : 20,
+        "log_every" : 500
     }
     
 }
