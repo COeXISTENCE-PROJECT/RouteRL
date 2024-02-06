@@ -14,6 +14,7 @@ class Keychain:
     REWARDS_LOGS_PATH = "rewards"
     ACTIONS_LOGS_PATH = "actions"
     Q_TABLES_LOG_PATH = "q_tables"
+    ONE_AGENT_EXPERIENCE_LOG_PATH = "one_reward.csv"
     
     ###########################################################
     

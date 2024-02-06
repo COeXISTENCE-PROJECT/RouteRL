@@ -4,6 +4,7 @@ import traci
 import xml.etree.ElementTree as ET
 
 from bs4 import BeautifulSoup
+from collections import Counter
 from queue import PriorityQueue
 
 from keychain import Keychain as kc
@@ -211,7 +212,7 @@ class Simulator:
         depart_id = []
         depart_cost = []
         depart_time = []
-        self.route_counter = []
+        self.selected_routes = list()
 
         sorted_rows_based_on_start_time = self.priority_queue_creation(joint_action)
         sorted_df = pd.DataFrame(sorted_rows_based_on_start_time, columns=pd.DataFrame(joint_action).columns)
@@ -241,12 +242,13 @@ class Simulator:
                     #depart_cost.append((timestep-start)/60)
 
             for _, row in sorted_df[sorted_df["start_time"] == timestep].iterrows():
-                action = row["action"]
+                agent_action = row["action"]
                 vehicle_id = f"{row['id']}"
                 ori=row['origin']
                 dest=row['destination']
-                traci.vehicle.add(vehicle_id, f'{ori}_{dest}_{action}')
-                self.route_counter.append(f'{ori}_{dest}_{action}')
+                sumo_action = f'{ori}_{dest}_{agent_action}'
+                traci.vehicle.add(vehicle_id, sumo_action)
+                self.selected_routes.append(sumo_action)
         
 
         reward = pd.merge(pd.DataFrame(depart_id),pd.DataFrame(depart_time),right_index=True,left_index=True)

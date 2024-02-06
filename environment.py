@@ -19,8 +19,9 @@ class TrafficEnvironment(gym.Env):
 
     def __init__(self, simulation_parameters, agents_data_path):
         self.simulator = Simulator(simulation_parameters)
-        self.reward_table = []
-        self.flow=[]
+        self.reward_table = list()
+        self.route_flows = list()
+        self.all_selected_routes = set()
         self.agents_data_path=agents_data_path
         print("[SUCCESS] Environment initiated!")
 
@@ -38,10 +39,12 @@ class TrafficEnvironment(gym.Env):
     def step(self, joint_action):
 
         agent_ids = joint_action[kc.AGENT_ID]
-        sumo_df = self.simulator.run_simulation_iteration(joint_action)
+        sumo_df= self.simulator.run_simulation_iteration(joint_action)
 
-        data=pd.DataFrame(self.simulator.route_counter,columns=['route_id']).value_counts().values
-        self.flow.append(data)
+        selected_routes = self.simulator.selected_routes
+        self.all_selected_routes.update(selected_routes)
+        selected_routes_df = pd.DataFrame(selected_routes, columns=['route_id']).value_counts().values
+        self.route_flows.append(selected_routes_df)
 
         #### Calculate joint reward based on travel times returned by SUMO
         joint_reward = self.calculate_rewards(sumo_df)
@@ -62,30 +65,6 @@ class TrafficEnvironment(gym.Env):
         average_reward = real_reward.mean() 
         self.reward_table.append(average_reward)
         return real_reward
-    
-
-    def plot_rewards(self):
-        fig, axs = plt.subplots(2, 1)
-        printer=pd.DataFrame(self.flow,columns=list(set(self.simulator.route_counter)))
-        learning=pd.read_csv('one_reward.csv').cost_table.str.split(',',expand=True)
-        axs[0].plot(printer)
-        #plt.xlabel('Index')
-        #plt.ylabel('Values')
-        #plt.title('Line Plot for Each Column')
-        axs[0].legend(printer.columns)
-        for i in range(len(learning.columns)):
-            axs[1].plot(learning[i])
-        axs[1].legend(learning.columns)
-        #plt.ylim(0, 100)
-
-        plt.show()
-
-        plt.plot(self.reward_table)
-        plt.xlabel('Episode')
-        plt.ylabel('Reward')
-        plt.title('Reward Table Over Episodes')
-        plt.show()
-
 
 
     def print_free_flow_times(self, free_flow_times):
@@ -99,3 +78,29 @@ class TrafficEnvironment(gym.Env):
 
         print("------ Free flow travel times ------")
         print(table)
+
+
+    def plot_one_agent(self):
+        _, axs = plt.subplots(2, 1)
+
+        flows_df = pd.DataFrame(self.route_flows, columns = list(self.all_selected_routes))
+
+        axs[0].plot(flows_df)
+        axs[0].legend(flows_df.columns)
+
+        learning_data = pd.read_csv(kc.ONE_AGENT_EXPERIENCE_LOG_PATH).cost_table.str.split(',',expand=True)
+
+        for i in range(len(learning_data.columns)):
+            axs[1].plot(learning_data[i])
+        axs[1].legend(learning_data.columns)
+
+        plt.show()
+
+
+    def plot_rewards(self):
+
+        plt.plot(self.reward_table)
+        plt.xlabel('Episode')
+        plt.ylabel('Reward')
+        plt.title('Reward Table Over Episodes')
+        plt.show()
