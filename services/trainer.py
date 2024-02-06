@@ -74,7 +74,7 @@ class Trainer:
         ############ zoltan's request [4/4]
         one_human_cost_log_df = pd.DataFrame(one_human_cost_log)
         one_human_cost_log_df.to_csv(kc.ONE_AGENT_EXPERIENCE_LOG_PATH,index=False)
-        df_to_prettytable(one_human_cost_log_df, "HUMAN #{human_to_watch.id} EXPERIENCE")
+        #df_to_prettytable(one_human_cost_log_df, f"HUMAN #{human_to_watch.id} EXPERIENCE")
         ############
         
         env.plot_rewards()

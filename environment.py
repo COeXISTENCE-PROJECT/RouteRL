@@ -13,7 +13,6 @@ from simulator import Simulator
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 
-
 class TrafficEnvironment(gym.Env):
 
     def __init__(self, simulation_parameters, agents_data_path):
@@ -40,6 +39,7 @@ class TrafficEnvironment(gym.Env):
     def step(self, joint_action):
 
         agent_ids = joint_action[kc.AGENT_ID]
+
         sumo_df= self.simulator.run_simulation_iteration(joint_action)
 
         selected_routes = self.simulator.selected_routes
@@ -47,10 +47,9 @@ class TrafficEnvironment(gym.Env):
         selected_routes_df = pd.DataFrame(selected_routes, columns=['route_id']).value_counts().values
         self.route_flows.append(selected_routes_df)
 
-        #### Calculate joint reward based on travel times returned by SUMO
+        #Calculate joint reward based on travel times returned by SUMO
         joint_reward = self.calculate_rewards(sumo_df)
 
-        #rewards = [joint_reward for i in range(len(agent_ids))]
         rewards = joint_reward.values.tolist()
         joint_reward = pd.DataFrame({kc.AGENT_ID : agent_ids, kc.REWARD : rewards})
 
@@ -58,7 +57,6 @@ class TrafficEnvironment(gym.Env):
 
 
     def calculate_rewards(self, sumo_df):
-        ### sychronize names
         agent_data=pd.read_csv(self.agents_data_path)
         real_reward = pd.merge(sumo_df,agent_data,left_on='car_id',right_on='id',how='right')
         real_reward = real_reward.fillna(100)
@@ -99,7 +97,6 @@ class TrafficEnvironment(gym.Env):
 
 
     def plot_rewards(self):
-
         plt.plot(self.reward_table)
         plt.xlabel('Episode')
         plt.ylabel('Reward')
