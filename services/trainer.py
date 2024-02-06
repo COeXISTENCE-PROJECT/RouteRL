@@ -80,7 +80,6 @@ class Trainer:
         env.plot_rewards()
         env.plot_one_agent()
         
-        print(f"[INFO] Over {self.num_episodes} episodes, env.step took {sum(env.step_timer)} seconds in total and {sum(env.step_timer)/len(env.step_timer)} seconds in average.")
         return agents
     
 
