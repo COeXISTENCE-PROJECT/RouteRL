@@ -5,6 +5,7 @@ import time
 
 from prettytable import PrettyTable
 
+
 def confirm_env_variable(env_var, append=None):
     if env_var in os.environ:
         print("[CONFIRMED] Environment variable exists: %s" % env_var)
@@ -96,6 +97,7 @@ def list_to_string(from_list, separator=', '):
             out_str = "%s%s%s" % (out_str, separator, item)
 
     return out_str
+
 
 def df_to_prettytable(df, header_message="DATA", print_every=1):
     table = PrettyTable()

@@ -4,8 +4,6 @@ import numpy as np
 import os
 import pandas as pd
 
-from gymnasium.spaces import Box
-from gymnasium.spaces import Discrete
 from prettytable import PrettyTable
 
 from keychain import Keychain as kc
@@ -88,7 +86,7 @@ class TrafficEnvironment(gym.Env):
         axs[0].plot(flows_df)
         axs[0].legend(flows_df.columns)
 
-        learning_data = pd.read_csv(kc.ONE_AGENT_EXPERIENCE_LOG_PATH).cost_table.str.split(',',expand=True)
+        learning_data = pd.read_csv(kc.ONE_AGENT_EXPERIENCE_LOG_PATH).cost_table.str.split(',',expand=True).astype(float)
 
         for i in range(len(learning_data.columns)):
             axs[1].plot(learning_data[i])

@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 
 from keychain import Keychain as kc
 
+
 class Agent(ABC):
 
     """

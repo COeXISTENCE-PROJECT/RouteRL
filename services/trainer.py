@@ -76,6 +76,7 @@ class Trainer:
         one_human_cost_log_df.to_csv(kc.ONE_AGENT_EXPERIENCE_LOG_PATH,index=False)
         df_to_prettytable(one_human_cost_log_df, "HUMAN #{human_to_watch.id} EXPERIENCE")
         ############
+        
         env.plot_rewards()
         env.plot_one_agent()
         
