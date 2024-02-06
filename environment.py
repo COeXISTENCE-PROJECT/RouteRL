@@ -9,6 +9,7 @@ from prettytable import PrettyTable
 
 from keychain import Keychain as kc
 from simulator import Simulator
+from services import make_dir
 
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
@@ -18,9 +19,12 @@ class TrafficEnvironment(gym.Env):
     def __init__(self, simulation_parameters, agents_data_path):
         self.simulator = Simulator(simulation_parameters)
         self.parameter = simulation_parameters
-        self.reward_table = list()
+
+        self.average_rewards = list()
+
         self.route_flows = list()
         self.all_selected_routes = set()
+
         self.agents_data_path=agents_data_path
         print("[SUCCESS] Environment initiated!")
 
@@ -62,7 +66,7 @@ class TrafficEnvironment(gym.Env):
         real_reward = real_reward.fillna(100)
         real_reward = real_reward.cost
         average_reward = real_reward.mean() 
-        self.reward_table.append(average_reward)
+        self.average_rewards.append(average_reward)
         return real_reward
 
 
@@ -92,13 +96,14 @@ class TrafficEnvironment(gym.Env):
         for i in range(len(learning_data.columns)):
             axs[1].plot(learning_data[i])
         axs[1].legend(learning_data.columns)
-
+        plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.ONE_AGENT_PLOT_FILE_NAME))
         plt.show()
 
 
     def plot_rewards(self):
-        plt.plot(self.reward_table)
+        plt.plot(self.average_rewards)
         plt.xlabel('Episode')
-        plt.ylabel('Reward')
-        plt.title('Reward Table Over Episodes')
+        plt.ylabel('Mean Reward')
+        plt.title('Mean Rewards Over Episodes')
+        plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.REWARDS_PLOT_FILE_NAME))
         plt.show()
