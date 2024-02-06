@@ -57,7 +57,7 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
         verbose=1,
     )"""
 
-    model.learn(total_timesteps=300000)
+    model.learn(total_timesteps=400000)
 
     print(f"[SUCCESS] Finished training on {str(env.unwrapped.metadata['name'])}.")
 

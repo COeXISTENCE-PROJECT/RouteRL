@@ -124,17 +124,26 @@ class TrafficEnvironment(ParallelEnv):
         ### Individual reward to each agent
         rewards = {}
 
-        """for agent_name in self.possible_agents:
-            rewards[agent_name] = costs[len(rewards)] if len(rewards) < len(costs) else None"""
+        # each agent tries to minimize each one travel time
+        i = 0
+        for agent_name in self.possible_agents:
+            rewards[agent_name] = costs[i]
+            
 
+            if(i == 500):
+                self.reward_table.append(costs[i])
+
+            i = i + 1
+
+        #print(rewards)
 
         ### Joint reward for all agents
-        joint_reward = self.calculate_rewards(sumo_df)
+        """joint_reward = self.calculate_rewards(sumo_df)
 
         print("\n\njoint_reward is: ", joint_reward, "\n\n")
 
         for agent_name in self.possible_agents:
-            rewards[agent_name] = joint_reward
+            rewards[agent_name] = joint_reward"""
 
         #print("\n\n", rewards, "\n\n")
 
