@@ -12,7 +12,7 @@ from simulator import Simulator
 
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
-
+import time ####
 
 class TrafficEnvironment(gym.Env):
 
@@ -24,6 +24,8 @@ class TrafficEnvironment(gym.Env):
         self.all_selected_routes = set()
         self.agents_data_path=agents_data_path
         print("[SUCCESS] Environment initiated!")
+
+        self.step_timer = list() ####
 
 
     def calculate_free_flow_times(self):
@@ -40,7 +42,11 @@ class TrafficEnvironment(gym.Env):
     def step(self, joint_action):
 
         agent_ids = joint_action[kc.AGENT_ID]
+
+        start_time = time.time() ####
         sumo_df= self.simulator.run_simulation_iteration(joint_action)
+        duration = time.time() - start_time ####
+        self.step_timer.append(duration) ####
 
         selected_routes = self.simulator.selected_routes
         self.all_selected_routes.update(selected_routes)

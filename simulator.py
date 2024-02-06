@@ -11,7 +11,6 @@ from services import path_generator
 from services import cursed_path_generator
 from services import list_to_string
 from services import remove_double_quotes
-from services import df_to_prettytable
 
 
 
@@ -184,26 +183,25 @@ class Simulator:
     
 
 
-    def joint_action_to_sorted_stack(self, joint_action):
-        sorted_df = joint_action.sort_values(kc.AGENT_START_TIME, ascending=False)
-        agents_stack = [sorted_df.iloc[-1]]
-        for _, row in sorted_df.iterrows():
+    def joint_action_to_sorted_stack(self, sorted_joint_action):
+        stack_bottom_placeholder = {kc.AGENT_START_TIME : -1}
+        agents_stack = [stack_bottom_placeholder]
+        for _, row in sorted_joint_action.iterrows():
             agents_stack.append(row)
-        return sorted_df, agents_stack
+        return agents_stack
     
 
 
     def run_simulation_iteration(self, joint_action):
 
         depart_id = []
-        #depart_cost = []
         depart_time = []
         self.selected_routes = list()
 
-        sorted_df, agents_stack = self.joint_action_to_sorted_stack(joint_action)
+        sorted_joint_action = joint_action.sort_values(kc.AGENT_START_TIME, ascending=False)
+        agents_stack = self.joint_action_to_sorted_stack(sorted_joint_action)
 
         # Simulation loop
-
         for timestep in range(self.simulation_length):
             traci.simulationStep()
         
@@ -227,7 +225,8 @@ class Simulator:
                         depart_id.append(value_as_int)
                         depart_time.append(timestep)
 
-                for _, row in sorted_df[sorted_df["start_time"] == timestep].iterrows():
+                while agents_stack[-1][kc.AGENT_START_TIME] == timestep:
+                    row = agents_stack.pop()
                     agent_action = row["action"]
                     vehicle_id = f"{row['id']}"
                     ori=row['origin']
@@ -237,63 +236,11 @@ class Simulator:
                     self.selected_routes.append(sumo_action)
         
 
-        reward = pd.merge(pd.DataFrame(depart_id),pd.DataFrame(depart_time),right_index=True,left_index=True)
+        reward = pd.merge(pd.DataFrame(depart_id), pd.DataFrame(depart_time), right_index=True, left_index=True)
         reward = reward.rename(columns={'0_x':'car_id','0_y':'depart_time'})
-        reward.to_csv('heh.csv',index=False)
-        reward = pd.merge(left = reward,right = sorted_df, right_on='id', left_on = 'car_id')
+        reward = pd.merge(left = reward, right = sorted_joint_action, right_on='id', left_on = 'car_id')
         reward['cost'] = (reward.depart_time - reward.start_time)/60
-        reward = reward.drop(columns=['depart_time','id','action','origin','destination','start_time'])
-
-        """for timestep in range(self.simulation_length):
-            traci.simulationStep()
-        
-            if timestep==self.simulation_length-1:
-                print(traci.simulation.getMinExpectedNumber())
-                remove=traci.vehicle.getIDList()
-                routes=traci.route.getIDList()
-
-                for route in routes:
-                    traci.simulation.clearPending(routeID=route)
-                for i in remove:
-                    traci.vehicle.remove(i,3)
-
-
-            departed=traci.simulation.getArrivedIDList()  # just collect this and time and calculate at the end
-
-            for value in departed:
-                if value:
-                    value_as_int = int(value)
-                    depart_id.append(value_as_int)
-                    depart_time.append(timestep)
-                    #start=sorted_df[sorted_df.id==value_as_int].start_time.values
-                    #depart_cost.append((timestep-start)/60)
-
-            while agents_stack[-1][kc.AGENT_START_TIME] == timestep:
-                row = agents_stack.pop()
-                agent_action = row["action"]
-                vehicle_id = f"{row['id']}"
-                ori=row['origin']
-                dest=row['destination']
-                sumo_action = f'{ori}_{dest}_{agent_action}'
-                traci.vehicle.add(vehicle_id, sumo_action)
-                self.selected_routes.append(sumo_action)
-
-            """
-            for _, row in sorted_df[sorted_df["start_time"] == timestep].iterrows():
-                agent_action = row["action"]
-                vehicle_id = f"{row['id']}"
-                ori=row['origin']
-                dest=row['destination']
-                sumo_action = f'{ori}_{dest}_{agent_action}'
-                traci.vehicle.add(vehicle_id, sumo_action)
-                self.selected_routes.append(sumo_action)
-            """ 
-
-        reward = pd.merge(pd.DataFrame(depart_id),pd.DataFrame(depart_time),right_index=True,left_index=True)
-        reward = reward.rename(columns={'0_x':'car_id','0_y':'depart_time'})
-        reward = pd.merge(left = reward,right = sorted_df, right_on='id', left_on = 'car_id')
-        reward['cost'] = (reward.depart_time - reward.start_time)/60
-        reward = reward.drop(columns=['depart_time','id','action','origin','destination','start_time'])"""
+        reward = reward.drop(columns=['depart_time', 'id', 'action', 'origin', 'destination', 'start_time'])
 
         return reward
     
