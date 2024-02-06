@@ -52,7 +52,7 @@
 
     "training_parameters":
     {
-        "num_episodes" : 20,
+        "num_episodes" : 10,
         "log_every" : 500
     }
     
