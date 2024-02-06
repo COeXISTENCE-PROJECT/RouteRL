@@ -232,14 +232,6 @@ class Simulator:
                             value_as_int = int(value)
                             depart_id.append(value_as_int)
                             depart_time.append(timestep)
-                #print(traci.simulation.getMinExpectedNumber())
-                #remove=traci.vehicle.getIDList()
-                #routes=traci.route.getIDList()
-
-                #for route in routes:
-                #    traci.simulation.clearPending(routeID=route)
-                #for i in remove:
-                #    traci.vehicle.remove(i,3)
             else:
 
                 departed=traci.simulation.getArrivedIDList()  # just collect this and time and calculate at the end
@@ -249,8 +241,6 @@ class Simulator:
                         value_as_int = int(value)
                         depart_id.append(value_as_int)
                         depart_time.append(timestep)
-                        #start=sorted_df[sorted_df.id==value_as_int].start_time.values
-                        #depart_cost.append((timestep-start)/60)
 
                 for _, row in sorted_df[sorted_df["start_time"] == timestep].iterrows():
                     agent_action = row["action"]
