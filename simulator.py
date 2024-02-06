@@ -4,7 +4,6 @@ import traci
 import xml.etree.ElementTree as ET
 
 from bs4 import BeautifulSoup
-from collections import Counter
 from queue import PriorityQueue
 
 from keychain import Keychain as kc
@@ -12,6 +11,7 @@ from services import path_generator
 from services import cursed_path_generator
 from services import list_to_string
 from services import remove_double_quotes
+from services import df_to_prettytable
 
 
 
@@ -184,26 +184,12 @@ class Simulator:
     
 
 
-    def priority_queue_creation(self, joint_action):
-        #### joint action - columns{id, origin, destination, actions, start_time}
-        #### queue ordered by start_time
-
-        df = pd.DataFrame(joint_action)
-
-        # Use heapq to create a priority queue
-        priority_queue = PriorityQueue()
-
-        # Iterate over the DataFrame and enqueue rows based on the sorting column
-        for _, row in df.iterrows():
-            priority_queue.put((row["start_time"], tuple(row)))
-
-        sorted_rows = []
-        while not priority_queue.empty():
-            _, row = priority_queue.get()
-            #print("row is: ", row, "\n")
-            sorted_rows.append(row)
-
-        return sorted_rows
+    def joint_action_to_sorted_stack(self, joint_action):
+        sorted_df = joint_action.sort_values(kc.AGENT_START_TIME, ascending=False)
+        agents_stack = [sorted_df.iloc[-1]]
+        for _, row in sorted_df.iterrows():
+            agents_stack.append(row)
+        return sorted_df, agents_stack
     
 
 
@@ -214,8 +200,7 @@ class Simulator:
         depart_time = []
         self.selected_routes = list()
 
-        sorted_rows_based_on_start_time = self.priority_queue_creation(joint_action)
-        sorted_df = pd.DataFrame(sorted_rows_based_on_start_time, columns=pd.DataFrame(joint_action).columns)
+        sorted_df, agents_stack = self.joint_action_to_sorted_stack(joint_action)
 
         # Simulation loop
         for timestep in range(self.simulation_length):
@@ -241,6 +226,17 @@ class Simulator:
                     #start=sorted_df[sorted_df.id==value_as_int].start_time.values
                     #depart_cost.append((timestep-start)/60)
 
+            while agents_stack[-1][kc.AGENT_START_TIME] == timestep:
+                row = agents_stack.pop()
+                agent_action = row["action"]
+                vehicle_id = f"{row['id']}"
+                ori=row['origin']
+                dest=row['destination']
+                sumo_action = f'{ori}_{dest}_{agent_action}'
+                traci.vehicle.add(vehicle_id, sumo_action)
+                self.selected_routes.append(sumo_action)
+
+            """
             for _, row in sorted_df[sorted_df["start_time"] == timestep].iterrows():
                 agent_action = row["action"]
                 vehicle_id = f"{row['id']}"
@@ -249,7 +245,7 @@ class Simulator:
                 sumo_action = f'{ori}_{dest}_{agent_action}'
                 traci.vehicle.add(vehicle_id, sumo_action)
                 self.selected_routes.append(sumo_action)
-        
+            """ 
 
         reward = pd.merge(pd.DataFrame(depart_id),pd.DataFrame(depart_time),right_index=True,left_index=True)
         reward = reward.rename(columns={'0_x':'car_id','0_y':'depart_time'})
