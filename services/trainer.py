@@ -53,10 +53,13 @@ class Trainer:
                     futures = [executor.submit(self.learn_agent, agent, joint_action_df, joint_reward_df, state, next_state) for agent in agents]
                     concurrent.futures.wait(futures)
 
-                if not (ep % self.log_every):
+                
+                self.recorder.remember_all(ep, joint_action_df, joint_reward_df, agents)
+
+                ##if not (ep % self.log_every):
                 ########## Save training records
-                    joint_reward_df.to_csv(make_dir(kc.RECORDS_PATH, f"rewards_ep%d.csv" % (ep), [kc.REWARDS_LOGS_PATH]), index = False)
-                    joint_action_df.to_csv(make_dir(kc.RECORDS_PATH, f"actions_ep%d.csv" % (ep), [kc.ACTIONS_LOGS_PATH]), index = False)
+                ##    joint_reward_df.to_csv(make_dir(kc.RECORDS_PATH, f"rewards_ep%d.csv" % (ep), [kc.REWARDS_LOGS_PATH]), index = False)
+                ##    joint_action_df.to_csv(make_dir(kc.RECORDS_PATH, f"actions_ep%d.csv" % (ep), [kc.ACTIONS_LOGS_PATH]), index = False)
                 ##########
 
                 ############ zoltan's request [3/4]

@@ -13,7 +13,8 @@ class Keychain:
     RECORDS_PATH = "training_records"
     REWARDS_LOGS_PATH = "rewards"
     ACTIONS_LOGS_PATH = "actions"
-    Q_TABLES_LOG_PATH = "q_tables"
+    MACHINES_LOG_PATH = "machines"
+    HUMANS_LOG_PATH = "humans"
     ONE_AGENT_EXPERIENCE_LOG_PATH = "one_reward.csv"
 
     PLOTS_LOG_PATH = "plots"
