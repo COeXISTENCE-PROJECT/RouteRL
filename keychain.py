@@ -69,6 +69,11 @@ class Keychain:
     ORIGINS = "origins"
     DESTINATIONS = "destinations"
 
+    # Recorder
+    RECORDER_PARAMETERS = "recorder_parameters"
+    REMEMBER_EVERY = "remember_every"
+    RECORDER_MODE = "mode"
+
     ###########################################################
     
     
@@ -104,5 +109,10 @@ class Keychain:
     # Agent type encodings
     TYPE_HUMAN = "h"
     TYPE_MACHINE = "m"
+
+    # Recorder modes
+    PLOT_ONLY = "plot_only"
+    SAVE_ONLY = "save_only"
+    PLOT_AND_SAVE = "plot_and_save"
 
     ###########################################################

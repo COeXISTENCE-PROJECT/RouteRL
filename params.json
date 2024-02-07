@@ -53,7 +53,13 @@
     "training_parameters":
     {
         "num_episodes" : 100,
-        "log_every" : 50
+        "log_every" : 50,
+
+        "recorder_parameters":
+        {
+            "remember_every" : 1,
+            "mode" : "plot_and_save"
+        }
     }
     
 }
