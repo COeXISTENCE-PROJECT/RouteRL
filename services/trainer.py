@@ -3,6 +3,7 @@ import pandas as pd
 import time
 
 from keychain import Keychain as kc
+from recorder import Recorder
 from services.utils import make_dir
 from services.utils import show_progress, show_progress_bar
 
@@ -18,11 +19,14 @@ class Trainer:
     def __init__(self, params):
         self.num_episodes = params[kc.NUM_EPISODES]
         self.log_every = params[kc.LOG_EVERY]
+        self.recorder_params = params[kc.RECORDER_PARAMETERS]
 
 
     def train(self, env, agents):
 
         start_time = time.time()
+
+        self.recorder = Recorder(agents, self.recorder_params)
 
         ############ zoltan's request [2/4]
         one_human_cost_log = {key:list() for key in ['episode', 'agent_id', 'action', 'reward', 'cost_table']}

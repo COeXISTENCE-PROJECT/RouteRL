@@ -73,6 +73,8 @@ class Keychain:
     RECORDER_PARAMETERS = "recorder_parameters"
     REMEMBER_EVERY = "remember_every"
     RECORDER_MODE = "mode"
+    TRACK_HUMAN = "track_human"
+    TRACK_MACHINE = "track_machine"
 
     ###########################################################
     
