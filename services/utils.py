@@ -48,13 +48,14 @@ def read_json(file_path):    # Read json file, return as dict
 
 
 
-def make_dir(dir1, dir2, filename):    # Make dir if not exists, make full path
-    if not os.path.exists(dir1):
-        os.mkdir(dir1)
-    dir2 = os.path.join(dir1, dir2)
-    if not os.path.exists(dir2):
-        os.mkdir(dir2)
-    path = os.path.join(dir2, filename)
+def make_dir(main_folder_name, filename, lower_folders = list()):    # Make dir if not exists, make full path
+    if not os.path.exists(main_folder_name):
+        os.mkdir(main_folder_name)
+    for folder_name in lower_folders:
+        main_folder_name = os.path.join(main_folder_name, folder_name)
+        if not os.path.exists(main_folder_name):
+            os.mkdir(main_folder_name)
+    path = os.path.join(main_folder_name, filename)
     return path
 
 
