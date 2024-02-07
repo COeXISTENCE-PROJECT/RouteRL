@@ -4,11 +4,9 @@ import traci
 import xml.etree.ElementTree as ET
 
 from bs4 import BeautifulSoup
-from queue import PriorityQueue
 
 from keychain import Keychain as kc
 from services import path_generator
-from services import cursed_path_generator
 from services import list_to_string
 from services import remove_double_quotes
 

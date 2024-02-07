@@ -1,6 +1,3 @@
-import gymnasium as gym
-import matplotlib.pyplot as plt
-import numpy as np
 import os
 import pandas as pd
 import traci
@@ -9,12 +6,11 @@ from prettytable import PrettyTable
 
 from keychain import Keychain as kc
 from simulator import Simulator
-from services import make_dir, df_to_prettytable
 
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 
-class TrafficEnvironment(gym.Env):
+class TrafficEnvironment:
 
     def __init__(self, simulation_parameters, agents_data_path):
         self.simulator = Simulator(simulation_parameters)

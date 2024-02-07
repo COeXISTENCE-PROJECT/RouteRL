@@ -36,12 +36,12 @@ class Trainer:
                     futures = [executor.submit(self.learn_agent, agent, joint_action_df, joint_reward_df, state, next_state) for agent in agents]
                     concurrent.futures.wait(futures)
 
-                self.recorder.remember_all(ep, joint_action_df, joint_reward_df, agents)
-
                 state = next_state
 
+            self.recorder.remember_all(ep, joint_action_df, joint_reward_df, agents)
             show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes)
 
+        self.recorder.remember_all(ep, joint_action_df, joint_reward_df, agents)
         print("\n[COMPLETE] Training completed in: %s" % (time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(time.time() - start_time))))
         
         self.recorder.rewind()

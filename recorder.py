@@ -6,7 +6,7 @@ import random
 from collections import Counter
 
 from keychain import Keychain as kc
-from services.utils import make_dir, list_to_string, df_to_prettytable, string_to_list
+from services.utils import make_dir, list_to_string, string_to_list
 
 class Recorder:
 
@@ -107,9 +107,9 @@ class Recorder:
 #################### REWIND
         
     def rewind(self):
-        self.get_tracking_agent_data()
         self.get_average_rewards()
         self.get_flows()
+        self.get_tracking_agent_data()
 
 
 ########################################
@@ -128,6 +128,7 @@ class Recorder:
         plt.legend()
         if self.save: plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.REWARDS_PLOT_FILE_NAME))
         if self.show: plt.show()
+        plt.close()
 
     
     def read_mean_rewards(self):
@@ -194,22 +195,6 @@ class Recorder:
                     picked_actions.append(row[kc.ACTION])
                     current_costs.append(row["cost"])
 
-            """
-            ids, actions, rewards = experience_data[kc.AGENT_ID], experience_data[kc.ACTION], experience_data[kc.REWARD]
-            for i, id in enumerate(ids):
-                if id == self.human_to_track.id:
-                    collected_rewards.append(rewards[i])
-                    picked_actions.append(actions[i])
-                    break
-
-            humans_data_path = os.path.join(self.humans_folder, f"humans_ep{episode}.csv")
-            humans_data = pd.read_csv(humans_data_path)
-            ids, costs = humans_data["id"], humans_data["cost"]
-            for i, id in enumerate(ids):
-                if id == self.human_to_track.id:
-                    current_costs.append(costs[i])
-                    break
-            """
         experiences_df = pd.DataFrame({
             "rewards" : collected_rewards,
             "actions" : picked_actions,
@@ -253,45 +238,13 @@ class Recorder:
 
         if self.save: plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.ONE_HUMAN_PLOT_FILE_NAME))
         if self.show: plt.show()
+        plt.close()
     
 
 ########################################
         
 
 #################### TRACKING ONE MACHINE
-    """    
-    def get_one_machine_experiences(self):
-        if self.machine_to_track is None: return None
-
-        collected_rewards, picked_actions, current_q_tables, current_epsilons = list(), list(), list(), list()
-        for episode in self.episodes:
-            experience_data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
-            experience_data = pd.read_csv(experience_data_path)
-            ids, actions, rewards = experience_data[kc.AGENT_ID], experience_data[kc.ACTION], experience_data[kc.REWARD]
-            for i, id in enumerate(ids):
-                if id == self.machine_to_track.id:
-                    collected_rewards.append(rewards[i])
-                    picked_actions.append(actions[i])
-                    break
-
-            machines_data_path = os.path.join(self.machines_folder, f"machines_ep{episode}.csv")
-            machines_data = pd.read_csv(machines_data_path)
-            ids, q_tables, epsilons = machines_data["id"], machines_data["q_table"], machines_data["epsilon"]
-            for i, id in enumerate(ids):
-                if id == self.machine_to_track.id:
-                    current_q_tables.append(q_tables[i])
-                    current_epsilons.append(epsilons[i])
-                    break
-
-        experiences_df = pd.DataFrame({
-            "rewards" : collected_rewards,
-            "actions" : picked_actions,
-            "q_tables" : current_q_tables,
-            "epsilons" : current_epsilons
-        })
-
-        return experiences_df
-    """
 
     def get_one_machine_experiences(self):
         if self.machine_to_track is None: return None
@@ -362,6 +315,7 @@ class Recorder:
 
         if self.save: plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.ONE_MACHINE_PLOT_FILE_NAME))
         if self.show: plt.show()
+        plt.close()
     
 
 ########################################
@@ -389,6 +343,7 @@ class Recorder:
         plt.legend()
         if self.save: plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.FLOWS_PLOT_FILE_NAME))
         if self.show: plt.show()
+        plt.close()
 
         
 

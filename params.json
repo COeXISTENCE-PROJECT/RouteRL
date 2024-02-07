@@ -16,10 +16,10 @@
         {
             "min_alpha" : 0.1,
             "max_alpha" : 0.6,
-            "min_epsilon" : 0.7,
-            "max_epsilon" : 0.99,
-            "min_eps_decay" : 0.5,
-            "max_eps_decay" : 0.99,
+            "min_epsilon" : 0.9,
+            "max_epsilon" : 1.0,
+            "min_eps_decay" : 0.99,
+            "max_eps_decay" : 0.99999,
             "gamma" : 0.95
         },
 
@@ -54,11 +54,11 @@
 
     "training_parameters":
     {
-        "num_episodes" : 10,
+        "num_episodes" : 500,
 
         "recorder_parameters":
         {
-            "remember_every" : 2,
+            "remember_every" : 20,
             "mode" : "save_only",
             "track_human" : true,
             "track_machine" : true

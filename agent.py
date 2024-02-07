@@ -99,7 +99,6 @@ class MachineAgent(Agent):
 
     def learn(self, action, reward, state, next_state):
         prev_knowledge = self.q_table[action]
-        #self.q_table[action] = prev_knowledge + (self.alpha * (reward + (self.gamma * np.argmax(self.q_table)) - prev_knowledge))
         self.q_table[action] = prev_knowledge + (self.alpha * (reward - prev_knowledge))
         self.decay_epsilon()
 
