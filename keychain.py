@@ -10,16 +10,18 @@ class Keychain:
     PARAMS_PATH = "params.json"
 
 
-    RECORDS_PATH = "training_records"
-    REWARDS_LOGS_PATH = "rewards"
-    ACTIONS_LOGS_PATH = "actions"
-    MACHINES_LOG_PATH = "machines"
-    HUMANS_LOG_PATH = "humans"
+    RECORDS_FOLDER = "training_records"
+    EPISODES_LOGS_FOLDER = "episodes"
+    MACHINES_LOG_FOLDER = "machines"
+    HUMANS_LOG_FOLDER = "humans"
+
     ONE_AGENT_EXPERIENCE_LOG_PATH = "one_reward.csv"
 
     PLOTS_LOG_PATH = "plots"
     REWARDS_PLOT_FILE_NAME = "rewards.png"
-    ONE_AGENT_PLOT_FILE_NAME = "one_agent.png"
+    ONE_HUMAN_PLOT_FILE_NAME = "one_human.png"
+    ONE_MACHINE_PLOT_FILE_NAME = "one_machine.png"
+    FLOWS_PLOT_FILE_NAME = "flows.png"
     
     ###########################################################
     
@@ -54,7 +56,6 @@ class Keychain:
 
     # Training
     NUM_EPISODES = "num_episodes"
-    LOG_EVERY = "log_every"
 
     # Simulation
     SUMO_TYPE = "sumo_type"
@@ -66,6 +67,8 @@ class Keychain:
     
     PATHS_SAVE_PATH = "paths_save_path"
     NUMBER_OF_PATHS = "number_of_paths"
+
+    TRANSPORT_PENALTY = "transport_penalty"
 
     ORIGINS = "origins"
     DESTINATIONS = "destinations"
@@ -98,9 +101,11 @@ class Keychain:
 
     # Joint action df column headers
     ACTION = "action"
+    SUMO_ACTION = "sumo_action"
 
     # Joint rewards df column headers
     REWARD = "reward"
+    COST = "cost"
 
     # Q-Table log df headers
     Q_TABLE = "q_table"

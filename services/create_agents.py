@@ -44,7 +44,7 @@ def create_agent_objects(params, free_flow_times):
             print('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_TYPE])
 
     print(f'[SUCCESS] Created agent objects (%d)' % (len(agents)))
-    print_agents(agents, agent_attributes, print_every=50)
+    #print_agents(agents, agent_attributes, print_every=50)
     return agents
 
 

@@ -237,10 +237,11 @@ class Simulator:
         
 
         reward = pd.merge(pd.DataFrame(depart_id), pd.DataFrame(depart_time), right_index=True, left_index=True)
-        reward = reward.rename(columns={'0_x':'car_id','0_y':'depart_time'})
-        reward = pd.merge(left = reward, right = sorted_joint_action, right_on='id', left_on = 'car_id')
-        reward['cost'] = (reward.depart_time - reward.start_time)/60
-        reward = reward.drop(columns=['depart_time', 'id', 'action', 'origin', 'destination', 'start_time'])
+        reward = reward.rename(columns={'0_x' : kc.AGENT_ID, '0_y' : "depart_time"})
+        reward = pd.merge(left = reward, right = sorted_joint_action, on=kc.AGENT_ID)
+        reward[kc.COST] = (reward.depart_time - reward.start_time)/60
+        #reward = reward.drop(columns=['depart_time', 'action', 'origin', 'destination', 'start_time'])
+        reward = reward[[kc.AGENT_ID, kc.COST]]
 
         return reward
     

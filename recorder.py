@@ -1,9 +1,12 @@
 import matplotlib.pyplot as plt
+import os
 import pandas as pd
 import random
 
+from collections import Counter
+
 from keychain import Keychain as kc
-from services.utils import make_dir, list_to_string
+from services.utils import make_dir, list_to_string, df_to_prettytable, string_to_list
 
 class Recorder:
 
@@ -12,17 +15,25 @@ class Recorder:
         self.update_agents(agents)
 
         self.remember_every = params[kc.REMEMBER_EVERY]
-        self.mode = params[kc.RECORDER_MODE]
+        self.save, self.show = self.resolve_mode(params[kc.RECORDER_MODE])
         self.human_to_track, self.machine_to_track = self.get_tracking_agents(params[kc.TRACK_HUMAN], params[kc.TRACK_MACHINE])
 
+        self.episodes_folder = make_dir([kc.RECORDS_FOLDER, kc.EPISODES_LOGS_FOLDER])
+        self.machines_folder = make_dir([kc.RECORDS_FOLDER, kc.MACHINES_LOG_FOLDER])
+        self.humans_folder = make_dir([kc.RECORDS_FOLDER, kc.HUMANS_LOG_FOLDER])
 
+        self.episodes = list()
+
+
+#################### INIT HELPERS
+        
     def update_agents(self, agents):
         self.agents, self.humans, self.machines = agents, list(), list()
         for agent in agents:
             if agent.kind == kc.TYPE_HUMAN:
-                self.humans.append(agent)
+                self.humans.append(agent.id)
             elif agent.kind == kc.TYPE_MACHINE:
-                self.machines.append(agent)
+                self.machines.append(agent.id)
 
     
     def get_tracking_agents(self, if_track_human, if_track_machine):
@@ -38,24 +49,32 @@ class Recorder:
         return track_human, track_machine
 
 
+    def resolve_mode(self, mode):
+        if mode == kc.PLOT_AND_SAVE:
+            return True, True
+        elif mode == kc.PLOT_ONLY:
+            return False, True
+        elif mode == kc.SAVE_ONLY:
+            return True, False
+        
+########################################
+        
+
 #################### REMEMBER FUNCTIONS
     
     def remember_all(self, episode, joint_action, joint_reward, agents):
         if not (episode % self.remember_every):
+            self.episodes.append(episode)
             self.update_agents(agents)
-            self.remember_actions(episode, joint_action)
-            self.remember_rewards(episode, joint_reward)
+            self.remember_episode(episode, joint_action, joint_reward)
             self.remember_agents_status(episode)
-            self.track_human(episode, joint_action, joint_reward)
-            self.track_machine(episode, joint_action, joint_reward)
 
-    def remember_actions(self, episode, joint_action):
-        joint_action.drop([kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME], axis=1, inplace=True)
-        joint_action.to_csv(make_dir(kc.RECORDS_PATH, f"actions_ep{episode}.csv", [kc.ACTIONS_LOGS_PATH]), index = False)
 
- 
-    def remember_rewards(self, episode, joint_reward):
-        joint_reward.to_csv(make_dir(kc.RECORDS_PATH, f"rewards_ep{episode}.csv", [kc.REWARDS_LOGS_PATH]), index = False)
+    def remember_episode(self, episode, joint_action, joint_reward):
+        origins, dests, actions = joint_action[kc.AGENT_ORIGIN], joint_action[kc.AGENT_DESTINATION], joint_action[kc.ACTION]
+        joint_action[kc.SUMO_ACTION] = [f"{origins[i]}_{dests[i]}_{action}" for i, action in enumerate(actions)]
+        merged_df = pd.merge(joint_action, joint_reward, on=kc.AGENT_ID)
+        merged_df.to_csv(make_dir(self.episodes_folder, f"ep{episode}.csv"), index = False)
 
 
     def remember_agents_status(self, episode):
@@ -64,34 +83,339 @@ class Recorder:
 
 
     def remember_machines_status(self, episode):
-        machines_df_cols = ["id", "alpha", "epsilon", "eps_decay", "gamma", "q_table"]
+        machines_df_cols = [kc.AGENT_ID, "alpha", "epsilon", "eps_decay", "gamma", "q_table"]
         machines_df = pd.DataFrame(columns = machines_df_cols)
-        for machine in self.machines:
-            row_data = [machine.id, machine.alpha, machine.epsilon, machine.epsilon_decay_rate, machine.gamma, list_to_string(machine.q_table)]
+        machine_agents = self.get_agents_from_ids(self.machines)
+        for machine in machine_agents:
+            row_data = [machine.id, machine.alpha, machine.epsilon, machine.epsilon_decay_rate, machine.gamma, 
+                        list_to_string(machine.q_table, ' , ')]
             machines_df.loc[len(machines_df.index)] = {key : value for key, value in zip(machines_df_cols, row_data)} 
-        machines_df.to_csv(make_dir(kc.RECORDS_PATH, f"machines_ep{episode}.csv", [kc.MACHINES_LOG_PATH]), index = False)
+        machines_df.to_csv(make_dir([self.machines_folder], f"machines_ep{episode}.csv"), index = False)
         
-
 
     def remember_humans_status(self, episode):
-        humans_df_cols = ["id", "cost"]
+        humans_df_cols = [kc.AGENT_ID, "cost"]
         humans_df = pd.DataFrame(columns = humans_df_cols)
-        for human in self.humans:
-            row_data = [human.id, list_to_string(human.cost)]
+        human_agents = self.get_agents_from_ids(self.humans)
+        for human in human_agents:
+            row_data = [human.id, list_to_string(human.cost, ' , ')]
             humans_df.loc[len(humans_df.index)] = {key : value for key, value in zip(humans_df_cols, row_data)}  
-        humans_df.to_csv(make_dir(kc.RECORDS_PATH, f"humans_ep{episode}.csv", [kc.HUMANS_LOG_PATH]), index = False)
+        humans_df.to_csv(make_dir([self.humans_folder], f"humans_ep{episode}.csv"), index = False)
 
-
-    def track_human(self, episode, joint_action, joint_reward):
-        if self.human_to_track:
-            pass
+########################################
         
+#################### REWIND
+        
+    def rewind(self):
+        self.get_tracking_agent_data()
+        self.get_average_rewards()
+        self.get_flows()
 
-
-    def track_machine(self, episode, joint_action, joint_reward):
-        if self.machine_to_track:
-            pass
 
 ########################################
     
-#################### SAVING PLOTS & VISUALIZATION
+#################### MEAN REWARDS
+        
+    def get_average_rewards(self):
+        mean_rewards = self.read_mean_rewards()
+
+        plt.plot(self.episodes, mean_rewards["humans"], label="Humans")
+        plt.plot(self.episodes, mean_rewards["machines"], label="Machines")
+        plt.plot(self.episodes, mean_rewards["all"], label="All")
+        plt.xlabel('Episode')
+        plt.ylabel('Mean Reward')
+        plt.title('Mean Rewards Over Episodes')
+        plt.legend()
+        if self.save: plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.REWARDS_PLOT_FILE_NAME))
+        if self.show: plt.show()
+
+    
+    def read_mean_rewards(self):
+        all_mean_rewards, mean_human_rewards, mean_machine_rewards = list(), list(), list()
+
+        for episode in self.episodes:
+            data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
+            data = pd.read_csv(data_path)
+            ids, rewards = data[kc.AGENT_ID], data[kc.REWARD]
+            human_rewards, machine_rewards = list(), list()
+            for id, reward in zip(ids, rewards):
+                if id in self.humans:
+                    human_rewards.append(reward)
+                else:
+                    machine_rewards.append(reward)
+                
+            mean_human_rewards.append(self.mean(human_rewards))
+            mean_machine_rewards.append(self.mean(machine_rewards))
+            all_mean_rewards.append(self.mean(rewards))
+
+        mean_rewards = pd.DataFrame({
+            "humans": mean_human_rewards,
+            "machines": mean_machine_rewards,
+            "all": all_mean_rewards
+        })
+
+        return mean_rewards
+
+
+########################################
+    
+    
+#################### TRACKING ONE AGENT
+    
+
+    def get_tracking_agent_data(self):
+        tracking_human_data = self.get_one_human_experiences()
+        self.visualize_one_human(tracking_human_data)
+        tracking_machine_data = self.get_one_machine_experiences()
+        self.visualize_one_machine(tracking_machine_data)
+
+
+########################################
+    
+
+#################### TRACKING ONE HUMAN
+    
+    def get_one_human_experiences(self):
+        if self.human_to_track is None: return None
+
+        collected_rewards, picked_actions, current_costs = list(), list(), list()
+        for episode in self.episodes:
+            experience_data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
+            experience_data = pd.read_csv(experience_data_path)
+
+            humans_data_path = os.path.join(self.humans_folder, f"humans_ep{episode}.csv")
+            humans_data = pd.read_csv(humans_data_path)
+
+            merged_df = pd.merge(experience_data, humans_data, on=kc.AGENT_ID, how="left")
+
+            for _, row in merged_df.iterrows():
+                if row[kc.AGENT_ID] == self.human_to_track.id:
+                    collected_rewards.append(row[kc.REWARD])
+                    picked_actions.append(row[kc.ACTION])
+                    current_costs.append(row["cost"])
+
+            """
+            ids, actions, rewards = experience_data[kc.AGENT_ID], experience_data[kc.ACTION], experience_data[kc.REWARD]
+            for i, id in enumerate(ids):
+                if id == self.human_to_track.id:
+                    collected_rewards.append(rewards[i])
+                    picked_actions.append(actions[i])
+                    break
+
+            humans_data_path = os.path.join(self.humans_folder, f"humans_ep{episode}.csv")
+            humans_data = pd.read_csv(humans_data_path)
+            ids, costs = humans_data["id"], humans_data["cost"]
+            for i, id in enumerate(ids):
+                if id == self.human_to_track.id:
+                    current_costs.append(costs[i])
+                    break
+            """
+        experiences_df = pd.DataFrame({
+            "rewards" : collected_rewards,
+            "actions" : picked_actions,
+            "costs" : current_costs
+        })
+
+        return experiences_df
+    
+
+    def visualize_one_human(self, tracking_human_data):
+        if self.human_to_track is None: return
+
+        self.introduce_agent(self.human_to_track)
+
+        costs = tracking_human_data["costs"]
+        actions = tracking_human_data["actions"]
+        rewards = tracking_human_data["rewards"]
+
+        parsed_costs = list()
+        for cost in costs:
+            cost = string_to_list(cost, " , ")
+            parsed_costs.append([float(value) for value in cost])
+
+        fig, axs = plt.subplots(3, 1, figsize=(8, 12))
+
+        # Plot on each subplot
+        axs[0].plot(self.episodes, [cost[0] for cost in parsed_costs], label="0")
+        axs[0].plot(self.episodes, [cost[1] for cost in parsed_costs], label="1")
+        axs[0].plot(self.episodes, [cost[2] for cost in parsed_costs], label="2")
+        axs[0].legend()
+        axs[0].set_title('Cost Table Over Episodes')
+
+        axs[1].plot(self.episodes, rewards)
+        axs[1].set_title('Collected Rewards Over Episodes')
+
+        axs[2].step(self.episodes, actions, where='mid', linestyle='None', marker='o')
+        axs[2].set_title('Picked Actions Over Episodes')
+
+        fig.suptitle('One Human Experience')
+        plt.tight_layout()
+
+        if self.save: plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.ONE_HUMAN_PLOT_FILE_NAME))
+        if self.show: plt.show()
+    
+
+########################################
+        
+
+#################### TRACKING ONE MACHINE
+    """    
+    def get_one_machine_experiences(self):
+        if self.machine_to_track is None: return None
+
+        collected_rewards, picked_actions, current_q_tables, current_epsilons = list(), list(), list(), list()
+        for episode in self.episodes:
+            experience_data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
+            experience_data = pd.read_csv(experience_data_path)
+            ids, actions, rewards = experience_data[kc.AGENT_ID], experience_data[kc.ACTION], experience_data[kc.REWARD]
+            for i, id in enumerate(ids):
+                if id == self.machine_to_track.id:
+                    collected_rewards.append(rewards[i])
+                    picked_actions.append(actions[i])
+                    break
+
+            machines_data_path = os.path.join(self.machines_folder, f"machines_ep{episode}.csv")
+            machines_data = pd.read_csv(machines_data_path)
+            ids, q_tables, epsilons = machines_data["id"], machines_data["q_table"], machines_data["epsilon"]
+            for i, id in enumerate(ids):
+                if id == self.machine_to_track.id:
+                    current_q_tables.append(q_tables[i])
+                    current_epsilons.append(epsilons[i])
+                    break
+
+        experiences_df = pd.DataFrame({
+            "rewards" : collected_rewards,
+            "actions" : picked_actions,
+            "q_tables" : current_q_tables,
+            "epsilons" : current_epsilons
+        })
+
+        return experiences_df
+    """
+
+    def get_one_machine_experiences(self):
+        if self.machine_to_track is None: return None
+
+        collected_rewards, picked_actions = list(), list()
+        current_q_tables, current_epsilons = list(), list()
+        for episode in self.episodes:
+            experience_data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
+            experience_data = pd.read_csv(experience_data_path)
+
+            machines_data_path = os.path.join(self.machines_folder, f"machines_ep{episode}.csv")
+            machines_data = pd.read_csv(machines_data_path)
+
+            merged_df = pd.merge(experience_data, machines_data, on=kc.AGENT_ID, how="left")
+
+            for _, row in merged_df.iterrows():
+                if row[kc.AGENT_ID] == self.machine_to_track.id:
+                    collected_rewards.append(row[kc.REWARD])
+                    picked_actions.append(row[kc.ACTION])
+                    current_q_tables.append(row["q_table"])
+                    current_epsilons.append(row["epsilon"])
+
+        experiences_df = pd.DataFrame({
+            "rewards" : collected_rewards,
+            "actions" : picked_actions,
+            "q_tables" : current_q_tables,
+            "epsilons" : current_epsilons
+        })
+
+        return experiences_df
+    
+
+    def visualize_one_machine(self, tracking_machine_data):
+        if self.machine_to_track is None: return
+
+        self.introduce_agent(self.machine_to_track)
+
+        q_tables = tracking_machine_data["q_tables"]
+        actions = tracking_machine_data["actions"]
+        rewards = tracking_machine_data["rewards"]
+        epsilons = tracking_machine_data["epsilons"]
+
+        parsed_q = list()
+        for q in q_tables:
+            q = string_to_list(q, " , ")
+            parsed_q.append([float(value) for value in q])
+
+        fig, axs = plt.subplots(4, 1, figsize=(8, 12))
+
+        # Plot on each subplot
+        axs[0].plot(self.episodes, [q[0] for q in parsed_q], label="Action 0")
+        axs[0].plot(self.episodes, [q[1] for q in parsed_q], label="Action 1")
+        axs[0].plot(self.episodes, [q[2] for q in parsed_q], label="Action 2")
+        axs[0].legend()
+        axs[0].set_title('Q-Table Over Episodes')
+
+        axs[1].plot(self.episodes, rewards)
+        axs[1].set_title('Collected Rewards Over Episodes')
+
+        axs[2].step(self.episodes, actions, where='mid', linestyle='None', marker='o')
+        axs[2].set_title('Picked Actions Over Episodes')
+
+        axs[3].plot(self.episodes, epsilons)
+        axs[3].set_title('Epsilon Over Episodes')
+
+        fig.suptitle('One Machine Experience')
+        plt.tight_layout()
+
+        if self.save: plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.ONE_MACHINE_PLOT_FILE_NAME))
+        if self.show: plt.show()
+    
+
+########################################
+    
+    def get_flows(self):
+
+        all_selections = list()
+        ever_picked = set()
+
+        for episode in self.episodes:
+            experience_data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
+            experience_data = pd.read_csv(experience_data_path)
+            actions = experience_data[kc.SUMO_ACTION]
+
+            ever_picked.update(actions)
+            actions_counter = Counter(actions)
+            all_selections.append(actions_counter)
+
+        for pick in ever_picked:
+            plt.plot(self.episodes, [selections[pick] for selections in all_selections], label=pick)
+
+        plt.xlabel('Episodes')
+        plt.ylabel('Population')
+        plt.title('Population in Routes Over Episodes')
+        plt.legend()
+        if self.save: plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.FLOWS_PLOT_FILE_NAME))
+        if self.show: plt.show()
+
+        
+
+
+#################### HELPERS
+        
+    def get_agent_from_id(self, id):
+        for agent in self.agents:
+            if agent.id == id:
+                return agent
+        return None
+    
+
+    def get_agents_from_ids(self, ids):
+        found = list()
+        for agent in self.agents:
+            if agent.id in ids:
+                found.append(agent)
+        return found
+
+
+
+    def mean(self, data):
+        return sum(data) / len(data)
+    
+
+    def introduce_agent(self, agent):
+        print(f"[INFO] Now visualizing agent #{agent.id} from kind {agent.kind} with OD: {agent.origin}-{agent.destination} at start time {agent.start_time}.")
+    
+

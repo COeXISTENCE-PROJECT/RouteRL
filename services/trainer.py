@@ -4,36 +4,19 @@ import time
 
 from keychain import Keychain as kc
 from recorder import Recorder
-from services.utils import make_dir
-from services.utils import show_progress, show_progress_bar
-
-############ zoltan's request [1/4]
-import random
-from agent import HumanAgent
-from services.utils import list_to_string, df_to_prettytable
-############
+from services.utils import show_progress_bar
 
 
 class Trainer:
 
     def __init__(self, params):
         self.num_episodes = params[kc.NUM_EPISODES]
-        self.log_every = params[kc.LOG_EVERY]
         self.recorder_params = params[kc.RECORDER_PARAMETERS]
 
 
     def train(self, env, agents):
-
         start_time = time.time()
-
         self.recorder = Recorder(agents, self.recorder_params)
-
-        ############ zoltan's request [2/4]
-        one_human_cost_log = {key:list() for key in ['episode', 'agent_id', 'action', 'reward', 'cost_table']}
-        human_to_watch = random.choice(agents)
-        while not isinstance(human_to_watch, HumanAgent):
-            human_to_watch = random.choice(agents) 
-        ############
 
         for ep in range(self.num_episodes):    # Until we simulate num_episode episodes
             state = env.reset()
@@ -53,39 +36,15 @@ class Trainer:
                     futures = [executor.submit(self.learn_agent, agent, joint_action_df, joint_reward_df, state, next_state) for agent in agents]
                     concurrent.futures.wait(futures)
 
-                
                 self.recorder.remember_all(ep, joint_action_df, joint_reward_df, agents)
-
-                ##if not (ep % self.log_every):
-                ########## Save training records
-                ##    joint_reward_df.to_csv(make_dir(kc.RECORDS_PATH, f"rewards_ep%d.csv" % (ep), [kc.REWARDS_LOGS_PATH]), index = False)
-                ##    joint_action_df.to_csv(make_dir(kc.RECORDS_PATH, f"actions_ep%d.csv" % (ep), [kc.ACTIONS_LOGS_PATH]), index = False)
-                ##########
-
-                ############ zoltan's request [3/4]
-                reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == human_to_watch.id, kc.REWARD].item()
-                action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == human_to_watch.id, kc.ACTION].item()
-                one_human_cost_log['episode'].append(ep)
-                one_human_cost_log['agent_id'].append(human_to_watch.id)
-                one_human_cost_log['action'].append(action)
-                one_human_cost_log['reward'].append("%.3f" % reward)
-                one_human_cost_log['cost_table'].append(list_to_string(human_to_watch.cost))
-                ############
 
                 state = next_state
 
             show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes)
 
         print("\n[COMPLETE] Training completed in: %s" % (time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(time.time() - start_time))))
-
-        ############ zoltan's request [4/4]
-        one_human_cost_log_df = pd.DataFrame(one_human_cost_log)
-        one_human_cost_log_df.to_csv(kc.ONE_AGENT_EXPERIENCE_LOG_PATH,index=False)
-        #df_to_prettytable(one_human_cost_log_df, f"HUMAN #{human_to_watch.id} EXPERIENCE")
-        ############
         
-        env.plot_rewards()
-        env.plot_one_agent()
+        self.recorder.rewind()
         
         return agents
     

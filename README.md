@@ -7,10 +7,17 @@ The implementation includes several components, as depicted in the UML Class and
 
 
 ## Collected Mean Rewards:
-
 ![](plots/rewards.png)
 
 
+## Route Populations:
+![](plots/flows.png)
 
-## Route Population (Upper) and One Human Agent's Cost Table (Lower)
-![](plots/one_agent.png)
+
+## One Random Human's Experience
+![](plots/one_human.png)
+
+
+## One Random Machine's Experience
+![](plots/one_machine.png)
+

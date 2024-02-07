@@ -14,11 +14,11 @@
 
         "machine_agent_parameters" :
         {
-            "min_alpha" : 0.2,
-            "max_alpha" : 0.5,
+            "min_alpha" : 0.1,
+            "max_alpha" : 0.6,
             "min_epsilon" : 0.7,
             "max_epsilon" : 0.99,
-            "min_eps_decay" : 0.9,
+            "min_eps_decay" : 0.5,
             "max_eps_decay" : 0.99,
             "gamma" : 0.95
         },
@@ -46,19 +46,20 @@
         "beta" : -0.1,
 
         "origins" : ["279952229#0", "115604053"],
-        "destinations" : ["-115602933#2", "-441496282#1"]
+        "destinations" : ["-115602933#2", "-441496282#1"],
+
+        "transport_penalty" : 100
     },
 
 
     "training_parameters":
     {
         "num_episodes" : 10,
-        "log_every" : 50,
 
         "recorder_parameters":
         {
-            "remember_every" : 1,
-            "mode" : "plot_and_save",
+            "remember_every" : 2,
+            "mode" : "save_only",
             "track_human" : true,
             "track_machine" : true
         }

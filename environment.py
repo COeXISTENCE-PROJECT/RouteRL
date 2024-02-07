@@ -9,7 +9,7 @@ from prettytable import PrettyTable
 
 from keychain import Keychain as kc
 from simulator import Simulator
-from services import make_dir
+from services import make_dir, df_to_prettytable
 
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
@@ -18,12 +18,10 @@ class TrafficEnvironment(gym.Env):
 
     def __init__(self, simulation_parameters, agents_data_path):
         self.simulator = Simulator(simulation_parameters)
-        self.parameter = simulation_parameters
+        self.params = simulation_parameters
 
-        self.average_rewards = list()
-
-        self.route_flows = list()
-        self.all_selected_routes = set()
+        self.transport_penalty = self.params[kc.TRANSPORT_PENALTY]
+        self.sumo_config_path = self.params[kc.SUMO_CONFIG_PATH]
 
         self.agents_data_path=agents_data_path
         print("[SUCCESS] Environment initiated!")
@@ -36,38 +34,32 @@ class TrafficEnvironment(gym.Env):
         
 
     def reset(self):
-        traci.load(['-c', self.parameter[kc.SUMO_CONFIG_PATH]])
+        traci.load(['-c', self.sumo_config_path])
         return None
 
 
     def step(self, joint_action):
 
-        agent_ids = joint_action[kc.AGENT_ID]
-
-        sumo_df= self.simulator.run_simulation_iteration(joint_action)
-
-        selected_routes = self.simulator.selected_routes
-        self.all_selected_routes.update(selected_routes)
-        selected_routes_df = pd.DataFrame(selected_routes, columns=['route_id']).value_counts().values
-        self.route_flows.append(selected_routes_df)
-
-        #Calculate joint reward based on travel times returned by SUMO
+        sumo_df = self.simulator.run_simulation_iteration(joint_action)
         joint_reward = self.calculate_rewards(sumo_df)
 
-        rewards = joint_reward.values.tolist()
-        joint_reward = pd.DataFrame({kc.AGENT_ID : agent_ids, kc.REWARD : rewards})
+        #agent_ids = joint_action[kc.AGENT_ID]
+        #rewards = joint_reward.values.tolist()
+        #joint_reward = pd.DataFrame({kc.AGENT_ID : agent_ids, kc.REWARD : rewards})
 
         return joint_reward, None, True
 
 
     def calculate_rewards(self, sumo_df):
-        agent_data=pd.read_csv(self.agents_data_path)
-        real_reward = pd.merge(sumo_df,agent_data,left_on='car_id',right_on='id',how='right')
-        real_reward = real_reward.fillna(100)
-        real_reward = real_reward.cost
-        average_reward = real_reward.mean() 
-        self.average_rewards.append(average_reward)
-        return real_reward
+        # Fill up for transports
+        agent_data = pd.read_csv(self.agents_data_path)
+        filled_reward = pd.merge(sumo_df, agent_data, left_on=kc.AGENT_ID, right_on=kc.AGENT_ID, how='right')
+        filled_reward = filled_reward.fillna(self.transport_penalty)
+        # Calculate reward from cost (skipped)
+        # Turn cost column to reward, drop everything but id and reward
+        filled_reward = filled_reward.rename(columns={kc.COST : kc.REWARD})
+        filled_reward = filled_reward[[kc.AGENT_ID, kc.REWARD]]
+        return filled_reward
 
 
     def print_free_flow_times(self, free_flow_times):
@@ -81,29 +73,3 @@ class TrafficEnvironment(gym.Env):
 
         print("------ Free flow travel times ------")
         print(table)
-
-
-    def plot_one_agent(self):
-        _, axs = plt.subplots(2, 1)
-
-        flows_df = pd.DataFrame(self.route_flows, columns = list(self.all_selected_routes))
-
-        axs[0].plot(flows_df)
-        axs[0].legend(flows_df.columns)
-
-        learning_data = pd.read_csv(kc.ONE_AGENT_EXPERIENCE_LOG_PATH).cost_table.str.split(',',expand=True).astype(float)
-
-        for i in range(len(learning_data.columns)):
-            axs[1].plot(learning_data[i])
-        axs[1].legend(learning_data.columns)
-        plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.ONE_AGENT_PLOT_FILE_NAME))
-        plt.show()
-
-
-    def plot_rewards(self):
-        plt.plot(self.average_rewards)
-        plt.xlabel('Episode')
-        plt.ylabel('Mean Reward')
-        plt.title('Mean Rewards Over Episodes')
-        plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.REWARDS_PLOT_FILE_NAME))
-        plt.show()
