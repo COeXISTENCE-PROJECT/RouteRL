@@ -12,14 +12,11 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 class TrafficEnvironment:
 
-    def __init__(self, simulation_parameters, agents_data_path):
-        self.simulator = Simulator(simulation_parameters)
-        self.params = simulation_parameters
-
-        self.transport_penalty = self.params[kc.TRANSPORT_PENALTY]
-        self.sumo_config_path = self.params[kc.SUMO_CONFIG_PATH]
-
-        self.agents_data_path=agents_data_path
+    def __init__(self, environment_params, simulation_params):
+        self.transport_penalty = environment_params[kc.TRANSPORT_PENALTY]
+        self.agents_data_path = environment_params[kc.AGENTS_DATA_PATH]
+        
+        self.simulator = Simulator(simulation_params)
         print("[SUCCESS] Environment initiated!")
 
 
@@ -30,8 +27,9 @@ class TrafficEnvironment:
         
 
     def reset(self):
-        traci.load(['-c', self.sumo_config_path])
-        return None
+        sumo_observation = self.simulator.reset()
+        state = None
+        return state
 
 
     def step(self, joint_action):

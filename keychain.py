@@ -32,6 +32,7 @@ class Keychain:
 
     AGENTS_GENERATION_PARAMETERS = "agent_generation_parameters"
     TRAINING_PARAMETERS = "training_parameters"
+    ENVIRONMENT_PARAMETERS = "environment_parameters"
     SIMULATION_PARAMETERS = "simulation_parameters"
 
     # Agent generation
@@ -57,6 +58,9 @@ class Keychain:
     # Training
     NUM_EPISODES = "num_episodes"
 
+    # Environment
+    TRANSPORT_PENALTY = "transport_penalty"
+
     # Simulation
     SUMO_TYPE = "sumo_type"
     SUMO_CONFIG_PATH = "sumo_config_path"
@@ -64,12 +68,8 @@ class Keychain:
     EDGE_FILE_PATH = "edge_file_path" 
     ROUTE_FILE_PATH = "route_file_path"
     ROUTES_XML_SAVE_PATH = "routes_xml_save_path"
-    
     PATHS_SAVE_PATH = "paths_save_path"
     NUMBER_OF_PATHS = "number_of_paths"
-
-    TRANSPORT_PENALTY = "transport_penalty"
-
     ORIGINS = "origins"
     DESTINATIONS = "destinations"
 

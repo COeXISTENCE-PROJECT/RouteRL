@@ -20,8 +20,7 @@ class Simulator:
 
     def __init__(self, params):
 
-        #self.sumo_type = params[kc.SUMO_TYPE]
-        #self.config = params[kc.SUMO_CONFIG_PATH]
+        self.sumo_config_path = params[kc.SUMO_CONFIG_PATH]
         self.routes_xml_save_path = params[kc.ROUTES_XML_SAVE_PATH]
 
         self.number_of_paths = params[kc.NUMBER_OF_PATHS]
@@ -44,6 +43,11 @@ class Simulator:
         # In list of nodes, we use SUMO simulation ids of nodes
         self.routes = self.create_routes(self.origins, self.destinations)
         self.save_paths(self.routes)
+
+    
+    def reset(self):
+        traci.load(['-c', self.sumo_config_path])
+        return None
 
         
 
