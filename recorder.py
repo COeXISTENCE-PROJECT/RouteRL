@@ -14,7 +14,6 @@ class Recorder:
         self.agents, self.humans, self.machines = list(), list(), list()
         self.update_agents(agents)
 
-        self.remember_every = params[kc.REMEMBER_EVERY]
         self.save, self.show = self.resolve_mode(params[kc.RECORDER_MODE])
         self.human_to_track, self.machine_to_track = self.get_tracking_agents(params[kc.TRACK_HUMAN], params[kc.TRACK_MACHINE])
 
@@ -63,11 +62,10 @@ class Recorder:
 #################### REMEMBER FUNCTIONS
     
     def remember_all(self, episode, joint_action, joint_reward, agents):
-        if not (episode % self.remember_every):
-            self.episodes.append(episode)
-            self.update_agents(agents)
-            self.remember_episode(episode, joint_action, joint_reward)
-            self.remember_agents_status(episode)
+        self.episodes.append(episode)
+        self.update_agents(agents)
+        self.remember_episode(episode, joint_action, joint_reward)
+        self.remember_agents_status(episode)
 
 
     def remember_episode(self, episode, joint_action, joint_reward):
@@ -319,7 +317,7 @@ class Recorder:
     def visualize_flows(self):
 
         ever_picked, all_selections = self.retrieve_flows()
-
+        
         for pick in ever_picked:
             plt.plot(self.episodes, [selections[pick] for selections in all_selections], label=pick)
 

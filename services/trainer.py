@@ -12,6 +12,7 @@ class Trainer:
     def __init__(self, params):
         self.num_episodes = params[kc.NUM_EPISODES]
         self.recorder_params = params[kc.RECORDER_PARAMETERS]
+        self.remember_every = params[kc.REMEMBER_EVERY]
 
 
     def train(self, env, agents):
@@ -37,11 +38,9 @@ class Trainer:
                     concurrent.futures.wait(futures)
 
                 state = next_state
-
-            self.recorder.remember_all(ep, joint_action_df, joint_reward_df, agents)
+            if (not (ep % self.remember_every)) or (ep == (self.num_episodes-1)): self.recorder.remember_all(ep, joint_action_df, joint_reward_df, agents)
             show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes)
 
-        self.recorder.remember_all(ep, joint_action_df, joint_reward_df, agents)
         print("\n[COMPLETE] Training completed in: %s" % (time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(time.time() - start_time))))
         
         self.recorder.rewind()

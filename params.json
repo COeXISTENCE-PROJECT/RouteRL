@@ -58,11 +58,11 @@
 
     "training_parameters":
     {
-        "num_episodes" : 500,
+        "num_episodes" : 3000,
+        "remember_every" : 60,
 
         "recorder_parameters":
         {
-            "remember_every" : 20,
             "mode" : "save_only",
             "track_human" : true,
             "track_machine" : true
