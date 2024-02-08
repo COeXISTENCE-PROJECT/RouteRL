@@ -83,7 +83,7 @@ class Recorder:
 
 
     def remember_machines_status(self, episode):
-        machines_df_cols = [kc.AGENT_ID, "alpha", "epsilon", "eps_decay", "gamma", "q_table"]
+        machines_df_cols = [kc.AGENT_ID, kc.ALPHA, kc.EPSILON, kc.EPSILON_DECAY_RATE, kc.GAMMA, kc.Q_TABLE]
         machines_df = pd.DataFrame(columns = machines_df_cols)
         machine_agents = self.get_agents_from_ids(self.machines)
         for machine in machine_agents:
@@ -94,7 +94,7 @@ class Recorder:
         
 
     def remember_humans_status(self, episode):
-        humans_df_cols = [kc.AGENT_ID, "cost"]
+        humans_df_cols = [kc.AGENT_ID, kc.COST_TABLE]
         humans_df = pd.DataFrame(columns = humans_df_cols)
         human_agents = self.get_agents_from_ids(self.humans)
         for human in human_agents:
@@ -107,21 +107,21 @@ class Recorder:
 #################### REWIND
         
     def rewind(self):
-        self.get_average_rewards()
-        self.get_flows()
-        self.get_tracking_agent_data()
+        self.visualize_mean_rewards()
+        self.visualize_flows()
+        self.visualize_tracking_agent_data()
 
 
 ########################################
     
 #################### MEAN REWARDS
         
-    def get_average_rewards(self):
-        mean_rewards = self.read_mean_rewards()
+    def visualize_mean_rewards(self):
+        mean_rewards = self.retrieve_mean_rewards()
 
-        plt.plot(self.episodes, mean_rewards["humans"], label="Humans")
-        plt.plot(self.episodes, mean_rewards["machines"], label="Machines")
-        plt.plot(self.episodes, mean_rewards["all"], label="All")
+        plt.plot(self.episodes, mean_rewards[kc.HUMANS], label="Humans")
+        plt.plot(self.episodes, mean_rewards[kc.MACHINES], label="Machines")
+        plt.plot(self.episodes, mean_rewards[kc.ALL], label="All")
         plt.xlabel('Episode')
         plt.ylabel('Mean Reward')
         plt.title('Mean Rewards Over Episodes')
@@ -131,7 +131,7 @@ class Recorder:
         plt.close()
 
     
-    def read_mean_rewards(self):
+    def retrieve_mean_rewards(self):
         all_mean_rewards, mean_human_rewards, mean_machine_rewards = list(), list(), list()
 
         for episode in self.episodes:
@@ -150,9 +150,9 @@ class Recorder:
             all_mean_rewards.append(self.mean(rewards))
 
         mean_rewards = pd.DataFrame({
-            "humans": mean_human_rewards,
-            "machines": mean_machine_rewards,
-            "all": all_mean_rewards
+            kc.HUMANS: mean_human_rewards,
+            kc.MACHINES: mean_machine_rewards,
+            kc.ALL: all_mean_rewards
         })
 
         return mean_rewards
@@ -164,11 +164,11 @@ class Recorder:
 #################### TRACKING ONE AGENT
     
 
-    def get_tracking_agent_data(self):
-        tracking_human_data = self.get_one_human_experiences()
-        self.visualize_one_human(tracking_human_data)
-        tracking_machine_data = self.get_one_machine_experiences()
-        self.visualize_one_machine(tracking_machine_data)
+    def visualize_tracking_agent_data(self):
+        if not (self.human_to_track is None):
+            self.visualize_tracking_human_data()
+        if not (self.machine_to_track is None):
+            self.visualize_tracking_machine_data()
 
 
 ########################################
@@ -176,9 +176,7 @@ class Recorder:
 
 #################### TRACKING ONE HUMAN
     
-    def get_one_human_experiences(self):
-        if self.human_to_track is None: return None
-
+    def retrieve_tracking_human_data(self):
         collected_rewards, picked_actions, current_costs = list(), list(), list()
         for episode in self.episodes:
             experience_data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
@@ -193,25 +191,24 @@ class Recorder:
                 if row[kc.AGENT_ID] == self.human_to_track.id:
                     collected_rewards.append(row[kc.REWARD])
                     picked_actions.append(row[kc.ACTION])
-                    current_costs.append(row["cost"])
+                    current_costs.append(row[kc.COST_TABLE])
 
         experiences_df = pd.DataFrame({
-            "rewards" : collected_rewards,
-            "actions" : picked_actions,
+            kc.REWARD : collected_rewards,
+            kc.ACTION : picked_actions,
             "costs" : current_costs
         })
 
         return experiences_df
     
 
-    def visualize_one_human(self, tracking_human_data):
-        if self.human_to_track is None: return
-
+    def visualize_tracking_human_data(self):
+        tracking_human_data = self.retrieve_tracking_human_data()
         self.introduce_agent(self.human_to_track)
 
         costs = tracking_human_data["costs"]
-        actions = tracking_human_data["actions"]
-        rewards = tracking_human_data["rewards"]
+        actions = tracking_human_data[kc.ACTION]
+        rewards = tracking_human_data[kc.REWARD]
 
         parsed_costs = list()
         for cost in costs:
@@ -221,9 +218,9 @@ class Recorder:
         fig, axs = plt.subplots(3, 1, figsize=(8, 12))
 
         # Plot on each subplot
-        axs[0].plot(self.episodes, [cost[0] for cost in parsed_costs], label="0")
-        axs[0].plot(self.episodes, [cost[1] for cost in parsed_costs], label="1")
-        axs[0].plot(self.episodes, [cost[2] for cost in parsed_costs], label="2")
+        axs[0].plot(self.episodes, [cost[0] for cost in parsed_costs], label="Action 0")
+        axs[0].plot(self.episodes, [cost[1] for cost in parsed_costs], label="Action 1")
+        axs[0].plot(self.episodes, [cost[2] for cost in parsed_costs], label="Action 2")
         axs[0].legend()
         axs[0].set_title('Cost Table Over Episodes')
 
@@ -246,9 +243,7 @@ class Recorder:
 
 #################### TRACKING ONE MACHINE
 
-    def get_one_machine_experiences(self):
-        if self.machine_to_track is None: return None
-
+    def retrieve_tracking_machine_data(self):
         collected_rewards, picked_actions = list(), list()
         current_q_tables, current_epsilons = list(), list()
         for episode in self.episodes:
@@ -264,27 +259,26 @@ class Recorder:
                 if row[kc.AGENT_ID] == self.machine_to_track.id:
                     collected_rewards.append(row[kc.REWARD])
                     picked_actions.append(row[kc.ACTION])
-                    current_q_tables.append(row["q_table"])
-                    current_epsilons.append(row["epsilon"])
+                    current_q_tables.append(row[kc.Q_TABLE])
+                    current_epsilons.append(row[kc.EPSILON])
 
         experiences_df = pd.DataFrame({
-            "rewards" : collected_rewards,
-            "actions" : picked_actions,
-            "q_tables" : current_q_tables,
+            kc.REWARD : collected_rewards,
+            kc.ACTION : picked_actions,
+            kc.Q_TABLE : current_q_tables,
             "epsilons" : current_epsilons
         })
 
         return experiences_df
     
 
-    def visualize_one_machine(self, tracking_machine_data):
-        if self.machine_to_track is None: return
-
+    def visualize_tracking_machine_data(self):
+        tracking_machine_data = self.retrieve_tracking_machine_data()
         self.introduce_agent(self.machine_to_track)
 
-        q_tables = tracking_machine_data["q_tables"]
-        actions = tracking_machine_data["actions"]
-        rewards = tracking_machine_data["rewards"]
+        q_tables = tracking_machine_data[kc.Q_TABLE]
+        actions = tracking_machine_data[kc.ACTION]
+        rewards = tracking_machine_data[kc.REWARD]
         epsilons = tracking_machine_data["epsilons"]
 
         parsed_q = list()
@@ -319,8 +313,26 @@ class Recorder:
     
 
 ########################################
+        
+#################### FLOWS
     
-    def get_flows(self):
+    def visualize_flows(self):
+
+        ever_picked, all_selections = self.retrieve_flows()
+
+        for pick in ever_picked:
+            plt.plot(self.episodes, [selections[pick] for selections in all_selections], label=pick)
+
+        plt.xlabel('Episodes')
+        plt.ylabel('Population')
+        plt.title('Population in Routes Over Episodes')
+        plt.legend()
+        if self.save: plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.FLOWS_PLOT_FILE_NAME))
+        if self.show: plt.show()
+        plt.close()
+
+
+    def retrieve_flows(self):
 
         all_selections = list()
         ever_picked = set()
@@ -334,19 +346,9 @@ class Recorder:
             actions_counter = Counter(actions)
             all_selections.append(actions_counter)
 
-        for pick in ever_picked:
-            plt.plot(self.episodes, [selections[pick] for selections in all_selections], label=pick)
-
-        plt.xlabel('Episodes')
-        plt.ylabel('Population')
-        plt.title('Population in Routes Over Episodes')
-        plt.legend()
-        if self.save: plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.FLOWS_PLOT_FILE_NAME))
-        if self.show: plt.show()
-        plt.close()
-
+        return ever_picked, all_selections
         
-
+########################################
 
 #################### HELPERS
         
@@ -363,7 +365,6 @@ class Recorder:
             if agent.id in ids:
                 found.append(agent)
         return found
-
 
 
     def mean(self, data):

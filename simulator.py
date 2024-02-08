@@ -194,7 +194,6 @@ class Simulator:
 
         depart_id = []
         depart_time = []
-        self.selected_routes = list()
 
         sorted_joint_action = joint_action.sort_values(kc.AGENT_START_TIME, ascending=False)
         agents_stack = self.joint_action_to_sorted_stack(sorted_joint_action)
@@ -231,15 +230,14 @@ class Simulator:
                     dest=row['destination']
                     sumo_action = f'{ori}_{dest}_{agent_action}'
                     traci.vehicle.add(vehicle_id, sumo_action)
-                    self.selected_routes.append(sumo_action)
         
 
         reward = pd.merge(pd.DataFrame(depart_id), pd.DataFrame(depart_time), right_index=True, left_index=True)
         reward = reward.rename(columns={'0_x' : kc.AGENT_ID, '0_y' : "depart_time"})
         reward = pd.merge(left = reward, right = sorted_joint_action, on=kc.AGENT_ID)
-        reward[kc.COST] = (reward.depart_time - reward.start_time)/60
+        reward[kc.TRAVEL_TIME] = (reward.depart_time - reward.start_time)/60
         #reward = reward.drop(columns=['depart_time', 'action', 'origin', 'destination', 'start_time'])
-        reward = reward[[kc.AGENT_ID, kc.COST]]
+        reward = reward[[kc.AGENT_ID, kc.TRAVEL_TIME]]
 
         return reward
     

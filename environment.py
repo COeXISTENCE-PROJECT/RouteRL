@@ -35,15 +35,10 @@ class TrafficEnvironment:
 
 
     def step(self, joint_action):
-
         sumo_df = self.simulator.run_simulation_iteration(joint_action)
         joint_reward = self.calculate_rewards(sumo_df)
-
-        #agent_ids = joint_action[kc.AGENT_ID]
-        #rewards = joint_reward.values.tolist()
-        #joint_reward = pd.DataFrame({kc.AGENT_ID : agent_ids, kc.REWARD : rewards})
-
-        return joint_reward, None, True
+        next_state, done = None, True
+        return joint_reward, next_state, done
 
 
     def calculate_rewards(self, sumo_df):
@@ -53,7 +48,7 @@ class TrafficEnvironment:
         filled_reward = filled_reward.fillna(self.transport_penalty)
         # Calculate reward from cost (skipped)
         # Turn cost column to reward, drop everything but id and reward
-        filled_reward = filled_reward.rename(columns={kc.COST : kc.REWARD})
+        filled_reward = filled_reward.rename(columns={kc.TRAVEL_TIME : kc.REWARD})
         filled_reward = filled_reward[[kc.AGENT_ID, kc.REWARD]]
         return filled_reward
 

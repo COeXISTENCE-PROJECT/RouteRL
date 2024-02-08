@@ -90,29 +90,27 @@ class Keychain:
     SMALL_BUT_NOT_ZERO = 1e-14
 
     SUMO_HOME = "SUMO_HOME"
+
+    AGENT_ATTRIBUTES = "agent_attributes"
     
-    # Agent attribute df column headers
+    # Common dataframe column headers
     AGENT_ID = "id"
     AGENT_ORIGIN = "origin"
     AGENT_DESTINATION = "destination"
     AGENT_START_TIME = "start_time"
     AGENT_TYPE = "agent_type"
-    AGENT_ATTRIBUTES = "agent_attributes"
-
-    # Joint action df column headers
     ACTION = "action"
     SUMO_ACTION = "sumo_action"
-
-    # Joint rewards df column headers
     REWARD = "reward"
     COST = "cost"
-
-    # Q-Table log df headers
     Q_TABLE = "q_table"
     EPSILON = "epsilon"
-
-    # SUMO df headers
-    TRAVEL_TIMES = "travel_times"
+    EPSILON_DECAY_RATE = "epsilon_decay_rate"
+    COST_TABLE = "cost_table"
+    TRAVEL_TIME = "travel_time"
+    HUMANS = "humans"
+    MACHINES = "machines"
+    ALL = "all"
 
     # Agent type encodings
     TYPE_HUMAN = "h"
