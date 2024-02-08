@@ -162,7 +162,7 @@ class Simulator:
         final=pd.merge(id_name,from_to,right_on='From',left_on='ID')
         final=final.drop(columns=['ID'])
         final=pd.merge(id_name,final,right_on='To',left_on='ID')
-        final['time']=((final['length_x'].astype(float)/(final['speed_x'].astype(float)/3.6))/60)#np.exp
+        final['time']=((final['length_x'].astype(float)/(final['speed_x'].astype(float)*3.6))/60)#np.exp
         final=final.drop(columns=['ID','length_y','speed_y','speed_x','length_x'])
         Graph = nx.from_pandas_edgelist(final, 'From', 'To', ['time'], create_using=nx.DiGraph())
     
