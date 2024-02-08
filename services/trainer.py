@@ -96,3 +96,20 @@ class Trainer:
         joint_action[kc.AGENT_START_TIME].append(agent.start_time)
         joint_action[kc.ACTION].append(action)
         return joint_action
+    
+    def test(self, env, agents):
+
+        for ep in range(1):    # Until we simulate num_episode episodes
+            state = env.reset()
+            done = False
+            while not done:     # Until episode concludes
+                joint_action = {kc.AGENT_ID : list(), kc.ACTION : list(), kc.AGENT_ORIGIN : list(), 
+                                kc.AGENT_DESTINATION : list(), kc.AGENT_START_TIME : list()}
+
+                for agent in agents:    # Every agent picks action
+                    action = agent.act(state)
+                    joint_action = self.add_action_to_joint_action(agent, action, joint_action)
+                
+                joint_action_df = pd.DataFrame(joint_action)
+                env.check_env(joint_action_df)
+                break

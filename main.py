@@ -20,6 +20,7 @@ def main():
     sumo_ctrl.sumo_start()
 
     trainer = Trainer(params[kc.TRAINING_PARAMETERS])
+    trainer.test(env, agents)
     agents = trainer.train(env, agents)
 
     sumo_ctrl.sumo_stop()

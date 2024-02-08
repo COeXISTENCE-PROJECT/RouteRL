@@ -328,3 +328,37 @@ class Simulator:
         to_db=pd.DataFrame(to_)
 
         return from_db, to_db
+    
+
+    def run_simulation_test(self, joint_action):
+
+        sorted_joint_action = joint_action.sort_values(kc.AGENT_START_TIME, ascending=False)
+        agents_stack = self.joint_action_to_sorted_stack(sorted_joint_action)
+
+        # Simulation loop
+        for timestep in range(self.simulation_length):
+            traci.simulationStep()
+        
+            if timestep==self.simulation_length-1:
+                while traci.simulation.getMinExpectedNumber()>0:
+                    traci.simulationStep()
+                    timestep=traci.simulation.getTime()
+                    if timestep > 40000:
+                        test_value=0
+                        break
+                    else:
+                        test_value=1
+            else:
+
+                while agents_stack[-1][kc.AGENT_START_TIME] == timestep:
+                    row = agents_stack.pop()
+                    agent_action = row["action"]
+                    vehicle_id = f"{row['id']}"
+                    ori=row['origin']
+                    dest=row['destination']
+                    sumo_action = f'{ori}_{dest}_{agent_action}'
+                    traci.vehicle.add(vehicle_id, sumo_action)
+                    test_value=1
+
+        return test_value
+        

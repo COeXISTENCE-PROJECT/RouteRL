@@ -107,3 +107,11 @@ class TrafficEnvironment(gym.Env):
         plt.title('Mean Rewards Over Episodes')
         plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.REWARDS_PLOT_FILE_NAME))
         plt.show()
+
+    def check_env(self,joint_action):
+
+        test = self.simulator.run_simulation_test(joint_action)
+        if test==1:
+            print('Test completed')
+        else:
+            print('Test failed')
