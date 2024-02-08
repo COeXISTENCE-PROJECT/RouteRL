@@ -30,7 +30,7 @@ class Simulator:
         self.beta = params[kc.BETA]
 
         # NX graph, built on a OSM map
-        self.G = self.generate_network(params[kc.CONNECTION_FILE_PATH], params[kc.EDGE_FILE_PATH], params[kc.ROUTE_FILE_PATH])
+        self.traffic_graph = self.generate_network(params[kc.CONNECTION_FILE_PATH], params[kc.EDGE_FILE_PATH], params[kc.ROUTE_FILE_PATH])
 
         # We keep origins and dests as dict {origin_id : origin_code}
         # Such as (0 : "279952229#0") and (1 : "279952229#0")
@@ -44,6 +44,7 @@ class Simulator:
         self.routes = self.create_routes(self.origins, self.destinations)
         self.save_paths(self.routes)
 
+    
     
     def reset(self):
         traci.load(['-c', self.sumo_config_path])
@@ -98,7 +99,7 @@ class Simulator:
 
 
     def calculate_free_flow_times(self):
-        length = pd.DataFrame(self.G.edges(data = True))
+        length = pd.DataFrame(self.traffic_graph.edges(data = True))
         time = length[2].astype('str').str.split(':',expand=True)[1]
         length[2] = time.str.replace('}','',regex=True).astype('float')
 
@@ -166,9 +167,9 @@ class Simulator:
         final=pd.merge(id_name,final,right_on='To',left_on='ID')
         final['time']=((final['length_x'].astype(float)/(final['speed_x'].astype(float)/3.6))/60)#np.exp
         final=final.drop(columns=['ID','length_y','speed_y','speed_x','length_x'])
-        Graph = nx.from_pandas_edgelist(final, 'From', 'To', ['time'], create_using=nx.DiGraph())
+        traffic_graph = nx.from_pandas_edgelist(final, 'From', 'To', ['time'], create_using=nx.DiGraph())
     
-        return Graph
+        return traffic_graph
     
 
 
@@ -177,7 +178,7 @@ class Simulator:
         picked_nodes = set()
 
         for _ in range(self.number_of_paths):
-            path = path_generator(self.G, origin, destination, weight, picked_nodes, self.beta)
+            path = path_generator(self.traffic_graph, origin, destination, weight, picked_nodes, self.beta)
             paths.append(path)
             picked_nodes.update(path)
 
@@ -217,8 +218,8 @@ class Simulator:
                             depart_id.append(value_as_int)
                             depart_time.append(timestep)
             else:
-
-                departed=traci.simulation.getArrivedIDList()  # just collect this and time and calculate at the end
+                # just collect this and time and calculate at the end
+                departed=traci.simulation.getArrivedIDList()
 
                 for value in departed:
                     if value:
@@ -228,22 +229,25 @@ class Simulator:
 
                 while agents_stack[-1][kc.AGENT_START_TIME] == timestep:
                     row = agents_stack.pop()
-                    agent_action = row["action"]
-                    vehicle_id = f"{row['id']}"
-                    ori=row['origin']
-                    dest=row['destination']
-                    sumo_action = f'{ori}_{dest}_{agent_action}'
+                    action = row[kc.ACTION]
+                    vehicle_id = f"{row[kc.AGENT_ID]}"
+                    ori=row[kc.AGENT_ORIGIN]
+                    dest=row[kc.AGENT_DESTINATION]
+                    sumo_action = self.sumonize_action(ori, dest, action)
                     traci.vehicle.add(vehicle_id, sumo_action)
         
+        # Initiate the rewards df
+        reward = pd.DataFrame({kc.AGENT_ID: depart_id, kc.DEPART_TIME: depart_time})
 
-        reward = pd.merge(pd.DataFrame(depart_id), pd.DataFrame(depart_time), right_index=True, left_index=True)
-        reward = reward.rename(columns={'0_x' : kc.AGENT_ID, '0_y' : "depart_time"})
-        reward = pd.merge(left = reward, right = sorted_joint_action, on=kc.AGENT_ID)
-        reward[kc.TRAVEL_TIME] = (reward.depart_time - reward.start_time)/60
-        #reward = reward.drop(columns=['depart_time', 'action', 'origin', 'destination', 'start_time'])
-        reward = reward[[kc.AGENT_ID, kc.TRAVEL_TIME]]
+        # Merge the rewards df with the start times df for travel time calculation
+        start_times_df = sorted_joint_action[[kc.AGENT_ID, kc.AGENT_START_TIME]]
+        reward = pd.merge(left = reward, right = start_times_df, on=kc.AGENT_ID)
 
-        return reward
+        # Calculate travel time
+        reward[kc.TRAVEL_TIME] = (reward[kc.DEPART_TIME] - reward[kc.AGENT_START_TIME]) / 60
+
+        # Retain only the necessary columns
+        return reward[[kc.AGENT_ID, kc.TRAVEL_TIME]]
     
 
 
@@ -329,3 +333,7 @@ class Simulator:
         to_db=pd.DataFrame(to_)
 
         return from_db, to_db
+
+
+    def sumonize_action(self, origin, destination, action):
+        return f'{origin}_{destination}_{action}'

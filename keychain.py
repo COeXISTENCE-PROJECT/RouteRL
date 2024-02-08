@@ -106,6 +106,7 @@ class Keychain:
     Q_TABLE = "q_table"
     EPSILON = "epsilon"
     EPSILON_DECAY_RATE = "epsilon_decay_rate"
+    DEPART_TIME = "depart_time"
     COST_TABLE = "cost_table"
     TRAVEL_TIME = "travel_time"
     HUMANS = "humans"

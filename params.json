@@ -32,8 +32,7 @@
 
     "environment_parameters":
     {
-        "transport_penalty" : 100,
-        "agents_data_path" : "${agent_generation_parameters.agents_data_path}"
+        "ONUR_COMMENT2" : "nothing for now"
     },
 
     "simulation_parameters":
@@ -58,8 +57,8 @@
 
     "training_parameters":
     {
-        "num_episodes" : 3000,
-        "remember_every" : 60,
+        "num_episodes" : 1000,
+        "remember_every" : 50,
 
         "recorder_parameters":
         {

@@ -38,7 +38,8 @@ class Trainer:
                     concurrent.futures.wait(futures)
 
                 state = next_state
-            if (not (ep % self.remember_every)) or (ep == (self.num_episodes-1)): self.recorder.remember_all(ep, joint_action_df, joint_reward_df, agents)
+
+            self.remember(ep, joint_action_df, joint_reward_df, agents)
             show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes)
 
         print("\n[COMPLETE] Training completed in: %s" % (time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(time.time() - start_time))))
@@ -61,3 +62,8 @@ class Trainer:
         joint_action[kc.AGENT_START_TIME].append(agent.start_time)
         joint_action[kc.ACTION].append(action)
         return joint_action
+    
+    
+    def remember(self, episode, joint_action_df, joint_reward_df, agents):
+        if (not (episode % self.remember_every)) or (episode == (self.num_episodes-1)):
+            self.recorder.remember_all(episode, joint_action_df, joint_reward_df, agents)

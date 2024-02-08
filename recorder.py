@@ -264,7 +264,7 @@ class Recorder:
             kc.REWARD : collected_rewards,
             kc.ACTION : picked_actions,
             kc.Q_TABLE : current_q_tables,
-            "epsilons" : current_epsilons
+            kc.EPSILON : current_epsilons
         })
 
         return experiences_df
@@ -277,7 +277,7 @@ class Recorder:
         q_tables = tracking_machine_data[kc.Q_TABLE]
         actions = tracking_machine_data[kc.ACTION]
         rewards = tracking_machine_data[kc.REWARD]
-        epsilons = tracking_machine_data["epsilons"]
+        epsilons = tracking_machine_data[kc.EPSILON]
 
         parsed_q = list()
         for q in q_tables:
@@ -317,6 +317,8 @@ class Recorder:
     def visualize_flows(self):
 
         ever_picked, all_selections = self.retrieve_flows()
+        ever_picked = list(ever_picked)
+        ever_picked.sort()
         
         for pick in ever_picked:
             plt.plot(self.episodes, [selections[pick] for selections in all_selections], label=pick)
@@ -371,5 +373,3 @@ class Recorder:
 
     def introduce_agent(self, agent):
         print(f"[INFO] Now visualizing agent #{agent.id} from kind {agent.kind} with OD: {agent.origin}-{agent.destination} at start time {agent.start_time}.")
-    
-
