@@ -84,6 +84,21 @@ class Simulator:
                 route = self.find_best_paths(origin_sim_code, dest_sim_code, 'time')
                 routes[(origin_id, dest_id)] = route
         return routes
+    
+
+
+    def find_best_paths(self, origin, destination, weight):
+        paths = list()
+        picked_nodes = set()
+
+        for _ in range(self.number_of_paths):
+            while True:
+                path = path_generator(self.traffic_graph, origin, destination, weight, picked_nodes, self.beta)
+                if path not in paths: break     # if path is not already generated, then break
+            paths.append(path)
+            picked_nodes.update(path)
+
+        return paths
 
 
 
@@ -174,19 +189,6 @@ class Simulator:
         traffic_graph = nx.from_pandas_edgelist(final, 'From', 'To', ['time'], create_using=nx.DiGraph())
     
         return traffic_graph
-    
-
-
-    def find_best_paths(self, origin, destination, weight):
-        paths = list()
-        picked_nodes = set()
-
-        for _ in range(self.number_of_paths):
-            path = path_generator(self.traffic_graph, origin, destination, weight, picked_nodes, self.beta)
-            paths.append(path)
-            picked_nodes.update(path)
-
-        return paths
     
 
 
