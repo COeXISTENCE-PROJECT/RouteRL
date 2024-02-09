@@ -1,0 +1,71 @@
+{
+
+    "agent_generation_parameters" :
+    {
+        "agents_data_path" : "agents_data.csv",
+        "num_agents" : 1200,
+        "agent_attributes" : ["id", "origin", "destination", "start_time", "agent_type"],
+        "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",
+        "origins" : "${simulation_parameters.origins}",
+        "destinations" : "${simulation_parameters.destinations}",
+
+        "action_space_size" : "${simulation_parameters.number_of_paths}",
+        "ONUR_COMMENT1" : "DO NOT PUT DEPENDENT VARS BELOW THIS LEVEL",
+
+        "machine_agent_parameters" :
+        {
+            "min_alpha" : 0.1,
+            "max_alpha" : 0.6,
+            "min_epsilon" : 0.9,
+            "max_epsilon" : 1.0,
+            "min_eps_decay" : 0.99,
+            "max_eps_decay" : 0.99999,
+            "gamma" : 0.95
+        },
+
+        "human_agent_parameters" :
+        {
+            "beta" : -0.2,
+            "alpha" : 0.2
+        }
+    },
+
+    "environment_parameters":
+    {
+        "ONUR_COMMENT2" : "nothing for now"
+    },
+
+    "simulation_parameters":
+    {
+        "sumo_type" : "sumo",
+        "sumo_config_path" : "Network_and_config/csomor1.sumocfg",
+        "connection_file_path" : "Network_and_config/csomor1.con.xml",
+        "edge_file_path" : "Network_and_config/csomor1.edg.xml",
+        "route_file_path" : "Network_and_config/csomor1.rou.xml",
+        "routes_xml_save_path" : "Network_and_config/route.rou.xml",
+
+        "paths_save_path" : "paths.csv",
+
+        "number_of_paths" : 3,
+        "simulation_timesteps" : 3600,
+        "beta" : -0.1,
+
+        "origins" : ["279952229#0", "115604053"],
+        "destinations" : ["-115602933#2", "-441496282#1"]
+    },
+
+
+    "training_parameters":
+    {
+        "num_episodes" : 2000,
+        "remember_every" : 20,
+
+        "recorder_parameters":
+        {
+            "mode" : "save_only",
+            "track_human" : true,
+            "track_machine" : true
+        }
+    }
+    
+}

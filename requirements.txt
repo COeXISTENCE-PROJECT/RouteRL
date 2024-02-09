@@ -1,0 +1,11 @@
+beautifulsoup4==4.12.3
+lxml==5.1.0
+gymnasium==0.29.1
+matplotlib==3.8.2
+networkx==3.1
+numpy==1.26.0
+pandas==2.2.0
+prettytable==3.9.0
+seaborn==0.13.2
+stable_baselines3==2.2.1
+traci==1.19.0
