@@ -20,3 +20,6 @@ class SumoController:
 
     def sumo_stop(self):
         traci.close()
+
+    def sumo_reset(self):
+        traci.load(['-c', self.config])

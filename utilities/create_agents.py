@@ -1,6 +1,7 @@
 import pandas as pd
-from prettytable import PrettyTable
 import random
+
+from prettytable import PrettyTable
 
 from agent import MachineAgent, HumanAgent
 from keychain import Keychain as kc

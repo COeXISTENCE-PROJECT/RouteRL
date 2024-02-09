@@ -6,11 +6,10 @@ import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 
 from keychain import Keychain as kc
-from services import path_generator
-from services import list_to_string
-from services import remove_double_quotes
-
-from services import df_to_prettytable
+from services import SumoController
+from utilities import path_generator
+from utilities import list_to_string
+from utilities import remove_double_quotes
 
 
 class Simulator:
@@ -21,7 +20,8 @@ class Simulator:
 
     def __init__(self, params):
 
-        self.sumo_config_path = params[kc.SUMO_CONFIG_PATH]
+        self.sumo_controller = SumoController(params)
+
         self.routes_xml_save_path = params[kc.ROUTES_XML_SAVE_PATH]
 
         self.number_of_paths = params[kc.NUMBER_OF_PATHS]
@@ -47,11 +47,21 @@ class Simulator:
 
         self.last_simulation_duration = 0
 
+
+
+    def start_sumo(self):
+        self.sumo_controller.sumo_start()
+
+    def stop_sumo(self):
+        self.sumo_controller.sumo_stop()
+
+    def reset_sumo(self):
+        self.sumo_controller.sumo_reset()
+
+
     
-    
-    def reset(self):
-        traci.load(['-c', self.sumo_config_path])
-        return None
+    def get_last_sim_duration(self):
+        return self.last_simulation_duration
 
         
 
@@ -158,9 +168,7 @@ class Simulator:
 
         empty = [str(rou[x]) for x in range(len(rou))]
 
-        id=[]
-        length=[]
-        speed=[]
+        id, length, speed = list(), list(), list()
         for x in range(len(empty)):
             root = ET.fromstring(empty[x])
             id.append(root.attrib.get('id'))
@@ -204,12 +212,11 @@ class Simulator:
 
 
     def run_simulation_iteration(self, joint_action):
-
         depart_id, depart_time, depart_id_set = list(), list(), set()
         agents_stack = self.joint_action_to_sorted_stack(joint_action)
 
         # Simulation loop
-        while len(depart_id) != joint_action.shape[0]:
+        while (len(depart_id) != joint_action.shape[0]):
 
             timestep = int(traci.simulation.getTime())
 
@@ -237,26 +244,59 @@ class Simulator:
             
 
         self.last_simulation_duration = timestep
+        travel_times_df = self.prepare_travel_times_df(depart_id, depart_time, joint_action)
+        return travel_times_df
         
-        # Initiate the rewards df
-        reward = pd.DataFrame({kc.AGENT_ID: depart_id, kc.DEPART_TIME: depart_time})
+        
 
-        # Merge the rewards df with the start times df for travel time calculation
+    def prepare_travel_times_df(self, depart_id, depart_time, joint_action):
+        # Initiate the travel_time_df
+        travel_time_df = pd.DataFrame({kc.AGENT_ID: depart_id, kc.DEPART_TIME: depart_time})
+
+        # Merge the travel_time_df with the start_times_df for travel time calculation
         start_times_df = joint_action[[kc.AGENT_ID, kc.AGENT_START_TIME]]
-
-        reward = pd.merge(left=start_times_df, right=reward, on=kc.AGENT_ID, how='left')
+        travel_time_df = pd.merge(left=start_times_df, right=travel_time_df, on=kc.AGENT_ID, how='left')
         #reward.fillna(value=timestep, inplace=True)
 
         # Calculate travel time
-        reward[kc.TRAVEL_TIME] = (reward[kc.DEPART_TIME] - reward[kc.AGENT_START_TIME]) / 60
+        travel_time_df[kc.TRAVEL_TIME] = (travel_time_df[kc.DEPART_TIME] - travel_time_df[kc.AGENT_START_TIME]) / 60
 
         # Retain only the necessary columns
-        reward = reward[[kc.AGENT_ID, kc.TRAVEL_TIME]]
+        return travel_time_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
+
+
+    
+    def read_xml_file(self, file_path, element_name, attribute_name, attribute_name_2):
+        with open(file_path, 'r') as f:
+            data = f.read()
+        Bs_data_con = BeautifulSoup(data, "xml")
         
-        return reward
+        connections = Bs_data_con.find_all(element_name)
+
+        empty=[]
+        for x in range(len(connections)):
+            empty.append(str(connections[x]))
+
+        from_=[]
+        to_=[]
+        for x in range(len(empty)):
+            root = ET.fromstring(empty[x])
+            from_.append(root.attrib.get(attribute_name))
+            to_.append(root.attrib.get(attribute_name_2))
+
+        from_db=pd.DataFrame(from_)
+        to_db=pd.DataFrame(to_)
+        return from_db, to_db
+
+
+
+    def sumonize_action(self, origin, destination, action):
+        return f'{origin}_{destination}_{action}'
     
 
+
     # DO WE EVEN USE THIS??
+    """
     def create_network_from_xml(self, connection_file, edge_file, route_file):
         # Connection file
         from_db, to_db = self.read_xml_file(connection_file, 'connection', 'from', 'to')
@@ -314,32 +354,4 @@ class Simulator:
         Graph = nx.from_pandas_edgelist(final, 'From', 'To', ['time'], create_using=nx.DiGraph())
         
         return Graph
-
-
-    
-    def read_xml_file(self, file_path, element_name, attribute_name, attribute_name_2):
-        with open(file_path, 'r') as f:
-            data = f.read()
-        Bs_data_con = BeautifulSoup(data, "xml")
-        
-        connections = Bs_data_con.find_all(element_name)
-
-        empty=[]
-        for x in range(len(connections)):
-            empty.append(str(connections[x]))
-
-        from_=[]
-        to_=[]
-        for x in range(len(empty)):
-            root = ET.fromstring(empty[x])
-            from_.append(root.attrib.get(attribute_name))
-            to_.append(root.attrib.get(attribute_name_2))
-
-        from_db=pd.DataFrame(from_)
-        to_db=pd.DataFrame(to_)
-
-        return from_db, to_db
-
-
-    def sumonize_action(self, origin, destination, action):
-        return f'{origin}_{destination}_{action}'
+    """

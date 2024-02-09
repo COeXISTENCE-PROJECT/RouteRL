@@ -6,9 +6,9 @@ import random
 from collections import Counter
 
 from keychain import Keychain as kc
-from services.utils import list_to_string
-from services.utils import make_dir
-from services.utils import string_to_list
+from utilities import list_to_string
+from utilities import make_dir
+from utilities import string_to_list
 
 
 class Recorder:

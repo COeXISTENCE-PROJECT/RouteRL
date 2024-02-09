@@ -1,7 +1,7 @@
 from prettytable import PrettyTable
 
 from keychain import Keychain as kc
-from simulator import Simulator
+from services import Simulator
 
 class TrafficEnvironment:
 
@@ -10,16 +10,26 @@ class TrafficEnvironment:
         print("[SUCCESS] Environment initiated!")
 
 
+    def start(self):
+        self.simulator.start_sumo()
+        state = None
+        return state
+
+    def stop(self):
+        self.simulator.stop_sumo()
+        state = None
+        return state
+
+    def reset(self):
+        self.simulator.reset_sumo()
+        state = None
+        return state
+
+
     def calculate_free_flow_times(self):
         free_flow_times = self.simulator.calculate_free_flow_times()
         self.print_free_flow_times(free_flow_times)
         return free_flow_times
-        
-
-    def reset(self):
-        sumo_observation = self.simulator.reset()
-        state = None
-        return state
 
 
     def step(self, joint_action):
@@ -38,7 +48,8 @@ class TrafficEnvironment:
 
 
     def get_last_sim_duration(self):
-        return self.simulator.last_simulation_duration
+        return self.simulator.get_last_sim_duration()
+
 
     def print_free_flow_times(self, free_flow_times):
         table = PrettyTable()
