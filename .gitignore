@@ -5,4 +5,5 @@ summary.xml
 tripinfo.xml
 agents_data.csv
 paths.csv
+plots/
 route.rou.xml

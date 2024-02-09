@@ -3,8 +3,6 @@ from prettytable import PrettyTable
 from keychain import Keychain as kc
 from simulator import Simulator
 
-from services import df_to_prettytable
-
 class TrafficEnvironment:
 
     def __init__(self, environment_params, simulation_params):

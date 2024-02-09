@@ -3,11 +3,15 @@ import pandas as pd
 import time
 
 from keychain import Keychain as kc
-from recorder import Recorder
+from services.recorder import Recorder
 from services.utils import show_progress_bar
 
 
 class Trainer:
+
+    """
+    Class to train agents
+    """
 
     def __init__(self, params):
         self.num_episodes = params[kc.NUM_EPISODES]

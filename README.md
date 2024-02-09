@@ -9,21 +9,21 @@ The implementation includes several components, as depicted in the UML Class and
 
 
 ## Collected Mean Rewards(in minutes):
-![](plots/rewards.png)
+![](readme_plots/rewards.png)
 
 
 ## Simulation Duration (timesteps):
-![](plots/simulation_length.png)
+![](readme_plots/simulation_length.png)
 
 
 ## Route Populations:
-![](plots/flows.png)
+![](readme_plots/flows.png)
 
 
 ## One Random Human's Experience
-![](plots/one_human.png)
+![](readme_plots/one_human.png)
 
 
 ## One Random Machine's Experience
-![](plots/one_machine.png)
+![](readme_plots/one_machine.png)
 

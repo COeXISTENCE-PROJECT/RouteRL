@@ -6,9 +6,16 @@ import random
 from collections import Counter
 
 from keychain import Keychain as kc
-from services.utils import make_dir, list_to_string, string_to_list
+from services.utils import list_to_string
+from services.utils import make_dir
+from services.utils import string_to_list
+
 
 class Recorder:
+    
+    """
+    Class to record and visualize the training process.
+    """
 
     def __init__(self, agents, params):
         self.agents, self.humans, self.machines = list(), list(), list()

@@ -2,6 +2,8 @@ from .create_agents import create_agent_objects
 from .create_agents import generate_agents_data
 from .path_generator import path_generator
 from .path_generator import cursed_path_generator
+from .recorder import Recorder
+from .sumo_controller import SumoController
 from .trainer import Trainer
 from .utils import confirm_env_variable
 from .utils import df_to_prettytable

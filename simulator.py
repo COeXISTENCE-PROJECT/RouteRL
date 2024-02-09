@@ -13,7 +13,6 @@ from services import remove_double_quotes
 from services import df_to_prettytable
 
 
-
 class Simulator:
 
     """
@@ -193,7 +192,6 @@ class Simulator:
 
 
     def joint_action_to_sorted_stack(self, joint_action):
-
         sorted_joint_action = joint_action.sort_values(kc.AGENT_START_TIME, ascending=False)
 
         stack_bottom_placeholder = {kc.AGENT_START_TIME : -1}
@@ -201,7 +199,6 @@ class Simulator:
 
         for _, row in sorted_joint_action.iterrows():
             agents_stack.append(row)
-
         return agents_stack
     
 
@@ -216,6 +213,7 @@ class Simulator:
 
             timestep = int(traci.simulation.getTime())
 
+            # Add vehicles to the simulation
             while agents_stack[-1][kc.AGENT_START_TIME] == timestep:
                 row = agents_stack.pop()
                 action = row[kc.ACTION]
@@ -225,6 +223,7 @@ class Simulator:
                 sumo_action = self.sumonize_action(ori, dest, action)
                 traci.vehicle.add(vehicle_id, sumo_action)
 
+            # Collect vehicles that have reached their destination
             departed = traci.simulation.getArrivedIDList() # returns a list of arrived vehicle ids
             departed = [int(value) for value in departed] # convert to int
             departed = [value for value in departed if (value not in depart_id_set)] # for some reason sometimes adds twice
@@ -235,101 +234,29 @@ class Simulator:
 
             depart_id_set.update(depart_id)
             traci.simulationStep()
-
-        """
-        # Simulation loop
-        for timestep in range(self.simulation_length):
-            traci.simulationStep()
-        
-            if timestep == (self.simulation_length-1):
-                while traci.simulation.getMinExpectedNumber() > 0:
-                    traci.simulationStep()
-                    timestep = traci.simulation.getTime()
-                    departed = traci.simulation.getArrivedIDList()
-                    for value in departed:
-                        #if value:
-                            value_as_int = int(value)
-                            depart_id.append(value_as_int)
-                            depart_time.append(timestep)
-            else:
-                # just collect this and time and calculate at the end
-                departed = traci.simulation.getArrivedIDList()
-
-                for value in departed:
-                    #if value:
-                        value_as_int = int(value)
-                        depart_id.append(value_as_int)
-                        depart_time.append(timestep)
-
-                while agents_stack[-1][kc.AGENT_START_TIME] == timestep:
-                    row = agents_stack.pop()
-                    action = row[kc.ACTION]
-                    vehicle_id = f"{row[kc.AGENT_ID]}"
-                    ori=row[kc.AGENT_ORIGIN]
-                    dest=row[kc.AGENT_DESTINATION]
-                    sumo_action = self.sumonize_action(ori, dest, action)
-                    traci.vehicle.add(vehicle_id, sumo_action)
-        """
+            
 
         self.last_simulation_duration = timestep
         
         # Initiate the rewards df
         reward = pd.DataFrame({kc.AGENT_ID: depart_id, kc.DEPART_TIME: depart_time})
-        """
-        print("\n[1]")
-        print("Are there any missing values in the reward dataframe?", reward.isnull().values.any())
-        print("Are there any na values in the reward dataframe?", reward.isna().values.any())
-        print("Number of rows in the reward dataframe:", reward.shape[0])
-        """
 
         # Merge the rewards df with the start times df for travel time calculation
         start_times_df = joint_action[[kc.AGENT_ID, kc.AGENT_START_TIME]]
-        """
-        print("[2]")
-        print("Are there any missing values in the start_times_df dataframe?", start_times_df.isnull().values.any())
-        print("Are there any na values in the start_times_df dataframe?", start_times_df.isna().values.any())
-        print("Number of rows in the start_times_df dataframe:", start_times_df.shape[0])
-        """
 
         reward = pd.merge(left=start_times_df, right=reward, on=kc.AGENT_ID, how='left')
         #reward.fillna(value=timestep, inplace=True)
-        """
-        print("[3]")
-        print("Are there any missing values in the reward dataframe?", reward.isnull().values.any())
-        if reward.isnull().values.any():
-            print("Rows with null values in the reward dataframe:")
-            print(reward[reward.isnull().any(axis=1)])
-        repeating_ids = reward[reward.duplicated(subset=[kc.AGENT_ID])][kc.AGENT_ID]
-        print("is repeating?")
-        if not repeating_ids.empty:
-            print("Repeating IDs in reward dataframe:", repeating_ids.tolist())
-        print("Are there any na values in the reward dataframe?", reward.isna().values.any())
-        print("Number of rows in the reward dataframe:", reward.shape[0])
-        """
 
         # Calculate travel time
         reward[kc.TRAVEL_TIME] = (reward[kc.DEPART_TIME] - reward[kc.AGENT_START_TIME]) / 60
-        """
-        print("[4]")
-        print("Are there any missing values in the reward dataframe?", reward.isnull().values.any())
-        print("Are there any na values in the reward dataframe?", reward.isna().values.any())
-        print("Number of rows in the reward dataframe:", reward.shape[0])
-        """
 
         # Retain only the necessary columns
         reward = reward[[kc.AGENT_ID, kc.TRAVEL_TIME]]
-        #reward.fillna(value=10, inplace=True)
-        """
-        print("[5]")
-        print("Are there any missing values in the reward dataframe?", reward.isnull().values.any())
-        print("Are there any na values in the reward dataframe?", reward.isna().values.any())
-        print("Number of rows in the reward dataframe:", reward.shape[0])
-        """
         
         return reward
     
 
-
+    # DO WE EVEN USE THIS??
     def create_network_from_xml(self, connection_file, edge_file, route_file):
         # Connection file
         from_db, to_db = self.read_xml_file(connection_file, 'connection', 'from', 'to')

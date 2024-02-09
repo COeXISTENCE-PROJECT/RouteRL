@@ -3,8 +3,11 @@ import traci
 from keychain import Keychain as kc
 
     
-    
 class SumoController:
+
+    """
+    Class to control SUMO
+    """
 
     def __init__(self, params):
         self.sumo_type = params[kc.SUMO_TYPE]
