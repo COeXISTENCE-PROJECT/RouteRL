@@ -1,8 +1,0 @@
-.DS_Store
-training_records/
-__pycache__/
-summary.xml
-tripinfo.xml
-agents_data.csv
-paths.csv
-route.rou.xml
