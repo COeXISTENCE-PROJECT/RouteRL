@@ -1,12 +1,9 @@
-import os
-import pandas as pd
-import traci
-
 from prettytable import PrettyTable
 
 from keychain import Keychain as kc
 from simulator import Simulator
 
+from services import df_to_prettytable
 
 class TrafficEnvironment:
 

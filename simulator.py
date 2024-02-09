@@ -10,6 +10,8 @@ from services import path_generator
 from services import list_to_string
 from services import remove_double_quotes
 
+from services import df_to_prettytable
+
 
 
 class Simulator:
@@ -241,13 +243,15 @@ class Simulator:
 
         # Merge the rewards df with the start times df for travel time calculation
         start_times_df = sorted_joint_action[[kc.AGENT_ID, kc.AGENT_START_TIME]]
-        reward = pd.merge(left = reward, right = start_times_df, on=kc.AGENT_ID)
+        reward = pd.merge(left=start_times_df, right=reward, on=kc.AGENT_ID, how='left')
 
         # Calculate travel time
         reward[kc.TRAVEL_TIME] = (reward[kc.DEPART_TIME] - reward[kc.AGENT_START_TIME]) / 60
 
         # Retain only the necessary columns
-        return reward[[kc.AGENT_ID, kc.TRAVEL_TIME]]
+        reward = reward[[kc.AGENT_ID, kc.TRAVEL_TIME]]
+        
+        return reward
     
 
 
