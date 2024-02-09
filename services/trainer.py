@@ -39,7 +39,7 @@ class Trainer:
 
                 state = next_state
 
-            self.remember(ep, joint_action_df, joint_reward_df, agents)
+            self.remember(ep, joint_action_df, joint_reward_df, agents, env.get_last_sim_duration())
             show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes)
 
         print("\n[COMPLETE] Training completed in: %s" % (time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(time.time() - start_time))))
@@ -64,6 +64,6 @@ class Trainer:
         return joint_action
     
     
-    def remember(self, episode, joint_action_df, joint_reward_df, agents):
+    def remember(self, episode, joint_action_df, joint_reward_df, agents, last_sim_duration):
         if (not (episode % self.remember_every)) or (episode == (self.num_episodes-1)):
-            self.recorder.remember_all(episode, joint_action_df, joint_reward_df, agents)
+            self.recorder.remember_all(episode, joint_action_df, joint_reward_df, agents, last_sim_duration)

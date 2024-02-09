@@ -12,6 +12,10 @@ The implementation includes several components, as depicted in the UML Class and
 ![](plots/rewards.png)
 
 
+## Simulation Duration (timesteps):
+![](plots/simulation_length.png)
+
+
 ## Route Populations:
 ![](plots/flows.png)
 

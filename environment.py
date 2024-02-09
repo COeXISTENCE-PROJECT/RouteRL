@@ -39,6 +39,9 @@ class TrafficEnvironment:
         return reward_df
 
 
+    def get_last_sim_duration(self):
+        return self.simulator.last_simulation_duration
+
     def print_free_flow_times(self, free_flow_times):
         table = PrettyTable()
         table.field_names = ["Origin", "Destination", "Index", "FF Time"]

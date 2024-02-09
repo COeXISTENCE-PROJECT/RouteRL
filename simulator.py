@@ -46,6 +46,8 @@ class Simulator:
         self.routes = self.create_routes(self.origins, self.destinations)
         self.save_paths(self.routes)
 
+        self.last_simulation_duration = 0
+
     
     
     def reset(self):
@@ -188,43 +190,71 @@ class Simulator:
     
 
 
-    def joint_action_to_sorted_stack(self, sorted_joint_action):
+    def joint_action_to_sorted_stack(self, joint_action):
+
+        sorted_joint_action = joint_action.sort_values(kc.AGENT_START_TIME, ascending=False)
+
         stack_bottom_placeholder = {kc.AGENT_START_TIME : -1}
         agents_stack = [stack_bottom_placeholder]
+
         for _, row in sorted_joint_action.iterrows():
             agents_stack.append(row)
+
         return agents_stack
     
 
 
     def run_simulation_iteration(self, joint_action):
 
-        depart_id = []
-        depart_time = []
+        depart_id, depart_time, depart_id_set = list(), list(), set()
+        agents_stack = self.joint_action_to_sorted_stack(joint_action)
 
-        sorted_joint_action = joint_action.sort_values(kc.AGENT_START_TIME, ascending=False)
-        agents_stack = self.joint_action_to_sorted_stack(sorted_joint_action)
+        # Simulation loop
+        while len(depart_id) != joint_action.shape[0]:
 
+            timestep = int(traci.simulation.getTime())
+
+            while agents_stack[-1][kc.AGENT_START_TIME] == timestep:
+                row = agents_stack.pop()
+                action = row[kc.ACTION]
+                vehicle_id = f"{row[kc.AGENT_ID]}"
+                ori=row[kc.AGENT_ORIGIN]
+                dest=row[kc.AGENT_DESTINATION]
+                sumo_action = self.sumonize_action(ori, dest, action)
+                traci.vehicle.add(vehicle_id, sumo_action)
+
+            departed = traci.simulation.getArrivedIDList() # returns a list of arrived vehicle ids
+            departed = [int(value) for value in departed] # convert to int
+            departed = [value for value in departed if (value not in depart_id_set)] # for some reason sometimes adds twice
+
+            for value in departed:
+                depart_id.append(value)
+                depart_time.append(timestep)
+
+            depart_id_set.update(depart_id)
+            traci.simulationStep()
+
+        """
         # Simulation loop
         for timestep in range(self.simulation_length):
             traci.simulationStep()
         
-            if timestep==self.simulation_length-1:
-                while traci.simulation.getMinExpectedNumber()>0:
+            if timestep == (self.simulation_length-1):
+                while traci.simulation.getMinExpectedNumber() > 0:
                     traci.simulationStep()
-                    timestep=traci.simulation.getTime()
-                    departed=traci.simulation.getArrivedIDList()
+                    timestep = traci.simulation.getTime()
+                    departed = traci.simulation.getArrivedIDList()
                     for value in departed:
-                        if value:
+                        #if value:
                             value_as_int = int(value)
                             depart_id.append(value_as_int)
                             depart_time.append(timestep)
             else:
                 # just collect this and time and calculate at the end
-                departed=traci.simulation.getArrivedIDList()
+                departed = traci.simulation.getArrivedIDList()
 
                 for value in departed:
-                    if value:
+                    #if value:
                         value_as_int = int(value)
                         depart_id.append(value_as_int)
                         depart_time.append(timestep)
@@ -237,19 +267,62 @@ class Simulator:
                     dest=row[kc.AGENT_DESTINATION]
                     sumo_action = self.sumonize_action(ori, dest, action)
                     traci.vehicle.add(vehicle_id, sumo_action)
+        """
+
+        self.last_simulation_duration = timestep
         
         # Initiate the rewards df
         reward = pd.DataFrame({kc.AGENT_ID: depart_id, kc.DEPART_TIME: depart_time})
+        """
+        print("\n[1]")
+        print("Are there any missing values in the reward dataframe?", reward.isnull().values.any())
+        print("Are there any na values in the reward dataframe?", reward.isna().values.any())
+        print("Number of rows in the reward dataframe:", reward.shape[0])
+        """
 
         # Merge the rewards df with the start times df for travel time calculation
-        start_times_df = sorted_joint_action[[kc.AGENT_ID, kc.AGENT_START_TIME]]
+        start_times_df = joint_action[[kc.AGENT_ID, kc.AGENT_START_TIME]]
+        """
+        print("[2]")
+        print("Are there any missing values in the start_times_df dataframe?", start_times_df.isnull().values.any())
+        print("Are there any na values in the start_times_df dataframe?", start_times_df.isna().values.any())
+        print("Number of rows in the start_times_df dataframe:", start_times_df.shape[0])
+        """
+
         reward = pd.merge(left=start_times_df, right=reward, on=kc.AGENT_ID, how='left')
+        #reward.fillna(value=timestep, inplace=True)
+        """
+        print("[3]")
+        print("Are there any missing values in the reward dataframe?", reward.isnull().values.any())
+        if reward.isnull().values.any():
+            print("Rows with null values in the reward dataframe:")
+            print(reward[reward.isnull().any(axis=1)])
+        repeating_ids = reward[reward.duplicated(subset=[kc.AGENT_ID])][kc.AGENT_ID]
+        print("is repeating?")
+        if not repeating_ids.empty:
+            print("Repeating IDs in reward dataframe:", repeating_ids.tolist())
+        print("Are there any na values in the reward dataframe?", reward.isna().values.any())
+        print("Number of rows in the reward dataframe:", reward.shape[0])
+        """
 
         # Calculate travel time
         reward[kc.TRAVEL_TIME] = (reward[kc.DEPART_TIME] - reward[kc.AGENT_START_TIME]) / 60
+        """
+        print("[4]")
+        print("Are there any missing values in the reward dataframe?", reward.isnull().values.any())
+        print("Are there any na values in the reward dataframe?", reward.isna().values.any())
+        print("Number of rows in the reward dataframe:", reward.shape[0])
+        """
 
         # Retain only the necessary columns
         reward = reward[[kc.AGENT_ID, kc.TRAVEL_TIME]]
+        #reward.fillna(value=10, inplace=True)
+        """
+        print("[5]")
+        print("Are there any missing values in the reward dataframe?", reward.isnull().values.any())
+        print("Are there any na values in the reward dataframe?", reward.isna().values.any())
+        print("Number of rows in the reward dataframe:", reward.shape[0])
+        """
         
         return reward
     

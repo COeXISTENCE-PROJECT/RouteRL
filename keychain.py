@@ -14,14 +14,16 @@ class Keychain:
     EPISODES_LOGS_FOLDER = "episodes"
     MACHINES_LOG_FOLDER = "machines"
     HUMANS_LOG_FOLDER = "humans"
+    SIMULATION_LOG_FOLDER = "simulation"
 
-    ONE_AGENT_EXPERIENCE_LOG_PATH = "one_reward.csv"
+    SIMULATION_LENGTH_LOG_FILE_NAME = "simulation_length.txt"
 
-    PLOTS_LOG_PATH = "plots"
+    PLOTS_FOLDER = "plots"
     REWARDS_PLOT_FILE_NAME = "rewards.png"
     ONE_HUMAN_PLOT_FILE_NAME = "one_human.png"
     ONE_MACHINE_PLOT_FILE_NAME = "one_machine.png"
     FLOWS_PLOT_FILE_NAME = "flows.png"
+    SIMULATION_LENGTH_PLOT_FILE_NAME = "simulation_length.png"
     
     ###########################################################
     

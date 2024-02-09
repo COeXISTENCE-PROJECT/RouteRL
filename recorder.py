@@ -20,6 +20,7 @@ class Recorder:
         self.episodes_folder = make_dir([kc.RECORDS_FOLDER, kc.EPISODES_LOGS_FOLDER])
         self.machines_folder = make_dir([kc.RECORDS_FOLDER, kc.MACHINES_LOG_FOLDER])
         self.humans_folder = make_dir([kc.RECORDS_FOLDER, kc.HUMANS_LOG_FOLDER])
+        self.sim_length_file_path = self.get_sim_length_file_path()
 
         self.episodes = list()
 
@@ -56,16 +57,24 @@ class Recorder:
         elif mode == kc.SAVE_ONLY:
             return True, False
         
+    
+    def get_sim_length_file_path(self):
+        log_file_path = make_dir([kc.RECORDS_FOLDER, kc.SIMULATION_LOG_FOLDER], kc.SIMULATION_LENGTH_LOG_FILE_NAME)
+        if os.path.exists(log_file_path):
+            os.remove(log_file_path)
+        return log_file_path
+        
 ########################################
         
 
 #################### REMEMBER FUNCTIONS
     
-    def remember_all(self, episode, joint_action, joint_reward, agents):
+    def remember_all(self, episode, joint_action, joint_reward, agents, last_sim_duration):
         self.episodes.append(episode)
         self.update_agents(agents)
         self.remember_episode(episode, joint_action, joint_reward)
         self.remember_agents_status(episode)
+        self.remember_last_sim_duration(last_sim_duration)
 
 
     def remember_episode(self, episode, joint_action, joint_reward):
@@ -100,6 +109,11 @@ class Recorder:
             humans_df.loc[len(humans_df.index)] = {key : value for key, value in zip(humans_df_cols, row_data)}  
         humans_df.to_csv(make_dir([self.humans_folder], f"humans_ep{episode}.csv"), index = False)
 
+    
+    def remember_last_sim_duration(self, last_sim_duration):
+        with open(self.sim_length_file_path, "a") as file:
+            file.write(f"{last_sim_duration}\n")
+
 ########################################
         
 #################### REWIND
@@ -108,6 +122,7 @@ class Recorder:
         self.visualize_mean_rewards()
         self.visualize_flows()
         self.visualize_tracking_agent_data()
+        self.visualize_sim_length()
 
 
 ########################################
@@ -124,7 +139,7 @@ class Recorder:
         plt.ylabel('Mean Reward')
         plt.title('Mean Rewards Over Episodes')
         plt.legend()
-        if self.save: plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.REWARDS_PLOT_FILE_NAME))
+        if self.save: plt.savefig(make_dir(kc.PLOTS_FOLDER, kc.REWARDS_PLOT_FILE_NAME))
         if self.show: plt.show()
         plt.close()
 
@@ -231,7 +246,7 @@ class Recorder:
         fig.suptitle('One Human Experience')
         plt.tight_layout()
 
-        if self.save: plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.ONE_HUMAN_PLOT_FILE_NAME))
+        if self.save: plt.savefig(make_dir(kc.PLOTS_FOLDER, kc.ONE_HUMAN_PLOT_FILE_NAME))
         if self.show: plt.show()
         plt.close()
     
@@ -305,7 +320,7 @@ class Recorder:
         fig.suptitle('One Machine Experience')
         plt.tight_layout()
 
-        if self.save: plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.ONE_MACHINE_PLOT_FILE_NAME))
+        if self.save: plt.savefig(make_dir(kc.PLOTS_FOLDER, kc.ONE_MACHINE_PLOT_FILE_NAME))
         if self.show: plt.show()
         plt.close()
     
@@ -327,7 +342,7 @@ class Recorder:
         plt.ylabel('Population')
         plt.title('Population in Routes Over Episodes')
         plt.legend()
-        if self.save: plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.FLOWS_PLOT_FILE_NAME))
+        if self.save: plt.savefig(make_dir(kc.PLOTS_FOLDER, kc.FLOWS_PLOT_FILE_NAME))
         if self.show: plt.show()
         plt.close()
 
@@ -348,6 +363,28 @@ class Recorder:
 
         return ever_picked, all_selections
         
+########################################
+    
+#################### SIM LENGTH
+    
+    def visualize_sim_length(self):
+        sim_lengths = self.retrieve_sim_length()
+        plt.plot(self.episodes, sim_lengths)
+        plt.xlabel('Episode')
+        plt.ylabel('Simulation Length')
+        plt.title('Simulation Length Over Episodes')
+        if self.save: plt.savefig(make_dir(kc.PLOTS_FOLDER, kc.SIMULATION_LENGTH_PLOT_FILE_NAME))
+        if self.show: plt.show()
+        plt.close()
+
+    def retrieve_sim_length(self):
+        sim_lengths = list()
+        with open(self.sim_length_file_path, "r") as file:
+            lines = file.readlines()
+            for line in lines:
+                sim_lengths.append(int(line.strip()))
+        return sim_lengths
+    
 ########################################
 
 #################### HELPERS
