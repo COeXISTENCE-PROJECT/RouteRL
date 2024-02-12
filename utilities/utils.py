@@ -23,6 +23,8 @@ def get_params(file_path):      # Read params.json, resolve dependencies
     params = resolve_param_dependencies(params)
     return params
 
+
+
 def resolve_param_dependencies(params):    # Resolving dependent parameters in params.json
     for category, settings in params.items():
         for key, value in settings.items():
@@ -48,14 +50,18 @@ def read_json(file_path):    # Read json file, return as dict
 
 
 
-def make_dir(main_folder_name, filename, lower_folders = list()):    # Make dir if not exists, make full path
-    if not os.path.exists(main_folder_name):
-        os.mkdir(main_folder_name)
-    for folder_name in lower_folders:
-        main_folder_name = os.path.join(main_folder_name, folder_name)
-        if not os.path.exists(main_folder_name):
-            os.mkdir(main_folder_name)
-    path = os.path.join(main_folder_name, filename)
+def make_dir(folders, filename=None):    # Make dir if not exists, make full path
+    if not folders:
+        print("[ERROR] Expected at least one folder name.")
+        raise ValueError
+    if not isinstance(folders, list):
+        folders = [folders]
+    path = str()
+    for folder_name in folders:
+        path = os.path.join(path, folder_name)
+        if not os.path.exists(path):
+            os.mkdir(path)
+    if filename: path = os.path.join(path, filename)
     return path
 
 
@@ -98,6 +104,14 @@ def list_to_string(from_list, separator=', '):
             out_str = "%s%s%s" % (out_str, separator, item)
 
     return out_str
+
+
+def string_to_list(text, seperator, brackets=False):
+    if brackets:
+        text = text.strip("[]")
+    elements = text.split(seperator)
+    return elements
+
 
 
 def df_to_prettytable(df, header_message="DATA", print_every=1):

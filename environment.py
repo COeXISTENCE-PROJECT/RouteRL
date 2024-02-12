@@ -1,73 +1,54 @@
-import gymnasium as gym
-import matplotlib.pyplot as plt
-import numpy as np
-import os
-import pandas as pd
-import traci
-
 from prettytable import PrettyTable
 
 from keychain import Keychain as kc
-from simulator import Simulator
-from services import make_dir
+from services import Simulator
 
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+class TrafficEnvironment:
 
-
-class TrafficEnvironment(gym.Env):
-
-    def __init__(self, simulation_parameters, agents_data_path):
-        self.simulator = Simulator(simulation_parameters)
-        self.parameter = simulation_parameters
-
-        self.average_rewards = list()
-
-        self.route_flows = list()
-        self.all_selected_routes = set()
-
-        self.agents_data_path=agents_data_path
+    def __init__(self, environment_params, simulation_params):
+        self.simulator = Simulator(simulation_params)
         print("[SUCCESS] Environment initiated!")
+
+
+    def start(self):
+        self.simulator.start_sumo()
+        state = None
+        return state
+
+    def stop(self):
+        self.simulator.stop_sumo()
+        state = None
+        return state
+
+    def reset(self):
+        self.simulator.reset_sumo()
+        state = None
+        return state
 
 
     def calculate_free_flow_times(self):
         free_flow_times = self.simulator.calculate_free_flow_times()
         self.print_free_flow_times(free_flow_times)
         return free_flow_times
-        
-
-    def reset(self):
-        traci.load(['-c', self.parameter[kc.SUMO_CONFIG_PATH]])
-        return None
 
 
     def step(self, joint_action):
-
-        agent_ids = joint_action[kc.AGENT_ID]
-
-        sumo_df= self.simulator.run_simulation_iteration(joint_action)
-
-        selected_routes = self.simulator.selected_routes
-        self.all_selected_routes.update(selected_routes)
-        selected_routes_df = pd.DataFrame(selected_routes, columns=['route_id']).value_counts().values
-        self.route_flows.append(selected_routes_df)
-
-        #Calculate joint reward based on travel times returned by SUMO
+        sumo_df = self.simulator.run_simulation_iteration(joint_action)
         joint_reward = self.calculate_rewards(sumo_df)
-
-        rewards = joint_reward.values.tolist()
-        joint_reward = pd.DataFrame({kc.AGENT_ID : agent_ids, kc.REWARD : rewards})
-
-        return joint_reward, None, True
+        next_state, done = None, True
+        return joint_reward, next_state, done
 
 
     def calculate_rewards(self, sumo_df):
-        agent_data=pd.read_csv(self.agents_data_path)
-        real_reward = pd.merge(sumo_df,agent_data,left_on='car_id',right_on='id',how='right')
-        real_reward = real_reward.fillna(100)
-        real_reward = real_reward.cost
-        average_reward = real_reward.mean() 
-        self.average_rewards.append(average_reward)
-        return real_reward
+        # Calculate reward from cost (skipped)
+        # Turn cost column to reward, drop everything but id and reward
+        reward_df = sumo_df.rename(columns={kc.TRAVEL_TIME : kc.REWARD})
+        reward_df = reward_df[[kc.AGENT_ID, kc.REWARD]]
+        return reward_df
+
+
+    def get_last_sim_duration(self):
+        return self.simulator.get_last_sim_duration()
 
 
     def print_free_flow_times(self, free_flow_times):
@@ -81,29 +62,3 @@ class TrafficEnvironment(gym.Env):
 
         print("------ Free flow travel times ------")
         print(table)
-
-
-    def plot_one_agent(self):
-        _, axs = plt.subplots(2, 1)
-
-        flows_df = pd.DataFrame(self.route_flows, columns = list(self.all_selected_routes))
-
-        axs[0].plot(flows_df)
-        axs[0].legend(flows_df.columns)
-
-        learning_data = pd.read_csv(kc.ONE_AGENT_EXPERIENCE_LOG_PATH).cost_table.str.split(',',expand=True).astype(float)
-
-        for i in range(len(learning_data.columns)):
-            axs[1].plot(learning_data[i])
-        axs[1].legend(learning_data.columns)
-        plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.ONE_AGENT_PLOT_FILE_NAME))
-        plt.show()
-
-
-    def plot_rewards(self):
-        plt.plot(self.average_rewards)
-        plt.xlabel('Episode')
-        plt.ylabel('Mean Reward')
-        plt.title('Mean Rewards Over Episodes')
-        plt.savefig(make_dir(kc.PLOTS_LOG_PATH, kc.REWARDS_PLOT_FILE_NAME))
-        plt.show()

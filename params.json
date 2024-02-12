@@ -14,12 +14,12 @@
 
         "machine_agent_parameters" :
         {
-            "min_alpha" : 0.2,
-            "max_alpha" : 0.5,
-            "min_epsilon" : 0.7,
-            "max_epsilon" : 0.99,
-            "min_eps_decay" : 0.9,
-            "max_eps_decay" : 0.99,
+            "min_alpha" : 0.1,
+            "max_alpha" : 0.6,
+            "min_epsilon" : 0.9,
+            "max_epsilon" : 1.0,
+            "min_eps_decay" : 0.99,
+            "max_eps_decay" : 0.99999,
             "gamma" : 0.95
         },
 
@@ -28,6 +28,11 @@
             "beta" : -0.2,
             "alpha" : 0.2
         }
+    },
+
+    "environment_parameters":
+    {
+        "ONUR_COMMENT2" : "nothing for now"
     },
 
     "simulation_parameters":
@@ -52,8 +57,15 @@
 
     "training_parameters":
     {
-        "num_episodes" : 100,
-        "log_every" : 50
+        "num_episodes" : 5000,
+        "remember_every" : 50,
+
+        "recorder_parameters":
+        {
+            "mode" : "save_only",
+            "track_human" : true,
+            "track_machine" : true
+        }
     }
     
 }

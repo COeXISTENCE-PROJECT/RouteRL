@@ -1,6 +1,7 @@
 import pandas as pd
-from prettytable import PrettyTable
 import random
+
+from prettytable import PrettyTable
 
 from agent import MachineAgent, HumanAgent
 from keychain import Keychain as kc
@@ -34,15 +35,17 @@ def create_agent_objects(params, free_flow_times):
         origin, destination = row_dict[kc.AGENT_ORIGIN], row_dict[kc.AGENT_DESTINATION]
 
         if row_dict[kc.AGENT_TYPE] == kc.TYPE_MACHINE:
-            agents.append(MachineAgent(id, start_time, origin, destination, params, action_space_size))
+            agent_params = params[kc.MACHINE_AGENT_PARAMETERS]
+            agents.append(MachineAgent(id, start_time, origin, destination, agent_params, action_space_size))
         elif row_dict[kc.AGENT_TYPE] == kc.TYPE_HUMAN:
+            agent_params = params[kc.HUMAN_AGENT_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
-            agents.append(HumanAgent(id, start_time, origin, destination, params, initial_knowledge))
+            agents.append(HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge))
         else:
             print('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_TYPE])
 
     print(f'[SUCCESS] Created agent objects (%d)' % (len(agents)))
-    print_agents(agents, agent_attributes, print_every=50)
+    #print_agents(agents, agent_attributes, print_every=50)
     return agents
 
 

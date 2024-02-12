@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import random
 
 from abc import ABC, abstractmethod
@@ -39,9 +38,10 @@ class HumanAgent(Agent):
     def __init__(self, id, start_time, origin, destination, params, initial_knowledge):
         super().__init__(id, start_time, origin, destination)
 
-        learning_params = params[kc.HUMAN_AGENT_PARAMETERS]
-        self.beta = learning_params[kc.BETA]
-        self.alpha = learning_params[kc.ALPHA]
+        self.kind = kc.TYPE_HUMAN
+
+        self.beta = params[kc.BETA]
+        self.alpha = params[kc.ALPHA]
 
         self.cost = np.array(initial_knowledge, dtype=float)
 
@@ -72,16 +72,16 @@ class MachineAgent(Agent):
     def __init__(self, id, start_time, origin, destination, params, action_space_size):
         super().__init__(id, start_time, origin, destination)
 
-        learning_params = params[kc.MACHINE_AGENT_PARAMETERS]
+        self.kind = kc.TYPE_MACHINE
 
-        min_alpha, max_alpha = learning_params[kc.MIN_ALPHA], learning_params[kc.MAX_ALPHA]
-        min_epsilon, max_epsilon = learning_params[kc.MIN_EPSILON], learning_params[kc.MAX_EPSILON]
-        min_eps_decay, max_eps_decay = learning_params[kc.MIN_EPS_DECAY], learning_params[kc.MAX_EPS_DECAY]
+        min_alpha, max_alpha = params[kc.MIN_ALPHA], params[kc.MAX_ALPHA]
+        min_epsilon, max_epsilon = params[kc.MIN_EPSILON], params[kc.MAX_EPSILON]
+        min_eps_decay, max_eps_decay = params[kc.MIN_EPS_DECAY], params[kc.MAX_EPS_DECAY]
 
         self.epsilon = random.uniform(min_epsilon, max_epsilon)
         self.epsilon_decay_rate = random.uniform(min_eps_decay, max_eps_decay)
         self.alpha = random.uniform(min_alpha, max_alpha)
-        self.gamma = learning_params[kc.GAMMA]
+        self.gamma = params[kc.GAMMA]
 
         self.action_space_size = action_space_size
         # Q-table assumes only one state, otherwise should be np.zeros((num_states, action_space_size))
@@ -98,7 +98,7 @@ class MachineAgent(Agent):
 
     def learn(self, action, reward, state, next_state):
         prev_knowledge = self.q_table[action]
-        self.q_table[action] = prev_knowledge + (self.alpha * (reward + (self.gamma * np.argmax(self.q_table)) - prev_knowledge))
+        self.q_table[action] = prev_knowledge + (self.alpha * (reward - prev_knowledge))
         self.decay_epsilon()
 
 
