@@ -58,7 +58,7 @@
     "training_parameters":
     {
         "num_episodes" : 5000,
-        "remember_every" : 50,
+        "remember_every" : 20,
 
         "recorder_parameters":
         {
