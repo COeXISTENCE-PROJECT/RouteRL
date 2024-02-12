@@ -7,7 +7,6 @@ class TrafficEnvironment:
 
     def __init__(self, environment_params, simulation_params):
         self.simulator = Simulator(simulation_params)
-        print("something")
         print("[SUCCESS] Environment initiated!")
 
 
