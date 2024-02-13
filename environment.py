@@ -2,11 +2,15 @@ from prettytable import PrettyTable
 
 from keychain import Keychain as kc
 from services import Simulator
+from utilities import create_agent_objects
+
 
 class TrafficEnvironment:
 
-    def __init__(self, environment_params, simulation_params):
+    def __init__(self, environment_params, simulation_params, agent_params):
         self.simulator = Simulator(simulation_params)
+        self.agents = create_agent_objects(agent_params, self.calculate_free_flow_times())
+
         print("[SUCCESS] Environment initiated!")
 
 
