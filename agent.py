@@ -56,7 +56,7 @@ class HumanAgent(Agent):
         return action        
 
 
-    def learn(self, action, reward, state, next_state):
+    def learn(self, action, reward, observation):
         self.cost[action]=(1-self.alpha) * self.cost[action] + self.alpha * reward
 
 

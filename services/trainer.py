@@ -29,7 +29,7 @@ class Trainer:
         # Until we simulate num_episode episodes
         for ep in range(self.num_episodes):
 
-            state = env.reset()
+            observations, infos = env.reset()
             done = False
 
             # Until the episode concludes
@@ -39,16 +39,16 @@ class Trainer:
                                 kc.AGENT_DESTINATION : list(), kc.AGENT_START_TIME : list()}
 
                 # Every agent picks action
-                for agent in agents:
-                    action = agent.act(state)
+                for agent, observation in zip(agents, observations):
+                    action = agent.act(observation)
                     joint_action = self.add_action_to_joint_action(agent, action, joint_action)
                 
                 joint_action_df = pd.DataFrame(joint_action)
-                joint_reward_df, next_state, done = env.step(joint_action_df)
+                sample_observation, joint_reward_df, terminated, truncated, info = env.step(joint_action_df)
 
-                self.teach_agents(agents, joint_action_df, joint_reward_df, state, next_state)
-
-                state = next_state
+                self.teach_agents(agents, joint_action_df, joint_reward_df, sample_observation)
+                
+                done = all(terminated.values())
 
             self.save(ep, joint_action_df, joint_reward_df, agents, env.get_last_sim_duration())
             show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes)
@@ -61,17 +61,17 @@ class Trainer:
     
 
 
-    def teach_agents(self, agents, joint_action_df, joint_reward_df, state, next_state):
+    def teach_agents(self, agents, joint_action_df, joint_reward_df, observation):
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = [executor.submit(self.learn_agent, agent, joint_action_df, joint_reward_df, state, next_state) for agent in agents]
+            futures = [executor.submit(self.learn_agent, agent, joint_action_df, joint_reward_df, observation) for agent in agents]
             concurrent.futures.wait(futures)
         
     
 
-    def learn_agent(self, agent, joint_action_df, joint_reward_df, state, next_state):
+    def learn_agent(self, agent, joint_action_df, joint_reward_df, observation):
         action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION].item()
         reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD].item()
-        agent.learn(action, reward, state, next_state)
+        agent.learn(action, reward, observation)
     
 
 
