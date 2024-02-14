@@ -9,11 +9,8 @@ from stable_baselines3 import PPO
 import supersuit as ss
 from Sumo_controller import Sumo
 
-
-
 confirm_env_variable(kc.SUMO_HOME, append="tools")
 params = get_json(kc.PARAMS_PATH)
-
 
 ### Stable baselines
 def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **env_kwargs):
