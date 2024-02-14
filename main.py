@@ -76,9 +76,6 @@ def main():
     env_kwargs = {}
     train_butterfly_supersuit(env, steps=100, seed=0, **env_kwargs) 
 
-    env.close()
-
-
     Sumo_sim.Sumo_stop()  
 
 main()

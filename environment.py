@@ -80,9 +80,9 @@ class TrafficEnvironment(ParallelEnv):
         or any other environment data which should not be kept around after the
         user is no longer using the environment.
         """
-        #print("Reward table is: ", self.reward_table)
-        #self.plot_rewards()
-        pass
+        print("Reward table is: ", self.reward_table)
+        self.plot_rewards()
+        
 
 
     def calculate_free_flow_times(self):
