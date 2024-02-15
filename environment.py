@@ -1,12 +1,30 @@
+import functools
+from gymnasium.spaces import Box, Discrete
 from prettytable import PrettyTable
 
 from keychain import Keychain as kc
 from services import Simulator
+from utilities import create_agent_objects
+
 
 class TrafficEnvironment:
 
-    def __init__(self, environment_params, simulation_params):
+    def __init__(self, environment_params, simulation_params, agent_params, render_mode=None):
         self.simulator = Simulator(simulation_params)
+        self.agents = create_agent_objects(agent_params, self.calculate_free_flow_times())
+
+        self.possible_agents = [agent.id for agent in self.agents] 
+
+        self.observation_spaces = {
+            agent: Box(low=0, high=1, shape=(1,), dtype=float) for agent in self.possible_agents
+        }
+        
+        self.action_spaces = {
+            agent: Discrete(3) for agent in self.possible_agents
+        }
+
+        self.render_mode = render_mode
+
         print("[SUCCESS] Environment initiated!")
 
 
@@ -22,8 +40,15 @@ class TrafficEnvironment:
 
     def reset(self):
         self.simulator.reset_sumo()
-        state = None
-        return state
+
+        observations = {
+            a: Box(low=0, high=1, shape=(1,), dtype=float).sample() for a in self.possible_agents
+        }
+
+        infos = {a: {}  for a in self.possible_agents}
+
+
+        return observations, infos
 
 
     def calculate_free_flow_times(self):
@@ -32,11 +57,29 @@ class TrafficEnvironment:
         return free_flow_times
 
 
-    def step(self, joint_action):
+    def step(self, joint_action):        
+
         sumo_df = self.simulator.run_simulation_iteration(joint_action)
         joint_reward = self.calculate_rewards(sumo_df)
-        next_state, done = None, True
-        return joint_reward, next_state, done
+
+        sample_observation = {
+            a: (Box(low=0, high=1, shape=(1,), dtype=float).sample()) for a in self.possible_agents
+        }
+
+        terminated = {
+            terminated: True for terminated in self.possible_agents
+        }
+
+        truncated = {
+            truncated: 1 for truncated in self.possible_agents
+        }
+
+        info = {a: {} for a in self.agents} 
+
+        if any(terminated.values()) or all(truncated.values()):
+            self.agents = []
+
+        return sample_observation, joint_reward, terminated, truncated, info
 
 
     def calculate_rewards(self, sumo_df):
@@ -62,3 +105,12 @@ class TrafficEnvironment:
 
         print("------ Free flow travel times ------")
         print(table)
+
+    @functools.lru_cache(maxsize=None)
+    def observation_space(self, agent):
+        return Box(low=0, high=1, shape=(1,), dtype=float)
+
+
+    @functools.lru_cache(maxsize=None)
+    def action_space(self, agent):
+        return Discrete(3)

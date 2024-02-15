@@ -26,7 +26,7 @@ class Agent(ABC):
         pass
 
     @abstractmethod
-    def learn(self, action, reward, state, next_state):
+    def learn(self, action, reward, observation):
         # Pass the applied action and reward once the episode ends, and it will remember the consequences
         pass
 
@@ -56,7 +56,7 @@ class HumanAgent(Agent):
         return action        
 
 
-    def learn(self, action, reward, state, next_state):
+    def learn(self, action, reward, observation):
         self.cost[action]=(1-self.alpha) * self.cost[action] + self.alpha * reward
 
 
@@ -96,7 +96,7 @@ class MachineAgent(Agent):
             return np.argmin(self.q_table)
                 
 
-    def learn(self, action, reward, state, next_state):
+    def learn(self, action, reward, observation):
         prev_knowledge = self.q_table[action]
         self.q_table[action] = prev_knowledge + (self.alpha * (reward - prev_knowledge))
         self.decay_epsilon()
