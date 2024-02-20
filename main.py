@@ -1,16 +1,18 @@
 from environment import TrafficEnvironment
 from keychain import Keychain as kc
-from services import confirm_env_variable
-from services import get_json
+from utilities import confirm_env_variable
+from utilities import get_params
 from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env import DummyVecEnv
 from pettingzoo.test import parallel_api_test
 from stable_baselines3 import PPO
 import supersuit as ss
 from Sumo_controller import Sumo
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 confirm_env_variable(kc.SUMO_HOME, append="tools")
-params = get_json(kc.PARAMS_PATH)
+params = get_params(kc.PARAMS_PATH)
 
 ### Stable baselines
 def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **env_kwargs):
@@ -54,7 +56,7 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
         verbose=1,
     )"""
 
-    model.learn(total_timesteps=600)
+    model.learn(total_timesteps=10)
 
     print(f"[SUCCESS] Finished training on {str(env.unwrapped.metadata['name'])}.")
 
@@ -65,7 +67,7 @@ def main():
     Sumo_sim=Sumo(params)
     Sumo_sim.Sumo_start()
 
-    env = TrafficEnvironment(params[kc.SIMULATION_PARAMETERS])
+    env = TrafficEnvironment(params[kc.ENVIRONMENT_PARAMETERS], params[kc.SIMULATION_PARAMETERS], params[kc.AGENTS_GENERATION_PARAMETERS])
     
     parallel_api_test(env, num_cycles=1_000_000)
     print("\n[SUCCESS] Passed parallel_api_test\n")

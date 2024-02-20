@@ -3,7 +3,7 @@ import pandas as pd
 import time
 
 from keychain import Keychain as kc
-from services.utils import make_dir, show_progress, show_progress_bar
+from utilities.utils import make_dir, show_progress, show_progress_bar
 
 
 class Trainer:

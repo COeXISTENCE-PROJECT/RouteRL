@@ -1,23 +1,20 @@
 from copy import copy
-import gymnasium as gym
-from gymnasium.spaces import Box
-from gymnasium.spaces import Discrete
-import matplotlib.pyplot as plt
-import os
-from keychain import Keychain as kc
-from pettingzoo import ParallelEnv
-from services import confirm_env_variable
-from services import get_json
 import functools
+from gymnasium.spaces import Box, Discrete
+import gymnasium as gym
+import matplotlib.pyplot as plt
+from prettytable import PrettyTable
+from pettingzoo.utils.env import ParallelEnv
+import random
+import pandas as pd
+from keychain import Keychain as kc
+from services import Simulator
+from utilities import create_agent_objects
 
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-
-confirm_env_variable(kc.SUMO_HOME, append="tools")
-params = get_json(kc.PARAMS_PATH)
 
 
 from keychain import Keychain as kc
-from simulator import Simulator
+from services.simulator import Simulator
 
 
 ## link https://pettingzoo.farama.org/tutorials/custom_environment/1-project-structure/
@@ -28,13 +25,15 @@ class TrafficEnvironment(ParallelEnv):
         "is_parallelizable": True,
     }
 
-    def __init__(self, simulation_parameters, render_mode=None):
-        self.simulator = Simulator(simulation_parameters)
+    def __init__(self, environment_params, simulation_params, agent_params, render_mode=None):
+        self.simulator = Simulator(simulation_params)
         self.reward_table = []
+        self.actions = []
         print("[SUCCESS] Environment initiated!")
-
-        #self.possible_agents = ["1", "2"] 
-        self.possible_agents = [str(i) for i in range(1, 601)]
+        self.calculate_free_flow_times()
+        
+        self.possible_agents = ["1"] 
+        #self.possible_agents = [str(i) for i in range(1, 601)]
 
         self.agents = self.possible_agents
 
@@ -47,15 +46,21 @@ class TrafficEnvironment(ParallelEnv):
         }
 
         ### Create start_time table
+        num_origins = len(agent_params[kc.DESTINATIONS])
+        num_destinations = len(agent_params[kc.DESTINATIONS])
         step_size = 6
-
+        
         self.start_times = [i * step_size for i in range(len(self.possible_agents))]
+        self.origin = [random.randrange(num_origins) for i in range(len(self.possible_agents))]
+        self.destination = [random.randrange(num_destinations) for i in range(len(self.possible_agents))]
 
-        #self.start_times = [0, 6]
+        print("self.origin is: ", self.origin, "\n\n")
+        print("self.destination is: ", self.destination, "\n\n")
+        print("self.start_times is: ", self.start_times, "\n\n")
 
         self.render_mode = render_mode
 
-        self.od_pairs = []
+        """self.od_pairs = []
         number_of_agents = len(self.possible_agents)
 
         for i in range(number_of_agents):
@@ -63,6 +68,8 @@ class TrafficEnvironment(ParallelEnv):
                 self.od_pairs.append("0_0")
             else:
                 self.od_pairs.append("1_1")
+
+        print("[INFO] OD pairs: ", self.od_pairs)"""
 
 
 
@@ -81,7 +88,9 @@ class TrafficEnvironment(ParallelEnv):
         user is no longer using the environment.
         """
         print("Reward table is: ", self.reward_table)
+        print("Actions are: ", self.actions)
         self.plot_rewards()
+        self.plot_actions()
         
 
 
@@ -89,39 +98,67 @@ class TrafficEnvironment(ParallelEnv):
         free_flow_cost = self.simulator.calculate_free_flow_times()
         print('[INFO] Free-flow times: ', free_flow_cost)
         return free_flow_cost
+    
+    def start(self):
+        self.simulator.start_sumo()
+        state = None
+        return state
+
+    def stop(self):
+        self.simulator.stop_sumo()
+        state = None
+        return state
         
 
     def reset(self, seed=None, options=None):
+        self.simulator.reset_sumo()
         self.agents = copy(self.possible_agents)
 
         observations = {
-            a: Box(low=0, high=1, shape=(1,), dtype=float).sample() for a in self.agents
+            a: Box(low=0, high=1, shape=(1,), dtype=float).sample() for a in self.possible_agents
         }
 
-        infos = {a: {}  for a in self.agents}
+        infos = {a: {}  for a in self.possible_agents}
 
         return observations, infos
-
 
 
     def step(self, joint_action):
 
         if not joint_action:
-            self.agents = []
+            self.possible_agents = []
+            print("[INFO] No more agents to simulate!")
             return {}, {}, {}, {}, {}
+
+        data = {
+            'id': self.possible_agents,
+            'action': [joint_action[agent] for agent in self.possible_agents],
+            'origin': self.origin,
+            'destination': self.destination,
+            'start_time': self.start_times
+        }
+
+        self.actions.append(joint_action['1'])
+
+
+        # Create the DataFrame
+        joint_action_df = pd.DataFrame(data)
+        joint_action_df['id'] = joint_action_df['id'].astype(int)
         
 
         ### Interact with SUMO to get travel times
-        sumo_df = self.simulator.run_simulation_iteration(joint_action, self.start_times, self.od_pairs)
+        sumo_df = self.simulator.run_simulation_iteration(joint_action_df)
+        sumo_df['id'] = sumo_df['id'].astype(str)
+
         
-        costs = sumo_df['cost'].values
+        costs = sumo_df['travel_time'].values
 
 
         ### Individual reward to each agent
         rewards = {}
 
         # each agent tries to minimize each one travel time
-        i = 0
+        """i = 0
         for agent_name in self.possible_agents:
             rewards[agent_name] = -1 * costs[i]
             
@@ -129,19 +166,15 @@ class TrafficEnvironment(ParallelEnv):
             if(i == 500):
                 self.reward_table.append(-1 * costs[i])
 
-            i = i + 1
+            i = i + 1"""
 
         #print(rewards)
 
         ### Joint reward for all agents
-        """joint_reward = self.calculate_rewards(sumo_df)
-
-        print("\n\njoint_reward is: ", joint_reward, "\n\n")
+        joint_reward = self.calculate_rewards(sumo_df)
 
         for agent_name in self.possible_agents:
-            rewards[agent_name] = joint_reward"""
-
-        #print("\n\n", rewards, "\n\n")
+            rewards[agent_name] = joint_reward
 
         ### Return variables
         sample_observation = {
@@ -153,10 +186,10 @@ class TrafficEnvironment(ParallelEnv):
         }
 
         truncated = {
-            truncated: 1 for truncated in self.possible_agents
+            truncated: 0 for truncated in self.possible_agents
         }
 
-        info = {a: {} for a in self.agents} 
+        info = {a: {} for a in self.possible_agents} 
 
         if any(terminated.values()) or all(truncated.values()):
             self.agents = []
@@ -174,8 +207,18 @@ class TrafficEnvironment(ParallelEnv):
         plt.tight_layout() 
         plt.show()
 
+    def plot_actions(self):
+        plt.figure(figsize=(10, 6)) 
+        plt.plot(self.actions, color='blue', linestyle='-')  
+        plt.xlabel('Episode', fontsize=12) 
+        plt.ylabel('Action', fontsize=12) 
+        plt.title('Actions Over Episodes', fontsize=14)  
+        plt.grid(True, linestyle='--', alpha=0.7)  
+        plt.tight_layout() 
+        plt.show()
+
     def calculate_rewards(self, sumo_df):
-        average_reward = -1 * sumo_df['cost'].mean()
+        average_reward = -1 * sumo_df['travel_time'].mean()
         self.reward_table.append(average_reward)
         return average_reward
 
