@@ -56,7 +56,7 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
         verbose=1,
     )"""
 
-    model.learn(total_timesteps=10)
+    model.learn(total_timesteps=400)
 
     print(f"[SUCCESS] Finished training on {str(env.unwrapped.metadata['name'])}.")
 
@@ -68,6 +68,7 @@ def main():
     Sumo_sim.Sumo_start()
 
     env = TrafficEnvironment(params[kc.ENVIRONMENT_PARAMETERS], params[kc.SIMULATION_PARAMETERS], params[kc.AGENTS_GENERATION_PARAMETERS])
+    print("[SUCCESS] Environment initiated!")
     
     parallel_api_test(env, num_cycles=1_000_000)
     print("\n[SUCCESS] Passed parallel_api_test\n")

@@ -30,7 +30,8 @@ class TrafficEnvironment(ParallelEnv):
         self.reward_table = []
         self.actions = []
         print("[SUCCESS] Environment initiated!")
-        self.calculate_free_flow_times()
+        free_flows_dict = self.calculate_free_flow_times()
+        print("[SUCCESS] Free flow times calculated!")
         
         self.possible_agents = ["1"] 
         #self.possible_agents = [str(i) for i in range(1, 601)]
@@ -54,9 +55,11 @@ class TrafficEnvironment(ParallelEnv):
         self.origin = [random.randrange(num_origins) for i in range(len(self.possible_agents))]
         self.destination = [random.randrange(num_destinations) for i in range(len(self.possible_agents))]
 
-        print("self.origin is: ", self.origin, "\n\n")
+        print("[SUCCESS]: The vehicle will travel from origin ", self.origin, " to destination.", self.destination, " This path has free flow travel time: ", free_flows_dict[(self.origin[0], self.destination[0])])
+
+        """print("self.origin is: ", self.origin, "\n\n")
         print("self.destination is: ", self.destination, "\n\n")
-        print("self.start_times is: ", self.start_times, "\n\n")
+        print("self.start_times is: ", self.start_times, "\n\n")"""
 
         self.render_mode = render_mode
 
@@ -91,6 +94,8 @@ class TrafficEnvironment(ParallelEnv):
         print("Actions are: ", self.actions)
         self.plot_rewards()
         self.plot_actions()
+        self.reward_table = []
+        self.actions = []
         
 
 
