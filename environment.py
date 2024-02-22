@@ -29,11 +29,12 @@ class TrafficEnvironment(ParallelEnv):
         self.simulator = Simulator(simulation_params)
         self.reward_table = []
         self.actions = []
+        self.actions2 = []
         print("[SUCCESS] Environment initiated!")
         free_flows_dict = self.calculate_free_flow_times()
         print("[SUCCESS] Free flow times calculated!")
         
-        self.possible_agents = ["1"] 
+        self.possible_agents = ["1", "2"] 
         #self.possible_agents = [str(i) for i in range(1, 601)]
 
         self.agents = self.possible_agents
@@ -55,7 +56,7 @@ class TrafficEnvironment(ParallelEnv):
         self.origin = [random.randrange(num_origins) for i in range(len(self.possible_agents))]
         self.destination = [random.randrange(num_destinations) for i in range(len(self.possible_agents))]
 
-        print("[SUCCESS]: The vehicle will travel from origin ", self.origin, " to destination.", self.destination, " This path has free flow travel time: ", free_flows_dict[(self.origin[0], self.destination[0])])
+        #print("[SUCCESS]: The vehicle will travel from origin ", self.origin, " to destination.", self.destination, " This path has free flow travel time: ", free_flows_dict[(self.origin[0], self.destination[0])])
 
         """print("self.origin is: ", self.origin, "\n\n")
         print("self.destination is: ", self.destination, "\n\n")
@@ -94,10 +95,7 @@ class TrafficEnvironment(ParallelEnv):
         print("Actions are: ", self.actions)
         self.plot_rewards()
         self.plot_actions()
-        self.reward_table = []
-        self.actions = []
         
-
 
     def calculate_free_flow_times(self):
         free_flow_cost = self.simulator.calculate_free_flow_times()
@@ -144,6 +142,7 @@ class TrafficEnvironment(ParallelEnv):
         }
 
         self.actions.append(joint_action['1'])
+        self.actions2.append(joint_action['2'])
 
 
         # Create the DataFrame
@@ -214,13 +213,16 @@ class TrafficEnvironment(ParallelEnv):
 
     def plot_actions(self):
         plt.figure(figsize=(10, 6)) 
-        plt.plot(self.actions, color='blue', linestyle='-')  
+        plt.plot(self.actions, color='blue', linestyle='-', label='Actions 1')  
+        plt.plot(self.actions2, color='red', linestyle='-', label='Actions 2')  # Plot actions2
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Action', fontsize=12) 
         plt.title('Actions Over Episodes', fontsize=14)  
         plt.grid(True, linestyle='--', alpha=0.7)  
+        plt.legend()  # Show legend to differentiate between Actions 1 and Actions 2
         plt.tight_layout() 
         plt.show()
+
 
     def calculate_rewards(self, sumo_df):
         average_reward = -1 * sumo_df['travel_time'].mean()
