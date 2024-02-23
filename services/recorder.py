@@ -31,6 +31,8 @@ class Recorder:
 
         self.episodes = list()
 
+        print(f"[SUCCESS] Recorder is now here to record and visualize!")
+
 
 #################### INIT HELPERS
         

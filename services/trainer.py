@@ -19,14 +19,15 @@ class Trainer:
         self.remember_every = params[kc.REMEMBER_EVERY]
 
 
-
     def train(self, env, agents):
 
         self.recorder = Recorder(agents, self.recorder_params)
         env.start()
-        start_time = time.time()
-
+        
+        print(f"\n[INFO] Training started with {self.num_episodes} episodes.")
+        
         # Until we simulate num_episode episodes
+        start_time = time.time()
         for ep in range(self.num_episodes):
 
             observations, infos = env.reset()

@@ -47,6 +47,8 @@ class Simulator:
 
         self.last_simulation_duration = 0
 
+        print("[SUCCESS] Simulator is ready to simulate!")
+
 
 
     def start_sumo(self):
@@ -92,6 +94,7 @@ class Simulator:
             for dest_id, dest_sim_code in destinations.items():
                 route = self.find_best_paths(origin_sim_code, dest_sim_code, 'time')
                 routes[(origin_id, dest_id)] = route
+        print(f"[SUCCESS] Generated {len(routes)} routes")
         return routes
     
 
@@ -121,7 +124,7 @@ class Simulator:
                         if x[route][i] == y[k] and x[route][i + 1] == z[k]:
                             rou.append(l[k])
             length.append(sum(rou))
-            #length.append(0)
+
         return length
     
 
@@ -194,75 +197,83 @@ class Simulator:
         final['time']=((final['length_x'].astype(float)/(final['speed_x'].astype(float)))/60)
         final=final.drop(columns=['ID','length_y','speed_y','speed_x','length_x'])
         traffic_graph = nx.from_pandas_edgelist(final, 'From', 'To', ['time'], create_using=nx.DiGraph())
-    
         return traffic_graph
     
 
 
     def joint_action_to_sorted_stack(self, joint_action):
+        # Sort the joint_action dataframe by start times (descending order for stack)
         sorted_joint_action = joint_action.sort_values(kc.AGENT_START_TIME, ascending=False)
 
+        # Make a sumo_action column in sorted_joint_action dataframe
+        sumonize_action = lambda row: f'{row[kc.AGENT_ORIGIN]}_{row[kc.AGENT_DESTINATION]}_{row[kc.ACTION]}'
+        sorted_joint_action[kc.SUMO_ACTION] = sorted_joint_action.apply(sumonize_action, axis=1)
+
+        # Create a stack of agents and their sumo actions
         stack_bottom_placeholder = {kc.AGENT_START_TIME : -1}
         agents_stack = [stack_bottom_placeholder]
 
         for _, row in sorted_joint_action.iterrows():
-            agents_stack.append(row)
+            stack_row = {kc.AGENT_ID : f"{row[kc.AGENT_ID]}", kc.AGENT_START_TIME : row[kc.AGENT_START_TIME], kc.SUMO_ACTION : row[kc.SUMO_ACTION]}
+            agents_stack.append(stack_row)
+
         return agents_stack
     
 
 
     def run_simulation_iteration(self, joint_action):
-        depart_id, depart_time, depart_id_set = list(), list(), set()
-        agents_stack = self.joint_action_to_sorted_stack(joint_action)
+        arrivals = {kc.AGENT_ID : list(), kc.ARRIVAL_TIME: list()}  # Where we save arrivals
+        agents_stack = self.joint_action_to_sorted_stack(joint_action)  # Where we keep agents and their actions
+        should_continue = True
 
         # Simulation loop
-        while (len(depart_id) != joint_action.shape[0]):
-
+        while should_continue:
             timestep = int(traci.simulation.getTime())
 
             # Add vehicles to the simulation
             while agents_stack[-1][kc.AGENT_START_TIME] == timestep:
                 row = agents_stack.pop()
-                action = row[kc.ACTION]
-                vehicle_id = f"{row[kc.AGENT_ID]}"
-                ori=row[kc.AGENT_ORIGIN]
-                dest=row[kc.AGENT_DESTINATION]
-                sumo_action = self.sumonize_action(ori, dest, action)
-                traci.vehicle.add(vehicle_id, sumo_action)
+                traci.vehicle.add(row[kc.AGENT_ID], row[kc.SUMO_ACTION])
 
             # Collect vehicles that have reached their destination
-            departed = traci.simulation.getArrivedIDList() # returns a list of arrived vehicle ids
-            departed = [int(value) for value in departed] # convert to int
-            departed = [value for value in departed if (value not in depart_id_set)] # for some reason sometimes adds twice
+            arrived_now = traci.simulation.getArrivedIDList()   # returns a list of arrived vehicle ids
+            arrived_now = [int(value) for value in arrived_now]   # Convert values to int
 
-            for value in departed:
-                depart_id.append(value)
-                depart_time.append(timestep)
-
-            depart_id_set.update(depart_id)
-            traci.simulationStep()
+            for id in arrived_now:
+                arrivals[kc.AGENT_ID].append(id)
+                arrivals[kc.ARRIVAL_TIME].append(timestep)
             
-
+            # Did all vehicles arrive?
+            should_continue = len(arrivals[kc.AGENT_ID]) < len(joint_action)
+            # Advance the simulation
+            traci.simulationStep()
+        
+        # Needed for plots
         self.last_simulation_duration = timestep
-        travel_times_df = self.prepare_travel_times_df(depart_id, depart_time, joint_action)
+        # Calculate travel times
+        travel_times_df = self.prepare_travel_times_df(arrivals, joint_action)
         return travel_times_df
         
-        
 
-    def prepare_travel_times_df(self, depart_id, depart_time, joint_action):
+
+    def prepare_travel_times_df(self, arrivals, joint_action):
         # Initiate the travel_time_df
-        travel_time_df = pd.DataFrame({kc.AGENT_ID: depart_id, kc.DEPART_TIME: depart_time})
+        travel_times_df = pd.DataFrame(arrivals)
+
+        # Retrieve the start times of the agents from the joint_action dataframe
+        start_times_df = joint_action[[kc.AGENT_ID, kc.AGENT_START_TIME]]
 
         # Merge the travel_time_df with the start_times_df for travel time calculation
-        start_times_df = joint_action[[kc.AGENT_ID, kc.AGENT_START_TIME]]
-        travel_time_df = pd.merge(left=start_times_df, right=travel_time_df, on=kc.AGENT_ID, how='left')
-        #reward.fillna(value=timestep, inplace=True)
+        travel_times_df = pd.merge(left=start_times_df, right=travel_times_df, on=kc.AGENT_ID, how='left')
 
         # Calculate travel time
-        travel_time_df[kc.TRAVEL_TIME] = (travel_time_df[kc.DEPART_TIME] - travel_time_df[kc.AGENT_START_TIME]) / 60
+        calculate_travel_duration = lambda row: ((row[kc.ARRIVAL_TIME] - row[kc.AGENT_START_TIME]) / 60.0)
+        travel_times_df[kc.TRAVEL_TIME] = travel_times_df.apply(calculate_travel_duration, axis=1)
 
         # Retain only the necessary columns
-        return travel_time_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
+        travel_times_df = travel_times_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
+
+        return travel_times_df
 
 
     
@@ -287,9 +298,4 @@ class Simulator:
         from_db=pd.DataFrame(from_)
         to_db=pd.DataFrame(to_)
         return from_db, to_db
-
-
-
-    def sumonize_action(self, origin, destination, action):
-        return f'{origin}_{destination}_{action}'
     
