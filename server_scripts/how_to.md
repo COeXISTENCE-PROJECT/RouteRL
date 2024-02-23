@@ -1,7 +1,7 @@
 # Steps
 
 1. Navigate to your directory by running `cd /home/$USER/` in your terminal.
-2. Clone the project via HTTPS **right here** and not into any subfolder, by running `git clone https://github.com/COeXISTENCE-PROJECT/Milestone-One.git`.
+2. Clone the project via HTTPS **right here** and not into any subfolder, by running `git clone https://github.com/COeXISTENCE-PROJECT/Milestone-One.git` for the main branch and `git clone -b <branch-name> --single-branch https://github.com/COeXISTENCE-PROJECT/Milestone-One.git` for others.
 3. In your terminal, run `cd /home/$USER/Milestone-One/server_scripts/` to navigate to this folder.
 4. SBatch scripts are already configured. However, you may adjust configurations in `run_simulation.sh` for more resource/shorter wait time.
 5. In your terminal, run `sbatch run_simulation.sh` to start running the simulation.
