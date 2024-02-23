@@ -10,7 +10,7 @@ import pandas as pd
 from keychain import Keychain as kc
 from services import Simulator
 from utilities import create_agent_objects
-
+import seaborn as sns
 
 
 from keychain import Keychain as kc
@@ -28,6 +28,7 @@ class TrafficEnvironment(ParallelEnv):
     def __init__(self, environment_params, simulation_params, agent_params, render_mode=None):
         self.simulator = Simulator(simulation_params)
         self.reward_table = []
+        self.reward_table2 = []
         self.actions = []
         self.actions2 = []
         print("[SUCCESS] Environment initiated!")
@@ -56,24 +57,10 @@ class TrafficEnvironment(ParallelEnv):
         self.origin = [random.randrange(num_origins) for i in range(len(self.possible_agents))]
         self.destination = [random.randrange(num_destinations) for i in range(len(self.possible_agents))]
 
-        #print("[SUCCESS]: The vehicle will travel from origin ", self.origin, " to destination.", self.destination, " This path has free flow travel time: ", free_flows_dict[(self.origin[0], self.destination[0])])
-
-        """print("self.origin is: ", self.origin, "\n\n")
-        print("self.destination is: ", self.destination, "\n\n")
-        print("self.start_times is: ", self.start_times, "\n\n")"""
+        for i in range(len(self.origin)):
+            print(f"Agent {i} has origin {self.origin[i]} and destination {self.destination[i]}.")
 
         self.render_mode = render_mode
-
-        """self.od_pairs = []
-        number_of_agents = len(self.possible_agents)
-
-        for i in range(number_of_agents):
-            if i < number_of_agents // 2:
-                self.od_pairs.append("0_0")
-            else:
-                self.od_pairs.append("1_1")
-
-        print("[INFO] OD pairs: ", self.od_pairs)"""
 
 
 
@@ -92,6 +79,7 @@ class TrafficEnvironment(ParallelEnv):
         user is no longer using the environment.
         """
         print("Reward table is: ", self.reward_table)
+        print("Reward table is: ", self.reward_table2)
         print("Actions are: ", self.actions)
         self.plot_rewards()
         self.plot_actions()
@@ -162,23 +150,25 @@ class TrafficEnvironment(ParallelEnv):
         rewards = {}
 
         # each agent tries to minimize each one travel time
-        """i = 0
+        i = 0
         for agent_name in self.possible_agents:
             rewards[agent_name] = -1 * costs[i]
             
 
-            if(i == 500):
+            if(i == 0):
                 self.reward_table.append(-1 * costs[i])
+            else:
+                self.reward_table2.append(-1 * costs[i])
 
-            i = i + 1"""
+            i = i + 1
 
         #print(rewards)
 
         ### Joint reward for all agents
-        joint_reward = self.calculate_rewards(sumo_df)
+        """joint_reward = self.calculate_rewards(sumo_df)
 
         for agent_name in self.possible_agents:
-            rewards[agent_name] = joint_reward
+            rewards[agent_name] = joint_reward"""
 
         ### Return variables
         sample_observation = {
@@ -202,17 +192,22 @@ class TrafficEnvironment(ParallelEnv):
     
 
     def plot_rewards(self):
-        plt.figure(figsize=(10, 6)) 
+        # Set Seaborn style
+        sns.set_style("whitegrid")
+
+        plt.figure(figsize=(20, 12)) 
         plt.plot(self.reward_table, color='blue', linestyle='-')  
+        plt.plot(self.reward_table2, color='red', linestyle='-')  
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Reward', fontsize=12) 
         plt.title('Reward Table Over Episodes', fontsize=14)  
-        plt.grid(True, linestyle='--', alpha=0.7)  
         plt.tight_layout() 
         plt.show()
 
     def plot_actions(self):
-        plt.figure(figsize=(10, 6)) 
+        sns.set_style("whitegrid")
+
+        plt.figure(figsize=(20, 12)) 
         plt.plot(self.actions, color='blue', linestyle='-', label='Actions 1')  
         plt.plot(self.actions2, color='red', linestyle='-', label='Actions 2')  # Plot actions2
         plt.xlabel('Episode', fontsize=12) 
