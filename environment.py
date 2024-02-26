@@ -28,14 +28,14 @@ class TrafficEnvironment(ParallelEnv):
     def __init__(self, environment_params, simulation_params, agent_params, render_mode=None):
         self.simulator = Simulator(simulation_params)
         self.reward_table = []
-        self.reward_table2 = []
+        #self.reward_table2 = []
         self.actions = []
-        self.actions2 = []
+        #self.actions2 = []
         print("[SUCCESS] Environment initiated!")
         free_flows_dict = self.calculate_free_flow_times()
         print("[SUCCESS] Free flow times calculated!")
         
-        self.possible_agents = ["1", "2"] 
+        self.possible_agents = ["1"]#, "2"] 
         #self.possible_agents = [str(i) for i in range(1, 601)]
 
         self.agents = self.possible_agents
@@ -45,7 +45,7 @@ class TrafficEnvironment(ParallelEnv):
         }
         
         self.action_spaces = {
-            agent: gym.spaces.Discrete(3) for agent in self.possible_agents
+            agent: gym.spaces.Discrete(5) for agent in self.possible_agents
         }
 
         ### Create start_time table
@@ -79,7 +79,7 @@ class TrafficEnvironment(ParallelEnv):
         user is no longer using the environment.
         """
         print("Reward table is: ", self.reward_table)
-        print("Reward table is: ", self.reward_table2)
+        #print("Reward table is: ", self.reward_table2)
         print("Actions are: ", self.actions)
         self.plot_rewards()
         self.plot_actions()
@@ -130,7 +130,7 @@ class TrafficEnvironment(ParallelEnv):
         }
 
         self.actions.append(joint_action['1'])
-        self.actions2.append(joint_action['2'])
+        #self.actions2.append(joint_action['2'])
 
 
         # Create the DataFrame
@@ -150,7 +150,7 @@ class TrafficEnvironment(ParallelEnv):
         rewards = {}
 
         # each agent tries to minimize each one travel time
-        i = 0
+        """i = 0
         for agent_name in self.possible_agents:
             rewards[agent_name] = -1 * costs[i]
             
@@ -160,15 +160,15 @@ class TrafficEnvironment(ParallelEnv):
             else:
                 self.reward_table2.append(-1 * costs[i])
 
-            i = i + 1
+            i = i + 1"""
 
         #print(rewards)
 
         ### Joint reward for all agents
-        """joint_reward = self.calculate_rewards(sumo_df)
+        joint_reward = self.calculate_rewards(sumo_df)
 
         for agent_name in self.possible_agents:
-            rewards[agent_name] = joint_reward"""
+            rewards[agent_name] = joint_reward
 
         ### Return variables
         sample_observation = {
@@ -192,24 +192,46 @@ class TrafficEnvironment(ParallelEnv):
     
 
     def plot_rewards(self):
-        # Set Seaborn style
         sns.set_style("whitegrid")
 
         plt.figure(figsize=(20, 12)) 
         plt.plot(self.reward_table, color='blue', linestyle='-')  
-        plt.plot(self.reward_table2, color='red', linestyle='-')  
+        #plt.plot(self.reward_table2, color='red', linestyle='-')  
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Reward', fontsize=12) 
         plt.title('Reward Table Over Episodes', fontsize=14)  
         plt.tight_layout() 
         plt.show()
 
+        """num_plots = len(self.actions) // 100
+        remainder = len(self.actions) % 100
+
+        if remainder > 0:
+            num_plots += 1
+
+        fig, axes = plt.subplots(num_plots, 1, figsize=(10, 3*num_plots))
+
+        for i in range(num_plots):
+            start_index = i * 100
+            end_index = min(start_index + 100, len(self.actions))
+            ax = axes[i] if num_plots > 1 else axes
+
+            ax.plot(self.reward_table[start_index:end_index], color='blue', linestyle='-', label=f'Actions {i+1}')
+            ax.set_xlabel('Episode', fontsize=12)
+            ax.set_ylabel('Reward', fontsize=12)
+            ax.set_title(f'Rewards Over Episodes (Plot {i+1}, Learning rate {0.1*i})', fontsize=14)
+            ax.grid(True, linestyle='--', alpha=0.7)
+            ax.legend()
+            plt.tight_layout()
+
+        plt.show()"""
+
     def plot_actions(self):
         sns.set_style("whitegrid")
 
         plt.figure(figsize=(20, 12)) 
         plt.plot(self.actions, color='blue', linestyle='-', label='Actions 1')  
-        plt.plot(self.actions2, color='red', linestyle='-', label='Actions 2')  # Plot actions2
+        #plt.plot(self.actions2, color='red', linestyle='-', label='Actions 2')  # Plot actions2
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Action', fontsize=12) 
         plt.title('Actions Over Episodes', fontsize=14)  
@@ -217,6 +239,31 @@ class TrafficEnvironment(ParallelEnv):
         plt.legend()  # Show legend to differentiate between Actions 1 and Actions 2
         plt.tight_layout() 
         plt.show()
+
+        """num_plots = len(self.actions) // 100
+        remainder = len(self.actions) % 100
+
+        if remainder > 0:
+            num_plots += 1
+
+        fig, axes = plt.subplots(num_plots, 1, figsize=(10, 3*num_plots))
+
+        for i in range(num_plots):
+            start_index = i * 100
+            end_index = min(start_index + 100, len(self.actions))
+            ax = axes[i] if num_plots > 1 else axes
+
+            ax.plot(self.actions[start_index:end_index], color='blue', linestyle='-', label=f'Actions {i+1}')
+            ax.set_xlabel('Episode', fontsize=12)
+            ax.set_ylabel('Action', fontsize=12)
+            ax.set_title(f'Actions Over Episodes (Plot {i+1}, Learning rate {0.1*i})', fontsize=14)
+            ax.grid(True, linestyle='--', alpha=0.7)
+            ax.legend()
+            plt.tight_layout()
+
+        plt.show()"""
+
+    
 
 
     def calculate_rewards(self, sumo_df):
@@ -232,4 +279,4 @@ class TrafficEnvironment(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
-        return Discrete(3)
+        return Discrete(5)
