@@ -19,7 +19,6 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
     # Train a single model to play as each agent in a cooperative Parallel environment
 
     env.reset(seed=seed)
-    env.reward_table = []
 
     print(f"[SUCCESS] Starting training on {str(env.metadata['name'])}.")
 
@@ -56,7 +55,7 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
         verbose=1,
     )"""
 
-    model.learn(total_timesteps=400)
+    model.learn(total_timesteps=600)
 
     print(f"[SUCCESS] Finished training on {str(env.unwrapped.metadata['name'])}.")
 
@@ -67,13 +66,11 @@ def main():
     Sumo_sim=Sumo(params)
     Sumo_sim.Sumo_start()
 
-    print("kc: ", params[kc.ENVIRONMENT_PARAMETERS])
-
     env = TrafficEnvironment(params[kc.ENVIRONMENT_PARAMETERS], params[kc.SIMULATION_PARAMETERS], params[kc.AGENTS_GENERATION_PARAMETERS])
     print("[SUCCESS] Environment initiated!")
     
-    parallel_api_test(env, num_cycles=1_000_000)
-    print("\n[SUCCESS] Passed parallel_api_test\n")
+    #parallel_api_test(env, num_cycles=1_000_000)
+    #print("\n[SUCCESS] Passed parallel_api_test\n")
 
     env_kwargs = {}
     train_butterfly_supersuit(env, steps=100, seed=0, **env_kwargs) 

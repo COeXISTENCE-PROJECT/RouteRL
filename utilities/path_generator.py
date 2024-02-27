@@ -24,7 +24,7 @@ def path_generator(network, origin, destination, weight, avoid_nodes, beta):
         # Find reacheble AND feasible nodes
         options = list()
         for node in all_neighbors:
-            if (node == destination) or list(network.neighbors(node)): ##and (not abs_node_id(node) in visited_nodes_abs_names)):
+            if (node == destination) or (list(network.neighbors(node)) and (not abs_node_id(node) in visited_nodes_abs_names)):     
                 # if node is (destination) or (non-visited, non-deadend)
                 options.append(node)
 

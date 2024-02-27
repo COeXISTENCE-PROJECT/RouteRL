@@ -11,6 +11,7 @@ from keychain import Keychain as kc
 from services import Simulator
 from utilities import create_agent_objects
 import seaborn as sns
+import math
 
 
 from keychain import Keychain as kc
@@ -26,19 +27,17 @@ class TrafficEnvironment(ParallelEnv):
     }
 
     def __init__(self, environment_params, simulation_params, agent_params, render_mode=None):
+
         self.simulator = Simulator(simulation_params)
-        self.reward_table = []
-        #self.reward_table2 = []
-        self.actions = []
-        #self.actions2 = []
         print("[SUCCESS] Environment initiated!")
+
         free_flows_dict = self.calculate_free_flow_times()
-        print("[SUCCESS] Free flow times calculated!")
+        print("\n[SUCCESS] Free flow times calculated!")
 
 
         self.simulation_params = simulation_params
-        self.possible_agents = ["1"]#, "2"] 
-        #self.possible_agents = [str(i) for i in range(1, 601)]
+        #self.possible_agents = ["1"]#, "2"] 
+        self.possible_agents = [str(i) for i in range(1, 601)]
 
         self.agents = self.possible_agents
 
@@ -50,6 +49,15 @@ class TrafficEnvironment(ParallelEnv):
             agent: gym.spaces.Discrete(simulation_params[kc.NUMBER_OF_PATHS]) for agent in self.possible_agents
         }
 
+        ## save rewards and actions of each agent for the plots
+        self.reward_table = {
+            agent:[] for agent in self.possible_agents
+        }
+
+        self.action_table = {
+            agent:[] for agent in self.possible_agents
+        }
+
         ### Create start_time table
         num_origins = len(agent_params[kc.DESTINATIONS])
         num_destinations = len(agent_params[kc.DESTINATIONS])
@@ -59,9 +67,19 @@ class TrafficEnvironment(ParallelEnv):
         self.origin = [random.randrange(num_origins) for i in range(len(self.possible_agents))]
         self.destination = [random.randrange(num_destinations) for i in range(len(self.possible_agents))]
 
-        for i in range(len(self.origin)):
-            print(f"Agent {i} has origin {self.origin[i]} and destination {self.destination[i]}.")
+        ## Find the minimum free flow travel time from all the possible agents
+        overall_min_travel_time = math.inf
 
+        for i in range(len(self.origin)):
+            print(f"\nAgent {i} has origin {self.origin[i]} and destination {self.destination[i]}.\n\n")
+
+            travel_times = free_flows_dict[(self.origin[i], self.destination[i])]
+            current_min_travel_time = min(travel_times)
+
+            if (current_min_travel_time < overall_min_travel_time):
+                overall_min_travel_time = current_min_travel_time
+
+        self.overall_min_travel_time = overall_min_travel_time
         self.render_mode = render_mode
 
 
@@ -80,9 +98,6 @@ class TrafficEnvironment(ParallelEnv):
         or any other environment data which should not be kept around after the
         user is no longer using the environment.
         """
-        print("Reward table is: ", self.reward_table)
-        #print("Reward table is: ", self.reward_table2)
-        print("Actions are: ", self.actions)
         self.plot_rewards()
         self.plot_actions()
         
@@ -131,38 +146,23 @@ class TrafficEnvironment(ParallelEnv):
             'start_time': self.start_times
         }
 
-        self.actions.append(joint_action['1'])
-        #self.actions2.append(joint_action['2'])
-
-
         # Create the DataFrame
         joint_action_df = pd.DataFrame(data)
-        joint_action_df['id'] = joint_action_df['id'].astype(int)
-        
+        joint_action_df['id'] = joint_action_df['id'].astype(int)           
 
         ### Interact with SUMO to get travel times
         sumo_df = self.simulator.run_simulation_iteration(joint_action_df)
         sumo_df['id'] = sumo_df['id'].astype(str)
 
         
-        costs = sumo_df['travel_time'].values
-
-
         ### Individual reward to each agent
         rewards = {}
 
-        # each agent tries to minimize each one travel time
-        """i = 0
+        # Selfish agents
+        """costs = sumo_df['travel_time'].values
+
         for agent_name in self.possible_agents:
-            rewards[agent_name] = -1 * costs[i]
-            
-
-            if(i == 0):
-                self.reward_table.append(-1 * costs[i])
-            else:
-                self.reward_table2.append(-1 * costs[i])
-
-            i = i + 1"""
+            rewards[agent_name] = -1 * costs[i]"""
 
         #print(rewards)
 
@@ -171,6 +171,16 @@ class TrafficEnvironment(ParallelEnv):
 
         for agent_name in self.possible_agents:
             rewards[agent_name] = joint_reward
+
+
+        # Saves the actions and rewards of each agent for this episode
+        for id, action in joint_action.items():
+            self.action_table[id].append(action)
+            self.reward_table[id].append(rewards[id])
+
+        #print("Actions: ", self.action_table, "\n\n")
+        #print("Rewards: ", self.reward_table, "\n\n")
+
 
         ### Return variables
         sample_observation = {
@@ -197,7 +207,7 @@ class TrafficEnvironment(ParallelEnv):
         sns.set_style("whitegrid")
 
         plt.figure(figsize=(20, 12)) 
-        plt.plot(self.reward_table, color='blue', linestyle='-')  
+        plt.plot(self.reward_table['1'], color='blue', linestyle='-')  
         #plt.plot(self.reward_table2, color='red', linestyle='-')  
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Reward', fontsize=12) 
@@ -205,8 +215,8 @@ class TrafficEnvironment(ParallelEnv):
         plt.tight_layout() 
         plt.show()
 
-        """num_plots = len(self.actions) // 1000
-        remainder = len(self.actions) % 1000
+        """num_plots = len(self.action_table) // 1000
+        remainder = len(self.action_table) % 1000
 
         if remainder > 0:
             num_plots += 1
@@ -215,7 +225,7 @@ class TrafficEnvironment(ParallelEnv):
 
         for i in range(num_plots):
             start_index = i * 1000
-            end_index = min(start_index + 1000, len(self.actions))
+            end_index = min(start_index + 1000, len(self.action_table))
             ax = axes[i] if num_plots > 1 else axes
 
             ax.plot(self.reward_table[start_index:end_index], color='blue', linestyle='-', label=f'Actions {i+1}')
@@ -232,8 +242,7 @@ class TrafficEnvironment(ParallelEnv):
         sns.set_style("whitegrid")
 
         plt.figure(figsize=(20, 12)) 
-        plt.plot(self.actions, color='blue', linestyle='-', label='Actions 1')  
-        #plt.plot(self.actions2, color='red', linestyle='-', label='Actions 2')  # Plot actions2
+        plt.plot(self.action_table['1'], color='blue', linestyle='-', label='Actions 1')  
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Action', fontsize=12) 
         plt.title('Actions Over Episodes', fontsize=14)  
@@ -242,8 +251,8 @@ class TrafficEnvironment(ParallelEnv):
         plt.tight_layout() 
         plt.show()
 
-        """num_plots = len(self.actions) // 1000
-        remainder = len(self.actions) % 1000
+        """num_plots = len(self.action_table) // 1000
+        remainder = len(self.action_table) % 1000
 
         if remainder > 0:
             num_plots += 1
@@ -252,10 +261,10 @@ class TrafficEnvironment(ParallelEnv):
 
         for i in range(num_plots):
             start_index = i * 1000
-            end_index = min(start_index + 1000, len(self.actions))
+            end_index = min(start_index + 1000, len(self.action_table))
             ax = axes[i] if num_plots > 1 else axes
 
-            ax.plot(self.actions[start_index:end_index], color='blue', linestyle='-', label=f'Actions {i+1}')
+            ax.plot(self.action_table[start_index:end_index], color='blue', linestyle='-', label=f'Actions {i+1}')
             ax.set_xlabel('Episode', fontsize=12)
             ax.set_ylabel('Action', fontsize=12)
             ax.set_title(f'Actions Over Episodes (Plot {i+1}, Learning rate {0.1*i})', fontsize=14)
@@ -268,8 +277,7 @@ class TrafficEnvironment(ParallelEnv):
 
 
     def calculate_rewards(self, sumo_df):
-        average_reward = -1 * sumo_df['travel_time'].mean()
-        self.reward_table.append(average_reward)
+        average_reward = -1 * sumo_df['travel_time'].mean() / self.overall_min_travel_time
         return average_reward
 
 
