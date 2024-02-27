@@ -46,7 +46,7 @@
 
         "paths_save_path" : "paths.csv",
 
-        "number_of_paths" : 5,
+        "number_of_paths" : 3,
         "simulation_timesteps" : 3600,
         "beta" : -0.1,
 
