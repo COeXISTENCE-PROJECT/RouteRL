@@ -34,9 +34,16 @@ def create_agent_objects(params, free_flow_times):
         id, start_time = row_dict[kc.AGENT_ID], row_dict[kc.AGENT_START_TIME]
         origin, destination = row_dict[kc.AGENT_ORIGIN], row_dict[kc.AGENT_DESTINATION]
 
-        if row_dict[kc.AGENT_TYPE] == kc.TYPE_MACHINE:
-            agent_params = params[kc.MACHINE_AGENT_PARAMETERS]
-            agents.append(MachineAgent(id, start_time, origin, destination, agent_params, action_space_size))
+        if row_dict[kc.AGENT_TYPE] == kc.TYPE_MACHINE: ##### Changed
+            #agent_params = params[kc.MACHINE_AGENT_PARAMETERS]
+            #agents.append(MachineAgent(id, start_time, origin, destination, agent_params, action_space_size))
+            agent_params = params[kc.HUMAN_AGENT_PARAMETERS]
+            initial_knowledge = free_flow_times[(origin, destination)]
+            new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge)
+            new_agent.kind =  kc.TYPE_MACHINE
+            new_agent.mutate_to = MachineAgent(id, start_time, origin, destination, params[kc.MACHINE_AGENT_PARAMETERS], action_space_size)
+            agents.append(new_agent)
+            
         elif row_dict[kc.AGENT_TYPE] == kc.TYPE_HUMAN:
             agent_params = params[kc.HUMAN_AGENT_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
@@ -62,7 +69,7 @@ def generate_agents_data(num_agents, agent_attributes, simulation_timesteps, num
 
     for id in range(num_agents):
         # Generating agent data
-        agent_type = kc.TYPE_MACHINE if random.randint(0,10) > 5 else kc.TYPE_HUMAN
+        agent_type = kc.TYPE_MACHINE if random.randint(0,10) > 8 else kc.TYPE_HUMAN ###### 80% of the agents are humans
         origin, destination = random.randrange(num_origins), random.randrange(num_destinations)
         start_time = random.randrange(simulation_timesteps)
 

@@ -39,6 +39,8 @@ class HumanAgent(Agent):
         super().__init__(id, start_time, origin, destination)
 
         self.kind = kc.TYPE_HUMAN
+        self.mutate_to = None ##### CHANGED
+        self.mutated = False ##### CHANGED
 
         self.beta = params[kc.BETA]
         self.alpha = params[kc.ALPHA]
@@ -47,6 +49,8 @@ class HumanAgent(Agent):
 
 
     def act(self, state):  
+        if self.mutated: ##### CHANGED
+            return self.mutate_to.act(state)
         """ 
         the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
         """
@@ -57,12 +61,19 @@ class HumanAgent(Agent):
 
 
     def learn(self, action, reward, observation):
+        if self.mutated: ##### CHANGED
+            self.mutate_to.learn(action, reward, observation)
+            return
         self.cost[action]=(1-self.alpha) * self.cost[action] + self.alpha * reward
 
 
     def calculate_prob(self, utilities, n):
         prob = utilities[n] / sum(utilities)
         return prob
+    
+    def mutate(self): ##### CHANGED
+        self.mutated = True
+        self.muate_to.q_table = self.cost
     
 
 

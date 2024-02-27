@@ -17,6 +17,7 @@ class Trainer:
         self.num_episodes = params[kc.NUM_EPISODES]
         self.recorder_params = params[kc.RECORDER_PARAMETERS]
         self.remember_every = params[kc.REMEMBER_EVERY]
+        self.agents_mutated = False ##### Changed
 
 
     def train(self, env, agents):
@@ -53,6 +54,12 @@ class Trainer:
 
             self.save(ep, joint_action_df, joint_reward_df, agents, env.get_last_sim_duration())
             show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes)
+
+            if (ep > (self.num_episodes / 3)) and (not self.agents_mutated): ##### Changed
+                self.agents_mutated = True
+                for agent in agents:
+                    if agent.kind == kc.TYPE_MACHINE:
+                        agent.mutate()
 
         self.show_training_time(start_time)
         env.stop()
