@@ -67,6 +67,8 @@ def main():
     Sumo_sim=Sumo(params)
     Sumo_sim.Sumo_start()
 
+    print("kc: ", params[kc.ENVIRONMENT_PARAMETERS])
+
     env = TrafficEnvironment(params[kc.ENVIRONMENT_PARAMETERS], params[kc.SIMULATION_PARAMETERS], params[kc.AGENTS_GENERATION_PARAMETERS])
     print("[SUCCESS] Environment initiated!")
     

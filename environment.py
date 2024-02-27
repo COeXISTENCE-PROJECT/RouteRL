@@ -34,7 +34,9 @@ class TrafficEnvironment(ParallelEnv):
         print("[SUCCESS] Environment initiated!")
         free_flows_dict = self.calculate_free_flow_times()
         print("[SUCCESS] Free flow times calculated!")
-        
+
+
+        self.simulation_params = simulation_params
         self.possible_agents = ["1"]#, "2"] 
         #self.possible_agents = [str(i) for i in range(1, 601)]
 
@@ -45,7 +47,7 @@ class TrafficEnvironment(ParallelEnv):
         }
         
         self.action_spaces = {
-            agent: gym.spaces.Discrete(3) for agent in self.possible_agents
+            agent: gym.spaces.Discrete(simulation_params[kc.NUMBER_OF_PATHS]) for agent in self.possible_agents
         }
 
         ### Create start_time table
@@ -194,16 +196,16 @@ class TrafficEnvironment(ParallelEnv):
     def plot_rewards(self):
         sns.set_style("whitegrid")
 
-        """plt.figure(figsize=(20, 12)) 
+        plt.figure(figsize=(20, 12)) 
         plt.plot(self.reward_table, color='blue', linestyle='-')  
         #plt.plot(self.reward_table2, color='red', linestyle='-')  
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Reward', fontsize=12) 
         plt.title('Reward Table Over Episodes', fontsize=14)  
         plt.tight_layout() 
-        plt.show()"""
+        plt.show()
 
-        num_plots = len(self.actions) // 1000
+        """num_plots = len(self.actions) // 1000
         remainder = len(self.actions) % 1000
 
         if remainder > 0:
@@ -224,12 +226,12 @@ class TrafficEnvironment(ParallelEnv):
             ax.legend()
             plt.tight_layout()
 
-        plt.show()
+        plt.show()"""
 
     def plot_actions(self):
         sns.set_style("whitegrid")
 
-        """plt.figure(figsize=(20, 12)) 
+        plt.figure(figsize=(20, 12)) 
         plt.plot(self.actions, color='blue', linestyle='-', label='Actions 1')  
         #plt.plot(self.actions2, color='red', linestyle='-', label='Actions 2')  # Plot actions2
         plt.xlabel('Episode', fontsize=12) 
@@ -238,9 +240,9 @@ class TrafficEnvironment(ParallelEnv):
         plt.grid(True, linestyle='--', alpha=0.7)  
         plt.legend()  # Show legend to differentiate between Actions 1 and Actions 2
         plt.tight_layout() 
-        plt.show()"""
+        plt.show()
 
-        num_plots = len(self.actions) // 1000
+        """num_plots = len(self.actions) // 1000
         remainder = len(self.actions) % 1000
 
         if remainder > 0:
@@ -261,8 +263,7 @@ class TrafficEnvironment(ParallelEnv):
             ax.legend()
             plt.tight_layout()
 
-        plt.show()
-
+        plt.show()"""
     
 
 
@@ -279,4 +280,4 @@ class TrafficEnvironment(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
-        return Discrete(3)
+        return Discrete(self.simulation_params[kc.NUMBER_OF_PATHS])
