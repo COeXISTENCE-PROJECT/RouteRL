@@ -50,6 +50,7 @@ class HumanAgent(Agent):
 
     def act(self, state):  
         if self.mutated: ##### CHANGED
+            self.set_machine_attributes()
             return self.mutate_to.act(state)
         """ 
         the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
@@ -71,9 +72,21 @@ class HumanAgent(Agent):
         prob = utilities[n] / sum(utilities)
         return prob
     
+    def set_machine_attributes(self): ##### CHANGED
+        self.epsilon = self.mutate_to.epsilon
+        self.epsilon_decay_rate = self.mutate_to.epsilon_decay_rate
+        self.gamma = self.mutate_to.gamma
+        if self.mutated:
+            self.alpha = self.mutate_to.alpha
+            self.q_table = self.mutate_to.q_table
+            self.cost = self.q_table
+        else:
+            self.q_table = self.cost
+            
+    
     def mutate(self): ##### CHANGED
         self.mutated = True
-        self.muate_to.q_table = self.cost
+        self.mutate_to.q_table = self.cost
     
 
 

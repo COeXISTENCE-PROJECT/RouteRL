@@ -42,6 +42,7 @@ def create_agent_objects(params, free_flow_times):
             new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge)
             new_agent.kind =  kc.TYPE_MACHINE
             new_agent.mutate_to = MachineAgent(id, start_time, origin, destination, params[kc.MACHINE_AGENT_PARAMETERS], action_space_size)
+            new_agent.set_machine_attributes()
             agents.append(new_agent)
             
         elif row_dict[kc.AGENT_TYPE] == kc.TYPE_HUMAN:
