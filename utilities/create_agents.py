@@ -35,16 +35,11 @@ def create_agent_objects(params, free_flow_times):
         origin, destination = row_dict[kc.AGENT_ORIGIN], row_dict[kc.AGENT_DESTINATION]
 
         if row_dict[kc.AGENT_TYPE] == kc.TYPE_MACHINE: ##### Changed
-            #agent_params = params[kc.MACHINE_AGENT_PARAMETERS]
-            #agents.append(MachineAgent(id, start_time, origin, destination, agent_params, action_space_size))
             agent_params = params[kc.HUMAN_AGENT_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
-            new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge)
-            new_agent.kind =  kc.TYPE_MACHINE
-            new_agent.mutate_to = MachineAgent(id, start_time, origin, destination, params[kc.MACHINE_AGENT_PARAMETERS], action_space_size)
-            new_agent.set_machine_attributes()
+            mutate_to = MachineAgent(id, start_time, origin, destination, params[kc.MACHINE_AGENT_PARAMETERS], action_space_size)
+            new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, mutate_to)
             agents.append(new_agent)
-            
         elif row_dict[kc.AGENT_TYPE] == kc.TYPE_HUMAN:
             agent_params = params[kc.HUMAN_AGENT_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]

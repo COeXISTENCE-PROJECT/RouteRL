@@ -57,14 +57,12 @@
 
     "training_parameters":
     {
-        "num_episodes" : 200,
+        "num_episodes" : 500,
         "remember_every" : 10,
 
         "recorder_parameters":
         {
-            "mode" : "save_only",
-            "track_human" : true,
-            "track_machine" : true
+            "ONUR_COMMENT3" : "nothing for now"
         }
     }
     

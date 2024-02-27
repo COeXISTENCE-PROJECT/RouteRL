@@ -3,6 +3,7 @@ import pandas as pd
 import time
 
 from keychain import Keychain as kc
+from services import Plotter
 from services import Recorder
 from utilities import show_progress_bar
 
@@ -17,12 +18,12 @@ class Trainer:
         self.num_episodes = params[kc.NUM_EPISODES]
         self.recorder_params = params[kc.RECORDER_PARAMETERS]
         self.remember_every = params[kc.REMEMBER_EVERY]
-        self.agents_mutated = False ##### Changed
+        self.mutation_time = int(self.num_episodes / 3) ##### Changed
 
 
     def train(self, env, agents):
 
-        self.recorder = Recorder(agents, self.recorder_params)
+        self.recorder = Recorder(self.recorder_params)
         env.start()
         
         print(f"\n[INFO] Training started with {self.num_episodes} episodes.")
@@ -37,8 +38,8 @@ class Trainer:
             # Until the episode concludes
             while not done:
 
-                joint_action = {kc.AGENT_ID : list(), kc.ACTION : list(), kc.AGENT_ORIGIN : list(), 
-                                kc.AGENT_DESTINATION : list(), kc.AGENT_START_TIME : list()}
+                joint_action = {kc.AGENT_ID : list(), kc.AGENT_KIND : list(), kc.ACTION : list(),
+                                kc.AGENT_ORIGIN : list(), kc.AGENT_DESTINATION : list(), kc.AGENT_START_TIME : list()}
 
                 # Every agent picks action
                 for agent, observation in zip(agents, observations):
@@ -55,15 +56,12 @@ class Trainer:
             self.save(ep, joint_action_df, joint_reward_df, agents, env.get_last_sim_duration())
             show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes)
 
-            if (ep > (self.num_episodes / 3)) and (not self.agents_mutated): ##### Changed
-                self.agents_mutated = True
-                for agent in agents:
-                    if agent.kind == kc.TYPE_MACHINE:
-                        agent.mutate()
+            if ep == self.mutation_time: ##### Changed
+                agents = self.mutate_agents(agents)
 
         self.show_training_time(start_time)
         env.stop()
-        self.recorder.rewind()
+        Plotter(self.recorder.episodes, self.mutation_time, self.recorder_params).visualize_all()
 
         return agents
     
@@ -85,6 +83,7 @@ class Trainer:
 
     def add_action_to_joint_action(self, agent, action, joint_action):  # Add individual action to joint action
         joint_action[kc.AGENT_ID].append(agent.id)
+        joint_action[kc.AGENT_KIND].append(agent.kind)
         joint_action[kc.AGENT_ORIGIN].append(agent.origin)
         joint_action[kc.AGENT_DESTINATION].append(agent.destination)
         joint_action[kc.AGENT_START_TIME].append(agent.start_time)
@@ -97,6 +96,13 @@ class Trainer:
         if (not (episode % self.remember_every)) or (episode == (self.num_episodes-1)):
             self.recorder.remember_all(episode, joint_action_df, joint_reward_df, agents, last_sim_duration)
 
+
+    def mutate_agents(self, agents):
+        for idx, agent in enumerate(agents):
+            if agent.mutate_to is not None:
+                new_agent = agent.mutate()
+                agents[idx] = new_agent
+        return agents
 
     
     def show_training_time(self, start_time):

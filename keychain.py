@@ -12,8 +12,7 @@ class Keychain:
 
     RECORDS_FOLDER = "training_records"
     EPISODES_LOGS_FOLDER = "episodes"
-    MACHINES_LOG_FOLDER = "machines"
-    HUMANS_LOG_FOLDER = "humans"
+    AGENTS_LOGS_FOLDER = "agents"
     SIMULATION_LOG_FOLDER = "simulation"
 
     SIMULATION_LENGTH_LOG_FILE_NAME = "simulation_length.txt"
@@ -79,8 +78,6 @@ class Keychain:
     RECORDER_PARAMETERS = "recorder_parameters"
     REMEMBER_EVERY = "remember_every"
     RECORDER_MODE = "mode"
-    TRACK_HUMAN = "track_human"
-    TRACK_MACHINE = "track_machine"
 
     ###########################################################
     
@@ -97,10 +94,12 @@ class Keychain:
     
     # Common dataframe column headers
     AGENT_ID = "id"
+    AGENT_KIND = "kind"
     AGENT_ORIGIN = "origin"
     AGENT_DESTINATION = "destination"
     AGENT_START_TIME = "start_time"
     AGENT_TYPE = "agent_type"
+    TO_MUTATE = "to_mutate"
     ACTION = "action"
     SUMO_ACTION = "sumo_action"
     REWARD = "reward"
@@ -118,10 +117,5 @@ class Keychain:
     # Agent type encodings
     TYPE_HUMAN = "h"
     TYPE_MACHINE = "m"
-
-    # Recorder modes
-    PLOT_ONLY = "plot_only"
-    SAVE_ONLY = "save_only"
-    PLOT_AND_SAVE = "plot_and_save"
 
     ###########################################################
