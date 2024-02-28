@@ -61,7 +61,7 @@ class TrafficEnvironment(ParallelEnv):
         ### Create start_time table
         num_origins = len(agent_params[kc.DESTINATIONS])
         num_destinations = len(agent_params[kc.DESTINATIONS])
-        step_size = 6
+        step_size = 1
         
         self.start_times = [i * step_size for i in range(len(self.possible_agents))]
         self.origin = [random.randrange(num_origins) for i in range(len(self.possible_agents))]
@@ -85,19 +85,9 @@ class TrafficEnvironment(ParallelEnv):
 
 
     def observe(self, agent):
-        """
-        Observe should return the observation of the specified agent. This function
-        should return a sane observation (though not necessarily the most up to date possible)
-        at any time after reset() is called.
-        """
         return Box(low=0, high=1, shape=(1,), dtype=float).sample() 
 
     def close(self):
-        """
-        Close should release any graphical displays, subprocesses, network connections
-        or any other environment data which should not be kept around after the
-        user is no longer using the environment.
-        """
         self.plot_rewards()
         self.plot_actions()
         
@@ -168,6 +158,7 @@ class TrafficEnvironment(ParallelEnv):
 
         ### Joint reward for all agents
         joint_reward = self.calculate_rewards(sumo_df)
+        #print("joint_reward is: ", joint_reward)
 
         for agent_name in self.possible_agents:
             rewards[agent_name] = joint_reward
@@ -177,10 +168,6 @@ class TrafficEnvironment(ParallelEnv):
         for id, action in joint_action.items():
             self.action_table[id].append(action)
             self.reward_table[id].append(rewards[id])
-
-        #print("Actions: ", self.action_table, "\n\n")
-        #print("Rewards: ", self.reward_table, "\n\n")
-
 
         ### Return variables
         sample_observation = {
@@ -206,74 +193,39 @@ class TrafficEnvironment(ParallelEnv):
     def plot_rewards(self):
         sns.set_style("whitegrid")
 
+        random_agents = random.sample(self.possible_agents, 2)
         plt.figure(figsize=(20, 12)) 
-        plt.plot(self.reward_table['1'], color='blue', linestyle='-')  
-        #plt.plot(self.reward_table2, color='red', linestyle='-')  
+
+        # Iterate over the selected agents and plot their rewards
+        for agent_index in random_agents:
+            plt.plot(self.reward_table[agent_index], linestyle='-', label=f'Agent {agent_index}')
+
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Reward', fontsize=12) 
-        plt.title('Reward Table Over Episodes', fontsize=14)  
+        plt.title('Reward Table Over Episodes', fontsize=14) 
+        plt.grid(True, linestyle='--', alpha=0.7)  
+        plt.legend()
         plt.tight_layout() 
         plt.show()
 
-        """num_plots = len(self.action_table) // 1000
-        remainder = len(self.action_table) % 1000
-
-        if remainder > 0:
-            num_plots += 1
-
-        fig, axes = plt.subplots(num_plots, 1, figsize=(10, 3*num_plots))
-
-        for i in range(num_plots):
-            start_index = i * 1000
-            end_index = min(start_index + 1000, len(self.action_table))
-            ax = axes[i] if num_plots > 1 else axes
-
-            ax.plot(self.reward_table[start_index:end_index], color='blue', linestyle='-', label=f'Actions {i+1}')
-            ax.set_xlabel('Episode', fontsize=12)
-            ax.set_ylabel('Reward', fontsize=12)
-            ax.set_title(f'Rewards Over Episodes (Plot {i+1}, Learning rate {0.1*i})', fontsize=14)
-            ax.grid(True, linestyle='--', alpha=0.7)
-            ax.legend()
-            plt.tight_layout()
-
-        plt.show()"""
 
     def plot_actions(self):
         sns.set_style("whitegrid")
 
+        random_agents = random.sample(self.possible_agents, 5)
         plt.figure(figsize=(20, 12)) 
-        plt.plot(self.action_table['1'], color='blue', linestyle='-', label='Actions 1')  
+
+        # Iterate over the selected agents and plot their actions
+        for agent_index in random_agents:
+            plt.plot(self.action_table[agent_index], linestyle='-', label=f'Agent {agent_index}')
+
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Action', fontsize=12) 
         plt.title('Actions Over Episodes', fontsize=14)  
         plt.grid(True, linestyle='--', alpha=0.7)  
-        plt.legend()  # Show legend to differentiate between Actions 1 and Actions 2
+        plt.legend() 
         plt.tight_layout() 
         plt.show()
-
-        """num_plots = len(self.action_table) // 1000
-        remainder = len(self.action_table) % 1000
-
-        if remainder > 0:
-            num_plots += 1
-
-        fig, axes = plt.subplots(num_plots, 1, figsize=(10, 3*num_plots))
-
-        for i in range(num_plots):
-            start_index = i * 1000
-            end_index = min(start_index + 1000, len(self.action_table))
-            ax = axes[i] if num_plots > 1 else axes
-
-            ax.plot(self.action_table[start_index:end_index], color='blue', linestyle='-', label=f'Actions {i+1}')
-            ax.set_xlabel('Episode', fontsize=12)
-            ax.set_ylabel('Action', fontsize=12)
-            ax.set_title(f'Actions Over Episodes (Plot {i+1}, Learning rate {0.1*i})', fontsize=14)
-            ax.grid(True, linestyle='--', alpha=0.7)
-            ax.legend()
-            plt.tight_layout()
-
-        plt.show()"""
-    
 
 
     def calculate_rewards(self, sumo_df):
