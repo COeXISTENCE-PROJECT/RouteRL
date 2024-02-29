@@ -54,9 +54,9 @@
 
     "training_parameters":
     {
-        "num_episodes" : 5,
-        "remember_every" : 1,
-        "mutation_time" : 2,
+        "num_episodes" : 200,
+        "remember_every" : 5,
+        "mutation_time" : 100,
 
         "recorder_parameters":
         {
