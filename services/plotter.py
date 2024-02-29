@@ -84,6 +84,7 @@ class Plotter:
         print(f"[SUCCESS] Free-flow travel times are saved to {save_to}")
 
 
+
     def retrieve_free_flows(self):
         free_flows = pd.read_csv(self.free_flow_times_file_path)
         free_flows = free_flows.astype({kc.ORIGINS: 'int', kc.DESTINATIONS: 'int', kc.PATH_INDEX: 'int', kc.FREE_FLOW_TIME: 'float'})
@@ -322,6 +323,8 @@ class Plotter:
 #################### SIM LENGTH
     
     def visualize_sim_length(self):
+        save_to = make_dir(kc.PLOTS_FOLDER, kc.SIMULATION_LENGTH_PLOT_FILE_NAME)
+
         sim_lengths = self.retrieve_sim_length()
 
         plt.figure(figsize=(12, 8))
@@ -331,10 +334,10 @@ class Plotter:
         plt.ylabel('Simulation Length')
         plt.title('Simulation Length Over Episodes')
         plt.legend()
-        plt.savefig(make_dir(kc.PLOTS_FOLDER, kc.SIMULATION_LENGTH_PLOT_FILE_NAME))
+        plt.savefig(save_to)
         #plt.show()
         plt.close()
-        print(f"[SUCCESS] Simulation lengths are saved to {kc.PLOTS_FOLDER}/{kc.SIMULATION_LENGTH_PLOT_FILE_NAME}")
+        print(f"[SUCCESS] Simulation lengths are saved to {save_to}")
 
 
 
