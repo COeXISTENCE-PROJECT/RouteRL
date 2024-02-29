@@ -21,8 +21,7 @@ class Keychain:
 
     PLOTS_FOLDER = "plots"
     REWARDS_PLOT_FILE_NAME = "rewards.png"
-    ONE_HUMAN_PLOT_FILE_NAME = "one_human.png"
-    ONE_MACHINE_PLOT_FILE_NAME = "one_machine.png"
+    FF_TRAVEL_TIME_PLOT_FILE_NAME = "ff_travel_time.png"
     FLOWS_PLOT_FILE_NAME = "flows.png"
     SIMULATION_LENGTH_PLOT_FILE_NAME = "simulation_length.png"
     ACTIONS_PLOT_FILE_NAME = "actions.png"

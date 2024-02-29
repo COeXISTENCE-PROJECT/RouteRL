@@ -50,27 +50,38 @@ class Plotter:
 #################### FREE FLOWS
         
     def visualize_free_flows(self):
+        save_to = make_dir(kc.PLOTS_FOLDER, kc.FF_TRAVEL_TIME_PLOT_FILE_NAME)
+
         free_flows = self.retrieve_free_flows()
+        od_pairs = list(set(free_flows[['origins', 'destinations']].apply(lambda x: (x.iloc[0], x.iloc[1]), axis=1)))
+        num_od_pairs = len(od_pairs)
+        
+        num_columns = 2 
+        num_rows = (num_od_pairs + num_columns - 1) // num_columns
 
-        # Creating a 'group' column to help in plotting
-        free_flows['group'] = free_flows[['origins', 'destinations']].apply(lambda x: f'{x[0]}-{x[1]}', axis=1)
+        fig, axes = plt.subplots(num_rows, num_columns, figsize=(12, num_rows * 4))  # Adjust figsize as needed
+        fig.tight_layout(pad=5.0)
 
-        # Setting the figure size
-        plt.figure(figsize=(10, 6))
+        if num_rows > 1:   axes = axes.flatten()   # Flatten axes
 
-        # Plotting
-        for i, group in enumerate(free_flows['group'].unique()):
-            # Subset for each group
-            subset = free_flows[free_flows['group'] == group]
-            # Plotting each group with an offset based on the group number
-            plt.bar(x=subset['path_index'] + i*0.2, height=subset['free_flow_time'], width=0.2, label=group)
+        od_pairs.sort()
+        for idx, od in enumerate(od_pairs):
+            ax = axes[idx]
+            subset = free_flows[free_flows[kc.ORIGINS] == od[0]]
+            subset = subset[subset[kc.DESTINATIONS] == od[1]]
+            for _, row in subset.iterrows():
+                ax.bar(f"{row[kc.PATH_INDEX]}", row[kc.FREE_FLOW_TIME], label = f"Route: {int(row[kc.PATH_INDEX])}")
 
-        plt.title('Free Flow Times by Origin-Destination Pairs')
-        plt.xlabel('Path Index')
-        plt.ylabel('Free Flow Time')
-        plt.xticks(free_flows['path_index'] + 0.2, free_flows['path_index'])  # Adjusting x-ticks to be centered for each group
-        plt.legend(title='Origin-Destination')
-        plt.show()
+            ax.set_title(f"Free flow travel times in {od[0]}-{od[1]}")
+            ax.set_xlabel('Route Index')
+            ax.set_ylabel('Minutes')
+            ax.legend()
+
+        for ax in axes[idx+1:]:   ax.axis('off')    # Hide unused subplots if any
+        #plt.show()
+        plt.savefig(save_to)
+        plt.close()
+        print(f"[SUCCESS] Free-flow travel times are saved to {save_to}")
 
 
     def retrieve_free_flows(self):
@@ -86,23 +97,27 @@ class Plotter:
 #################### MEAN REWARDS
         
     def visualize_mean_rewards(self):
+        save_to = make_dir(kc.PLOTS_FOLDER, kc.REWARDS_PLOT_FILE_NAME)
+
         mean_rewards = self.retrieve_mean_rewards()
 
-        plt.figure(figsize=(15, 10))
+        plt.figure(figsize=(12, 8))
         plt.plot(self.episodes, mean_rewards[kc.HUMANS], label="Humans")
         machine_episodes = [ep for ep in self.episodes if ep >= self.mutation_time]
         machine_rewards = [reward for idx, reward in enumerate(mean_rewards[kc.MACHINES]) if (self.episodes[idx] >= self.mutation_time)]
         plt.plot(machine_episodes, machine_rewards, label="Machines")
         plt.plot(self.episodes, mean_rewards[kc.ALL], label="All")
+
         plt.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         plt.xlabel('Episode')
         plt.ylabel('Mean Reward')
         plt.title('Mean Rewards Over Episodes')
         plt.legend()
-        plt.savefig(make_dir(kc.PLOTS_FOLDER, kc.REWARDS_PLOT_FILE_NAME))
+
         #plt.show()
+        plt.savefig(save_to)
         plt.close()
-        print(f"[SUCCESS] Mean rewards are saved to {kc.PLOTS_FOLDER}/{kc.REWARDS_PLOT_FILE_NAME}")
+        print(f"[SUCCESS] Mean rewards are saved to {save_to}")
 
 
     
@@ -139,6 +154,8 @@ class Plotter:
 #################### ACTIONS
 
     def visualize_actions(self):
+        save_to = make_dir(kc.PLOTS_FOLDER, kc.ACTIONS_PLOT_FILE_NAME)
+
         all_actions, unique_actions = self.retrieve_actions()
         num_od_pairs = len(self.retrieve_all_od_pairs())
         
@@ -146,7 +163,7 @@ class Plotter:
         num_columns = 2 
         num_rows = (num_od_pairs + num_columns - 1) // num_columns  # Calculate rows needed
         
-        fig, axes = plt.subplots(num_rows, num_columns, figsize=(15, num_rows * 5))  # Adjust figsize as needed
+        fig, axes = plt.subplots(num_rows, num_columns, figsize=(12, num_rows * 4))  # Adjust figsize as needed
         fig.tight_layout(pad=5.0)
         
         if num_rows > 1:   axes = axes.flatten()   # Flatten axes
@@ -164,9 +181,9 @@ class Plotter:
 
         # Hide unused subplots if any
         for ax in axes[idx+1:]:   ax.axis('off')    # Hide unused subplots if any
-        plt.savefig(make_dir(kc.PLOTS_FOLDER, kc.ACTIONS_PLOT_FILE_NAME))
+        plt.savefig(save_to)
         plt.close()
-        print(f"[SUCCESS] Actions are saved to {kc.PLOTS_FOLDER}/{kc.ACTIONS_PLOT_FILE_NAME}")
+        print(f"[SUCCESS] Actions are saved to {save_to}")
 
 
 
@@ -195,6 +212,8 @@ class Plotter:
 #################### ACTION SHIFTS
     
     def visualize_action_shifts(self):
+        save_to = make_dir(kc.PLOTS_FOLDER, kc.ACTIONS_SHIFTS_PLOT_FILE_NAME)
+
         all_od_pairs = self.retrieve_all_od_pairs()
         machine_episodes = [ep for ep in self.episodes if ep >= self.mutation_time]
         
@@ -202,7 +221,7 @@ class Plotter:
         num_columns = 2 
         num_rows = (len(all_od_pairs) + num_columns - 1) // num_columns  # Calculate rows needed
         
-        fig, axes = plt.subplots(num_rows, num_columns, figsize=(15, num_rows * 5))  # Adjust figsize as needed
+        fig, axes = plt.subplots(num_rows, num_columns, figsize=(12, num_rows * 4))  # Adjust figsize as needed
         fig.tight_layout(pad=5.0)
         
         if num_rows > 1:   axes = axes.flatten()   # Flatten axes
@@ -226,9 +245,9 @@ class Plotter:
             ax.legend()
 
         for ax in axes[idx+1:]:   ax.axis('off')    # Hide unused subplots if any
-        plt.savefig(make_dir(kc.PLOTS_FOLDER, kc.ACTIONS_SHIFTS_PLOT_FILE_NAME))
+        plt.savefig(save_to)
         plt.close()
-        print(f"[SUCCESS] Actions are saved to {kc.PLOTS_FOLDER}/{kc.ACTIONS_SHIFTS_PLOT_FILE_NAME}")
+        print(f"[SUCCESS] Actions are saved to {save_to}")
         
     
 
@@ -255,12 +274,13 @@ class Plotter:
 #################### FLOWS
     
     def visualize_flows(self):
+        save_to = make_dir(kc.PLOTS_FOLDER, kc.FLOWS_PLOT_FILE_NAME)
 
         ever_picked, all_selections = self.retrieve_flows()
         ever_picked = list(ever_picked)
         ever_picked.sort()
         
-        plt.figure(figsize=(15, 10))
+        plt.figure(figsize=(12, 8))
 
         for pick in ever_picked:
             plt.plot(self.episodes, [selections[pick] for selections in all_selections], label=pick)
@@ -271,10 +291,11 @@ class Plotter:
         plt.ylabel('Population')
         plt.title('Population in Routes Over Episodes')
         plt.legend()
-        plt.savefig(make_dir(kc.PLOTS_FOLDER, kc.FLOWS_PLOT_FILE_NAME))
+
         #plt.show()
+        plt.savefig(save_to)
         plt.close()
-        print(f"[SUCCESS] Flows are saved to {kc.PLOTS_FOLDER}/{kc.FLOWS_PLOT_FILE_NAME}")
+        print(f"[SUCCESS] Flows are saved to {save_to}")
 
 
 
@@ -303,7 +324,7 @@ class Plotter:
     def visualize_sim_length(self):
         sim_lengths = self.retrieve_sim_length()
 
-        plt.figure(figsize=(15, 10))
+        plt.figure(figsize=(12, 8))
         plt.plot(self.episodes, sim_lengths, label="Simulation timesteps")
         plt.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         plt.xlabel('Episode')

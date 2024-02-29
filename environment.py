@@ -118,10 +118,9 @@ class TrafficEnvironment:
         for od, times in free_flow_times.items():
             for idx, time in enumerate(times):
                 free_flow_pd.loc[len(free_flow_pd.index)] = [od[0], od[1], idx, time]
-        
-        free_flow_pd = free_flow_pd.astype({kc.ORIGINS: 'int', kc.DESTINATIONS: 'int', kc.PATH_INDEX: 'int', kc.FREE_FLOW_TIME: 'float'})
         save_to = make_dir(kc.RECORDS_FOLDER, kc.FREE_FLOW_TIMES_CSV_FILE_NAME)
         free_flow_pd.to_csv(save_to, index = False)
+        print(f"[SUCCESS] Free-flow travel times calculated and saved to: {save_to}")
 
 
     @functools.lru_cache(maxsize=None)
