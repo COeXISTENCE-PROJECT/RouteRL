@@ -57,7 +57,7 @@
     {
         "num_episodes" : 200,
         "remember_every" : 5,
-        "mutation_time" : 100,
+        "mutation_time" : 80,
 
         "recorder_parameters":
         {

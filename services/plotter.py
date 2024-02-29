@@ -27,6 +27,10 @@ class Plotter:
         self.episodes = list()
         self.mutation_time = mutation_time
 
+        self.default_width, self.default_height = 12, 8
+        self.multimode_height = 4
+        self.default_num_columns = 2
+
         print(f"[SUCCESS] Plotter is now here to plot!")
 
 
@@ -56,10 +60,10 @@ class Plotter:
         od_pairs = list(set(free_flows[['origins', 'destinations']].apply(lambda x: (x.iloc[0], x.iloc[1]), axis=1)))
         num_od_pairs = len(od_pairs)
         
-        num_columns = 2 
+        num_columns = self.default_num_columns
         num_rows = (num_od_pairs + num_columns - 1) // num_columns
 
-        fig, axes = plt.subplots(num_rows, num_columns, figsize=(12, num_rows * 4))  # Adjust figsize as needed
+        fig, axes = plt.subplots(num_rows, num_columns, figsize=(self.default_width, num_rows * self.multimode_height))  # Adjust figsize as needed
         fig.tight_layout(pad=5.0)
 
         if num_rows > 1:   axes = axes.flatten()   # Flatten axes
@@ -103,7 +107,7 @@ class Plotter:
 
         mean_rewards = self.retrieve_mean_rewards()
 
-        plt.figure(figsize=(12, 8))
+        plt.figure(figsize=(self.default_height, self.default_width))
         plt.plot(self.episodes, mean_rewards[kc.HUMANS], label="Humans")
         machine_episodes = [ep for ep in self.episodes if ep >= self.mutation_time]
         machine_rewards = [reward for idx, reward in enumerate(mean_rewards[kc.MACHINES]) if (self.episodes[idx] >= self.mutation_time)]
@@ -162,10 +166,10 @@ class Plotter:
         num_od_pairs = len(self.retrieve_all_od_pairs())
         
         # Determine the layout of the subplots (rows x columns)
-        num_columns = 2 
+        num_columns = self.default_num_columns
         num_rows = (num_od_pairs + num_columns - 1) // num_columns  # Calculate rows needed
         
-        fig, axes = plt.subplots(num_rows, num_columns, figsize=(12, num_rows * 4))  # Adjust figsize as needed
+        fig, axes = plt.subplots(num_rows, num_columns, figsize=(self.default_width, num_rows * self.multimode_height))  # Adjust figsize as needed
         fig.tight_layout(pad=5.0)
         
         if num_rows > 1:   axes = axes.flatten()   # Flatten axes
@@ -221,10 +225,10 @@ class Plotter:
         machine_episodes = [ep for ep in self.episodes if ep >= self.mutation_time]
         
         # Determine the layout of the subplots (rows x columns)
-        num_columns = 2 
+        num_columns = self.default_num_columns
         num_rows = (len(all_od_pairs) + num_columns - 1) // num_columns  # Calculate rows needed
         
-        fig, axes = plt.subplots(num_rows, num_columns, figsize=(12, num_rows * 4))  # Adjust figsize as needed
+        fig, axes = plt.subplots(num_rows, num_columns, figsize=(self.default_width, num_rows * self.multimode_height))  # Adjust figsize as needed
         fig.tight_layout(pad=5.0)
         
         if num_rows > 1:   axes = axes.flatten()   # Flatten axes
@@ -284,7 +288,7 @@ class Plotter:
         ever_picked = list(ever_picked)
         ever_picked.sort()
         
-        plt.figure(figsize=(12, 8))
+        plt.figure(figsize=(self.default_width, self.default_height))
 
         for pick in ever_picked:
             plt.plot(self.episodes, [selections[pick] for selections in all_selections], label=pick)
@@ -330,14 +334,14 @@ class Plotter:
 
         sim_lengths = self.retrieve_sim_length()
 
-        plt.figure(figsize=(12, 8))
+        plt.figure(figsize=(self.default_width, self.default_height))
         plt.plot(self.episodes, sim_lengths, label="Simulation timesteps")
         plt.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         plt.xlabel('Episode')
         plt.ylabel('Simulation Length')
         plt.title('Simulation Length Over Episodes')
         plt.legend()
-        
+
         #plt.show()
         plt.savefig(save_to)
         plt.close()

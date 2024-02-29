@@ -12,14 +12,11 @@ See [here](server_scripts/how_to.md).
 ## Training results
 
 ### Number of agents
-1200 agents ~ around 600 machines and 600 humans (random)
+1200 agents ~ around 80% humans and 20% mutating humans
 ### Training episodes
-5000 Episodes
+200 Episodes
 ### Training duration
-02 hours, 17 minutes, 04 seconds
-### Visualizing agents
-- Agent #159 from kind h with OD: 1-0 at start time 1768
-- Agent #1071 from kind m with OD: 0-1 at start time 2394
+4 minutes 34 seconds
 
 
 ## Collected Mean Rewards(in minutes):
@@ -30,12 +27,12 @@ See [here](server_scripts/how_to.md).
 ![](readme_plots/simulation_length.png)
 
 
-## ID: 159
-![](readme_plots/one_human.png)
+## Picked Actions for OD Pairs
+![](readme_plots/actions.png)
 
 
-## ID:1071
-![](readme_plots/one_machine.png)
+## Action Selection Shifts After Mutation
+![](readme_plots/action_shifts.png)
 
 
 ## Route Populations:
@@ -44,21 +41,4 @@ See [here](server_scripts/how_to.md).
 
 ## Freeflow Times
 
-| Origin | Destination | Index | FF Time |
-|--------|-------------|-------|---------|
-|   0    |      0      |   0   |  2.084  |
-|   0    |      0      |   1   |  1.977  |
-|   0    |      0      |   2   |  3.325  |
-|  ----  |     ----    |  ---- |   ----  |
-|   0    |      1      |   0   |  0.779  |
-|   0    |      1      |   1   |  1.118  |
-|   0    |      1      |   2   |  0.768  |
-|  ----  |     ----    |  ---- |   ----  |
-|   1    |      0      |   0   |  0.740  |
-|   1    |      0      |   1   |  0.687  |
-|   1    |      0      |   2   |  4.705  |
-|  ----  |     ----    |  ---- |   ----  |
-|   1    |      1      |   0   |  2.035  |
-|   1    |      1      |   1   |  3.847  |
-|   1    |      1      |   2   |  2.232  |
-|  ----  |     ----    |  ---- |   ----  |
+![](readme_plots/ff_travel_time.png)
