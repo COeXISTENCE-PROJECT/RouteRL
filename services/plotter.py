@@ -15,24 +15,30 @@ class Plotter:
     """
     This class is to plot the results of the training
     """
-    def __init__(self, episodes, mutation_time, params):
+    def __init__(self, mutation_time, episodes_folder, agents_folder, sim_length_file_path, params):
 
-        self.episodes_folder = make_dir([kc.RECORDS_FOLDER, kc.EPISODES_LOGS_FOLDER])
-        self.agents_folder = make_dir([kc.RECORDS_FOLDER, kc.AGENTS_LOGS_FOLDER])
-        self.sim_length_file_path = make_dir([kc.RECORDS_FOLDER, kc.SIMULATION_LOG_FOLDER], kc.SIMULATION_LENGTH_LOG_FILE_NAME)
+        self.episodes_folder = episodes_folder
+        self.agents_folder = agents_folder
+        self.sim_length_file_path = sim_length_file_path
 
-        self.episodes = episodes
+        self.episodes = list()
         self.mutation_time = mutation_time
 
         print(f"[SUCCESS] Plotter is now here to plot!")
 
 
-    def visualize_all(self):
+#################### VISUALIZE ALL
+
+    def visualize_all(self, episodes):
+        self.episodes = episodes
+
         self.visualize_mean_rewards()
         self.visualize_flows()
         #self.visualize_tracking_agent_data()
         self.visualize_sim_length()
 
+####################
+        
 
 #################### MEAN REWARDS
         
@@ -52,6 +58,7 @@ class Plotter:
         plt.savefig(make_dir(kc.PLOTS_FOLDER, kc.REWARDS_PLOT_FILE_NAME))
         #plt.show()
         plt.close()
+        print(f"[SUCCESS] Mean rewards are saved to {kc.PLOTS_FOLDER}/{kc.REWARDS_PLOT_FILE_NAME}")
 
     
     def retrieve_mean_rewards(self):
@@ -81,8 +88,9 @@ class Plotter:
         return mean_rewards
 
 
-########################################
-    
+####################
+
+
 #################### FLOWS
     
     def visualize_flows(self):
@@ -101,6 +109,7 @@ class Plotter:
         plt.savefig(make_dir(kc.PLOTS_FOLDER, kc.FLOWS_PLOT_FILE_NAME))
         #plt.show()
         plt.close()
+        print(f"[SUCCESS] Flows are saved to {kc.PLOTS_FOLDER}/{kc.FLOWS_PLOT_FILE_NAME}")
 
 
     def retrieve_flows(self):
@@ -119,7 +128,7 @@ class Plotter:
 
         return ever_picked, all_selections
         
-########################################
+####################
     
 
 #################### SIM LENGTH
@@ -133,6 +142,7 @@ class Plotter:
         plt.savefig(make_dir(kc.PLOTS_FOLDER, kc.SIMULATION_LENGTH_PLOT_FILE_NAME))
         #plt.show()
         plt.close()
+        print(f"[SUCCESS] Simulation lengths are saved to {kc.PLOTS_FOLDER}/{kc.SIMULATION_LENGTH_PLOT_FILE_NAME}")
 
     def retrieve_sim_length(self):
         sim_lengths = list()
@@ -142,9 +152,14 @@ class Plotter:
                 sim_lengths.append(int(line.strip()))
         return sim_lengths
     
-########################################
+####################
+
+
+#################### HELPERS
     
     def mean(self, data):
         if len(data) == 0:
             return None
         return sum(data) / len(data)
+    
+####################

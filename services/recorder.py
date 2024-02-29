@@ -31,7 +31,7 @@ class Recorder:
             os.remove(log_file_path)
         return log_file_path
     
-########################################
+####################
         
 
 #################### REMEMBER FUNCTIONS
@@ -69,7 +69,7 @@ class Recorder:
         with open(self.sim_length_file_path, "a") as file:
             file.write(f"{last_sim_duration}\n")
 
-########################################
+####################
             
     
         

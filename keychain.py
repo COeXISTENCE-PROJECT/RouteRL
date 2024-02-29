@@ -58,6 +58,8 @@ class Keychain:
 
     # Training
     NUM_EPISODES = "num_episodes"
+    REMEMBER_EVERY = "remember_every"
+    MUTATION_TIME = "mutation_time"
 
     # Environment
     TRANSPORT_PENALTY = "transport_penalty"
@@ -76,8 +78,9 @@ class Keychain:
 
     # Recorder
     RECORDER_PARAMETERS = "recorder_parameters"
-    REMEMBER_EVERY = "remember_every"
-    RECORDER_MODE = "mode"
+
+    # Plotter
+    PLOTTER_PARAMETERS = "plotter_parameters"
 
     ###########################################################
     

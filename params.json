@@ -57,12 +57,18 @@
 
     "training_parameters":
     {
-        "num_episodes" : 500,
-        "remember_every" : 10,
+        "num_episodes" : 1000,
+        "remember_every" : 20,
+        "mutation_time" : 400,
 
         "recorder_parameters":
         {
             "ONUR_COMMENT3" : "nothing for now"
+        },
+
+        "plotter_parameters":
+        {
+            "ONUR_COMMENT4" : "nothing for now"
         }
     }
     

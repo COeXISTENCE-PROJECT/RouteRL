@@ -17,16 +17,19 @@ class Trainer:
     def __init__(self, params):
         self.num_episodes = params[kc.NUM_EPISODES]
         self.recorder_params = params[kc.RECORDER_PARAMETERS]
+        self.plotter_params = params[kc.PLOTTER_PARAMETERS]
         self.remember_every = params[kc.REMEMBER_EVERY]
-        self.mutation_time = int(self.num_episodes / 3) ##### Changed
+        self.mutation_time = params[kc.MUTATION_TIME]
 
 
     def train(self, env, agents):
 
         self.recorder = Recorder(self.recorder_params)
+        self.plotter = Plotter(self.mutation_time, self.recorder.episodes_folder, self.recorder.agents_folder, self.recorder.sim_length_file_path, self.plotter_params)
+
         env.start()
         
-        print(f"\n[INFO] Training started with {self.num_episodes} episodes.")
+        print(f"\n[INFO] Training is starting with {self.num_episodes} episodes.")
         
         # Until we simulate num_episode episodes
         start_time = time.time()
@@ -56,14 +59,12 @@ class Trainer:
             self.save(ep, joint_action_df, joint_reward_df, agents, env.get_last_sim_duration())
             show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes)
 
-            if ep == self.mutation_time: ##### Changed
+            if ep == self.mutation_time:
                 agents = self.mutate_agents(agents)
 
         self.show_training_time(start_time)
         env.stop()
-        Plotter(self.recorder.episodes, self.mutation_time, self.recorder_params).visualize_all()
-
-        return agents
+        self.plotter.visualize_all(self.recorder.episodes)
     
 
 
