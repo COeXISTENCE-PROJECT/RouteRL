@@ -107,7 +107,7 @@ class Plotter:
 
         mean_rewards = self.retrieve_mean_rewards()
 
-        plt.figure(figsize=(self.default_height, self.default_width))
+        plt.figure(figsize=(self.default_width, self.default_height))
         plt.plot(self.episodes, mean_rewards[kc.HUMANS], label="Humans")
         machine_episodes = [ep for ep in self.episodes if ep >= self.mutation_time]
         machine_rewards = [reward for idx, reward in enumerate(mean_rewards[kc.MACHINES]) if (self.episodes[idx] >= self.mutation_time)]
