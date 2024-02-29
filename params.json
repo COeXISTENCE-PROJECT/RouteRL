@@ -3,7 +3,7 @@
     "agent_generation_parameters" :
     {
         "agents_data_path" : "agents_data.csv",
-        "num_agents" : 1200,
+        "num_agents" : 600,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "agent_type"],
         "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",
         "origins" : "${simulation_parameters.origins}",

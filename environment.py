@@ -34,10 +34,9 @@ class TrafficEnvironment(ParallelEnv):
         free_flows_dict = self.calculate_free_flow_times()
         print("\n[SUCCESS] Free flow times calculated!")
 
-
+        self.agent_params = agent_params
         self.simulation_params = simulation_params
-        #self.possible_agents = ["1"]#, "2"] 
-        self.possible_agents = [str(i) for i in range(1, 601)]
+        self.possible_agents = [str(i) for i in range(0, agent_params[kc.NUM_AGENTS])]
 
         self.agents = self.possible_agents
 
@@ -61,7 +60,7 @@ class TrafficEnvironment(ParallelEnv):
         ### Create start_time table
         num_origins = len(agent_params[kc.DESTINATIONS])
         num_destinations = len(agent_params[kc.DESTINATIONS])
-        step_size = 1
+        step_size = 6
         
         self.start_times = [i * step_size for i in range(len(self.possible_agents))]
         self.origin = [random.randrange(num_origins) for i in range(len(self.possible_agents))]
@@ -81,6 +80,7 @@ class TrafficEnvironment(ParallelEnv):
 
         self.overall_min_travel_time = overall_min_travel_time
         self.render_mode = render_mode
+        self.min_reward = - math.inf
 
 
 
@@ -90,6 +90,21 @@ class TrafficEnvironment(ParallelEnv):
     def close(self):
         self.plot_rewards()
         self.plot_actions()
+
+        ## Save the minimum rewards observed in every environment
+        file_path = "min_reward.txt"
+
+        with open(file_path, 'a') as file:
+            file.write(str(self.min_reward) + '\n')
+
+        ## Empty the reward and action tables
+        self.reward_table = {
+            agent:[] for agent in self.possible_agents
+        }
+
+        self.action_table = {
+            agent:[] for agent in self.possible_agents
+        }
         
 
     def calculate_free_flow_times(self):
@@ -193,7 +208,8 @@ class TrafficEnvironment(ParallelEnv):
     def plot_rewards(self):
         sns.set_style("whitegrid")
 
-        random_agents = random.sample(self.possible_agents, 2)
+        ## Choose 1 random agent and plot its rewards
+        random_agents = random.sample(self.possible_agents, 1)
         plt.figure(figsize=(20, 12)) 
 
         # Iterate over the selected agents and plot their rewards
@@ -202,7 +218,7 @@ class TrafficEnvironment(ParallelEnv):
 
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Reward', fontsize=12) 
-        plt.title('Reward Table Over Episodes', fontsize=14) 
+        plt.title(f'Reward Table Over Episodes for {self.agent_params[kc.NUM_AGENTS]} agents', fontsize=14) 
         plt.grid(True, linestyle='--', alpha=0.7)  
         plt.legend()
         plt.tight_layout() 
@@ -212,7 +228,12 @@ class TrafficEnvironment(ParallelEnv):
     def plot_actions(self):
         sns.set_style("whitegrid")
 
-        random_agents = random.sample(self.possible_agents, 5)
+        ## Choose 5 random agents and plot their actions
+        if(len(self.possible_agents) < 5):
+            random_agents = self.possible_agents
+        else:
+            random_agents = random.sample(self.possible_agents, 5)
+
         plt.figure(figsize=(20, 12)) 
 
         # Iterate over the selected agents and plot their actions
@@ -221,7 +242,7 @@ class TrafficEnvironment(ParallelEnv):
 
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Action', fontsize=12) 
-        plt.title('Actions Over Episodes', fontsize=14)  
+        plt.title(f'Actions Over Episodes for {self.agent_params[kc.NUM_AGENTS]} agents', fontsize=14)  
         plt.grid(True, linestyle='--', alpha=0.7)  
         plt.legend() 
         plt.tight_layout() 
@@ -230,6 +251,10 @@ class TrafficEnvironment(ParallelEnv):
 
     def calculate_rewards(self, sumo_df):
         average_reward = -1 * sumo_df['travel_time'].mean() / self.overall_min_travel_time
+
+        if average_reward > self.min_reward:
+            self.min_reward = average_reward
+
         return average_reward
 
 
