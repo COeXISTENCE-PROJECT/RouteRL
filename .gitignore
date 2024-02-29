@@ -1,10 +1,7 @@
 .DS_Store
-training_records/
 __pycache__/
+plots/
+training_records/
 summary.xml
 tripinfo.xml
-agents_data.csv
-paths.csv
-plots/
 route.rou.xml
-docker_prints.txt

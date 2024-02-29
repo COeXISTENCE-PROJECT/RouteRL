@@ -26,7 +26,7 @@ class Recorder:
 #################### INIT HELPERS
     
     def get_sim_length_file_path(self):
-        log_file_path = make_dir([kc.RECORDS_FOLDER, kc.SIMULATION_LOG_FOLDER], kc.SIMULATION_LENGTH_LOG_FILE_NAME)
+        log_file_path = make_dir(kc.RECORDS_FOLDER, kc.SIMULATION_LENGTH_LOG_FILE_NAME)
         if os.path.exists(log_file_path):
             os.remove(log_file_path)
         return log_file_path

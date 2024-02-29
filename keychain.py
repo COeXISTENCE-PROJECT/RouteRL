@@ -13,9 +13,11 @@ class Keychain:
     RECORDS_FOLDER = "training_records"
     EPISODES_LOGS_FOLDER = "episodes"
     AGENTS_LOGS_FOLDER = "agents"
-    SIMULATION_LOG_FOLDER = "simulation"
 
+    AGENTS_DATA_FILE_NAME = "agents_data.csv"
     SIMULATION_LENGTH_LOG_FILE_NAME = "simulation_length.txt"
+    PATHS_CSV_FILE_NAME = "paths.csv"
+    FREE_FLOW_TIMES_CSV_FILE_NAME = "free_flow_times.csv"
 
     PLOTS_FOLDER = "plots"
     REWARDS_PLOT_FILE_NAME = "rewards.png"
@@ -23,6 +25,8 @@ class Keychain:
     ONE_MACHINE_PLOT_FILE_NAME = "one_machine.png"
     FLOWS_PLOT_FILE_NAME = "flows.png"
     SIMULATION_LENGTH_PLOT_FILE_NAME = "simulation_length.png"
+    ACTIONS_PLOT_FILE_NAME = "actions.png"
+    ACTIONS_SHIFTS_PLOT_FILE_NAME = "actions_shifts.png"
     
     ###########################################################
     
@@ -101,7 +105,6 @@ class Keychain:
     AGENT_ORIGIN = "origin"
     AGENT_DESTINATION = "destination"
     AGENT_START_TIME = "start_time"
-    AGENT_TYPE = "agent_type"
     TO_MUTATE = "to_mutate"
     ACTION = "action"
     SUMO_ACTION = "sumo_action"
@@ -116,6 +119,8 @@ class Keychain:
     HUMANS = "humans"
     MACHINES = "machines"
     ALL = "all"
+    PATH_INDEX = "path_index"
+    FREE_FLOW_TIME = "free_flow_time"
 
     # Agent type encodings
     TYPE_HUMAN = "h"

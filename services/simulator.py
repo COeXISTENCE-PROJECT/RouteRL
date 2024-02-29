@@ -7,8 +7,9 @@ from bs4 import BeautifulSoup
 
 from keychain import Keychain as kc
 from services import SumoController
-from utilities import path_generator
 from utilities import list_to_string
+from utilities import make_dir
+from utilities import path_generator
 from utilities import remove_double_quotes
 
 
@@ -21,12 +22,8 @@ class Simulator:
     def __init__(self, params):
 
         self.sumo_controller = SumoController(params)
-
         self.routes_xml_save_path = params[kc.ROUTES_XML_SAVE_PATH]
-
         self.number_of_paths = params[kc.NUMBER_OF_PATHS]
-        self.paths_save_path = params[kc.PATHS_SAVE_PATH]
-
         self.simulation_length = params[kc.SIMULATION_TIMESTEPS]
         self.beta = params[kc.BETA]
 
@@ -72,9 +69,10 @@ class Simulator:
         paths_df = pd.DataFrame(columns = ["origin", "destination", "path"])
         for od, paths in routes.items():
             for path in paths:
-                paths_df.loc[len(paths_df)] = [od[0], od[1], list_to_string(path, "-> ")]
-        paths_df.to_csv(self.paths_save_path, index=True)
-        print("[SUCCESS] Generated & saved %d paths to: %s" % (len(paths_df), self.paths_save_path))
+                paths_df.loc[len(paths_df.index)] = [od[0], od[1], list_to_string(path, "-> ")]
+        save_to = make_dir(kc.RECORDS_FOLDER, kc.PATHS_CSV_FILE_NAME)
+        paths_df.to_csv(save_to, index=True)
+        print("[SUCCESS] Generated & saved %d paths to: %s" % (len(paths_df), save_to))
         
         # XML file, for sumo
         with open(self.routes_xml_save_path, "w") as rou:

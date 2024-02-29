@@ -35,6 +35,9 @@ class Trainer:
         start_time = time.time()
         for ep in range(self.num_episodes):
 
+            if ep == self.mutation_time:
+                agents = self.mutate_agents(agents)
+
             observations, infos = env.reset()
             done = False
 
@@ -58,9 +61,6 @@ class Trainer:
 
             self.save(ep, joint_action_df, joint_reward_df, agents, env.get_last_sim_duration())
             show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes)
-
-            if ep == self.mutation_time:
-                agents = self.mutate_agents(agents)
 
         self.show_training_time(start_time)
         env.stop()

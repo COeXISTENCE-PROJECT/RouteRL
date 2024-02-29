@@ -2,9 +2,8 @@
 
     "agent_generation_parameters" :
     {
-        "agents_data_path" : "agents_data.csv",
         "num_agents" : 1200,
-        "agent_attributes" : ["id", "origin", "destination", "start_time", "agent_type"],
+        "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",
         "origins" : "${simulation_parameters.origins}",
         "destinations" : "${simulation_parameters.destinations}",
@@ -44,8 +43,6 @@
         "route_file_path" : "Network_and_config/csomor1.rou.xml",
         "routes_xml_save_path" : "Network_and_config/route.rou.xml",
 
-        "paths_save_path" : "paths.csv",
-
         "number_of_paths" : 3,
         "simulation_timesteps" : 3600,
         "beta" : -0.1,
@@ -57,9 +54,9 @@
 
     "training_parameters":
     {
-        "num_episodes" : 1000,
-        "remember_every" : 20,
-        "mutation_time" : 400,
+        "num_episodes" : 10,
+        "remember_every" : 2,
+        "mutation_time" : 5,
 
         "recorder_parameters":
         {
