@@ -3,6 +3,7 @@
     "agent_generation_parameters" :
     {
         "num_agents" : 1200,
+        "ratio_mutating" : 0.2,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",
         "origins" : "${simulation_parameters.origins}",

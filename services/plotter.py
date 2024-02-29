@@ -78,6 +78,7 @@ class Plotter:
             ax.legend()
 
         for ax in axes[idx+1:]:   ax.axis('off')    # Hide unused subplots if any
+
         #plt.show()
         plt.savefig(save_to)
         plt.close()
@@ -182,6 +183,7 @@ class Plotter:
 
         # Hide unused subplots if any
         for ax in axes[idx+1:]:   ax.axis('off')    # Hide unused subplots if any
+
         plt.savefig(save_to)
         plt.close()
         print(f"[SUCCESS] Actions are saved to {save_to}")
@@ -246,6 +248,7 @@ class Plotter:
             ax.legend()
 
         for ax in axes[idx+1:]:   ax.axis('off')    # Hide unused subplots if any
+
         plt.savefig(save_to)
         plt.close()
         print(f"[SUCCESS] Actions are saved to {save_to}")
@@ -334,8 +337,9 @@ class Plotter:
         plt.ylabel('Simulation Length')
         plt.title('Simulation Length Over Episodes')
         plt.legend()
-        plt.savefig(save_to)
+        
         #plt.show()
+        plt.savefig(save_to)
         plt.close()
         print(f"[SUCCESS] Simulation lengths are saved to {save_to}")
 

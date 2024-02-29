@@ -16,6 +16,7 @@ def create_agent_objects(params, free_flow_times):
 
     # Getting parameters
     num_agents = params[kc.NUM_AGENTS]
+    ratio_mutating = params[kc.RATIO_MUTATING]
     simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]
     num_origins = len(params[kc.ORIGINS])
     num_destinations = len(params[kc.DESTINATIONS])
@@ -24,7 +25,7 @@ def create_agent_objects(params, free_flow_times):
     action_space_size = params[kc.ACTION_SPACE_SIZE]
     
     # Generating agent data
-    agents_data_df = generate_agents_data(num_agents, agent_attributes, simulation_timesteps, num_origins, num_destinations)
+    agents_data_df = generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulation_timesteps, num_origins, num_destinations)
     agents = list() # Where we will store & return agents
     
     # Generating agent objects from generated agent data
@@ -53,7 +54,7 @@ def create_agent_objects(params, free_flow_times):
 
 
 
-def generate_agents_data(num_agents, agent_attributes, simulation_timesteps, num_origins, num_destinations):
+def generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulation_timesteps, num_origins, num_destinations):
 
     """
     Generates agents data
@@ -65,13 +66,13 @@ def generate_agents_data(num_agents, agent_attributes, simulation_timesteps, num
 
     for id in range(num_agents):
         # Generating agent data
-        agent_type = kc.TYPE_MACHINE if random.randint(0,10) > 8 else kc.TYPE_HUMAN ###### 80% of the agents are humans
+        agent_type = kc.TYPE_HUMAN if (random.random() > ratio_mutating) else kc.TYPE_MACHINE ###### 80% of the agents are humans
         origin, destination = random.randrange(num_origins), random.randrange(num_destinations)
         start_time = random.randrange(simulation_timesteps)
 
         # Registering to the dataframe
         agent_features = [id, origin, destination, start_time, agent_type]
-        agent_dict = {agent_attributes[i] : agent_features[i] for i in range(len(agent_features))}
+        agent_dict = {attribute : feature for attribute, feature in zip(agent_attributes, agent_features)}
         agents_df.loc[id] = agent_dict
 
     save_to = make_dir(kc.RECORDS_FOLDER, kc.AGENTS_DATA_FILE_NAME)
