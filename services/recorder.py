@@ -62,7 +62,7 @@ class Recorder:
                 alpha, epsilon, epsilon_decay_rate, gamma, q_table = agent.alpha, agent.epsilon, agent.epsilon_decay_rate, agent.gamma, list_to_string(agent.q_table, ' , ')
             row_data = [id, kind, cost, to_mutate, alpha, beta, epsilon, epsilon_decay_rate, gamma, q_table]
             agents_df.loc[len(agents_df.index)] = {key : value for key, value in zip(agents_df_cols, row_data)}
-        agents_df.to_csv(make_dir(self.agents_folder, f"agents_ep{episode}.csv"), index = False)
+        agents_df.to_csv(make_dir(self.agents_folder, f"ep{episode}.csv"), index = False)
 
 
     def remember_last_sim_duration(self, last_sim_duration):

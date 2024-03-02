@@ -14,13 +14,17 @@ See [here](server_scripts/how_to.md).
 ### Number of agents
 1200 agents ~ around 80% humans and 20% mutating humans
 ### Training episodes
-200 Episodes
+1000 Episodes, mutation at 400
 ### Training duration
-4 minutes 34 seconds
+22 minutes, 04 seconds
 
 
 ## Collected Mean Rewards(in minutes):
 ![](readme_plots/rewards.png)
+
+
+## Distribution of Rewards:
+![](readme_plots/rewards_dist.png)
 
 
 ## Simulation Timesteps:
@@ -40,5 +44,8 @@ See [here](server_scripts/how_to.md).
 
 
 ## Freeflow Times
-
 ![](readme_plots/ff_travel_time.png)
+
+
+## Epsilons of Machines
+![](readme_plots/epsilons.png)

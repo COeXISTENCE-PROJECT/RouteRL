@@ -21,11 +21,13 @@ class Keychain:
 
     PLOTS_FOLDER = "plots"
     REWARDS_PLOT_FILE_NAME = "rewards.png"
+    REWARDS_DIST_PLOT_FILE_NAME = "rewards_dist.png"
     FF_TRAVEL_TIME_PLOT_FILE_NAME = "ff_travel_time.png"
     FLOWS_PLOT_FILE_NAME = "flows.png"
     SIMULATION_LENGTH_PLOT_FILE_NAME = "simulation_length.png"
     ACTIONS_PLOT_FILE_NAME = "actions.png"
     ACTIONS_SHIFTS_PLOT_FILE_NAME = "actions_shifts.png"
+    MACHINE_AGENTS_EPSILONS_PLOT_FILE_NAME = "epsilons.png"
     
     ###########################################################
     
@@ -59,6 +61,7 @@ class Keychain:
 
     BETA = "beta"
     ALPHA = "alpha"
+    RANDOMNESS = "randomness"
 
     # Training
     NUM_EPISODES = "num_episodes"

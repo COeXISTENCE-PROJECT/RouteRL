@@ -3,6 +3,8 @@ import os
 import pandas as pd
 
 from collections import Counter
+from statistics import mean
+from statistics import variance
 
 from keychain import Keychain as kc
 from utilities import make_dir
@@ -26,9 +28,10 @@ class Plotter:
 
         self.episodes = list()
         self.mutation_time = mutation_time
+        self.machine_episodes = list()
 
-        self.default_width, self.default_height = 12, 8
-        self.multimode_height = 4
+        self.default_width, self.default_height = 12, 6
+        self.multimode_width, self.multimode_height = 8, 5
         self.default_num_columns = 2
 
         print(f"[SUCCESS] Plotter is now here to plot!")
@@ -39,13 +42,16 @@ class Plotter:
 
     def visualize_all(self, episodes):
         self.episodes = episodes
+        self.machine_episodes = [ep for ep in self.episodes if ep >= self.mutation_time]
 
         self.visualize_free_flows()
         self.visualize_mean_rewards()
+        self.visualize_rewards_distributions()
         self.visualize_flows()
         self.visualize_actions()
         self.visualize_action_shifts()
         self.visualize_sim_length()
+        self.visualize_machine_agents_epsilons()
 
 ####################
         
@@ -63,7 +69,8 @@ class Plotter:
         num_columns = self.default_num_columns
         num_rows = (num_od_pairs + num_columns - 1) // num_columns
 
-        fig, axes = plt.subplots(num_rows, num_columns, figsize=(self.default_width, num_rows * self.multimode_height))  # Adjust figsize as needed
+        figure_size = (self.multimode_width * num_columns, self.multimode_height * num_rows)
+        fig, axes = plt.subplots(num_rows, num_columns, figsize=figure_size)
         fig.tight_layout(pad=5.0)
 
         if num_rows > 1:   axes = axes.flatten()   # Flatten axes
@@ -95,24 +102,22 @@ class Plotter:
         free_flows = free_flows.astype({kc.ORIGINS: 'int', kc.DESTINATIONS: 'int', kc.PATH_INDEX: 'int', kc.FREE_FLOW_TIME: 'float'})
         return free_flows
         
-
 ####################
         
 
 
-#################### MEAN REWARDS
-        
+#################### REWARDS
+    
     def visualize_mean_rewards(self):
         save_to = make_dir(kc.PLOTS_FOLDER, kc.REWARDS_PLOT_FILE_NAME)
-
-        mean_rewards = self.retrieve_mean_rewards()
+        all_rewards = self.retrieve_rewards_per_kind()
+        all_mean_rewards, mean_human_rewards, mean_machine_rewards  = self.retrieve_mean_rewards(all_rewards)
 
         plt.figure(figsize=(self.default_width, self.default_height))
-        plt.plot(self.episodes, mean_rewards[kc.HUMANS], label="Humans")
-        machine_episodes = [ep for ep in self.episodes if ep >= self.mutation_time]
-        machine_rewards = [reward for idx, reward in enumerate(mean_rewards[kc.MACHINES]) if (self.episodes[idx] >= self.mutation_time)]
-        plt.plot(machine_episodes, machine_rewards, label="Machines")
-        plt.plot(self.episodes, mean_rewards[kc.ALL], label="All")
+
+        plt.plot(self.episodes, mean_human_rewards, label="Humans")
+        plt.plot(self.machine_episodes, mean_machine_rewards, label="Machines")
+        plt.plot(self.episodes, all_mean_rewards, label="All")
 
         plt.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         plt.xlabel('Episode')
@@ -120,38 +125,133 @@ class Plotter:
         plt.title('Mean Rewards Over Episodes')
         plt.legend()
 
+        plt.savefig(save_to)
+        plt.close()
+        print(f"[SUCCESS] Rewards are saved to {save_to}")
+        
+
+
+    def visualize_rewards_distributions(self):
+        save_to = make_dir(kc.PLOTS_FOLDER, kc.REWARDS_DIST_PLOT_FILE_NAME)
+
+        all_rewards = self.retrieve_rewards_per_kind()
+    
+        num_rows, num_cols = 2, 2
+        fig, axes = plt.subplots(num_rows, num_cols, figsize=(self.multimode_width * num_cols, self.multimode_height * num_rows))
+        fig.tight_layout(pad=5.0)
+
+        if num_rows > 1:   axes = axes.flatten()   # Flatten axes
+
+        # Plot mean rewards for each OD
+        mean_rewards_od = self.retrieve_mean_rewards_per_od()
+        sorted_keys = sorted(mean_rewards_od.keys())
+        for od in sorted_keys:
+            axes[0].plot(self.episodes, mean_rewards_od[od], label=od)
+        axes[0].axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
+        axes[0].set_xlabel('Episode')
+        axes[0].set_ylabel('Mean Reward')
+        axes[0].set_title('Mean Rewards For OD Over Episodes')
+        axes[0].legend()
+
+        # Plot variance rewards for all, humans and machines
+        all_var_rewards, var_human_rewards, var_machine_rewards  = self.retrieve_var_rewards(all_rewards)
+        axes[1].plot(self.episodes, var_human_rewards, label="Humans")
+        axes[1].plot(self.machine_episodes, var_machine_rewards, label="Machines")
+        axes[1].plot(self.episodes, all_var_rewards, label="All")
+        axes[1].axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
+        axes[1].set_xlabel('Episode')
+        axes[1].set_ylabel('Variance Reward')
+        axes[1].set_title('Variance Rewards Over Episodes')
+        axes[1].legend()
+
+        # Plot boxplot and violinplot for rewards
+        ep_idx, ep = [(idx, ep) for idx, ep in enumerate(self.episodes) if ep < self.mutation_time][-1]
+        data_to_plot = [all_rewards[kc.TYPE_HUMAN][ep_idx], all_rewards[kc.TYPE_HUMAN][-1], all_rewards[kc.TYPE_MACHINE][-1]]
+        labels = [f'H #{ep}', 'H Final', 'M Final']
+
+        axes[2].boxplot(data_to_plot, labels=labels, patch_artist=True)
+        axes[2].set_ylabel('Rewards')
+        axes[2].set_title('Rewards Distribution (Boxplot)')
+
+        axes[3].violinplot(data_to_plot)
+        axes[3].set_xticks([1, 2, 3])
+        axes[3].set_xticklabels(labels)
+        axes[3].set_ylabel('Rewards')
+        axes[3].set_title('Rewards Distribution (Violinplot)')
+
         #plt.show()
         plt.savefig(save_to)
         plt.close()
-        print(f"[SUCCESS] Mean rewards are saved to {save_to}")
+        print(f"[SUCCESS] Rewards distributions are saved to {save_to}")
 
 
-    
-    def retrieve_mean_rewards(self):
-        all_mean_rewards, mean_human_rewards, mean_machine_rewards = list(), list(), list()
 
+    def retrieve_rewards_per_kind(self):
+        all_rewards = {kc.TYPE_HUMAN: list(), kc.TYPE_MACHINE: list()}
         for episode in self.episodes:
             data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
             data = pd.read_csv(data_path)
             kinds, rewards = data[kc.AGENT_KIND], data[kc.REWARD]
-            human_rewards, machine_rewards = list(), list()
+            rewards_per_kind =  {kc.TYPE_HUMAN: list(), kc.TYPE_MACHINE: list()}
             for kind, reward in zip(kinds, rewards):
-                if kind == kc.TYPE_HUMAN:
-                    human_rewards.append(reward)
-                elif kind == kc.TYPE_MACHINE:
-                    machine_rewards.append(reward)
-                
-            mean_human_rewards.append(self.mean(human_rewards))
-            mean_machine_rewards.append(self.mean(machine_rewards))
-            all_mean_rewards.append(self.mean(rewards))
+                rewards_per_kind[kind].append(reward)
+            for kind in rewards_per_kind.keys():
+                all_rewards[kind].append(rewards_per_kind[kind])
+        return all_rewards
 
-        mean_rewards = pd.DataFrame({
-            kc.HUMANS: mean_human_rewards,
-            kc.MACHINES: mean_machine_rewards,
-            kc.ALL: all_mean_rewards
-        })
 
-        return mean_rewards
+    
+    def retrieve_mean_rewards(self, all_rewards):
+        all_mean_rewards, mean_human_rewards, mean_machine_rewards = list(), list(), list()
+
+        for idx, ep in enumerate(self.episodes):
+            human_rewards = all_rewards[kc.TYPE_HUMAN][idx]
+            rewards = human_rewards
+            mean_human_rewards.append(mean(human_rewards))
+            
+            if ep >= self.mutation_time:
+                machine_rewards = all_rewards[kc.TYPE_MACHINE][idx]
+                rewards = rewards + machine_rewards
+                mean_machine_rewards.append(mean(machine_rewards))
+            
+            all_mean_rewards.append(mean(rewards))
+
+        return all_mean_rewards, mean_human_rewards, mean_machine_rewards
+    
+
+    
+    def retrieve_mean_rewards_per_od(self):
+        all_od_pairs = self.retrieve_all_od_pairs()
+        all_mean_rewards = {f"{od[0]} - {od[1]}" : list() for od in all_od_pairs}
+        for idx, ep in enumerate(self.episodes):
+            episode_rewards = {f"{od[0]} - {od[1]}" : list() for od in all_od_pairs}
+            data_path = os.path.join(self.episodes_folder, f"ep{ep}.csv")
+            episode_data = pd.read_csv(data_path)
+            episode_origins, episode_destinations, rewards = episode_data[kc.AGENT_ORIGIN], episode_data[kc.AGENT_DESTINATION], episode_data[kc.REWARD]
+            for idx, reward in enumerate(rewards):
+                episode_rewards[f"{episode_origins[idx]} - {episode_destinations[idx]}"].append(reward)
+            for key in episode_rewards.keys():
+                all_mean_rewards[key].append(mean(episode_rewards[key]))
+        return all_mean_rewards
+    
+
+
+    def retrieve_var_rewards(self, all_rewards):
+        all_var_rewards, var_human_rewards, var_machine_rewards = list(), list(), list()
+
+        for idx, ep in enumerate(self.episodes):
+            human_rewards = all_rewards[kc.TYPE_HUMAN][idx]
+            rewards = human_rewards
+            var_human_rewards.append(variance(human_rewards))
+            
+            if ep >= self.mutation_time:
+                machine_rewards = all_rewards[kc.TYPE_MACHINE][idx]
+                rewards = rewards + machine_rewards
+                var_machine_rewards.append(variance(machine_rewards))
+            
+            all_var_rewards.append(variance(rewards))
+
+        return all_var_rewards, var_human_rewards, var_machine_rewards
 
 ####################
     
@@ -169,7 +269,8 @@ class Plotter:
         num_columns = self.default_num_columns
         num_rows = (num_od_pairs + num_columns - 1) // num_columns  # Calculate rows needed
         
-        fig, axes = plt.subplots(num_rows, num_columns, figsize=(self.default_width, num_rows * self.multimode_height))  # Adjust figsize as needed
+        figure_size = (self.multimode_width * num_columns, self.multimode_height * num_rows)
+        fig, axes = plt.subplots(num_rows, num_columns, figsize=figure_size)
         fig.tight_layout(pad=5.0)
         
         if num_rows > 1:   axes = axes.flatten()   # Flatten axes
@@ -228,7 +329,8 @@ class Plotter:
         num_columns = self.default_num_columns
         num_rows = (len(all_od_pairs) + num_columns - 1) // num_columns  # Calculate rows needed
         
-        fig, axes = plt.subplots(num_rows, num_columns, figsize=(self.default_width, num_rows * self.multimode_height))  # Adjust figsize as needed
+        figure_size = (self.multimode_width * num_columns, self.multimode_height * num_rows)
+        fig, axes = plt.subplots(num_rows, num_columns, figsize=figure_size)
         fig.tight_layout(pad=5.0)
         
         if num_rows > 1:   axes = axes.flatten()   # Flatten axes
@@ -358,7 +460,39 @@ class Plotter:
         return sim_lengths
     
 ####################
+    
 
+
+#################### MACHINE AGENTS EPSILONS
+    
+    def visualize_machine_agents_epsilons(self):
+        save_to = make_dir(kc.PLOTS_FOLDER, kc.MACHINE_AGENTS_EPSILONS_PLOT_FILE_NAME)
+
+        machine_agents_epsilons = self.retrieve_machine_agents_epsilons()
+
+        plt.figure(figsize=(self.default_width, self.default_height))
+        plt.plot(self.machine_episodes, machine_agents_epsilons)
+        plt.xlabel('Episode')
+        plt.ylabel('Mean Epsilon')
+        plt.title('Machine Agents Mean Epsilons Over Episodes')
+
+        #plt.show()
+        plt.savefig(save_to)
+        plt.close()
+        print(f"[SUCCESS] Machine agents mean epsilons are saved to {save_to}")
+
+
+    
+    def retrieve_machine_agents_epsilons(self):
+        machine_agents_epsilons = list()
+        for episode in self.machine_episodes:
+            agents_data_path = os.path.join(self.agents_folder, f"ep{episode}.csv")
+            agents_data = pd.read_csv(agents_data_path)
+            machine_agents_epsilons.append(agents_data[agents_data[kc.AGENT_KIND] == kc.TYPE_MACHINE][kc.EPSILON].mean())
+        return machine_agents_epsilons
+    
+#################### 
+    
 
 
 #################### HELPERS
@@ -373,12 +507,5 @@ class Plotter:
             all_od_pairs.append((origin, destination))
         all_od_pairs = list(set(all_od_pairs))
         return all_od_pairs
-    
-
-
-    def mean(self, data):
-        if len(data) == 0:
-            return None
-        return sum(data) / len(data)
     
 ####################
