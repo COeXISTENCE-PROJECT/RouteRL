@@ -8,7 +8,7 @@
 
 PATH_PROGRAM="/home/$USER/Milestone-One"
 PUT_PROGRAM_TO="/app"
-PATH_SUMO_CONTAINER="/shared/sets/singularity/sumo_docker.sif"
+PATH_SUMO_CONTAINER="/shared/sets/singularity/sumo.sif"
 CMD_PATH="/home/$USER/Milestone-One/server_scripts/cmd_container.sh"
 PRINTS_SAVE_PATH="/home/$USER/Milestone-One/server_scripts/container_printouts/output_$SLURM_JOB_ID.txt"
 
