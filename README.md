@@ -36,7 +36,7 @@ See [here](server_scripts/how_to.md).
 
 
 ## Action Selection Shifts After Mutation
-![](readme_plots/action_shifts.png)
+![](readme_plots/actions_shifts.png)
 
 
 ## Route Populations:
