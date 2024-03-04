@@ -93,7 +93,6 @@ class MachineAgent(Agent):
         self.action_space_size = action_space_size
         # Q-table assumes only one state, otherwise should be np.zeros((num_states, action_space_size))
         self.q_table = np.zeros((action_space_size))
-        #self.q_table = initial_knowledge
 
 
     def act(self, state):
