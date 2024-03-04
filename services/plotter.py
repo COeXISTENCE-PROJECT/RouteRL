@@ -352,7 +352,7 @@ class Plotter:
 
         plt.savefig(save_to)
         plt.close()
-        print(f"[SUCCESS] Actions are saved to {save_to}")
+        print(f"[SUCCESS] Actions shifts are saved to {save_to}")
         
     
 
