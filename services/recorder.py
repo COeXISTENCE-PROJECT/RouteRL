@@ -55,7 +55,7 @@ class Recorder:
         agents_df = pd.DataFrame(columns = agents_df_cols)
         for agent in agents:
             id, kind = agent.id, agent.kind
-            beta, alpha, cost, q_table, epsilon, epsilon_decay_rate, gamma, to_mutate = ["N/A"] * 8
+            beta, alpha, cost, q_table, epsilon, epsilon_decay_rate, gamma, to_mutate = [kc.NOT_AVAILABLE] * 8
             if kind == kc.TYPE_HUMAN:
                 beta, alpha, cost, to_mutate = agent.beta, agent.alpha, list_to_string(agent.cost, ' , '), (agent.mutate_to != None)
             elif kind == kc.TYPE_MACHINE:

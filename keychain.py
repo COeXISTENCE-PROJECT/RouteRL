@@ -97,6 +97,7 @@ class Keychain:
     ####################### ELSE ##############################
 
     SMALL_BUT_NOT_ZERO = 1e-14
+    NOT_AVAILABLE = "N/A"
 
     SUMO_HOME = "SUMO_HOME"
 
