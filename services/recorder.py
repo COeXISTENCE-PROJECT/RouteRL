@@ -18,7 +18,7 @@ class Recorder:
         self.agents_folder = make_dir([kc.RECORDS_FOLDER, kc.AGENTS_LOGS_FOLDER])
         self.sim_length_file_path = self.get_sim_length_file_path()
 
-        self.episodes = list()
+        self.saved_episodes = list()
 
         print(f"[SUCCESS] Recorder is now here to record!")
 
@@ -37,7 +37,7 @@ class Recorder:
 #################### REMEMBER FUNCTIONS
     
     def remember_all(self, episode, joint_action, joint_reward, agents, last_sim_duration):
-        self.episodes.append(episode)
+        self.saved_episodes.append(episode)
         self.remember_episode(episode, joint_action, joint_reward)
         self.remember_agents_status(episode, agents)
         self.remember_last_sim_duration(last_sim_duration)

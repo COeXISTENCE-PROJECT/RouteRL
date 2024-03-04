@@ -51,7 +51,7 @@ class Trainer:
 
         self.show_training_time(start_time)
         env.stop()
-        self.plotter.visualize_all(self.recorder.episodes)
+        self.plotter.visualize_all(self.recorder.saved_episodes)
 
 
     def get_joint_action(self, agents, observations):

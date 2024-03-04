@@ -26,7 +26,7 @@ class Plotter:
         self.sim_length_file_path = sim_length_file_path
         self.free_flow_times_file_path = os.path.join(kc.RECORDS_FOLDER, kc.FREE_FLOW_TIMES_CSV_FILE_NAME)
 
-        self.episodes = list()
+        self.saved_episodes = list()
         self.mutation_time = mutation_time
         self.machine_episodes = list()
 
@@ -40,8 +40,8 @@ class Plotter:
 #################### VISUALIZE ALL
 
     def visualize_all(self, episodes):
-        self.episodes = episodes
-        self.machine_episodes = [ep for ep in self.episodes if ep >= self.mutation_time]
+        self.saved_episodes = episodes
+        self.machine_episodes = [ep for ep in self.saved_episodes if ep >= self.mutation_time]
 
         self.visualize_free_flows()
         self.visualize_mean_rewards()
@@ -112,9 +112,9 @@ class Plotter:
 
         plt.figure(figsize=(self.default_width, self.default_height))
 
-        plt.plot(self.episodes, mean_human_rewards, label="Humans")
+        plt.plot(self.saved_episodes, mean_human_rewards, label="Humans")
         plt.plot(self.machine_episodes, mean_machine_rewards, label="Machines")
-        plt.plot(self.episodes, all_mean_rewards, label="All")
+        plt.plot(self.saved_episodes, all_mean_rewards, label="All")
 
         plt.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         plt.xlabel('Episode')
@@ -143,7 +143,7 @@ class Plotter:
         mean_rewards_od = self.retrieve_mean_rewards_per_od()
         sorted_keys = sorted(mean_rewards_od.keys())
         for od in sorted_keys:
-            axes[0].plot(self.episodes, mean_rewards_od[od], label=od)
+            axes[0].plot(self.saved_episodes, mean_rewards_od[od], label=od)
         axes[0].axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         axes[0].set_xlabel('Episode')
         axes[0].set_ylabel('Mean Reward')
@@ -152,9 +152,9 @@ class Plotter:
 
         # Plot variance rewards for all, humans and machines
         all_var_rewards, var_human_rewards, var_machine_rewards  = self.retrieve_var_rewards(all_rewards)
-        axes[1].plot(self.episodes, var_human_rewards, label="Humans")
+        axes[1].plot(self.saved_episodes, var_human_rewards, label="Humans")
         axes[1].plot(self.machine_episodes, var_machine_rewards, label="Machines")
-        axes[1].plot(self.episodes, all_var_rewards, label="All")
+        axes[1].plot(self.saved_episodes, all_var_rewards, label="All")
         axes[1].axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         axes[1].set_xlabel('Episode')
         axes[1].set_ylabel('Variance Reward')
@@ -162,7 +162,7 @@ class Plotter:
         axes[1].legend()
 
         # Plot boxplot and violinplot for rewards
-        ep_idx, ep = [(idx, ep) for idx, ep in enumerate(self.episodes) if ep < self.mutation_time][-1]
+        ep_idx, ep = [(idx, ep) for idx, ep in enumerate(self.saved_episodes) if ep < self.mutation_time][-1]
         data_to_plot = [all_rewards[kc.TYPE_HUMAN][ep_idx], all_rewards[kc.TYPE_HUMAN][-1], all_rewards[kc.TYPE_MACHINE][-1]]
         labels = [f'H #{ep}', 'H Final', 'M Final']
 
@@ -185,7 +185,7 @@ class Plotter:
 
     def retrieve_rewards_per_kind(self):
         all_rewards = {kc.TYPE_HUMAN: list(), kc.TYPE_MACHINE: list()}
-        for episode in self.episodes:
+        for episode in self.saved_episodes:
             data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
             data = pd.read_csv(data_path)
             kinds, rewards = data[kc.AGENT_KIND], data[kc.REWARD]
@@ -201,7 +201,7 @@ class Plotter:
     def retrieve_mean_rewards(self, all_rewards):
         all_mean_rewards, mean_human_rewards, mean_machine_rewards = list(), list(), list()
 
-        for idx, ep in enumerate(self.episodes):
+        for idx, ep in enumerate(self.saved_episodes):
             human_rewards = all_rewards[kc.TYPE_HUMAN][idx]
             rewards = human_rewards
             mean_human_rewards.append(mean(human_rewards))
@@ -220,7 +220,7 @@ class Plotter:
     def retrieve_mean_rewards_per_od(self):
         all_od_pairs = self.retrieve_all_od_pairs()
         all_mean_rewards = {f"{od[0]} - {od[1]}" : list() for od in all_od_pairs}
-        for idx, ep in enumerate(self.episodes):
+        for idx, ep in enumerate(self.saved_episodes):
             episode_rewards = {f"{od[0]} - {od[1]}" : list() for od in all_od_pairs}
             data_path = os.path.join(self.episodes_folder, f"ep{ep}.csv")
             episode_data = pd.read_csv(data_path)
@@ -236,7 +236,7 @@ class Plotter:
     def retrieve_var_rewards(self, all_rewards):
         all_var_rewards, var_human_rewards, var_machine_rewards = list(), list(), list()
 
-        for idx, ep in enumerate(self.episodes):
+        for idx, ep in enumerate(self.saved_episodes):
             human_rewards = all_rewards[kc.TYPE_HUMAN][idx]
             rewards = human_rewards
             var_human_rewards.append(variance(human_rewards))
@@ -274,7 +274,7 @@ class Plotter:
         for idx, (od, actions) in enumerate(all_actions.items()):
             ax = axes[idx]
             for unique_action in unique_actions[od]:
-                ax.plot(self.episodes, [ep_actions.get(unique_action, 0) for ep_actions in actions], label=f"{unique_action}")
+                ax.plot(self.saved_episodes, [ep_actions.get(unique_action, 0) for ep_actions in actions], label=f"{unique_action}")
 
             ax.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--') 
             ax.set_title(f"Actions for {od}")
@@ -295,7 +295,7 @@ class Plotter:
         all_od_pairs = self.retrieve_all_od_pairs()
         all_actions = {f"{od[0]} - {od[1]}" : list() for od in all_od_pairs}
         unique_actions = {f"{od[0]} - {od[1]}" : set() for od in all_od_pairs}
-        for episode in self.episodes:
+        for episode in self.saved_episodes:
             episode_actions = {f"{od[0]} - {od[1]}" : list() for od in all_od_pairs}
             data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
             episode_data = pd.read_csv(data_path)
@@ -318,7 +318,7 @@ class Plotter:
         save_to = make_dir(kc.PLOTS_FOLDER, kc.ACTIONS_SHIFTS_PLOT_FILE_NAME)
 
         all_od_pairs = self.retrieve_all_od_pairs()
-        machine_episodes = [ep for ep in self.episodes if ep >= self.mutation_time]
+        machine_episodes = [ep for ep in self.saved_episodes if ep >= self.mutation_time]
         
         # Determine the layout of the subplots (rows x columns)
         num_columns = self.default_num_columns
@@ -337,7 +337,7 @@ class Plotter:
             all_actions, unique_actions = self.retrieve_selected_actions(origin, destination)
 
             for action in unique_actions:
-                ax.plot(self.episodes, [ep_counter[action] / sum(ep_counter.values()) for ep_counter in all_actions[kc.TYPE_HUMAN]], label=f"Humans-{action}")
+                ax.plot(self.saved_episodes, [ep_counter[action] / sum(ep_counter.values()) for ep_counter in all_actions[kc.TYPE_HUMAN]], label=f"Humans-{action}")
 
             for action in unique_actions: # Two loops just to make the plot legend alphabetical
                 ax.plot(machine_episodes, [ep_counter[action] / sum(ep_counter.values()) for ep_counter in all_actions[kc.TYPE_MACHINE]], label=f"Machines-{action}")
@@ -359,7 +359,7 @@ class Plotter:
     def retrieve_selected_actions(self, origin, destination):
         all_actions = {kc.TYPE_HUMAN: list(), kc.TYPE_MACHINE: list()}
         unique_actions = set()
-        for episode in self.episodes:
+        for episode in self.saved_episodes:
             data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
             data = pd.read_csv(data_path)
             data = data[(data[kc.AGENT_ORIGIN] == origin) & (data[kc.AGENT_DESTINATION] == destination)]
@@ -387,7 +387,7 @@ class Plotter:
         plt.figure(figsize=(self.default_width, self.default_height))
 
         for pick in ever_picked:
-            plt.plot(self.episodes, [selections[pick] for selections in all_selections], label=pick)
+            plt.plot(self.saved_episodes, [selections[pick] for selections in all_selections], label=pick)
 
         plt.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
 
@@ -408,7 +408,7 @@ class Plotter:
         all_selections = list()
         ever_picked = set()
 
-        for episode in self.episodes:
+        for episode in self.saved_episodes:
             experience_data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
             experience_data = pd.read_csv(experience_data_path)
             actions = experience_data[kc.SUMO_ACTION]
@@ -430,7 +430,7 @@ class Plotter:
         sim_lengths = self.retrieve_sim_length()
 
         plt.figure(figsize=(self.default_width, self.default_height))
-        plt.plot(self.episodes, sim_lengths, label="Simulation timesteps")
+        plt.plot(self.saved_episodes, sim_lengths, label="Simulation timesteps")
         plt.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         plt.xlabel('Episode')
         plt.ylabel('Simulation Length')
@@ -490,7 +490,7 @@ class Plotter:
 
     def retrieve_all_od_pairs(self):
         all_od_pairs = list()
-        data_path = os.path.join(self.episodes_folder, f"ep{self.episodes[0]}.csv")
+        data_path = os.path.join(self.episodes_folder, f"ep{self.saved_episodes[0]}.csv")
         episode_data = pd.read_csv(data_path)
         episode_data = episode_data[[kc.AGENT_ORIGIN, kc.AGENT_DESTINATION]]
         for _, row in episode_data.iterrows():
