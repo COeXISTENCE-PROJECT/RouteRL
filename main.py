@@ -6,7 +6,6 @@ from utilities import confirm_env_variable
 from utilities import get_params
 
 
-
 def main(params):
     env = TrafficEnvironment(params[kc.ENVIRONMENT_PARAMETERS], params[kc.SIMULATION_PARAMETERS], params[kc.AGENTS_GENERATION_PARAMETERS]) 
     trainer = Trainer(params[kc.TRAINING_PARAMETERS])

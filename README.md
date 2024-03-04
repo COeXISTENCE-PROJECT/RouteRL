@@ -14,9 +14,11 @@ See [here](server_scripts/how_to.md).
 ### Number of agents
 1200 agents ~ around 80% humans and 20% mutating humans
 ### Training episodes
-1000 Episodes, mutation at 400
+5000 Episodes, mutation at 1000
 ### Training duration
-22 minutes, 04 seconds
+09 hours, 51 minutes, 07 seconds
+### Specs
+mem: 32G, cpus-per-task: 10, partition: cpu
 
 
 ## Collected Mean Rewards(in minutes):

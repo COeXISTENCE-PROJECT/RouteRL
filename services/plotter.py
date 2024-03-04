@@ -37,7 +37,6 @@ class Plotter:
         print(f"[SUCCESS] Plotter is now here to plot!")
 
 
-
 #################### VISUALIZE ALL
 
     def visualize_all(self, episodes):
@@ -54,7 +53,6 @@ class Plotter:
         self.visualize_machine_agents_epsilons()
 
 ####################
-        
 
 
 #################### FREE FLOWS
@@ -102,8 +100,7 @@ class Plotter:
         free_flows = free_flows.astype({kc.ORIGINS: 'int', kc.DESTINATIONS: 'int', kc.PATH_INDEX: 'int', kc.FREE_FLOW_TIME: 'float'})
         return free_flows
         
-####################
-        
+####################    
 
 
 #################### REWARDS
@@ -256,7 +253,6 @@ class Plotter:
 ####################
     
 
-
 #################### ACTIONS
 
     def visualize_actions(self):
@@ -315,7 +311,6 @@ class Plotter:
             
 ####################
     
-
 
 #################### ACTION SHIFTS
     
@@ -380,7 +375,6 @@ class Plotter:
 ####################
 
 
-
 #################### FLOWS
     
     def visualize_flows(self):
@@ -428,7 +422,6 @@ class Plotter:
 ####################
     
 
-
 #################### SIM LENGTH
     
     def visualize_sim_length(self):
@@ -460,7 +453,6 @@ class Plotter:
         return sim_lengths
     
 ####################
-    
 
 
 #################### MACHINE AGENTS EPSILONS
@@ -494,12 +486,11 @@ class Plotter:
 #################### 
     
 
-
 #################### HELPERS
 
     def retrieve_all_od_pairs(self):
         all_od_pairs = list()
-        data_path = os.path.join(self.episodes_folder, f"ep0.csv")
+        data_path = os.path.join(self.episodes_folder, f"ep{self.episodes[0]}.csv")
         episode_data = pd.read_csv(data_path)
         episode_data = episode_data[[kc.AGENT_ORIGIN, kc.AGENT_DESTINATION]]
         for _, row in episode_data.iterrows():

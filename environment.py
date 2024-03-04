@@ -21,11 +21,9 @@ class TrafficEnvironment:
         self.observation_spaces = {
             agent: Box(low=0, high=1, shape=(1,), dtype=float) for agent in self.possible_agents
         }
-        
         self.action_spaces = {
             agent: Discrete(3) for agent in self.possible_agents
         }
-
         self.render_mode = render_mode
 
         print("[SUCCESS] Environment initiated!")
@@ -43,14 +41,10 @@ class TrafficEnvironment:
 
     def reset(self):
         self.simulator.reset_sumo()
-
         observations = {
             a: Box(low=0, high=1, shape=(1,), dtype=float).sample() for a in self.possible_agents
         }
-
         infos = {a: {}  for a in self.possible_agents}
-
-
         return observations, infos
 
 
