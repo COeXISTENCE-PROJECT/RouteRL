@@ -503,10 +503,10 @@ class Plotter:
 
     def running_average(self, values):
         running_sum = 0
-        running_averages = []
-        for idx, number in enumerate(values, 1):
-            running_sum += number
-            running_averages.append(running_sum / idx)
+        running_averages = list()
+        for idx, value in enumerate(values):
+            running_sum += value
+            running_averages.append(running_sum / (idx+1))
         return running_averages
     
 ####################
