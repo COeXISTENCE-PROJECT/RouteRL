@@ -435,7 +435,7 @@ class Plotter:
         plt.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         plt.xlabel('Episode')
         plt.ylabel('Simulation Length')
-        plt.title('Simulation Length Over Episodes')
+        plt.title('Simulation Length Over Episodes (Running Average)')
         plt.legend()
 
         #plt.show()
