@@ -428,6 +428,7 @@ class Plotter:
         save_to = make_dir(kc.PLOTS_FOLDER, kc.SIMULATION_LENGTH_PLOT_FILE_NAME)
 
         sim_lengths = self.retrieve_sim_length()
+        sim_lengths = self.running_average(sim_lengths)
 
         plt.figure(figsize=(self.default_width, self.default_height))
         plt.plot(self.saved_episodes, sim_lengths, label="Simulation timesteps")
@@ -498,5 +499,14 @@ class Plotter:
             all_od_pairs.append((origin, destination))
         all_od_pairs = list(set(all_od_pairs))
         return all_od_pairs
+    
+
+    def running_average(values):
+        running_sum = 0
+        running_averages = []
+        for idx, number in enumerate(values, 1):
+            running_sum += number
+            running_averages.append(running_sum / idx)
+        return running_averages
     
 ####################
