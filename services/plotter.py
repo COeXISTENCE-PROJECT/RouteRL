@@ -501,7 +501,7 @@ class Plotter:
         return all_od_pairs
     
 
-    def running_average(values):
+    def running_average(self, values):
         running_sum = 0
         running_averages = []
         for idx, number in enumerate(values, 1):
