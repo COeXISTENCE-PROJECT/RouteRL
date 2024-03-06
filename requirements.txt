@@ -5,4 +5,5 @@ networkx==3.2.1
 numpy==1.26.4
 pandas==2.2.1
 prettytable==3.10.0
+seaborn==0.13.2
 traci==1.19.0
