@@ -39,7 +39,7 @@ def path_generator(network, origin, destination, weight, avoid_nodes, beta):
                 reached_to_destination = True
                 break
             elif node in avoid_nodes:   # Please think about this!
-                costs.append(distance_to_destination[node] * 3)  # if we saw this node in any previous path, discourage
+                costs.append(distance_to_destination[node] * 5)  # if we saw this node in any previous path, discourage
             else:
                 costs.append(distance_to_destination[node])
 

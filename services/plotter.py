@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
+import seaborn as sns
 
 from collections import Counter
 from statistics import mean
@@ -8,6 +9,7 @@ from statistics import variance
 
 from keychain import Keychain as kc
 from utilities import make_dir
+from utilities import running_average
 
 
 
@@ -112,14 +114,14 @@ class Plotter:
 
         plt.figure(figsize=(self.default_width, self.default_height))
 
-        plt.plot(self.saved_episodes, mean_human_rewards, label="Humans")
-        plt.plot(self.machine_episodes, mean_machine_rewards, label="Machines")
-        plt.plot(self.saved_episodes, all_mean_rewards, label="All")
+        plt.plot(self.saved_episodes, running_average(mean_human_rewards, last_n=3), label="Humans")
+        plt.plot(self.machine_episodes, running_average(mean_machine_rewards, last_n=3), label="Machines")
+        plt.plot(self.saved_episodes, running_average(all_mean_rewards, last_n=3), label="All")
 
         plt.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         plt.xlabel('Episode')
         plt.ylabel('Mean Reward')
-        plt.title('Mean Rewards Over Episodes')
+        plt.title('Mean Rewards Over Episodes (n = 3)')
         plt.legend()
 
         plt.savefig(save_to)
@@ -130,8 +132,6 @@ class Plotter:
 
     def visualize_rewards_distributions(self):
         save_to = make_dir(kc.PLOTS_FOLDER, kc.REWARDS_DIST_PLOT_FILE_NAME)
-
-        all_rewards = self.retrieve_rewards_per_kind()
     
         num_rows, num_cols = 2, 2
         fig, axes = plt.subplots(num_rows, num_cols, figsize=(self.multimode_width * num_cols, self.multimode_height * num_rows))
@@ -143,22 +143,24 @@ class Plotter:
         mean_rewards_od = self.retrieve_mean_rewards_per_od()
         sorted_keys = sorted(mean_rewards_od.keys())
         for od in sorted_keys:
-            axes[0].plot(self.saved_episodes, mean_rewards_od[od], label=od)
+            axes[0].plot(self.saved_episodes, running_average(mean_rewards_od[od], last_n=5), label=od)
         axes[0].axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         axes[0].set_xlabel('Episode')
         axes[0].set_ylabel('Mean Reward')
-        axes[0].set_title('Mean Rewards For OD Over Episodes')
+        axes[0].set_title('Mean Rewards For OD Over Episodes (n = 5)')
         axes[0].legend()
 
         # Plot variance rewards for all, humans and machines
+        all_rewards = self.retrieve_rewards_per_kind()
         all_var_rewards, var_human_rewards, var_machine_rewards  = self.retrieve_var_rewards(all_rewards)
+        all_var_rewards, var_human_rewards, var_machine_rewards = running_average(all_var_rewards, last_n=5), running_average(var_human_rewards, last_n=5), running_average(var_machine_rewards, last_n=5)
         axes[1].plot(self.saved_episodes, var_human_rewards, label="Humans")
         axes[1].plot(self.machine_episodes, var_machine_rewards, label="Machines")
         axes[1].plot(self.saved_episodes, all_var_rewards, label="All")
         axes[1].axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         axes[1].set_xlabel('Episode')
         axes[1].set_ylabel('Variance Reward')
-        axes[1].set_title('Variance Rewards Over Episodes')
+        axes[1].set_title('Variance Rewards Over Episodes (n = 5)')
         axes[1].legend()
 
         # Plot boxplot and violinplot for rewards
@@ -170,11 +172,12 @@ class Plotter:
         axes[2].set_ylabel('Rewards')
         axes[2].set_title('Rewards Distribution (Boxplot)')
 
-        axes[3].violinplot(data_to_plot)
-        axes[3].set_xticks([1, 2, 3])
-        axes[3].set_xticklabels(labels)
-        axes[3].set_ylabel('Rewards')
-        axes[3].set_title('Rewards Distribution (Violinplot)')
+        for label, data in zip(labels, data_to_plot):
+            sns.kdeplot(data, ax=axes[3], label=label, alpha=0.3, fill=True, linewidth=0)
+        axes[3].set_xlabel('Rewards')
+        axes[3].set_ylabel('Density (Probability)')
+        axes[3].set_title('Rewards Distribution (KDE)')
+        axes[3].legend()
 
         #plt.show()
         plt.savefig(save_to)
@@ -274,10 +277,12 @@ class Plotter:
         for idx, (od, actions) in enumerate(all_actions.items()):
             ax = axes[idx]
             for unique_action in unique_actions[od]:
-                ax.plot(self.saved_episodes, [ep_actions.get(unique_action, 0) for ep_actions in actions], label=f"{unique_action}")
+                action_data = [ep_actions.get(unique_action, 0) for ep_actions in actions]
+                action_data = running_average(action_data, last_n=5)
+                ax.plot(self.saved_episodes, action_data, label=f"{unique_action}")
 
             ax.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--') 
-            ax.set_title(f"Actions for {od}")
+            ax.set_title(f"Actions for {od} (n = 5)")
             ax.set_xlabel('Episodes')
             ax.set_ylabel('Population')
             ax.legend()
@@ -337,15 +342,19 @@ class Plotter:
             all_actions, unique_actions = self.retrieve_selected_actions(origin, destination)
 
             for action in unique_actions:
-                ax.plot(self.saved_episodes, [ep_counter[action] / sum(ep_counter.values()) for ep_counter in all_actions[kc.TYPE_HUMAN]], label=f"Humans-{action}")
+                action_data = [ep_counter[action] / sum(ep_counter.values()) for ep_counter in all_actions[kc.TYPE_HUMAN]]
+                action_data = running_average(action_data, last_n=5)
+                ax.plot(self.saved_episodes, action_data, label=f"Humans-{action}")
 
             for action in unique_actions: # Two loops just to make the plot legend alphabetical
-                ax.plot(machine_episodes, [ep_counter[action] / sum(ep_counter.values()) for ep_counter in all_actions[kc.TYPE_MACHINE]], label=f"Machines-{action}")
+                action_data = [ep_counter[action] / sum(ep_counter.values()) for ep_counter in all_actions[kc.TYPE_MACHINE]]
+                action_data = running_average(action_data, last_n=5)
+                ax.plot(machine_episodes, action_data, label=f"Machines-{action}")
 
             ax.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
             ax.set_xlabel('Episodes')
             ax.set_ylabel('Population')
-            ax.set_title(f'Actions for {od} (Normalized by type population)')
+            ax.set_title(f'Actions for {od} (Normalized by type population, n = 5)')
             ax.legend()
 
         for ax in axes[idx+1:]:   ax.axis('off')    # Hide unused subplots if any
@@ -387,13 +396,15 @@ class Plotter:
         plt.figure(figsize=(self.default_width, self.default_height))
 
         for pick in ever_picked:
-            plt.plot(self.saved_episodes, [selections[pick] for selections in all_selections], label=pick)
+            flow_data = [selections[pick] for selections in all_selections]
+            flow_data = running_average(flow_data, last_n=5)
+            plt.plot(self.saved_episodes, flow_data, label=pick)
 
         plt.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
 
         plt.xlabel('Episodes')
         plt.ylabel('Population')
-        plt.title('Population in Routes Over Episodes')
+        plt.title('Population in Routes Over Episodes (n = 5)')
         plt.legend()
 
         #plt.show()
@@ -428,14 +439,14 @@ class Plotter:
         save_to = make_dir(kc.PLOTS_FOLDER, kc.SIMULATION_LENGTH_PLOT_FILE_NAME)
 
         sim_lengths = self.retrieve_sim_length()
-        sim_lengths = self.running_average(sim_lengths)
+        sim_lengths = running_average(sim_lengths, last_n = 5)
 
         plt.figure(figsize=(self.default_width, self.default_height))
         plt.plot(self.saved_episodes, sim_lengths, label="Simulation timesteps")
         plt.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         plt.xlabel('Episode')
         plt.ylabel('Simulation Length')
-        plt.title('Simulation Length Over Episodes (Running Average)')
+        plt.title('Simulation Length Over Episodes (n = 5)')
         plt.legend()
 
         #plt.show()
@@ -499,14 +510,5 @@ class Plotter:
             all_od_pairs.append((origin, destination))
         all_od_pairs = list(set(all_od_pairs))
         return all_od_pairs
-    
-
-    def running_average(self, values):
-        running_sum = 0
-        running_averages = list()
-        for idx, value in enumerate(values):
-            running_sum += value
-            running_averages.append(running_sum / (idx+1))
-        return running_averages
     
 ####################

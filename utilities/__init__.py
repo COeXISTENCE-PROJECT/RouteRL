@@ -8,6 +8,7 @@ from .utils import show_progress_bar
 from .utils import string_to_list
 from .utils import remove_double_quotes
 from .utils import resolve_param_dependencies
+from .utils import running_average
 
 from .create_agents import create_agent_objects
 
