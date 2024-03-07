@@ -1,10 +1,9 @@
 #!/bin/bash
 #SBATCH --job-name=traffic_simulation
-#SBATCH --qos=test
-#SBATCH --mem=32G
-#SBATCH --cpus-per-task=10
-#SBATCH --partition=dgx
-#SBATCH --gres=gpu:1
+#SBATCH --qos=normal
+#SBATCH --mem=64G
+#SBATCH --cpus-per-task=20
+#SBATCH --partition=cpu
 
 PATH_PROGRAM="/home/$USER/Milestone-One"
 PUT_PROGRAM_TO="/app"
