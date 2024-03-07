@@ -41,9 +41,9 @@ class HumanAgent(Agent):
         self.kind = kc.TYPE_HUMAN
         self.mutate_to = mutate_to
 
-        randomness = params[kc.RANDOMNESS]
-        self.beta = random.uniform(params[kc.BETA] - randomness, params[kc.BETA] + randomness)
-        self.alpha = random.uniform(params[kc.ALPHA] - randomness, params[kc.ALPHA] + randomness)
+        beta_randomness = params[kc.BETA_RANDOMNESS]
+        self.beta = random.uniform(params[kc.BETA] - beta_randomness, params[kc.BETA] + beta_randomness)
+        self.alpha = params[kc.ALPHA]
 
         self.cost = np.array(initial_knowledge, dtype=float)
 

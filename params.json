@@ -25,9 +25,9 @@
 
         "human_agent_parameters" :
         {
-            "beta" : -0.2,
             "alpha" : 0.2,
-            "randomness" : 0.1
+            "beta" : -0.5,
+            "beta_randomness" : 0.3
         }
     },
 
@@ -56,9 +56,9 @@
 
     "training_parameters":
     {
-        "num_episodes" : 200,
-        "remember_every" : 5,
-        "mutation_time" : 50,
+        "num_episodes" : 1000,
+        "remember_every" : 20,
+        "mutation_time" : 300,
 
         "recorder_parameters":
         {

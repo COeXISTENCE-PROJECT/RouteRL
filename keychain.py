@@ -59,9 +59,9 @@ class Keychain:
     MAX_EPS_DECAY = "max_eps_decay"
     GAMMA = "gamma"
 
-    BETA = "beta"
     ALPHA = "alpha"
-    RANDOMNESS = "randomness"
+    BETA = "beta"
+    BETA_RANDOMNESS = "beta_randomness"
 
     # Training
     NUM_EPISODES = "num_episodes"
