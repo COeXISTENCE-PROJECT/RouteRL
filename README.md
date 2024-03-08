@@ -16,9 +16,9 @@ See [here](server_scripts/how_to.md).
 ### Training episodes
 5000 Episodes, mutation at 1000
 ### Training duration
-11 hours, 40 minutes, 01 seconds
+10 hours, 03 minutes, 53 seconds
 ### Specs
-mem: 32G, cpus-per-task: 10, partition: cpu
+mem: 64G, cpus-per-task: 20, partition: cpu
 
 
 ## Collected Mean Rewards(in minutes):
