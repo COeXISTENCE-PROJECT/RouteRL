@@ -35,12 +35,14 @@ class Agent(ABC):
 
 class HumanAgent(Agent):
 
-    def __init__(self, id, start_time, origin, destination, params, initial_knowledge):
+    def __init__(self, id, start_time, origin, destination, params, initial_knowledge, mutate_to=None):
         super().__init__(id, start_time, origin, destination)
 
         self.kind = kc.TYPE_HUMAN
+        self.mutate_to = mutate_to
 
-        self.beta = params[kc.BETA]
+        beta_randomness = params[kc.BETA_RANDOMNESS]
+        self.beta = random.uniform(params[kc.BETA] - beta_randomness, params[kc.BETA] + beta_randomness)
         self.alpha = params[kc.ALPHA]
 
         self.cost = np.array(initial_knowledge, dtype=float)
@@ -65,6 +67,11 @@ class HumanAgent(Agent):
         return prob
     
 
+    def mutate(self):
+        self.mutate_to.q_table = self.cost
+        return self.mutate_to
+    
+
 
 
 class MachineAgent(Agent):
@@ -86,7 +93,6 @@ class MachineAgent(Agent):
         self.action_space_size = action_space_size
         # Q-table assumes only one state, otherwise should be np.zeros((num_states, action_space_size))
         self.q_table = np.zeros((action_space_size))
-        #self.q_table = initial_knowledge
 
 
     def act(self, state):

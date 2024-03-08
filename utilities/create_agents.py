@@ -5,6 +5,7 @@ from prettytable import PrettyTable
 
 from agent import MachineAgent, HumanAgent
 from keychain import Keychain as kc
+from utilities import make_dir
 
 
 def create_agent_objects(params, free_flow_times):
@@ -14,8 +15,8 @@ def create_agent_objects(params, free_flow_times):
     """
 
     # Getting parameters
-    agents_data_path = params[kc.AGENTS_DATA_PATH]
     num_agents = params[kc.NUM_AGENTS]
+    ratio_mutating = params[kc.RATIO_MUTATING]
     simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]
     num_origins = len(params[kc.ORIGINS])
     num_destinations = len(params[kc.DESTINATIONS])
@@ -24,7 +25,7 @@ def create_agent_objects(params, free_flow_times):
     action_space_size = params[kc.ACTION_SPACE_SIZE]
     
     # Generating agent data
-    agents_data_df = generate_agents_data(num_agents, agent_attributes, simulation_timesteps, num_origins, num_destinations, agents_data_path)
+    agents_data_df = generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulation_timesteps, num_origins, num_destinations)
     agents = list() # Where we will store & return agents
     
     # Generating agent objects from generated agent data
@@ -34,15 +35,18 @@ def create_agent_objects(params, free_flow_times):
         id, start_time = row_dict[kc.AGENT_ID], row_dict[kc.AGENT_START_TIME]
         origin, destination = row_dict[kc.AGENT_ORIGIN], row_dict[kc.AGENT_DESTINATION]
 
-        if row_dict[kc.AGENT_TYPE] == kc.TYPE_MACHINE:
-            agent_params = params[kc.MACHINE_AGENT_PARAMETERS]
-            agents.append(MachineAgent(id, start_time, origin, destination, agent_params, action_space_size))
-        elif row_dict[kc.AGENT_TYPE] == kc.TYPE_HUMAN:
+        if row_dict[kc.AGENT_KIND] == kc.TYPE_MACHINE: ##### Changed
+            agent_params = params[kc.HUMAN_AGENT_PARAMETERS]
+            initial_knowledge = free_flow_times[(origin, destination)]
+            mutate_to = MachineAgent(id, start_time, origin, destination, params[kc.MACHINE_AGENT_PARAMETERS], action_space_size)
+            new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, mutate_to)
+            agents.append(new_agent)
+        elif row_dict[kc.AGENT_KIND] == kc.TYPE_HUMAN:
             agent_params = params[kc.HUMAN_AGENT_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
             agents.append(HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge))
         else:
-            print('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_TYPE])
+            print('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_KIND])
 
     print(f'[SUCCESS] Created agent objects (%d)' % (len(agents)))
     #print_agents(agents, agent_attributes, print_every=50)
@@ -50,7 +54,7 @@ def create_agent_objects(params, free_flow_times):
 
 
 
-def generate_agents_data(num_agents, agent_attributes, simulation_timesteps, num_origins, num_destinations, save_to = None):
+def generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulation_timesteps, num_origins, num_destinations):
 
     """
     Generates agents data
@@ -62,15 +66,16 @@ def generate_agents_data(num_agents, agent_attributes, simulation_timesteps, num
 
     for id in range(num_agents):
         # Generating agent data
-        agent_type = kc.TYPE_MACHINE if random.randint(0,10) > 5 else kc.TYPE_HUMAN
+        agent_type = kc.TYPE_HUMAN if (random.random() > ratio_mutating) else kc.TYPE_MACHINE ###### 80% of the agents are humans
         origin, destination = random.randrange(num_origins), random.randrange(num_destinations)
         start_time = random.randrange(simulation_timesteps)
 
         # Registering to the dataframe
         agent_features = [id, origin, destination, start_time, agent_type]
-        agent_dict = {agent_attributes[i] : agent_features[i] for i in range(len(agent_features))}
+        agent_dict = {attribute : feature for attribute, feature in zip(agent_attributes, agent_features)}
         agents_df.loc[id] = agent_dict
 
+    save_to = make_dir(kc.RECORDS_FOLDER, kc.AGENTS_DATA_FILE_NAME)
     agents_df.to_csv(save_to, index = False)
     print('[SUCCESS] Generated agent data and saved to: ' + save_to)
     return agents_df

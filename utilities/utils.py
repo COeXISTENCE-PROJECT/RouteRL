@@ -122,3 +122,19 @@ def df_to_prettytable(df, header_message="DATA", print_every=1):
             table.add_row(row.tolist())
     print(f"##### {header_message} #####")
     print(table)
+
+
+
+def running_average(values, last_n = 0): 
+    # last_n -> -1 disables the averaging, 0 averages all, n averages the last n
+    if last_n < 0: return values
+    if last_n == 0: start_from = 0
+    
+    running_sum, running_averages = 0, list()
+    for idx, _ in enumerate(values):
+        if last_n > 0: start_from = max(0, idx - last_n)
+        divide_by = idx - start_from + 1
+        running_sum = sum(values[start_from:idx+1])
+        running_averages.append(running_sum / divide_by)
+    return running_averages
+    

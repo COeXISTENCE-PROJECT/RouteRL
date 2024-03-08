@@ -7,8 +7,9 @@ from bs4 import BeautifulSoup
 
 from keychain import Keychain as kc
 from services import SumoController
-from utilities import path_generator
 from utilities import list_to_string
+from utilities import make_dir
+from utilities import path_generator
 from utilities import remove_double_quotes
 
 
@@ -21,12 +22,8 @@ class Simulator:
     def __init__(self, params):
 
         self.sumo_controller = SumoController(params)
-
         self.routes_xml_save_path = params[kc.ROUTES_XML_SAVE_PATH]
-
         self.number_of_paths = params[kc.NUMBER_OF_PATHS]
-        self.paths_save_path = params[kc.PATHS_SAVE_PATH]
-
         self.simulation_length = params[kc.SIMULATION_TIMESTEPS]
         self.beta = params[kc.BETA]
 
@@ -50,7 +47,6 @@ class Simulator:
         print("[SUCCESS] Simulator is ready to simulate!")
 
 
-
     def start_sumo(self):
         self.sumo_controller.sumo_start()
 
@@ -60,21 +56,20 @@ class Simulator:
     def reset_sumo(self):
         self.sumo_controller.sumo_reset()
 
-
     
     def get_last_sim_duration(self):
         return self.last_simulation_duration
 
-        
 
     def save_paths(self, routes):
         # csv file, for us
         paths_df = pd.DataFrame(columns = ["origin", "destination", "path"])
         for od, paths in routes.items():
             for path in paths:
-                paths_df.loc[len(paths_df)] = [od[0], od[1], list_to_string(path, "-> ")]
-        paths_df.to_csv(self.paths_save_path, index=True)
-        print("[SUCCESS] Generated & saved %d paths to: %s" % (len(paths_df), self.paths_save_path))
+                paths_df.loc[len(paths_df.index)] = [od[0], od[1], list_to_string(path, "-> ")]
+        save_to = make_dir(kc.RECORDS_FOLDER, kc.PATHS_CSV_FILE_NAME)
+        paths_df.to_csv(save_to, index=True)
+        print("[SUCCESS] Generated & saved %d paths to: %s" % (len(paths_df), save_to))
         
         # XML file, for sumo
         with open(self.routes_xml_save_path, "w") as rou:
@@ -87,7 +82,6 @@ class Simulator:
             print("</routes>", file=rou)
         
 
-
     def create_routes(self, origins, destinations):
         routes = dict()
         for origin_id, origin_sim_code in origins.items():
@@ -98,20 +92,16 @@ class Simulator:
         return routes
     
 
-
     def find_best_paths(self, origin, destination, weight):
         paths = list()
         picked_nodes = set()
-
         for _ in range(self.number_of_paths):
             while True:
                 path = path_generator(self.traffic_graph, origin, destination, weight, picked_nodes, self.beta)
                 if path not in paths: break     # if path is not already generated, then break
             paths.append(path)
             picked_nodes.update(path)
-
         return paths
-
 
 
     def free_flow_time_finder(self, x, y, z, l):
@@ -128,7 +118,6 @@ class Simulator:
         return length
     
 
-
     def calculate_free_flow_times(self):
         length = pd.DataFrame(self.traffic_graph.edges(data = True))
         time = length[2].astype('str').str.split(':',expand=True)[1]
@@ -143,7 +132,6 @@ class Simulator:
             free_flows_dict[od] = free_flow
 
         return free_flows_dict
-
 
 
     def generate_network(self, connection_file, edge_file, route_file):
@@ -200,7 +188,6 @@ class Simulator:
         return traffic_graph
     
 
-
     def joint_action_to_sorted_stack(self, joint_action):
         # Sort the joint_action dataframe by start times (descending order for stack)
         sorted_joint_action = joint_action.sort_values(kc.AGENT_START_TIME, ascending=False)
@@ -219,7 +206,6 @@ class Simulator:
 
         return agents_stack
     
-
 
     def run_simulation_iteration(self, joint_action):
         arrivals = {kc.AGENT_ID : list(), kc.ARRIVAL_TIME: list()}  # Where we save arrivals
@@ -255,7 +241,6 @@ class Simulator:
         return travel_times_df
         
 
-
     def prepare_travel_times_df(self, arrivals, joint_action):
         # Initiate the travel_time_df
         travel_times_df = pd.DataFrame(arrivals)
@@ -272,9 +257,7 @@ class Simulator:
 
         # Retain only the necessary columns
         travel_times_df = travel_times_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
-
         return travel_times_df
-
 
     
     def read_xml_file(self, file_path, element_name, attribute_name, attribute_name_2):
@@ -298,4 +281,3 @@ class Simulator:
         from_db=pd.DataFrame(from_)
         to_db=pd.DataFrame(to_)
         return from_db, to_db
-    
