@@ -191,7 +191,7 @@ class Plotter:
         for episode in self.saved_episodes:
             data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
             data = pd.read_csv(data_path)
-            kinds, rewards = data[kc.AGENT_KIND], data[kc.REWARD]
+            kinds, rewards = data[kc.AGENT_KIND], data[kc.TRAVEL_TIME]
             rewards_per_kind =  {kc.TYPE_HUMAN: list(), kc.TYPE_MACHINE: list()}
             for kind, reward in zip(kinds, rewards):
                 rewards_per_kind[kind].append(reward)
@@ -227,7 +227,7 @@ class Plotter:
             episode_rewards = {f"{od[0]} - {od[1]}" : list() for od in all_od_pairs}
             data_path = os.path.join(self.episodes_folder, f"ep{ep}.csv")
             episode_data = pd.read_csv(data_path)
-            episode_origins, episode_destinations, rewards = episode_data[kc.AGENT_ORIGIN], episode_data[kc.AGENT_DESTINATION], episode_data[kc.REWARD]
+            episode_origins, episode_destinations, rewards = episode_data[kc.AGENT_ORIGIN], episode_data[kc.AGENT_DESTINATION], episode_data[kc.TRAVEL_TIME]
             for idx, reward in enumerate(rewards):
                 episode_rewards[f"{episode_origins[idx]} - {episode_destinations[idx]}"].append(reward)
             for key in episode_rewards.keys():

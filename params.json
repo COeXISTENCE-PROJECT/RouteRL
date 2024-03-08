@@ -2,9 +2,9 @@
 
     "training_parameters":
     {
-        "num_episodes" : 200,
-        "mutation_time" : 50,
-        "remember_every" : 5,
+        "num_episodes" : 5000,
+        "mutation_time" : 500,
+        "remember_every" : 50,
 
         "recorder_parameters":
         {
@@ -52,7 +52,7 @@
 
     "environment_parameters":
     {
-        "ONUR_COMMENT2" : "nothing for now"
+        "action_space_size" : "${simulation_parameters.number_of_paths}"
     },
 
     "simulation_parameters":

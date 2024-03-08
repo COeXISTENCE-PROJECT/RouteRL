@@ -31,22 +31,27 @@ class Trainer:
         self.plotter = Plotter(self.mutation_time, self.recorder.episodes_folder, self.recorder.agents_folder, self.recorder.sim_length_file_path, self.plotter_params)
         env.start()
 
+        agents = self.sort_agents(agents)
+
         print(f"\n[INFO] Training is starting with {self.num_episodes} episodes.")
         start_time = time.time()
 
         for ep in range(1, self.num_episodes+1):    # Until we simulate num_episode episodes
 
             if ep == self.mutation_time:    agents = self.mutate_agents(agents)
-            observations, infos = env.reset()
+            env.reset()
             done = False
 
             while not done:     # Until the episode concludes
-                joint_action = self.get_joint_action(agents, observations)
-                sample_observation, joint_reward, terminated, truncated, info = env.step(joint_action)
-                self.teach_agents(agents, joint_action, joint_reward, sample_observation)
+                for agent in agents:
+                    observation = env.get_observation(agent.origin, agent.destination)
+                    action = agent.act(observation)
+                    env.register_action(agent, action)
+                observation, terminated, truncated, info = env.step()
+                self.teach_agents(agents, env.joint_action, observation)
                 done = all(terminated.values())
 
-            self.record(ep, joint_action, joint_reward, agents, env.get_last_sim_duration())
+            self.record(ep, env.joint_action, observation[[kc.AGENT_ID, kc.TRAVEL_TIME]], agents, info[kc.LAST_SIM_DURATION])
             show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes)
 
         self.show_training_time(start_time)
@@ -54,27 +59,19 @@ class Trainer:
         self.plotter.visualize_all(self.recorder.saved_episodes)
 
 
-    def get_joint_action(self, agents, observations):
-        joint_action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
-        joint_action = pd.DataFrame(columns = joint_action_cols)
-        # Every agent picks action
-        for agent, observation in zip(agents, observations):
-            action = agent.act(observation)
-            action_data = [agent.id, agent.kind, action, agent.origin, agent.destination, agent.start_time]
-            joint_action.loc[len(joint_action.index)] = {key : value for key, value in zip(joint_action_cols, action_data)}
-        return joint_action
+    def sort_agents(self, agents):
+        return sorted(agents, key=lambda x: x.start_time)
 
 
-    def teach_agents(self, agents, joint_action_df, joint_reward_df, observation):
+    def teach_agents(self, agents, joint_action_df, observation):
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = [executor.submit(self.learn_agent, agent, joint_action_df, joint_reward_df, observation) for agent in agents]
+            futures = [executor.submit(self.learn_agent, agent, joint_action_df, observation) for agent in agents]
             concurrent.futures.wait(futures)
         
 
-    def learn_agent(self, agent, joint_action_df, joint_reward_df, observation):
+    def learn_agent(self, agent, joint_action_df, observation):
         action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION].item()
-        reward = joint_reward_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.REWARD].item()
-        agent.learn(action, reward, observation)
+        agent.learn(action, observation)
     
 
     def record(self, episode, joint_action_df, joint_reward_df, agents, last_sim_duration):

@@ -69,7 +69,6 @@ class Keychain:
     MUTATION_TIME = "mutation_time"
 
     # Environment
-    TRANSPORT_PENALTY = "transport_penalty"
 
     # Simulation
     SUMO_TYPE = "sumo_type"
@@ -114,6 +113,7 @@ class Keychain:
     SUMO_ACTION = "sumo_action"
     REWARD = "reward"
     COST = "cost"
+    STATE = "state"
     Q_TABLE = "q_table"
     EPSILON = "epsilon"
     EPSILON_DECAY_RATE = "epsilon_decay_rate"
@@ -125,6 +125,7 @@ class Keychain:
     ALL = "all"
     PATH_INDEX = "path_index"
     FREE_FLOW_TIME = "free_flow_time"
+    LAST_SIM_DURATION = "last_sim_duration"
 
     # Agent type encodings
     TYPE_HUMAN = "h"
