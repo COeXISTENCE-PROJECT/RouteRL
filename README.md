@@ -12,7 +12,7 @@ See [here](server_scripts/how_to.md).
 ## Training results
 
 ### Number of agents
-1200 agents ~ around 80% humans and 20% mutating humans
+1000 agents ~ around 80% humans and 20% mutating humans
 ### Training episodes
 5000 Episodes, mutation at 1000
 ### Training duration
