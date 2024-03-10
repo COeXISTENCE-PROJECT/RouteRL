@@ -2,9 +2,10 @@
 
     "training_parameters":
     {
-        "num_episodes" : 5000,
-        "mutation_time" : 500,
-        "remember_every" : 50,
+        "num_episodes" : 500,
+        "mutation_time" : 50,
+        "second_mutation_time" : 100,
+        "remember_every" : 20,
 
         "recorder_parameters":
         {
@@ -22,6 +23,7 @@
     {
         "num_agents" : 1000,
         "ratio_mutating" : 0.2,
+        "ratio_mutating_2" : 0.1,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",
         "origins" : "${simulation_parameters.origins}",

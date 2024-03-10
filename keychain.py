@@ -45,6 +45,7 @@ class Keychain:
     AGENTS_DATA_PATH = "agents_data_path"
     NUM_AGENTS = "num_agents"
     RATIO_MUTATING = "ratio_mutating"
+    RATIO_MUTATING_2 = "ratio_mutating_2"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
 
     ACTION_SPACE_SIZE = "action_space_size"
@@ -67,6 +68,7 @@ class Keychain:
     NUM_EPISODES = "num_episodes"
     REMEMBER_EVERY = "remember_every"
     MUTATION_TIME = "mutation_time"
+    SECOND_MUTATION_TIME = "second_mutation_time"
 
     # Environment
 
@@ -130,5 +132,6 @@ class Keychain:
     # Agent type encodings
     TYPE_HUMAN = "h"
     TYPE_MACHINE = "m"
+    TYPE_MACHINE_2 = "m2"
 
     ###########################################################

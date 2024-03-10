@@ -3,7 +3,7 @@ import random
 
 from prettytable import PrettyTable
 
-from agent import MachineAgent, HumanAgent
+from agent import MachineAgent, MaliciousMachineAgent, HumanAgent
 from keychain import Keychain as kc
 from utilities import make_dir
 
@@ -17,6 +17,7 @@ def create_agent_objects(params, free_flow_times):
     # Getting parameters
     num_agents = params[kc.NUM_AGENTS]
     ratio_mutating = params[kc.RATIO_MUTATING]
+    ratio_mutating_2 = params[kc.RATIO_MUTATING_2]
     simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]
     num_origins = len(params[kc.ORIGINS])
     num_destinations = len(params[kc.DESTINATIONS])
@@ -25,7 +26,8 @@ def create_agent_objects(params, free_flow_times):
     action_space_size = params[kc.ACTION_SPACE_SIZE]
     
     # Generating agent data
-    agents_data_df = generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulation_timesteps, num_origins, num_destinations)
+    agents_data_df = generate_agents_data(num_agents, ratio_mutating, ratio_mutating_2,
+                                          agent_attributes, simulation_timesteps, num_origins, num_destinations)
     agents = list() # Where we will store & return agents
     
     # Generating agent objects from generated agent data
@@ -35,11 +37,17 @@ def create_agent_objects(params, free_flow_times):
         id, start_time = row_dict[kc.AGENT_ID], row_dict[kc.AGENT_START_TIME]
         origin, destination = row_dict[kc.AGENT_ORIGIN], row_dict[kc.AGENT_DESTINATION]
 
-        if row_dict[kc.AGENT_KIND] == kc.TYPE_MACHINE: ##### Changed
+        if row_dict[kc.AGENT_KIND] == kc.TYPE_MACHINE:
             agent_params = params[kc.HUMAN_AGENT_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
             mutate_to = MachineAgent(id, start_time, origin, destination, params[kc.MACHINE_AGENT_PARAMETERS], action_space_size)
-            new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, mutate_to)
+            new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, mutate_to, kc.TYPE_MACHINE)
+            agents.append(new_agent)
+        elif row_dict[kc.AGENT_KIND] == kc.TYPE_MACHINE_2:
+            agent_params = params[kc.HUMAN_AGENT_PARAMETERS]
+            initial_knowledge = free_flow_times[(origin, destination)]
+            mutate_to = MaliciousMachineAgent(id, start_time, origin, destination, params[kc.MACHINE_AGENT_PARAMETERS], action_space_size)
+            new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, mutate_to, kc.TYPE_MACHINE_2)
             agents.append(new_agent)
         elif row_dict[kc.AGENT_KIND] == kc.TYPE_HUMAN:
             agent_params = params[kc.HUMAN_AGENT_PARAMETERS]
@@ -54,7 +62,7 @@ def create_agent_objects(params, free_flow_times):
 
 
 
-def generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulation_timesteps, num_origins, num_destinations):
+def generate_agents_data(num_agents, ratio_mutating, ratio_mutating2, agent_attributes, simulation_timesteps, num_origins, num_destinations):
 
     """
     Generates agents data
@@ -66,7 +74,11 @@ def generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulatio
 
     for id in range(num_agents):
         # Generating agent data
-        agent_type = kc.TYPE_HUMAN if (random.random() > ratio_mutating) else kc.TYPE_MACHINE ###### 80% of the agents are humans
+        kind_token, agent_type = random.random(), kc.TYPE_HUMAN
+        if kind_token < ratio_mutating:
+            agent_type = kc.TYPE_MACHINE
+        elif kind_token < (ratio_mutating + ratio_mutating2):
+            agent_type = kc.TYPE_MACHINE_2
         origin, destination = random.randrange(num_origins), random.randrange(num_destinations)
         start_time = random.randrange(simulation_timesteps)
 
