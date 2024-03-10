@@ -194,7 +194,7 @@ class MaliciousMachineAgent(Agent):
             return np.random.choice(self.action_space_size)
         else:    # Exploit
             table = self.q_table.loc[self.q_table[kc.STATE] == state, kc.Q_TABLE].item()
-            return np.argmax(table)
+            return np.argmin(table)
         
 
     def get_state(self, observation):
