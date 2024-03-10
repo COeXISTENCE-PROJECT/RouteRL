@@ -105,7 +105,8 @@ class TrafficEnvironment:
         # Calculate reward from cost (skipped)
         observation_df = sumo_df.merge(joint_action, on=kc.AGENT_ID)
         machines_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME].mean()
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME] = machines_mean_travel_times
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME] += machines_mean_travel_times
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME] /= 2
         return observation_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
 
 
