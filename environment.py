@@ -12,6 +12,7 @@ from services import Simulator
 from utilities import create_agent_objects
 import seaborn as sns
 import math
+import os
 
 
 from keychain import Keychain as kc
@@ -212,6 +213,14 @@ class TrafficEnvironment(ParallelEnv):
         random_agents = random.sample(self.possible_agents, 1)
         plt.figure(figsize=(20, 12)) 
 
+        ## Save the plot in the results folder
+        file_number = 1
+        while os.path.exists(f"results/rewards{file_number}.png"):
+            file_number += 1
+
+        filename = f"results/rewards{file_number}.png"
+
+
         # Iterate over the selected agents and plot their rewards
         for agent_index in random_agents:
             plt.plot(self.reward_table[agent_index], linestyle='-', label=f'Agent {agent_index}')
@@ -222,6 +231,7 @@ class TrafficEnvironment(ParallelEnv):
         plt.grid(True, linestyle='--', alpha=0.7)  
         plt.legend()
         plt.tight_layout() 
+        plt.savefig(filename)
         plt.show()
 
 
@@ -234,9 +244,16 @@ class TrafficEnvironment(ParallelEnv):
         else:
             random_agents = random.sample(self.possible_agents, 5)
 
+        ## Save the plot in the results folder
+        file_number = 1
+        while os.path.exists(f"results/actions{file_number}.png"):
+            file_number += 1
+
+        filename = f"results/actions{file_number}.png"
+
         plt.figure(figsize=(20, 12)) 
 
-        # Iterate over the selected agents and plot their actions
+        ## Iterate over the selected agents and plot their actions
         for agent_index in random_agents:
             plt.plot(self.action_table[agent_index], linestyle='-', label=f'Agent {agent_index}')
 
@@ -246,7 +263,11 @@ class TrafficEnvironment(ParallelEnv):
         plt.grid(True, linestyle='--', alpha=0.7)  
         plt.legend() 
         plt.tight_layout() 
+        plt.savefig(filename)
         plt.show()
+
+        
+        
 
 
     def calculate_rewards(self, sumo_df):
