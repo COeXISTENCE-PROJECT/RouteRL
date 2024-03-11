@@ -3,6 +3,7 @@ from .utils import df_to_prettytable
 from .utils import get_params
 from .utils import list_to_string
 from .utils import make_dir
+from .utils import set_seeds
 from .utils import show_progress
 from .utils import show_progress_bar
 from .utils import string_to_list

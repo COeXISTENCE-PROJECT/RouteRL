@@ -1,7 +1,10 @@
 import json
+import numpy as np
 import os
+import random
 import sys
 import time
+
 
 from prettytable import PrettyTable
 
@@ -47,6 +50,12 @@ def read_json(file_path):    # Read json file, return as dict
         print(f"[ERROR] Cannot locate: %s" % (file_path))
         raise
     return file_data
+
+
+
+def set_seeds(seed=42):    # Set seeds for reproducibility
+    np.random.seed(seed)
+    random.seed(seed)
 
 
 
