@@ -21,6 +21,7 @@ class Trainer:
         self.mutation_time, self.second_mutation_time  = params[kc.MUTATION_TIME], params[kc.SECOND_MUTATION_TIME]
         self.mutation_times = [self.mutation_time, self.second_mutation_time]
 
+        self.frequent_progressbar = params[kc.FREQUENT_PROGRESSBAR_UPDATE]
         self.remember_every = params[kc.REMEMBER_EVERY]
         self.remember_also = {1, self.num_episodes, self.mutation_time-1, self.mutation_time, self.second_mutation_time-1, self.second_mutation_time}
 
@@ -53,6 +54,7 @@ class Trainer:
                 done = all(terminated.values())
 
             self.record(episode, training_start_time, env.joint_action, observation, agents, info[kc.LAST_SIM_DURATION])
+            if self.frequent_progressbar: show_progress_bar("TRAINING", training_start_time, episode, self.num_episodes)
 
         self.show_training_time(training_start_time)
         env.stop()

@@ -5,7 +5,8 @@
         "num_episodes" : 5000,
         "mutation_time" : 1000,
         "second_mutation_time" : 2500,
-        "remember_every" : 50,
+        "remember_every" : 25,
+        "frequent_progressbar_update" : true,
 
         "recorder_parameters":
         {

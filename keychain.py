@@ -63,6 +63,7 @@ class Keychain:
     REMEMBER_EVERY = "remember_every"
     MUTATION_TIME = "mutation_time"
     SECOND_MUTATION_TIME = "second_mutation_time"
+    FREQUENT_PROGRESSBAR_UPDATE = "frequent_progressbar_update"
 
     # Environment
 

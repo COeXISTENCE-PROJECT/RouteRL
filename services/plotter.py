@@ -119,7 +119,7 @@ class Plotter:
         plt.plot(self.saved_episodes, running_average(mean_human_rewards, last_n=3), label="Humans")
         plt.plot(self.machine_episodes, running_average(mean_machine_rewards, last_n=3), label="Machines")
         plt.plot(self.machine2_episodes, running_average(mean_machine2_rewards, last_n=3), label="Malicious")
-        plt.plot(self.saved_episodes, running_average(all_mean_rewards, last_n=3), label="All")
+        plt.plot(self.machine_episodes, running_average(all_mean_rewards, last_n=3), label="All")   # Before machines, it is just humans
 
         plt.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         plt.axvline(x = self.second_mutation_time, label = 'Mutation Time 2', color = 'b', linestyle = '--')
@@ -162,7 +162,7 @@ class Plotter:
         axes[1].plot(self.saved_episodes, var_human_rewards, label="Humans")
         axes[1].plot(self.machine_episodes, var_machine_rewards, label="Machines")
         axes[1].plot(self.machine2_episodes, var_machine2_rewards, label="Malicious")
-        axes[1].plot(self.saved_episodes, all_var_rewards, label="All")
+        axes[1].plot(self.machine_episodes, all_var_rewards, label="All")    # Before machines, it is just humans
         axes[1].axvline(x = self.mutation_time, label = 'Mutation Time 1', color = 'r', linestyle = '--')
         axes[1].axvline(x = self.second_mutation_time, label = 'Mutation Time 2', color = 'b', linestyle = '--')
         axes[1].set_xlabel('Episode')
@@ -464,7 +464,7 @@ class Plotter:
         save_to = make_dir(kc.PLOTS_FOLDER, kc.SIMULATION_LENGTH_PLOT_FILE_NAME)
 
         sim_lengths = self.retrieve_sim_length()
-        sim_lengths = running_average(sim_lengths, last_n = 5)
+        sim_lengths = running_average(sim_lengths, last_n = 10)
 
         plt.figure(figsize=(self.default_width, self.default_height))
         plt.plot(self.saved_episodes, sim_lengths, label="Simulation timesteps")
@@ -472,7 +472,7 @@ class Plotter:
         plt.axvline(x = self.second_mutation_time, label = 'Mutation Time 2', color = 'b', linestyle = '--')
         plt.xlabel('Episode')
         plt.ylabel('Simulation Length')
-        plt.title('Simulation Length Over Episodes (n = 5)')
+        plt.title('Simulation Length Over Episodes (n = 10)')
         plt.legend()
 
         #plt.show()
