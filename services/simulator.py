@@ -22,10 +22,10 @@ class Simulator:
     def __init__(self, params):
 
         self.sumo_controller = SumoController(params)
-        self.routes_xml_save_path = params[kc.ROUTES_XML_SAVE_PATH]
-        self.number_of_paths = params[kc.NUMBER_OF_PATHS]
-        self.simulation_length = params[kc.SIMULATION_TIMESTEPS]
-        self.beta = params[kc.BETA]
+        self.routes_xml_save_path = params[kc.ROUTES_XML_SAVE_PATH] # RK: why do we want to double variables - this is exactly the same and static?
+        self.number_of_paths = params[kc.NUMBER_OF_PATHS] #RK: same here
+        self.simulation_length = params[kc.SIMULATION_TIMESTEPS] #RK: same here
+        self.beta = params[kc.BETA] #why this is here? this is main of simulator
 
         # NX graph, built on a OSM map
         self.traffic_graph = self.generate_network(params[kc.CONNECTION_FILE_PATH], params[kc.EDGE_FILE_PATH], params[kc.ROUTE_FILE_PATH])
@@ -33,22 +33,22 @@ class Simulator:
         # We keep origins and dests as dict {origin_id : origin_code}
         # Such as (0 : "279952229#0") and (1 : "279952229#0")
         # Keys are what agents know, values are what we use in SUMO
-        self.origins = {i : origin for i, origin in enumerate(params[kc.ORIGINS])}
+        self.origins = {i : origin for i, origin in enumerate(params[kc.ORIGINS])}  # RK: I think it should be more generic, and operate on sth like nx.get_nearest_node(lon, lat) - otherwise it is very error prone.
         self.destinations = {i : dest for i, dest in enumerate(params[kc.DESTINATIONS])}
 
         # We keep routes as dict {(origin_id, dest_id) : [list of nodes]}
         # Such as ((0,0) : [list of nodes]) and ((1,0) : [list of nodes])
         # In list of nodes, we use SUMO simulation ids of nodes
-        self.routes = self.create_routes(self.origins, self.destinations)
+        self.routes = self.create_routes(self.origins, self.destinations) # RK: this shall be standalone also, i.e. I may want to generate routes without running simulations and learning (training).
         self.save_paths(self.routes)
 
         self.last_simulation_duration = 0
 
-        print("[SUCCESS] Simulator is ready to simulate!")
+        print("[SUCCESS] Simulator is ready to simulate!") # RK: replace with logger.log()
 
 
     def start_sumo(self):
-        self.sumo_controller.sumo_start()
+        self.sumo_controller.sumo_start() # RK: why do we need this extra level of calls? why not directly to sumo_controller?
 
     def stop_sumo(self):
         self.sumo_controller.sumo_stop()
@@ -57,7 +57,7 @@ class Simulator:
         self.sumo_controller.sumo_reset()
 
     
-    def get_last_sim_duration(self):
+    def get_last_sim_duration(self): #RK: this can be nicely decorated with @ to make a property :)
         return self.last_simulation_duration
 
 
@@ -86,13 +86,13 @@ class Simulator:
         routes = dict()
         for origin_id, origin_sim_code in origins.items():
             for dest_id, dest_sim_code in destinations.items():
-                route = self.find_best_paths(origin_sim_code, dest_sim_code, 'time')
+                route = self.find_best_paths(origin_sim_code, dest_sim_code, 'time') # here the 'time' shall be generic and variable from kc (default 'time' to be overriden)
                 routes[(origin_id, dest_id)] = route
         print(f"[SUCCESS] Generated {len(routes)} routes")
         return routes
     
 
-    def find_best_paths(self, origin, destination, weight):
+    def find_best_paths(self, origin, destination, weight): # RK: why do we need 3rd degree nesting? create_routes -> find_best_paths -> path_generator...
         paths = list()
         picked_nodes = set()
         for _ in range(self.number_of_paths):
@@ -104,7 +104,7 @@ class Simulator:
         return paths
 
 
-    def free_flow_time_finder(self, x, y, z, l):
+    def free_flow_time_finder(self, x, y, z, l): # RK: Document this part.
         length=[]
         for route in range(len(x)):
             rou=[]
@@ -134,7 +134,7 @@ class Simulator:
         return free_flows_dict
 
 
-    def generate_network(self, connection_file, edge_file, route_file):
+    def generate_network(self, connection_file, edge_file, route_file): # RK: This shall also be standalone - I may want to create the network without simulations and training.
         # Connection file
         from_db, to_db = self.read_xml_file(connection_file, 'connection', 'from', 'to')
         from_to = pd.merge(from_db,to_db,left_index=True,right_index=True)
@@ -197,10 +197,10 @@ class Simulator:
         sorted_joint_action[kc.SUMO_ACTION] = sorted_joint_action.apply(sumonize_action, axis=1)
 
         # Create a stack of agents and their sumo actions
-        stack_bottom_placeholder = {kc.AGENT_START_TIME : -1}
+        stack_bottom_placeholder = {kc.AGENT_START_TIME : -1} #redundant line - this variable is used just once, make it direct.
         agents_stack = [stack_bottom_placeholder]
 
-        for _, row in sorted_joint_action.iterrows():
+        for _, row in sorted_joint_action.iterrows(): # RK: typically iterrows is very slow, you may use .apply() or see what is fastest now.
             stack_row = {kc.AGENT_ID : f"{row[kc.AGENT_ID]}", kc.AGENT_START_TIME : row[kc.AGENT_START_TIME], kc.SUMO_ACTION : row[kc.SUMO_ACTION]}
             agents_stack.append(stack_row)
 

@@ -6,7 +6,7 @@ import time
 from prettytable import PrettyTable
 
 
-def confirm_env_variable(env_var, append=None):
+def confirm_env_variable(env_var, append=None): # RK: describe in doc string variables.
     if env_var in os.environ:
         print("[CONFIRMED] Environment variable exists: %s" % env_var)
         if append:
