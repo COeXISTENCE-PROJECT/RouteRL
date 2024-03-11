@@ -46,7 +46,7 @@ def create_agent_objects(params, free_flow_times):
         elif row_dict[kc.AGENT_KIND] == kc.TYPE_MACHINE_2:
             agent_params = params[kc.HUMAN_AGENT_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
-            mutate_to = MaliciousMachineAgent(id, start_time, origin, destination, params[kc.MACHINE_AGENT_PARAMETERS], action_space_size)
+            mutate_to = MaliciousMachineAgent(id, start_time, origin, destination, params[kc.MACHINE2_AGENT_PARAMETERS], action_space_size)
             new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, mutate_to, kc.TYPE_MACHINE_2)
             agents.append(new_agent)
         elif row_dict[kc.AGENT_KIND] == kc.TYPE_HUMAN:

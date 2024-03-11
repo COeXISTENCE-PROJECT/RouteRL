@@ -55,7 +55,6 @@ class Plotter:
         self.visualize_actions()
         self.visualize_action_shifts()
         self.visualize_sim_length()
-        #self.visualize_machine_agents_epsilons()
 
 ####################
 
@@ -492,37 +491,6 @@ class Plotter:
         return sim_lengths
     
 ####################
-
-
-#################### MACHINE AGENTS EPSILONS
-    
-    def visualize_machine_agents_epsilons(self):
-        save_to = make_dir(kc.PLOTS_FOLDER, kc.MACHINE_AGENTS_EPSILONS_PLOT_FILE_NAME)
-
-        machine_agents_epsilons = self.retrieve_machine_agents_epsilons()
-
-        plt.figure(figsize=(self.default_width, self.default_height))
-        plt.plot(self.machine_episodes, machine_agents_epsilons)
-        plt.xlabel('Episode')
-        plt.ylabel('Mean Epsilon')
-        plt.title('Machine Agents Mean Epsilons Over Episodes')
-
-        #plt.show()
-        plt.savefig(save_to)
-        plt.close()
-        print(f"[SUCCESS] Machine agents mean epsilons are saved to {save_to}")
-
-
-    
-    def retrieve_machine_agents_epsilons(self):
-        machine_agents_epsilons = list()
-        for episode in self.machine_episodes:
-            agents_data_path = os.path.join(self.agents_folder, f"ep{episode}.csv")
-            agents_data = pd.read_csv(agents_data_path)
-            machine_agents_epsilons.append(agents_data[agents_data[kc.AGENT_KIND] == kc.TYPE_MACHINE][kc.EPSILON].mean())
-        return machine_agents_epsilons
-    
-#################### 
     
 
 #################### HELPERS

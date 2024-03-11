@@ -104,12 +104,17 @@ class TrafficEnvironment:
     def prepare_observations(self, sumo_df, joint_action):
         # Calculate reward from cost (skipped)
         observation_df = sumo_df.merge(joint_action, on=kc.AGENT_ID)
+
+        # Machines rewards (to minimize) = 0.4 x own_time + 0.6 x machines_mean_time
         machines_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME].mean()
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME] += machines_mean_travel_times
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME] /= 2
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME] *= 0.4
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME] += (machines_mean_travel_times * 0.6)
+
+        # Malicious machines rewards (to maximize) = 0.1 x -own_time + 0.9 x humans_mean_time
         humans_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_HUMAN, kc.TRAVEL_TIME].mean()
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] -= humans_mean_travel_times
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] *= 2
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] *= -0.1
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] += (humans_mean_travel_times * 0.9)
+
         return observation_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
 
 

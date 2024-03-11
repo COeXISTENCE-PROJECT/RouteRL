@@ -1,10 +1,6 @@
-from collections import deque
 import numpy as np
 import pandas as pd
 import random
-import torch
-import torch.nn as nn
-import torch.optim as optim
 
 from abc import ABC, abstractmethod
 
@@ -190,7 +186,7 @@ class MaliciousMachineAgent(Agent):
             return np.random.choice(self.action_space_size)
         else:    # Exploit
             table = self.q_table.loc[self.q_table[kc.STATE] == state, kc.Q_TABLE].item()
-            return np.argmin(table)
+            return np.argmax(table)     # Malicious machines always choose the max
         
 
     def get_state(self, observation):

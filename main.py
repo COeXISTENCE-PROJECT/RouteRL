@@ -10,6 +10,7 @@ def main(params):
     env = TrafficEnvironment(params[kc.ENVIRONMENT_PARAMETERS], params[kc.SIMULATION_PARAMETERS], params[kc.AGENTS_GENERATION_PARAMETERS]) 
     trainer = Trainer(params[kc.TRAINING_PARAMETERS])
     trainer.train(env, env.agents)
+    trainer.show_training_results()
 
 
 if __name__ == "__main__":

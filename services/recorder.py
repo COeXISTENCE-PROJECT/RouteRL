@@ -58,7 +58,7 @@ class Recorder:
             beta, alpha, cost, q_table, epsilon, epsilon_decay_rate, gamma, to_mutate = [kc.NOT_AVAILABLE] * 8
             if kind == kc.TYPE_HUMAN:
                 beta, alpha, cost, to_mutate = agent.beta, agent.alpha, list_to_string(agent.cost, ' , '), (agent.mutate_to != None)
-            elif kind == kc.TYPE_MACHINE:
+            elif (kind == kc.TYPE_MACHINE) or (kind == kc.TYPE_MACHINE_2):
                 alpha, epsilon, epsilon_decay_rate, gamma, q_table = agent.alpha, agent.epsilon, agent.epsilon_decay_rate, agent.gamma, list_to_string(agent.q_table, ' , ')
             row_data = [id, kind, cost, to_mutate, alpha, beta, epsilon, epsilon_decay_rate, gamma, q_table]
             agents_df.loc[len(agents_df.index)] = {key : value for key, value in zip(agents_df_cols, row_data)}

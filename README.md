@@ -47,7 +47,3 @@ mem: 64G, cpus-per-task: 20, partition: cpu
 
 ## Freeflow Times
 ![](readme_plots/ff_travel_time.png)
-
-
-## Epsilons of Machines
-![](readme_plots/epsilons.png)
