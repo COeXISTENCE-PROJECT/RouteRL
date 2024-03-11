@@ -2,9 +2,9 @@
 
     "training_parameters":
     {
-        "num_episodes" : 5000,
-        "mutation_time" : 500,
-        "second_mutation_time" : 2000,
+        "num_episodes" : 500,
+        "mutation_time" : 50,
+        "second_mutation_time" : 200,
         "remember_every" : 25,
         "frequent_progressbar_update" : true,
 
@@ -36,7 +36,7 @@
         "machine_agent_parameters" :
         {
             "alpha" : 0.3,
-            "epsilon" : 0.95,
+            "epsilon" : 0.85,
             "epsilon_decay_rate" : 0.999,
             "gamma" : 0.95
         },
@@ -44,8 +44,8 @@
         "machine2_agent_parameters" :
         {
             "alpha" : 0.4,
-            "epsilon" : 0.95,
-            "epsilon_decay_rate" : 0.99,
+            "epsilon" : 0.99,
+            "epsilon_decay_rate" : 0.997,
             "gamma" : 0.95
         },
 
