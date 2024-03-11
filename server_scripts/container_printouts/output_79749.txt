@@ -1,0 +1,27 @@
+Error: The route file 'Network_and_config/route.rou.xml' is not accessible.
+Quitting (on error).
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+Traceback (most recent call last):
+  File "/app/main.py", line 80, in <module>
+    main()
+  File "/app/main.py", line 67, in main
+    Sumo_sim.Sumo_start()
+  File "/app/Sumo_controller.py", line 13, in Sumo_start
+    traci.start(sumo_cmd)
+  File "/usr/local/lib/python3.12/site-packages/traci/main.py", line 147, in start
+    result = init(sumoPort, numRetries, "localhost", label, sumoProcess, doSwitch, traceFile, traceGetters)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/traci/main.py", line 119, in init
+    return con.getVersion()
+           ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/traci/connection.py", line 381, in getVersion
+    result = self._sendCmd(command, None, None)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/traci/connection.py", line 231, in _sendCmd
+    return self._sendExact()
+           ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/site-packages/traci/connection.py", line 137, in _sendExact
+    raise FatalTraCIError("Connection closed by SUMO.")
+traci.exceptions.FatalTraCIError: Connection closed by SUMO.
