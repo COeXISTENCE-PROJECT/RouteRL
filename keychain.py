@@ -52,14 +52,7 @@ class Keychain:
     MACHINE_AGENT_PARAMETERS = "machine_agent_parameters"
     HUMAN_AGENT_PARAMETERS = "human_agent_parameters"
 
-    MIN_ALPHA = "min_alpha"
-    MAX_ALPHA = "max_alpha"
-    MIN_EPSILON = "min_epsilon"
-    MAX_EPSILON = "max_epsilon"
-    MIN_EPS_DECAY = "min_eps_decay"
-    MAX_EPS_DECAY = "max_eps_decay"
     GAMMA = "gamma"
-
     ALPHA = "alpha"
     BETA = "beta"
     BETA_RANDOMNESS = "beta_randomness"

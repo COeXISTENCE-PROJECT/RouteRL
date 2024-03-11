@@ -4,7 +4,7 @@
     {
         "num_episodes" : 500,
         "mutation_time" : 50,
-        "second_mutation_time" : 100,
+        "second_mutation_time" : 150,
         "remember_every" : 20,
 
         "recorder_parameters":
@@ -34,12 +34,9 @@
 
         "machine_agent_parameters" :
         {
-            "min_alpha" : 0.1,
-            "max_alpha" : 0.6,
-            "min_epsilon" : 0.9,
-            "max_epsilon" : 1.0,
-            "min_eps_decay" : 0.99,
-            "max_eps_decay" : 0.99999,
+            "alpha" : 0.3,
+            "epsilon" : 0.95,
+            "epsilon_decay_rate" : 0.999,
             "gamma" : 0.95
         },
 

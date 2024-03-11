@@ -1,6 +1,10 @@
+from collections import deque
 import numpy as np
 import pandas as pd
 import random
+import torch
+import torch.nn as nn
+import torch.optim as optim
 
 from abc import ABC, abstractmethod
 
@@ -102,17 +106,13 @@ class MachineAgent(Agent):
 
         self.kind = kc.TYPE_MACHINE
 
-        min_alpha, max_alpha = params[kc.MIN_ALPHA], params[kc.MAX_ALPHA]
-        min_epsilon, max_epsilon = params[kc.MIN_EPSILON], params[kc.MAX_EPSILON]
-        min_eps_decay, max_eps_decay = params[kc.MIN_EPS_DECAY], params[kc.MAX_EPS_DECAY]
-
-        self.epsilon = random.uniform(min_epsilon, max_epsilon)
-        self.epsilon_decay_rate = random.uniform(min_eps_decay, max_eps_decay)
-        self.alpha = random.uniform(min_alpha, max_alpha)
+        self.epsilon = params[kc.EPSILON]
+        self.epsilon_decay_rate = params[kc.EPSILON_DECAY_RATE]
+        self.alpha = params[kc.ALPHA]
         self.gamma = params[kc.GAMMA]
 
         self.action_space_size = action_space_size
-        # Q-table assumes only one state, otherwise should be np.zeros((num_states, action_space_size))
+
         self.sample_q_table_row = np.zeros((action_space_size))
         self.q_table = pd.DataFrame(columns=[kc.STATE, kc.Q_TABLE])
 
@@ -169,17 +169,13 @@ class MaliciousMachineAgent(Agent):
 
         self.kind = kc.TYPE_MACHINE_2
 
-        min_alpha, max_alpha = params[kc.MIN_ALPHA], params[kc.MAX_ALPHA]
-        min_epsilon, max_epsilon = params[kc.MIN_EPSILON], params[kc.MAX_EPSILON]
-        min_eps_decay, max_eps_decay = params[kc.MIN_EPS_DECAY], params[kc.MAX_EPS_DECAY]
-
-        self.epsilon = random.uniform(min_epsilon, max_epsilon)
-        self.epsilon_decay_rate = random.uniform(min_eps_decay, max_eps_decay)
-        self.alpha = random.uniform(min_alpha, max_alpha)
+        self.epsilon = params[kc.EPSILON]
+        self.epsilon_decay_rate = params[kc.EPSILON_DECAY_RATE]
+        self.alpha = params[kc.ALPHA]
         self.gamma = params[kc.GAMMA]
 
         self.action_space_size = action_space_size
-        # Q-table assumes only one state, otherwise should be np.zeros((num_states, action_space_size))
+        
         self.sample_q_table_row = np.zeros((action_space_size))
         self.q_table = pd.DataFrame(columns=[kc.STATE, kc.Q_TABLE])
 
