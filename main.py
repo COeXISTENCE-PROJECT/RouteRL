@@ -28,7 +28,7 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
 
     env = ss.concat_vec_envs_v1(env, 1, num_cpus=2, base_class="stable_baselines3")
 
-    """policy_kwargs = dict(activation_fn=th.nn.ReLU, net_arch=[64, 64, 64])
+    policy_kwargs = dict(activation_fn=th.nn.ReLU, net_arch=[64, 64, 64])
 
     model = PPO(
         "MlpPolicy",
@@ -42,9 +42,9 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
         learning_rate = 1e-3
     )
 
-    model.learn(total_timesteps=600000)"""
+    model.learn(total_timesteps=600000)
 
-    model = DQN(
+    """model = DQN(
         env=env,
         policy="MlpPolicy",
         learning_rate=0.001,
@@ -56,7 +56,7 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
         device="cuda"
     )
 
-    model.learn(total_timesteps=600000)
+    model.learn(total_timesteps=600000)"""
 
     print(f"[SUCCESS] Finished training on {str(env.unwrapped.metadata['name'])}.")
 
