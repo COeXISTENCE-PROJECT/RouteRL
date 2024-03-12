@@ -12,11 +12,11 @@ See [here](server_scripts/how_to.md).
 ## Training results
 
 ### Number of agents
-1000 agents ~ around 80% humans and 20% mutating humans
+1000 agents ~ around 800 humans, 200 selfish machines, 100 malicious (disruptive?) machines
 ### Training episodes
-5000 Episodes, mutation at 1000
+8000 Episodes, first mutation at 1000, second at 4000
 ### Training duration
-10 hours, 03 minutes, 53 seconds
+15 hours, 10 minutes, 23 seconds
 ### Specs
 mem: 64G, cpus-per-task: 20, partition: cpu
 
