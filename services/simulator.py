@@ -129,12 +129,15 @@ class Simulator:
             # Call free_flow_time_finder for each route
             free_flow = self.free_flow_time_finder(route, length[0], length[1], length[2])
             # Append the free_flow value to the list
-            free_flows_dict[od] = free_flow
+            free_flows_dict[od] = free_flow # RK: Why do we need 2 lines here? and local variable 'free_flow' ? canbe one_liner
 
         return free_flows_dict
 
 
     def generate_network(self, connection_file, edge_file, route_file): # RK: This shall also be standalone - I may want to create the network without simulations and training.
+        """
+        RK: make a rich doc string, what is the connection_file etc.
+        """
         # Connection file
         from_db, to_db = self.read_xml_file(connection_file, 'connection', 'from', 'to')
         from_to = pd.merge(from_db,to_db,left_index=True,right_index=True)
@@ -207,14 +210,14 @@ class Simulator:
         return agents_stack
     
 
-    def run_simulation_iteration(self, joint_action):
-        arrivals = {kc.AGENT_ID : list(), kc.ARRIVAL_TIME: list()}  # Where we save arrivals
+    def run_simulation_iteration(self, joint_action): #RK: Why iteration? Let's think about naming it: episode? It will be confusing later.
+        arrivals = {kc.AGENT_ID : list(), kc.ARRIVAL_TIME: list()}  # Where we save arrivals #RK: what data type is this?
         agents_stack = self.joint_action_to_sorted_stack(joint_action)  # Where we keep agents and their actions
         should_continue = True
 
         # Simulation loop
         while should_continue:
-            timestep = int(traci.simulation.getTime())
+            timestep = int(traci.simulation.getTime()) # RK: do we need this? or maybe add simulationStep everytime>
 
             # Add vehicles to the simulation
             while agents_stack[-1][kc.AGENT_START_TIME] == timestep:
@@ -227,7 +230,7 @@ class Simulator:
 
             for id in arrived_now:
                 arrivals[kc.AGENT_ID].append(id)
-                arrivals[kc.ARRIVAL_TIME].append(timestep)
+                arrivals[kc.ARRIVAL_TIME].append(timestep) #RK: are you sure you keep track of indexes? it seems easy to be mixed up
             
             # Did all vehicles arrive?
             should_continue = len(arrivals[kc.AGENT_ID]) < len(joint_action)
@@ -238,10 +241,11 @@ class Simulator:
         self.last_simulation_duration = timestep
         # Calculate travel times
         travel_times_df = self.prepare_travel_times_df(arrivals, joint_action)
+        # RK: here add: get_state
         return travel_times_df
         
 
-    def prepare_travel_times_df(self, arrivals, joint_action):
+    def prepare_travel_times_df(self, arrivals, joint_action): #RK: this shall be a more generic reward. including distance, travel time, emmisions, etc. it can also become part of the state and observation.
         # Initiate the travel_time_df
         travel_times_df = pd.DataFrame(arrivals)
 
@@ -252,15 +256,16 @@ class Simulator:
         travel_times_df = pd.merge(left=start_times_df, right=travel_times_df, on=kc.AGENT_ID, how='left')
 
         # Calculate travel time
-        calculate_travel_duration = lambda row: ((row[kc.ARRIVAL_TIME] - row[kc.AGENT_START_TIME]) / 60.0)
+        calculate_travel_duration = lambda row: ((row[kc.ARRIVAL_TIME] - row[kc.AGENT_START_TIME]) / 60.0)  # RK: be very careful with dividing by 60! I'd avoid this, or be very precise when do you divide - only once!
         travel_times_df[kc.TRAVEL_TIME] = travel_times_df.apply(calculate_travel_duration, axis=1)
 
         # Retain only the necessary columns
-        travel_times_df = travel_times_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
+        travel_times_df = travel_times_df[[kc.AGENT_ID, kc.TRAVEL_TIME]] # RK: maybe it can be pd.Series()? it is just indexed column.
         return travel_times_df
 
     
-    def read_xml_file(self, file_path, element_name, attribute_name, attribute_name_2):
+    def read_xml_file(self, file_path, element_name, attribute_name, attribute_name_2): # RK: add docstring.
+        #RK: this shall be part of utils, not a cass method. it does not even use 'self'
         with open(file_path, 'r') as f:
             data = f.read()
         Bs_data_con = BeautifulSoup(data, "xml")
