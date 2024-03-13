@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=traffic_simulation
-#SBATCH --qos=test
+#SBATCH --qos=normal
 #SBATCH --mem=32G
 #SBATCH --cpus-per-task=10
 #SBATCH --partition=dgx  

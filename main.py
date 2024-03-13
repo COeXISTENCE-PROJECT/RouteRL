@@ -28,7 +28,7 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
 
     env = ss.concat_vec_envs_v1(env, 1, num_cpus=2, base_class="stable_baselines3")
 
-    policy_kwargs = dict(activation_fn=th.nn.ReLU, net_arch=[64, 64, 64])
+    policy_kwargs = dict(activation_fn=th.nn.ReLU, net_arch=[128, 128])
 
     model = PPO(
         "MlpPolicy",
