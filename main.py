@@ -9,6 +9,8 @@ from stable_baselines3 import PPO
 import supersuit as ss
 from Sumo_controller import Sumo
 import os
+import torch as th
+
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 confirm_env_variable(kc.SUMO_HOME, append="tools")
@@ -26,10 +28,7 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
 
     env = ss.concat_vec_envs_v1(env, 1, num_cpus=2, base_class="stable_baselines3")
 
-    tuned_params = {
-        "gamma": 0.9,
-        "learning_rate": 1e-3,
-    }
+    policy_kwargs = dict(activation_fn=th.nn.ReLU, net_arch=[128, 128])
 
     model = PPO(
         "MlpPolicy",
@@ -37,25 +36,27 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
         verbose = 1,
         n_steps = 10,
         batch_size=10,
-        **tuned_params
+        device = "cuda",
+        policy_kwargs=policy_kwargs,
+        gamma = 0.9,
+        learning_rate = 1e-3
     )
 
-    """model.learn(total_timesteps=70000)"""
+    model.learn(total_timesteps=600000)
 
     """model = DQN(
         env=env,
         policy="MlpPolicy",
-        #tensorboard_log="./board/",
         learning_rate=0.001,
-        #tensorboard_log="./board/",
         train_freq=1,
         target_update_interval=500,
         exploration_initial_eps=0.05,
         exploration_final_eps=0,
         verbose=1,
-    )"""
+        device="cuda"
+    )
 
-    model.learn(total_timesteps=600)
+    model.learn(total_timesteps=600000)"""
 
     print(f"[SUCCESS] Finished training on {str(env.unwrapped.metadata['name'])}.")
 
