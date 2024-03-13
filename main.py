@@ -42,7 +42,7 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
         learning_rate = 1e-3
     )
 
-    model.learn(total_timesteps=600000)
+    model.learn(total_timesteps=60000)
 
     """model = DQN(
         env=env,

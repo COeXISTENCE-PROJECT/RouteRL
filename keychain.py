@@ -12,18 +12,22 @@ class Keychain:
 
     RECORDS_FOLDER = "training_records"
     EPISODES_LOGS_FOLDER = "episodes"
-    MACHINES_LOG_FOLDER = "machines"
-    HUMANS_LOG_FOLDER = "humans"
-    SIMULATION_LOG_FOLDER = "simulation"
+    AGENTS_LOGS_FOLDER = "agents"
 
+    AGENTS_DATA_FILE_NAME = "agents_data.csv"
     SIMULATION_LENGTH_LOG_FILE_NAME = "simulation_length.txt"
+    PATHS_CSV_FILE_NAME = "paths.csv"
+    FREE_FLOW_TIMES_CSV_FILE_NAME = "free_flow_times.csv"
 
     PLOTS_FOLDER = "plots"
     REWARDS_PLOT_FILE_NAME = "rewards.png"
-    ONE_HUMAN_PLOT_FILE_NAME = "one_human.png"
-    ONE_MACHINE_PLOT_FILE_NAME = "one_machine.png"
+    REWARDS_DIST_PLOT_FILE_NAME = "rewards_dist.png"
+    FF_TRAVEL_TIME_PLOT_FILE_NAME = "ff_travel_time.png"
     FLOWS_PLOT_FILE_NAME = "flows.png"
     SIMULATION_LENGTH_PLOT_FILE_NAME = "simulation_length.png"
+    ACTIONS_PLOT_FILE_NAME = "actions.png"
+    ACTIONS_SHIFTS_PLOT_FILE_NAME = "actions_shifts.png"
+    MACHINE_AGENTS_EPSILONS_PLOT_FILE_NAME = "epsilons.png"
     
     ###########################################################
     
@@ -40,6 +44,7 @@ class Keychain:
     # Agent generation
     AGENTS_DATA_PATH = "agents_data_path"
     NUM_AGENTS = "num_agents"
+    RATIO_MUTATING = "ratio_mutating"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
 
     ACTION_SPACE_SIZE = "action_space_size"
@@ -54,11 +59,14 @@ class Keychain:
     MAX_EPS_DECAY = "max_eps_decay"
     GAMMA = "gamma"
 
-    BETA = "beta"
     ALPHA = "alpha"
+    BETA = "beta"
+    BETA_RANDOMNESS = "beta_randomness"
 
     # Training
     NUM_EPISODES = "num_episodes"
+    REMEMBER_EVERY = "remember_every"
+    MUTATION_TIME = "mutation_time"
 
     # Environment
     TRANSPORT_PENALTY = "transport_penalty"
@@ -77,10 +85,9 @@ class Keychain:
 
     # Recorder
     RECORDER_PARAMETERS = "recorder_parameters"
-    REMEMBER_EVERY = "remember_every"
-    RECORDER_MODE = "mode"
-    TRACK_HUMAN = "track_human"
-    TRACK_MACHINE = "track_machine"
+
+    # Plotter
+    PLOTTER_PARAMETERS = "plotter_parameters"
 
     ###########################################################
     
@@ -90,6 +97,7 @@ class Keychain:
     ####################### ELSE ##############################
 
     SMALL_BUT_NOT_ZERO = 1e-14
+    NOT_AVAILABLE = "N/A"
 
     SUMO_HOME = "SUMO_HOME"
 
@@ -97,10 +105,11 @@ class Keychain:
     
     # Common dataframe column headers
     AGENT_ID = "id"
+    AGENT_KIND = "kind"
     AGENT_ORIGIN = "origin"
     AGENT_DESTINATION = "destination"
     AGENT_START_TIME = "start_time"
-    AGENT_TYPE = "agent_type"
+    TO_MUTATE = "to_mutate"
     ACTION = "action"
     SUMO_ACTION = "sumo_action"
     REWARD = "reward"
@@ -114,14 +123,11 @@ class Keychain:
     HUMANS = "humans"
     MACHINES = "machines"
     ALL = "all"
+    PATH_INDEX = "path_index"
+    FREE_FLOW_TIME = "free_flow_time"
 
     # Agent type encodings
     TYPE_HUMAN = "h"
     TYPE_MACHINE = "m"
-
-    # Recorder modes
-    PLOT_ONLY = "plot_only"
-    SAVE_ONLY = "save_only"
-    PLOT_AND_SAVE = "plot_and_save"
 
     ###########################################################
