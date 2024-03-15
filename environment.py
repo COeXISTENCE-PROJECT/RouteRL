@@ -144,16 +144,16 @@ class TrafficEnvironment(ParallelEnv):
         return observations, infos
 
 
-    def step(self, joint_action):
+    def step(self, machine_joint_action):
 
-        if not joint_action:
+        if not machine_joint_action:
             self.possible_agents = []
             print("[INFO] No more agents to simulate!")
             return {}, {}, {}, {}, {}
 
         data = {
             'id': self.possible_agents,
-            'action': [joint_action[agent] for agent in self.possible_agents],
+            'action': [machine_joint_action[agent] for agent in self.possible_agents],
             'origin': self.origin,
             'destination': self.destination,
             'start_time': self.start_times
@@ -180,9 +180,9 @@ class TrafficEnvironment(ParallelEnv):
 
         sumo_df['id'] = sumo_df['id'].astype(str)
 
-        print("sumo_df is: \n", sumo_df, "\n\n")
+        #print("sumo_df is: \n", sumo_df, "\n\n")
         sumo_df_machines = sumo_df.head(self.agent_params[kc.NUM_AGENTS])
-        print("sumo_df_machines is: \n", sumo_df_machines, "\n\n")
+        #print("sumo_df_machines is: \n", sumo_df_machines, "\n\n")
 
         
         ### Individual reward to each agent
@@ -205,7 +205,7 @@ class TrafficEnvironment(ParallelEnv):
 
 
         # Saves the actions and rewards of each agent for this episode
-        for id, action in joint_action.items():
+        for id, action in machine_joint_action.items():
             self.action_table[id].append(action)
             self.reward_table[id].append(rewards[id])
 
