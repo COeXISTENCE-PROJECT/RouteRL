@@ -49,7 +49,7 @@ class TrafficEnvironment(ParallelEnv):
 
 
         self.observation_spaces = {
-            agent: Box(low=0, high=1, shape=(1,), dtype=float) for agent in self.possible_agents
+            agent: Box(low=0, high=1, shape=(1,), dtype=float) for agent in self.possible_agents ## observation will be the same as the action space
         }
         
         self.action_spaces = {
@@ -64,6 +64,19 @@ class TrafficEnvironment(ParallelEnv):
         self.action_table = {
             agent:[] for agent in self.possible_agents
         }
+
+        self.action_table_humans = {
+            agent.id:[] for agent in self.human_agents
+        }
+
+        self.reward_table_humans = {
+            agent.id:[] for agent in self.human_agents
+        }
+
+        print(self.action_table_humans)
+        print(self.reward_table_humans)
+
+        print(self.reward_table)
 
         ### Create start_time table
         num_origins = len(agent_params[kc.DESTINATIONS])
@@ -150,66 +163,60 @@ class TrafficEnvironment(ParallelEnv):
             self.possible_agents = []
             print("[INFO] No more agents to simulate!")
             return {}, {}, {}, {}, {}
-
-        data = {
-            'id': self.possible_agents,
-            'action': [machine_joint_action[agent] for agent in self.possible_agents],
-            'origin': self.origin,
-            'destination': self.destination,
-            'start_time': self.start_times
-        }
-
-        ## Human agent's action
-        human_joint_action = self.human_actions()
-
-        # Create the DataFrame
-        joint_action_df = pd.DataFrame(data)
-        joint_action_df['id'] = joint_action_df['id'].astype(int)  
-
-        ## Combine human agents with machine agents
-        joint_action_df = pd.concat([joint_action_df, human_joint_action], ignore_index=True)
-        #print("joint_action_df is: \n", joint_action_df, "\n\n")   
-  
+        
+        ## Preprocess the human and machine joint actions
+        joint_action_df, human_joint_action, state_table = self.prepare_joint_action(machine_joint_action)
 
         ### Interact with SUMO to get travel times
         sumo_df = self.simulator.run_simulation_iteration(joint_action_df)
 
-        #print("inside step\n", human_joint_action, "\n\n")
-
+        ## Human learning
         self.human_learning(sumo_df, human_joint_action)
 
+        ## Machine learning
+        sample_observation, rewards, terminated, truncated, info = self.machine_learning(sumo_df, machine_joint_action)
+
+
+        return sample_observation, rewards, terminated, truncated, info
+    
+    
+    def human_actions(self):
+        ## Human agent's action
+        observations = {
+            a: Box(low=0, high=1, shape=(1,), dtype=float).sample() for a in self.human_agents
+        }
+
+        human_joint_action = self.get_joint_action(self.human_agents, observations)
+
+        ## Change the id numbers so they don't collide with machine agents
+        human_joint_action['id'] = human_joint_action['id'] + self.agent_params[kc.NUM_AGENTS] 
+
+        ## Remove the kind column
+        human_joint_action.drop(columns=['kind'], inplace=True) 
+
+        return human_joint_action
+    
+    
+    def machine_learning(self, sumo_df, machine_joint_action):
+
         sumo_df['id'] = sumo_df['id'].astype(str)
-
-        #print("sumo_df is: \n", sumo_df, "\n\n")
         sumo_df_machines = sumo_df.head(self.agent_params[kc.NUM_AGENTS])
-        #print("sumo_df_machines is: \n", sumo_df_machines, "\n\n")
-
         
-        ### Individual reward to each agent
+        ## Individual reward to each machine agent
         rewards = {}
 
-        # Selfish agents
-        """costs = sumo_df['travel_time'].values
-
-        for agent_name in self.possible_agents:
-            rewards[agent_name] = -1 * costs[i]"""
-
-        #print(rewards)
-
-        ### Joint reward for all agents
+        ## Joint reward for all machine agents
         joint_reward = self.calculate_rewards(sumo_df_machines)
-        #print("joint_reward is: ", joint_reward)
 
         for agent_name in self.possible_agents:
             rewards[agent_name] = joint_reward
 
-
-        # Saves the actions and rewards of each agent for this episode
+        ## Saves the actions and rewards of each agent for this episode
         for id, action in machine_joint_action.items():
             self.action_table[id].append(action)
             self.reward_table[id].append(rewards[id])
 
-        ### Return variables
+        ## Return variables
         sample_observation = {
             a: (Box(low=0, high=1, shape=(1,), dtype=float).sample()) for a in self.possible_agents
         }
@@ -229,21 +236,47 @@ class TrafficEnvironment(ParallelEnv):
 
         return sample_observation, rewards, terminated, truncated, info
     
-    def human_actions(self):
-        ## Human agent's action
-        observations = {
-            a: Box(low=0, high=1, shape=(1,), dtype=float).sample() for a in self.human_agents
+    
+    
+    def prepare_joint_action(self, machine_joint_action):
+        data = {
+            'id': self.possible_agents,
+            'action': [machine_joint_action[agent] for agent in self.possible_agents],
+            'origin': self.origin,
+            'destination': self.destination,
+            'start_time': self.start_times
         }
 
-        human_joint_action = self.get_joint_action(self.human_agents, observations)
+        ## Human agent's action
+        human_joint_action = self.human_actions()
 
-        ## Change the id numbers so they don't collide with machine agents
-        human_joint_action['id'] = human_joint_action['id'] + self.agent_params[kc.NUM_AGENTS] 
 
-        ## Remove the kind column
-        human_joint_action.drop(columns=['kind'], inplace=True) 
+        # Create the DataFrame
+        joint_action_df = pd.DataFrame(data)
+        joint_action_df['id'] = joint_action_df['id'].astype(int)  
 
-        return human_joint_action
+        ## Combine human agents with machine agents
+        joint_action_df = pd.concat([joint_action_df, human_joint_action], ignore_index=True)  
+
+
+
+        # Group by 'origin', 'destination', and 'action', and count the occurrences
+        action_counts = joint_action_df.groupby(['origin', 'destination', 'action']).size().reset_index(name='count')
+
+        # Filter action_counts based on the maximum action value
+        action_counts = action_counts[action_counts['action'] < self.simulation_params[kc.NUMBER_OF_PATHS] + 1]
+
+        # Pivot the table to have 'origin' and 'destination' as rows, 'action' as columns, and 'count' as values
+        state_table = action_counts.pivot_table(index=['origin', 'destination'], columns='action', values='count', fill_value=0)
+
+        # Optionally, reset the index to make it a regular DataFrame
+        state_table.reset_index(inplace=True)
+
+        state_table = state_table.astype(int)
+
+
+        return joint_action_df, human_joint_action, state_table
+    
     
  
     def human_learning(self, sumo_df, human_joint_action):
@@ -262,7 +295,10 @@ class TrafficEnvironment(ParallelEnv):
         for agent in self.human_agents:
 
             action = human_joint_action.loc[human_joint_action[kc.AGENT_ID] == agent.id, kc.ACTION].item()
-            reward = human_df.loc[human_df[kc.AGENT_ID] == agent.id, "travel_time"].item()
+            reward = -1* human_df.loc[human_df[kc.AGENT_ID] == agent.id, "travel_time"].item() / self.overall_min_travel_time
+
+            self.action_table_humans[agent.id].append(action)
+            self.reward_table_humans[agent.id].append(reward)
 
             observation = 0
             agent.learn(action, reward, observation)    
@@ -285,7 +321,8 @@ class TrafficEnvironment(ParallelEnv):
 
         # Iterate over the selected agents and plot their rewards
         for agent_index in random_agents:
-            plt.plot(self.reward_table[agent_index], linestyle='-', label=f'Agent {agent_index}')
+            plt.plot(self.reward_table[agent_index], linestyle='-', label=f'Machine Agent {agent_index}')
+            plt.plot(self.reward_table_humans[int(agent_index)], linestyle='-', label=f'Human Agent {agent_index}')
 
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Reward', fontsize=12) 
@@ -301,10 +338,10 @@ class TrafficEnvironment(ParallelEnv):
         sns.set_style("whitegrid")
 
         ## Choose 5 random agents and plot their actions
-        if(len(self.possible_agents) < 5):
+        if(len(self.possible_agents) < 3):
             random_agents = self.possible_agents
         else:
-            random_agents = random.sample(self.possible_agents, 5)
+            random_agents = random.sample(self.possible_agents, 3)
 
         ## Save the plot in the results folder
         file_number = 1
@@ -318,6 +355,7 @@ class TrafficEnvironment(ParallelEnv):
         ## Iterate over the selected agents and plot their actions
         for agent_index in random_agents:
             plt.plot(self.action_table[agent_index], linestyle='-', label=f'Agent {agent_index}')
+            plt.plot(self.action_table_humans[int(agent_index)], linestyle='-', label=f'Agent {agent_index}')
 
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Action', fontsize=12) 

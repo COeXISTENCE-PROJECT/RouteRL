@@ -44,7 +44,7 @@
         "human_agent_parameters" :
         {
             "alpha" : 0.2,
-            "beta" : -0.5,
+            "beta" : 0.5, 
             "beta_randomness" : 0.3
         }
     },
