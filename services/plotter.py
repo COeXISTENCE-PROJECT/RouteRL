@@ -119,7 +119,7 @@ class Plotter:
         plt.plot(self.saved_episodes, running_average(mean_human_rewards, last_n=3), label="Humans")
         plt.plot(self.machine_episodes, running_average(mean_machine_rewards, last_n=3), label="Machines")
         plt.plot(self.machine2_episodes, running_average(mean_machine2_rewards, last_n=3), label="Malicious")
-        plt.plot(self.saved_episodes, running_average(all_mean_rewards, last_n=3), label="All")   # Before machines, it is just humans
+        #plt.plot(self.saved_episodes, running_average(all_mean_rewards, last_n=3), label="All")   # Before machines, it is just humans
 
         plt.axvline(x = self.mutation_time, label = 'Mutation Time', color = 'r', linestyle = '--')
         plt.axvline(x = self.second_mutation_time, label = 'Mutation Time 2', color = 'b', linestyle = '--')
