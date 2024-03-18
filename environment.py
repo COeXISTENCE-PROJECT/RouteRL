@@ -49,7 +49,7 @@ class TrafficEnvironment(ParallelEnv):
 
 
         self.observation_spaces = {
-            agent: Box(low=0, high=1, shape=(1,), dtype=float) for agent in self.possible_agents ## observation will be the same as the action space
+            agent: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=int) for agent in self.possible_agents 
         }
         
         self.action_spaces = {
@@ -72,11 +72,6 @@ class TrafficEnvironment(ParallelEnv):
         self.reward_table_humans = {
             agent.id:[] for agent in self.human_agents
         }
-
-        print(self.action_table_humans)
-        print(self.reward_table_humans)
-
-        print(self.reward_table)
 
         ### Create start_time table
         num_origins = len(agent_params[kc.DESTINATIONS])
@@ -149,7 +144,7 @@ class TrafficEnvironment(ParallelEnv):
         self.agents = copy(self.possible_agents)
 
         observations = {
-            a: Box(low=0, high=1, shape=(1,), dtype=float).sample() for a in self.possible_agents
+            a: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=int).sample() for a in self.possible_agents
         }
 
         infos = {a: {}  for a in self.possible_agents}
@@ -174,7 +169,7 @@ class TrafficEnvironment(ParallelEnv):
         self.human_learning(sumo_df, human_joint_action)
 
         ## Machine learning
-        sample_observation, rewards, terminated, truncated, info = self.machine_learning(sumo_df, machine_joint_action)
+        sample_observation, rewards, terminated, truncated, info = self.machine_learning(sumo_df, machine_joint_action, state_table)
 
 
         return sample_observation, rewards, terminated, truncated, info
@@ -183,7 +178,7 @@ class TrafficEnvironment(ParallelEnv):
     def human_actions(self):
         ## Human agent's action
         observations = {
-            a: Box(low=0, high=1, shape=(1,), dtype=float).sample() for a in self.human_agents
+            a: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=int).sample() for a in self.human_agents
         }
 
         human_joint_action = self.get_joint_action(self.human_agents, observations)
@@ -197,10 +192,11 @@ class TrafficEnvironment(ParallelEnv):
         return human_joint_action
     
     
-    def machine_learning(self, sumo_df, machine_joint_action):
+    def machine_learning(self, sumo_df, machine_joint_action, state_table):
 
         sumo_df['id'] = sumo_df['id'].astype(str)
         sumo_df_machines = sumo_df.head(self.agent_params[kc.NUM_AGENTS])
+        state_table = state_table.head(self.agent_params[kc.NUM_AGENTS])
         
         ## Individual reward to each machine agent
         rewards = {}
@@ -216,9 +212,10 @@ class TrafficEnvironment(ParallelEnv):
             self.action_table[id].append(action)
             self.reward_table[id].append(rewards[id])
 
+
         ## Return variables
         sample_observation = {
-            a: (Box(low=0, high=1, shape=(1,), dtype=float).sample()) for a in self.possible_agents
+            str(id): (row[-3:].values) for id, row in state_table.iterrows()
         }
 
         terminated = {
@@ -258,7 +255,7 @@ class TrafficEnvironment(ParallelEnv):
         ## Combine human agents with machine agents
         joint_action_df = pd.concat([joint_action_df, human_joint_action], ignore_index=True)  
 
-
+        ## Create a dataframe that will contain the state table
 
         # Group by 'origin', 'destination', and 'action', and count the occurrences
         action_counts = joint_action_df.groupby(['origin', 'destination', 'action']).size().reset_index(name='count')
@@ -273,6 +270,8 @@ class TrafficEnvironment(ParallelEnv):
         state_table.reset_index(inplace=True)
 
         state_table = state_table.astype(int)
+
+        state_table = pd.merge(joint_action_df, state_table, on=['origin', 'destination'], how='inner')
 
 
         return joint_action_df, human_joint_action, state_table
@@ -389,7 +388,7 @@ class TrafficEnvironment(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
-        return Box(low=0, high=1, shape=(1,), dtype=float)
+        return Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=int)
 
 
     @functools.lru_cache(maxsize=None)
