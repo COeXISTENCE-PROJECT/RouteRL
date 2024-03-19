@@ -12,24 +12,24 @@ See [here](server_scripts/how_to.md).
 ## Training results
 
 ### Number of agents
-1000 agents ~ around 800 humans, 200 selfish machines, 100 malicious (disruptive?) machines
+3000 agents - Humans: 1520 | Machines: 882 | Malicious machines: 598
 ### Training episodes
-8000 Episodes, first mutation at 1000, second at 4000
+6000 Episodes, first mutation at 1000, second at 3000
 ### Training duration
-15 hours, 10 minutes, 23 seconds
+1 day, 05 hours, 35 minutes, 50 seconds
 ### Specs
 mem: 64G, cpus-per-task: 20, partition: cpu
 
 
-## Collected Mean Rewards(in minutes):
+## Collected Mean Rewards (in minutes)
 ![](readme_plots/rewards.png)
 
 
-## Distribution of Rewards:
+## Distribution of Rewards
 ![](readme_plots/rewards_dist.png)
 
 
-## Simulation Timesteps:
+## Simulation Timesteps
 ![](readme_plots/simulation_length.png)
 
 
@@ -41,7 +41,7 @@ mem: 64G, cpus-per-task: 20, partition: cpu
 ![](readme_plots/actions_shifts.png)
 
 
-## Route Populations:
+## Route Populations
 ![](readme_plots/flows.png)
 
 
