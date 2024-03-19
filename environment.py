@@ -13,6 +13,7 @@ from utilities import create_agent_objects
 import seaborn as sns
 import math
 import os
+import numpy as np
 
 
 from keychain import Keychain as kc
@@ -32,7 +33,7 @@ class TrafficEnvironment(ParallelEnv):
         self.simulator = Simulator(simulation_params)
         print("[SUCCESS] Environment initiated!")
 
-        free_flows_dict = self.calculate_free_flow_times()
+        self.free_flows_dict = self.calculate_free_flow_times()
         print("\n[SUCCESS] Free flow times calculated!")
 
         self.agent_params = agent_params
@@ -56,7 +57,7 @@ class TrafficEnvironment(ParallelEnv):
             agent: gym.spaces.Discrete(simulation_params[kc.NUMBER_OF_PATHS]) for agent in self.possible_agents
         }
 
-        ## save rewards and actions of each agent for the plots
+        ## Save rewards and actions of each agent for the plots
         self.reward_table = {
             agent:[] for agent in self.possible_agents
         }
@@ -82,26 +83,71 @@ class TrafficEnvironment(ParallelEnv):
         self.origin = [random.randrange(num_origins) for i in range(len(self.possible_agents))]
         self.destination = [random.randrange(num_destinations) for i in range(len(self.possible_agents))]
 
+        self.render_mode = render_mode
+        self.min_reward = - math.inf
+        self.overall_min_travel_time = self.min_travel_time()
+
+
+
+    def reset(self, seed=None, options=None):
+        self.simulator.reset_sumo()
+        self.agents = copy(self.possible_agents)
+
+        observations = {
+            a: np.zeros(3, dtype=int) for a in self.possible_agents
+        }
+
+        infos = {a: {}  for a in self.possible_agents}
+
+        return observations, infos
+
+
+
+    def step(self, machine_joint_action):
+
+        if not machine_joint_action:
+            self.possible_agents = []
+            print("[INFO] No more agents to simulate!")
+            return {}, {}, {}, {}, {}
+        
+        ## Preprocess the human and machine joint actions
+        joint_action_df, human_joint_action, state_table = self.prepare_joint_action(machine_joint_action)
+
+        ## Interact with SUMO to get travel times
+        sumo_df = self.simulator.run_simulation_iteration(joint_action_df)
+
+        ## Human learning
+        self.human_learning(sumo_df, human_joint_action)
+
+        ## Machine learning
+        sample_observation, rewards, terminated, truncated, info = self.machine_learning(sumo_df, machine_joint_action, state_table)
+
+
+        return sample_observation, rewards, terminated, truncated, info
+
+
+    def min_travel_time(self):
+
         ## Find the minimum free flow travel time from all the possible agents
         overall_min_travel_time = math.inf
 
         for i in range(len(self.origin)):
             print(f"\nAgent {i} has origin {self.origin[i]} and destination {self.destination[i]}.\n\n")
 
-            travel_times = free_flows_dict[(self.origin[i], self.destination[i])]
+            travel_times = self.free_flows_dict[(self.origin[i], self.destination[i])]
             current_min_travel_time = min(travel_times)
 
             if (current_min_travel_time < overall_min_travel_time):
                 overall_min_travel_time = current_min_travel_time
 
-        self.overall_min_travel_time = overall_min_travel_time
-        self.render_mode = render_mode
-        self.min_reward = - math.inf
+        return overall_min_travel_time
+        
 
 
 
     def observe(self, agent):
-        return Box(low=0, high=1, shape=(1,), dtype=float).sample() 
+        return Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=int)
+    
 
     def close(self):
         self.plot_rewards()
@@ -121,58 +167,21 @@ class TrafficEnvironment(ParallelEnv):
         self.action_table = {
             agent:[] for agent in self.possible_agents
         }
+
+        self.action_table_humans = {
+            agent.id:[] for agent in self.human_agents
+        }
+
+        self.reward_table_humans = {
+            agent.id:[] for agent in self.human_agents
+        }
         
 
     def calculate_free_flow_times(self):
         free_flow_cost = self.simulator.calculate_free_flow_times()
         print('[INFO] Free-flow times: ', free_flow_cost)
+
         return free_flow_cost
-    
-    def start(self):
-        self.simulator.start_sumo()
-        state = None
-        return state
-
-    def stop(self):
-        self.simulator.stop_sumo()
-        state = None
-        return state
-        
-
-    def reset(self, seed=None, options=None):
-        self.simulator.reset_sumo()
-        self.agents = copy(self.possible_agents)
-
-        observations = {
-            a: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=int).sample() for a in self.possible_agents
-        }
-
-        infos = {a: {}  for a in self.possible_agents}
-
-        return observations, infos
-
-
-    def step(self, machine_joint_action):
-
-        if not machine_joint_action:
-            self.possible_agents = []
-            print("[INFO] No more agents to simulate!")
-            return {}, {}, {}, {}, {}
-        
-        ## Preprocess the human and machine joint actions
-        joint_action_df, human_joint_action, state_table = self.prepare_joint_action(machine_joint_action)
-
-        ### Interact with SUMO to get travel times
-        sumo_df = self.simulator.run_simulation_iteration(joint_action_df)
-
-        ## Human learning
-        self.human_learning(sumo_df, human_joint_action)
-
-        ## Machine learning
-        sample_observation, rewards, terminated, truncated, info = self.machine_learning(sumo_df, machine_joint_action, state_table)
-
-
-        return sample_observation, rewards, terminated, truncated, info
     
     
     def human_actions(self):
@@ -181,7 +190,7 @@ class TrafficEnvironment(ParallelEnv):
             a: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=int).sample() for a in self.human_agents
         }
 
-        human_joint_action = self.get_joint_action(self.human_agents, observations)
+        human_joint_action = self.get_human_joint_action(self.human_agents, observations)
 
         ## Change the id numbers so they don't collide with machine agents
         human_joint_action['id'] = human_joint_action['id'] + self.agent_params[kc.NUM_AGENTS] 
@@ -266,11 +275,8 @@ class TrafficEnvironment(ParallelEnv):
         # Pivot the table to have 'origin' and 'destination' as rows, 'action' as columns, and 'count' as values
         state_table = action_counts.pivot_table(index=['origin', 'destination'], columns='action', values='count', fill_value=0)
 
-        # Optionally, reset the index to make it a regular DataFrame
         state_table.reset_index(inplace=True)
-
         state_table = state_table.astype(int)
-
         state_table = pd.merge(joint_action_df, state_table, on=['origin', 'destination'], how='inner')
 
 
@@ -294,7 +300,7 @@ class TrafficEnvironment(ParallelEnv):
         for agent in self.human_agents:
 
             action = human_joint_action.loc[human_joint_action[kc.AGENT_ID] == agent.id, kc.ACTION].item()
-            reward = -1* human_df.loc[human_df[kc.AGENT_ID] == agent.id, "travel_time"].item() / self.overall_min_travel_time
+            reward = -1 * human_df.loc[human_df[kc.AGENT_ID] == agent.id, "travel_time"].item() / self.overall_min_travel_time
 
             self.action_table_humans[agent.id].append(action)
             self.reward_table_humans[agent.id].append(reward)
@@ -336,8 +342,8 @@ class TrafficEnvironment(ParallelEnv):
     def plot_actions(self):
         sns.set_style("whitegrid")
 
-        ## Choose 5 random agents and plot their actions
-        if(len(self.possible_agents) < 3):
+        ## Choose 2 random agents and plot their actions
+        if(len(self.possible_agents) < 2):
             random_agents = self.possible_agents
         else:
             random_agents = random.sample(self.possible_agents, 3)
@@ -366,9 +372,10 @@ class TrafficEnvironment(ParallelEnv):
         plt.show()
 
         
-    def get_joint_action(self, agents, observations):
+    def get_human_joint_action(self, agents, observations):
         joint_action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
         joint_action = pd.DataFrame(columns = joint_action_cols)
+
         # Every agent picks action
         for agent, observation in zip(agents, observations):
             action = agent.act(observation)
