@@ -30,7 +30,7 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
 
     policy_kwargs = dict(activation_fn=th.nn.ReLU, net_arch=[128, 128])
 
-    model = PPO(
+    """model = PPO(
         "MlpPolicy",
         env,
         verbose = 1,
@@ -39,12 +39,13 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
         device = "cuda",
         policy_kwargs=policy_kwargs,
         gamma = 0.9,
-        learning_rate = 1e-3
+        learning_rate = 1e-3,
+        tensorboard_log="./ppo_board/",
     )
 
-    model.learn(total_timesteps=200000)
+    model.learn(total_timesteps=200000)"""
 
-    """model = DQN(
+    model = DQN(
         env=env,
         policy="MlpPolicy",
         learning_rate=0.001,
@@ -53,10 +54,11 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
         exploration_initial_eps=0.05,
         exploration_final_eps=0,
         verbose=1,
-        device="cuda"
+        device="cuda",
+        tensorboard_log="./board/",
     )
 
-    model.learn(total_timesteps=600000)"""
+    model.learn(total_timesteps=200000)
 
     print(f"[SUCCESS] Finished training on {str(env.unwrapped.metadata['name'])}.")
 
