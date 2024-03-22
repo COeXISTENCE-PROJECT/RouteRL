@@ -43,7 +43,7 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
         tensorboard_log="./board/",
     )
 
-    model.learn(total_timesteps=200000)
+    model.learn(total_timesteps=2000)
 
     """model = DQN(
         env=env,
@@ -63,6 +63,13 @@ def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **
     print(f"[SUCCESS] Finished training on {str(env.unwrapped.metadata['name'])}.")
 
     env.close()
+
+    # Enjoy trained agent
+    obs = env.reset()
+    for i in range(100):
+        action, _states = model.predict(obs)
+        obs, rewards, dones, info = env.step(action)
+
 
 def main():
 
