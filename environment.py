@@ -87,6 +87,8 @@ class TrafficEnvironment(ParallelEnv):
         self.min_reward = - math.inf
         self.overall_min_travel_time = self.min_travel_time()
 
+    def state(self):
+        return 0
 
 
     def reset(self, seed=None, options=None):
@@ -150,8 +152,8 @@ class TrafficEnvironment(ParallelEnv):
     
 
     def close(self):
-        self.plot_rewards()
-        self.plot_actions()
+        #self.plot_rewards()
+        #self.plot_actions()
 
         ## Save the minimum rewards observed in every environment
         file_path = "min_reward.txt"

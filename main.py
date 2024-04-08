@@ -10,6 +10,42 @@ import supersuit as ss
 from Sumo_controller import Sumo
 import os
 import torch as th
+from torchrl.envs.libs.pettingzoo import PettingZooWrapper
+from torchrl.envs.transforms import TransformedEnv, RewardSum
+from torchrl.envs.utils import check_env_specs
+from torchrl.envs import (
+    Compose,
+    DoubleToFloat,
+    ObservationNorm,
+    StepCounter,
+    TransformedEnv,
+)
+from tensordict.nn.distributions import NormalParamExtractor
+import torch
+from torch import nn
+from tensordict.nn import TensorDictModule
+from tensordict.nn import TensorDictModule
+from tensordict.nn.distributions import NormalParamExtractor
+from torch import nn
+
+from torchrl.collectors import SyncDataCollector
+from torchrl.data.replay_buffers import ReplayBuffer
+from torchrl.data.replay_buffers.samplers import SamplerWithoutReplacement
+from torchrl.data.replay_buffers.storages import LazyTensorStorage
+from torchrl.envs import (
+    Compose,
+    DoubleToFloat,
+    ObservationNorm,
+    StepCounter,
+    TransformedEnv,
+)
+from torchrl.envs.libs.gym import GymEnv
+from torchrl.envs.utils import check_env_specs, ExplorationType, set_exploration_type
+from torchrl.modules import ProbabilisticActor, TanhNormal, ValueOperator
+from torchrl.objectives import ClipPPOLoss
+from torchrl.objectives.value import GAE
+from tqdm import tqdm
+
 
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
@@ -82,8 +118,59 @@ def main():
     #parallel_api_test(env, num_cycles=1_000_000)
     #print("\n[SUCCESS] Passed parallel_api_test\n")
 
-    env_kwargs = {}
-    train_butterfly_supersuit(env, steps=100, seed=0, **env_kwargs) 
+    #env_kwargs = {}
+    #train_butterfly_supersuit(env, steps=100, seed=0, **env_kwargs) 
+
+    env = PettingZooWrapper(
+        env=env,
+        return_state=True,
+        group_map=None, # Use default for parallel (all pistons grouped together)
+    )
+
+    print(env.group_map)
+
+    env.rollout(10)
+    num_cells = 256
+    device = (
+        torch.device(0)
+        if torch.cuda.is_available() and not is_fork
+        else torch.device("cpu")
+    )
+
+    print(env.action_spec)
+
+    check_env_specs(env)
+
+    actor_net = nn.Sequential(
+        nn.LazyLinear(num_cells, device=device),
+        nn.Tanh(),
+        nn.LazyLinear(num_cells, device=device),
+        nn.Tanh(),
+        nn.LazyLinear(num_cells, device=device),
+        nn.Tanh(),
+        nn.LazyLinear(2 * 1, device=device),
+        NormalParamExtractor(),
+    )
+
+    policy_module = TensorDictModule(
+        actor_net, in_keys=["agents", "observation"], out_keys=["loc", "scale"]
+    )
+
+    #print("env.action_spec.space is: ", env.action_spec.space)
+
+    """policy_module = ProbabilisticActor(
+        module=policy_module,
+        spec=env.action_spec,
+        in_keys=["loc", "scale"],
+        distribution_class=TanhNormal,
+        distribution_kwargs={
+            "min": env.action_spec.space.low,
+            "max": env.action_spec.space.high,
+        },
+        return_log_prob=True,
+        # we'll need the log-prob for the numerator of the importance weights
+    )"""
+        
 
     Sumo_sim.Sumo_stop()  
 
