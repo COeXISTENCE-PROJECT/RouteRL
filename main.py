@@ -45,6 +45,8 @@ from torchrl.modules import ProbabilisticActor, TanhNormal, ValueOperator
 from torchrl.objectives import ClipPPOLoss
 from torchrl.objectives.value import GAE
 from tqdm import tqdm
+# Multi-agent network
+from torchrl.modules import MultiAgentMLP, ProbabilisticActor, TanhNormal
 
 
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
@@ -52,59 +54,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 confirm_env_variable(kc.SUMO_HOME, append="tools")
 params = get_params(kc.PARAMS_PATH)
 
-### Stable baselines
-def train_butterfly_supersuit(env, steps: int = 10_000, seed: int | None = 0, **env_kwargs):
-    # Train a single model to play as each agent in a cooperative Parallel environment
 
-    env.reset(seed=seed)
-
-    print(f"[SUCCESS] Starting training on {str(env.metadata['name'])}.")
-
-    env = ss.pettingzoo_env_to_vec_env_v1(env)
-
-    env = ss.concat_vec_envs_v1(env, 1, num_cpus=2, base_class="stable_baselines3")
-
-    policy_kwargs = dict(activation_fn=th.nn.ReLU, net_arch=[64, 64, 64])
-
-    model = PPO(
-        "MlpPolicy",
-        env,
-        verbose = 1,
-        n_steps = 10,
-        batch_size=10,
-        device = "cuda",
-        policy_kwargs=policy_kwargs,
-        gamma = 0.9,
-        learning_rate = 1e-3,
-        tensorboard_log="./board/",
-    )
-
-    model.learn(total_timesteps=2000)
-
-    """model = DQN(
-        env=env,
-        policy="MlpPolicy",
-        learning_rate=0.001,
-        train_freq=1,
-        target_update_interval=500,
-        exploration_initial_eps=0.05,
-        exploration_final_eps=0,
-        verbose=1,
-        device="cuda",
-        tensorboard_log="./board/",
-    )
-
-    model.learn(total_timesteps=200000)"""
-
-    print(f"[SUCCESS] Finished training on {str(env.unwrapped.metadata['name'])}.")
-
-    env.close()
-
-    # Enjoy trained agent
-    obs = env.reset()
-    for i in range(100):
-        action, _states = model.predict(obs)
-        obs, rewards, dones, info = env.step(action)
 
 
 def main():
@@ -114,22 +64,23 @@ def main():
 
     env = TrafficEnvironment(params[kc.ENVIRONMENT_PARAMETERS], params[kc.SIMULATION_PARAMETERS], params[kc.AGENTS_GENERATION_PARAMETERS])
     print("[SUCCESS] Environment initiated!")
-    
-    #parallel_api_test(env, num_cycles=1_000_000)
-    #print("\n[SUCCESS] Passed parallel_api_test\n")
 
-    #env_kwargs = {}
-    #train_butterfly_supersuit(env, steps=100, seed=0, **env_kwargs) 
-
+    ## https://github.com/pytorch/rl/blob/main/torchrl/envs/libs/pettingzoo.py
     env = PettingZooWrapper(
         env=env,
         return_state=True,
-        group_map=None, # Use default for parallel (all pistons grouped together)
+        use_mask=True,
+        group_map=None, # Use default for parallel
+        categorical_actions=True,
     )
+    print(env)
 
-    print(env.group_map)
+    print("Environment group mapping", env.group_map)
 
-    env.rollout(10)
+    rollout = env.rollout(1)
+    print("rollout of three steps:", rollout)
+    print("Shape of the rollout TensorDict:", rollout.batch_size)
+
     num_cells = 256
     device = (
         torch.device(0)
@@ -137,9 +88,29 @@ def main():
         else torch.device("cpu")
     )
 
-    print(env.action_spec)
+    #print("Environement action space is: ", env.action_spec)
 
     check_env_specs(env)
+    print("Observation space is: ", env.observation_spec)
+
+    ### Policy
+
+    share_parameters_policy = True
+
+    policy_net = torch.nn.Sequential(
+        MultiAgentMLP(
+            n_agent_inputs=env.observation_spec(env.possible_agents, "observation").shape[-1],  # n_obs_per_agent
+            n_agent_outputs=2 * env.action_spec.shape[-1],  # 2 * n_actions_per_agents
+            n_agents=env.n_agents,
+            centralised=False,  # the policies are decentralised (ie each agent will act from its observation)
+            share_params=share_parameters_policy,
+            device=device,
+            depth=2,
+            num_cells=256,
+            activation_class=torch.nn.Tanh,
+        ),
+        NormalParamExtractor(),  # this will just separate the last dimension into two outputs: a loc and a non-negative scale
+    )
 
     actor_net = nn.Sequential(
         nn.LazyLinear(num_cells, device=device),

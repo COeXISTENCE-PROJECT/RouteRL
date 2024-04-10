@@ -41,7 +41,9 @@ class TrafficEnvironment(ParallelEnv):
 
         ## Create the agents
         ## Machine agents
-        self.possible_agents = [str(i) for i in range(0, agent_params[kc.NUM_AGENTS])]
+        self.possible_agents = [str(i) for i in range(0, 2)]
+
+        #self.possible_agents = [str(i) for i in range(0, agent_params[kc.NUM_AGENTS])]
 
         self.agents = self.possible_agents
 
@@ -158,8 +160,8 @@ class TrafficEnvironment(ParallelEnv):
         ## Save the minimum rewards observed in every environment
         file_path = "min_reward.txt"
 
-        with open(file_path, 'a') as file:
-            file.write(str(self.min_reward) + '\n')
+        """with open(file_path, 'a') as file:
+            file.write(str(self.min_reward) + '\n')"""
 
         ## Empty the reward and action tables
         self.reward_table = {
