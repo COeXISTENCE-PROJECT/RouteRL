@@ -73,12 +73,21 @@ def main():
         group_map=None, # Use default for parallel
         categorical_actions=True,
     )
-    print(env)
+    print("env is: ", env)
+
+    # This will modify the inputs and outputs of our environment in some way.
+    # This specific one will sum rewards over the episodes.
+    # We will tell the transform where where to find the reward key and where to write the summer episode reward
+    # The transformed environment will inherit the device and meta-data of the wrapped environment and transform these depending on the sequence of transforms it contains.
+    env = TransformedEnv(
+        env,
+        RewardSum(in_keys=[env.reward_key], out_keys=[("agents", "episode_reward")]),
+    )
 
     print("Environment group mapping", env.group_map)
 
     rollout = env.rollout(1)
-    print("rollout of three steps:", rollout)
+    print("rollout of one step:", rollout)
     print("Shape of the rollout TensorDict:", rollout.batch_size)
 
     num_cells = 256
@@ -99,7 +108,7 @@ def main():
 
     policy_net = torch.nn.Sequential(
         MultiAgentMLP(
-            n_agent_inputs=env.observation_spec(env.possible_agents, "observation").shape[-1],  # n_obs_per_agent
+            n_agent_inputs=env.observation_spec["1", "observation"].shape[-1],  # n_obs_per_agent
             n_agent_outputs=2 * env.action_spec.shape[-1],  # 2 * n_actions_per_agents
             n_agents=env.n_agents,
             centralised=False,  # the policies are decentralised (ie each agent will act from its observation)
@@ -124,24 +133,45 @@ def main():
     )
 
     policy_module = TensorDictModule(
-        actor_net, in_keys=["agents", "observation"], out_keys=["loc", "scale"]
+        actor_net, in_keys=["1", "observation"], out_keys=["loc", "scale"]
     )
 
     #print("env.action_spec.space is: ", env.action_spec.space)
 
-    """policy_module = ProbabilisticActor(
+    policy = ProbabilisticActor(
         module=policy_module,
         spec=env.action_spec,
-        in_keys=["loc", "scale"],
+        in_keys=[("1", "loc"), ("1", "scale")],
+        out_keys=[env.action_key],
         distribution_class=TanhNormal,
-        distribution_kwargs={
-            "min": env.action_spec.space.low,
-            "max": env.action_spec.space.high,
-        },
         return_log_prob=True,
-        # we'll need the log-prob for the numerator of the importance weights
-    )"""
-        
+        log_prob_key=("1", "sample_log_prob"),
+    )
+
+    share_parameters_critic = True
+    mappo = True  # IPPO if False
+
+    critic_net = MultiAgentMLP(
+        n_agent_inputs=env.observation_spec["1", "observation"].shape[-1],
+        n_agent_outputs=1,  # 1 value per agent
+        n_agents=env.n_agents,
+        centralised=mappo,
+        share_params=share_parameters_critic,
+        device=device,
+        depth=2,
+        num_cells=256,
+        activation_class=torch.nn.Tanh,
+    )
+
+    critic = TensorDictModule(
+        module=critic_net,
+        in_keys=[("1", "observation")],
+        out_keys=[("1", "state_value")],
+    )
+
+    print("Running policy:", policy(env.reset()))
+    #print("Running value:", critic(env.reset()))
+            
 
     Sumo_sim.Sumo_stop()  
 

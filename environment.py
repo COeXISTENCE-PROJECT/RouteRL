@@ -41,7 +41,8 @@ class TrafficEnvironment(ParallelEnv):
 
         ## Create the agents
         ## Machine agents
-        self.possible_agents = [str(i) for i in range(0, 2)]
+        self.possible_agents = [str(i) for i in range(1, 2)]
+        self.n_agents = len(self.possible_agents)
 
         #self.possible_agents = [str(i) for i in range(0, agent_params[kc.NUM_AGENTS])]
 
@@ -50,9 +51,9 @@ class TrafficEnvironment(ParallelEnv):
         ## Human agents
         self.human_agents = create_agent_objects(agent_params, self.calculate_free_flow_times())
 
-
+        # observations must be the same type as the weights of the NN, float32
         self.observation_spaces = {
-            agent: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=int) for agent in self.possible_agents 
+            agent: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=np.float32) for agent in self.possible_agents 
         }
         
         self.action_spaces = {
@@ -98,7 +99,7 @@ class TrafficEnvironment(ParallelEnv):
         self.agents = copy(self.possible_agents)
 
         observations = {
-            a: np.zeros(3, dtype=int) for a in self.possible_agents
+            a: np.zeros(3, dtype=np.float32) for a in self.possible_agents
         }
 
         infos = {a: {}  for a in self.possible_agents}
@@ -191,7 +192,7 @@ class TrafficEnvironment(ParallelEnv):
     def human_actions(self):
         ## Human agent's action
         observations = {
-            a: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=int).sample() for a in self.human_agents
+            a: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=np.float32).sample() for a in self.human_agents
         }
 
         human_joint_action = self.get_human_joint_action(self.human_agents, observations)
@@ -271,6 +272,7 @@ class TrafficEnvironment(ParallelEnv):
         ## Create a dataframe that will contain the state table
 
         # Group by 'origin', 'destination', and 'action', and count the occurrences
+        #### Edo ginete i malakia
         action_counts = joint_action_df.groupby(['origin', 'destination', 'action']).size().reset_index(name='count')
 
         # Filter action_counts based on the maximum action value
@@ -399,7 +401,7 @@ class TrafficEnvironment(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
-        return Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=int)
+        return Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=np.float32)
 
 
     @functools.lru_cache(maxsize=None)
