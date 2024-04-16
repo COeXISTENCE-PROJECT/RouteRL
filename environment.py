@@ -114,7 +114,7 @@ class TrafficEnvironment(ParallelEnv):
             self.possible_agents = []
             print("[INFO] No more agents to simulate!")
             return {}, {}, {}, {}, {}
-        
+                
         ## Preprocess the human and machine joint actions
         joint_action_df, human_joint_action, state_table = self.prepare_joint_action(machine_joint_action)
 
@@ -252,7 +252,7 @@ class TrafficEnvironment(ParallelEnv):
     def prepare_joint_action(self, machine_joint_action):
         data = {
             'id': self.possible_agents,
-            'action': [machine_joint_action[agent] for agent in self.possible_agents],
+            'action': [int(machine_joint_action[agent]) for agent in self.possible_agents],
             'origin': self.origin,
             'destination': self.destination,
             'start_time': self.start_times
@@ -272,7 +272,6 @@ class TrafficEnvironment(ParallelEnv):
         ## Create a dataframe that will contain the state table
 
         # Group by 'origin', 'destination', and 'action', and count the occurrences
-        #### Edo ginete i malakia
         action_counts = joint_action_df.groupby(['origin', 'destination', 'action']).size().reset_index(name='count')
 
         # Filter action_counts based on the maximum action value
