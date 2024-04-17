@@ -155,7 +155,7 @@ class TrafficEnvironment(ParallelEnv):
     
 
     def close(self):
-        #self.plot_rewards()
+        self.plot_rewards()
         #self.plot_actions()
 
         ## Save the minimum rewards observed in every environment
