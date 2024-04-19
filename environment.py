@@ -59,9 +59,8 @@ class TrafficEnvironment(ParallelEnv):
         self.num_destinations = len(agent_params[kc.DESTINATIONS])
         self.num_paths = simulation_params[kc.NUMBER_OF_PATHS]
 
-        """self.observation_spaces = {
-            agent: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(self.num_origins, self.num_destinations, self.num_paths), dtype=np.float32) 
-            for agent in self.possible_agents 
+        """self.state_spaces = {
+            Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(self.num_origins, self.num_destinations, self.num_paths), dtype=np.float32) 
         }"""
         
         self.action_spaces = {
@@ -97,8 +96,9 @@ class TrafficEnvironment(ParallelEnv):
         self.overall_min_travel_time = self.min_travel_time()
 
     def state(self):
-        """matrix_shape = (self.num_origins, self.num_destinations, self.num_paths)
+        matrix_shape = (self.num_origins, self.num_destinations, self.num_paths)
         agent_counts = np.zeros(matrix_shape, dtype=int)
+        print("matrix shape is: ", matrix_shape, "\n\n")
 
         # Iterate over agents and observations
         for agent in self.human_agents:
@@ -106,13 +106,13 @@ class TrafficEnvironment(ParallelEnv):
             action = agent.act(0)
             
             # Increment the count for the corresponding path in the matrix
-            agent_counts[action][agent.origin][agent.destination] += 1
+            agent_counts[agent.origin][agent.destination][action] += 1
 
         # Print the resulting matrix
         print(agent_counts)
-        print("state is: ", agent_counts)"""
+        print("state is: ", agent_counts)
 
-        return 0
+        return agent_counts
 
 
     def reset(self, seed=None, options=None):
