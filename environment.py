@@ -15,7 +15,6 @@ import math
 import os
 import numpy as np
 
-
 from keychain import Keychain as kc
 from services.simulator import Simulator
 
@@ -43,7 +42,6 @@ class TrafficEnvironment(ParallelEnv):
         ## Machine agents
         self.possible_agents = [str(i) for i in range(1, 2)]
         self.n_agents = len(self.possible_agents)
-
         #self.possible_agents = [str(i) for i in range(0, agent_params[kc.NUM_AGENTS])]
 
         self.agents = self.possible_agents
@@ -51,10 +49,20 @@ class TrafficEnvironment(ParallelEnv):
         ## Human agents
         self.human_agents = create_agent_objects(agent_params, self.calculate_free_flow_times())
 
-        # observations must be the same type as the weights of the NN, float32
+        # Note: observations must be the same type as the weights of the NN, float32
+        # The observation space represents the count of agents choosing each path with the same origin/destination pair as the current agent.
         self.observation_spaces = {
             agent: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=np.float32) for agent in self.possible_agents 
         }
+
+        self.num_origins = len(agent_params[kc.DESTINATIONS])
+        self.num_destinations = len(agent_params[kc.DESTINATIONS])
+        self.num_paths = simulation_params[kc.NUMBER_OF_PATHS]
+
+        """self.observation_spaces = {
+            agent: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(self.num_origins, self.num_destinations, self.num_paths), dtype=np.float32) 
+            for agent in self.possible_agents 
+        }"""
         
         self.action_spaces = {
             agent: gym.spaces.Discrete(simulation_params[kc.NUMBER_OF_PATHS]) for agent in self.possible_agents
@@ -78,19 +86,32 @@ class TrafficEnvironment(ParallelEnv):
         }
 
         ### Create start_time table
-        num_origins = len(agent_params[kc.DESTINATIONS])
-        num_destinations = len(agent_params[kc.DESTINATIONS])
         step_size = 6
         
         self.start_times = [i * step_size for i in range(len(self.possible_agents))]
-        self.origin = [random.randrange(num_origins) for i in range(len(self.possible_agents))]
-        self.destination = [random.randrange(num_destinations) for i in range(len(self.possible_agents))]
+        self.origin = [random.randrange(self.num_origins) for i in range(len(self.possible_agents))]
+        self.destination = [random.randrange(self.num_destinations) for i in range(len(self.possible_agents))]
 
         self.render_mode = render_mode
         self.min_reward = - math.inf
         self.overall_min_travel_time = self.min_travel_time()
 
     def state(self):
+        """matrix_shape = (self.num_origins, self.num_destinations, self.num_paths)
+        agent_counts = np.zeros(matrix_shape, dtype=int)
+
+        # Iterate over agents and observations
+        for agent in self.human_agents:
+            # Determine the action chosen by the agent (assuming it's a number between 0 and num_paths-1)
+            action = agent.act(0)
+            
+            # Increment the count for the corresponding path in the matrix
+            agent_counts[action][agent.origin][agent.destination] += 1
+
+        # Print the resulting matrix
+        print(agent_counts)
+        print("state is: ", agent_counts)"""
+
         return 0
 
 
@@ -124,11 +145,14 @@ class TrafficEnvironment(ParallelEnv):
         ## Human learning
         self.human_learning(sumo_df, human_joint_action)
 
+        ## Return observations
+        observations = self.return_observation()
+        
         ## Machine learning
-        sample_observation, rewards, terminated, truncated, info = self.machine_learning(sumo_df, machine_joint_action, state_table)
+        rewards, terminated, truncated, info = self.machine_learning(sumo_df, machine_joint_action, state_table)
 
 
-        return sample_observation, rewards, terminated, truncated, info
+        return observations, rewards, terminated, truncated, info
 
 
     def min_travel_time(self):
@@ -180,6 +204,24 @@ class TrafficEnvironment(ParallelEnv):
         self.reward_table_humans = {
             agent.id:[] for agent in self.human_agents
         }
+
+    def return_observation(self):
+        ### Works for one agent - if more agents needs adjustment
+
+        matrix_shape = (self.num_paths)
+        agent_counts = np.zeros(matrix_shape, dtype=int)
+        # Iterate over agents and observations
+        for agent in self.human_agents:
+
+            if(agent.origin == self.origin[0] and agent.destination == self.destination[0]):
+                action = agent.act(0)
+                agent_counts[action] += 1
+
+        observations = {
+            agents: agent_counts for agents in self.possible_agents
+        }
+
+        return observations
         
 
     def calculate_free_flow_times(self):
@@ -228,10 +270,6 @@ class TrafficEnvironment(ParallelEnv):
 
 
         ## Return variables
-        sample_observation = {
-            str(id): (row[-3:].values) for id, row in state_table.iterrows()
-        }
-
         terminated = {
             terminated: True for terminated in self.possible_agents
         }
@@ -245,14 +283,14 @@ class TrafficEnvironment(ParallelEnv):
         if any(terminated.values()) or all(truncated.values()):
             self.agents = []
 
-        return sample_observation, rewards, terminated, truncated, info
+        return rewards, terminated, truncated, info
     
     
     
     def prepare_joint_action(self, machine_joint_action):
         data = {
             'id': self.possible_agents,
-            'action': [int(machine_joint_action[agent]) for agent in self.possible_agents],
+            'action': [int(abs(machine_joint_action[agent])) for agent in self.possible_agents],
             'origin': self.origin,
             'destination': self.destination,
             'start_time': self.start_times
@@ -400,7 +438,7 @@ class TrafficEnvironment(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
-        return Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=np.float32)
+        return Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(self.simulation_params[kc.NUMBER_OF_PATHS],), dtype=np.float32)
 
 
     @functools.lru_cache(maxsize=None)
