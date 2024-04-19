@@ -291,7 +291,7 @@ class TrafficEnvironment(ParallelEnv):
     def prepare_joint_action(self, machine_joint_action):
         data = {
             'id': self.possible_agents,
-            'action': [int(abs(machine_joint_action[agent])) for agent in self.possible_agents],
+            'action': [machine_joint_action[agent] for agent in self.possible_agents],
             'origin': self.origin,
             'destination': self.destination,
             'start_time': self.start_times
