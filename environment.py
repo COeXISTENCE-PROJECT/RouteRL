@@ -109,8 +109,7 @@ class TrafficEnvironment(ParallelEnv):
             agent_counts[agent.origin][agent.destination][action] += 1
 
         # Print the resulting matrix
-        print(agent_counts)
-        print("state is: ", agent_counts)
+        print("state was used: \n", agent_counts)
 
         return agent_counts
 
@@ -150,6 +149,8 @@ class TrafficEnvironment(ParallelEnv):
         
         ## Machine learning
         rewards, terminated, truncated, info = self.machine_learning(sumo_df, machine_joint_action, state_table)
+
+        print("Observations are: ", observations, "\n\n")
 
 
         return observations, rewards, terminated, truncated, info
@@ -328,6 +329,7 @@ class TrafficEnvironment(ParallelEnv):
     
  
     def human_learning(self, sumo_df, human_joint_action):
+        print("[INFO] Humans are about to learn!")
 
         ## Separate the human agents from the machine agents
         split_value = self.agent_params[kc.NUM_AGENTS]
