@@ -27,7 +27,7 @@ class TrafficEnvironment(ParallelEnv):
         "is_parallelizable": True,
     }
 
-    def __init__(self, environment_params, simulation_params, agent_params, render_mode=None):
+    def __init__(self, environment_params, simulation_params, agent_params, nomachines, render_mode=None):
 
         self.simulator = Simulator(simulation_params)
         print("[SUCCESS] Environment initiated!")
@@ -37,35 +37,54 @@ class TrafficEnvironment(ParallelEnv):
 
         self.agent_params = agent_params
         self.simulation_params = simulation_params
+        self.nomachines = nomachines
+        self.render_mode = render_mode
+        self.humans_learning = True
 
-        ## Create the agents
-        ## Machine agents
-        self.possible_agents = [str(i) for i in range(1, 2)]
-        self.n_agents = len(self.possible_agents)
-        #self.possible_agents = [str(i) for i in range(0, agent_params[kc.NUM_AGENTS])]
+        if nomachines == False:
+
+            ## Create the agents
+            ## Machine agents
+            self.possible_agents = [str(i) for i in range(1, 2)]
+            self.n_agents = len(self.possible_agents)
+            #self.possible_agents = [str(i) for i in range(0, agent_params[kc.NUM_AGENTS])]
+        else:
+            self.possible_agents = []
+            self.n_agents = 0
+            print("[INFO] There are no machines in this environment!")
 
         self.agents = self.possible_agents
 
         ## Human agents
         self.human_agents = create_agent_objects(agent_params, self.calculate_free_flow_times())
 
+        self.initializeTheAgents(None)
+
+        
+        
+
+    def initializeTheAgents(self, random_human):
         # Note: observations must be the same type as the weights of the NN, float32
         # The observation space represents the count of agents choosing each path with the same origin/destination pair as the current agent.
         self.observation_spaces = {
             agent: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=np.float32) for agent in self.possible_agents 
         }
 
-        self.num_origins = len(agent_params[kc.DESTINATIONS])
-        self.num_destinations = len(agent_params[kc.DESTINATIONS])
-        self.num_paths = simulation_params[kc.NUMBER_OF_PATHS]
+        print("[INFO] Machine's observation space is:", self.observation_spaces, "\n\n")
+
+        self.num_origins = len(self.agent_params[kc.DESTINATIONS])
+        self.num_destinations = len(self.agent_params[kc.DESTINATIONS])
+        self.num_paths = self.simulation_params[kc.NUMBER_OF_PATHS]
 
         """self.state_spaces = {
             Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(self.num_origins, self.num_destinations, self.num_paths), dtype=np.float32) 
         }"""
         
         self.action_spaces = {
-            agent: gym.spaces.Discrete(simulation_params[kc.NUMBER_OF_PATHS]) for agent in self.possible_agents
+            agent: gym.spaces.Discrete(self.simulation_params[kc.NUMBER_OF_PATHS]) for agent in self.possible_agents
         }
+
+        print("[INFO] Machine's action space is:", self.action_spaces, "\n\n")
 
         ## Save rewards and actions of each agent for the plots
         self.reward_table = {
@@ -87,18 +106,26 @@ class TrafficEnvironment(ParallelEnv):
         ### Create start_time table
         step_size = 6
         
-        self.start_times = [i * step_size for i in range(len(self.possible_agents))]
-        self.origin = [random.randrange(self.num_origins) for i in range(len(self.possible_agents))]
-        self.destination = [random.randrange(self.num_destinations) for i in range(len(self.possible_agents))]
+        #self.start_times = [i * step_size for i in range(len(self.possible_agents))]
+        self.start_times = [random_human.start_time for i in range(len(self.possible_agents))]
+        self.origin = [random_human.origin for i in range(len(self.possible_agents))]
+        self.destination = [random_human.destination for i in range(len(self.possible_agents))]
+        """self.origin = [random.randrange(self.num_origins) for i in range(len(self.possible_agents))]
+        self.destination = [random.randrange(self.num_destinations) for i in range(len(self.possible_agents))]"""
 
-        self.render_mode = render_mode
+        for agent in self.possible_agents:
+            print("Agent with id", agent, "has origin", self.origin[int(agent) - 1], "and destination", self.destination[int(agent) - 1], "and start time", self.start_times[int(agent) - 1])
+        
         self.min_reward = - math.inf
+
+        ## Divide all travel times with this value -> Normalization
         self.overall_min_travel_time = self.min_travel_time()
+
+        print("[INFO] Minimum travel time is: ", self.overall_min_travel_time)
 
     def state(self):
         matrix_shape = (self.num_origins, self.num_destinations, self.num_paths)
         agent_counts = np.zeros(matrix_shape, dtype=int)
-        print("matrix shape is: ", matrix_shape, "\n\n")
 
         # Iterate over agents and observations
         for agent in self.human_agents:
@@ -109,7 +136,7 @@ class TrafficEnvironment(ParallelEnv):
             agent_counts[agent.origin][agent.destination][action] += 1
 
         # Print the resulting matrix
-        print("state was used: \n", agent_counts)
+        print("[INFO] state was used: \n", agent_counts)
 
         return agent_counts
 
@@ -130,7 +157,7 @@ class TrafficEnvironment(ParallelEnv):
 
     def step(self, machine_joint_action):
 
-        if not machine_joint_action:
+        if not machine_joint_action and not self.human_agents:
             self.possible_agents = []
             print("[INFO] No more agents to simulate!")
             return {}, {}, {}, {}, {}
@@ -145,15 +172,16 @@ class TrafficEnvironment(ParallelEnv):
         self.human_learning(sumo_df, human_joint_action)
 
         ## Return observations
-        observations = self.return_observation()
-        
-        ## Machine learning
-        rewards, terminated, truncated, info = self.machine_learning(sumo_df, machine_joint_action, state_table)
+        if self.nomachines == False:
+            observations = self.return_observation()
 
-        print("Observations are: ", observations, "\n\n")
+            ## Machine learning
+            rewards, terminated, truncated, info = self.machine_learning(sumo_df, machine_joint_action, state_table)
 
+            return observations, rewards, terminated, truncated, info
 
-        return observations, rewards, terminated, truncated, info
+        else:
+            observations = {}        
 
 
     def min_travel_time(self):
@@ -161,10 +189,8 @@ class TrafficEnvironment(ParallelEnv):
         ## Find the minimum free flow travel time from all the possible agents
         overall_min_travel_time = math.inf
 
-        for i in range(len(self.origin)):
-            print(f"\nAgent {i} has origin {self.origin[i]} and destination {self.destination[i]}.\n\n")
-
-            travel_times = self.free_flows_dict[(self.origin[i], self.destination[i])]
+        for agent in self.human_agents:
+            travel_times = self.free_flows_dict[(agent.origin, agent.destination)]
             current_min_travel_time = min(travel_times)
 
             if (current_min_travel_time < overall_min_travel_time):
@@ -250,6 +276,7 @@ class TrafficEnvironment(ParallelEnv):
     
     
     def machine_learning(self, sumo_df, machine_joint_action, state_table):
+        print("[INFO] Machines are about to learn!")
 
         sumo_df['id'] = sumo_df['id'].astype(str)
         sumo_df_machines = sumo_df.head(self.agent_params[kc.NUM_AGENTS])
@@ -303,13 +330,13 @@ class TrafficEnvironment(ParallelEnv):
 
         # Create the DataFrame
         joint_action_df = pd.DataFrame(data)
-        joint_action_df['id'] = joint_action_df['id'].astype(int)  
+        joint_action_df = joint_action_df.astype(int)
+
 
         ## Combine human agents with machine agents
         joint_action_df = pd.concat([joint_action_df, human_joint_action], ignore_index=True)  
 
         ## Create a dataframe that will contain the state table
-
         # Group by 'origin', 'destination', and 'action', and count the occurrences
         action_counts = joint_action_df.groupby(['origin', 'destination', 'action']).size().reset_index(name='count')
 
@@ -326,10 +353,23 @@ class TrafficEnvironment(ParallelEnv):
 
         return joint_action_df, human_joint_action, state_table
     
+    def mutation(self):
+        print("[INFO] Mutation is about to happen!\n")
+
+        print("[INFO] There were", len(self.human_agents), "human agents.\n")
+        random_human = random.choice(self.human_agents)
+        self.human_agents.remove(random_human)
+        print("[INFO] Now there are", len(self.human_agents), "human agents.\n")
+
+        self.possible_agents = [str(i) for i in range(1, 2)]
+        self.n_agents = len(self.possible_agents)
+        self.nomachines = False
+        self.humans_learning = False
+
+        self.initializeTheAgents(random_human)
     
  
     def human_learning(self, sumo_df, human_joint_action):
-        print("[INFO] Humans are about to learn!")
 
         ## Separate the human agents from the machine agents
         split_value = self.agent_params[kc.NUM_AGENTS]
@@ -343,22 +383,30 @@ class TrafficEnvironment(ParallelEnv):
 
         ## Human agents
         for agent in self.human_agents:
-
+            
             action = human_joint_action.loc[human_joint_action[kc.AGENT_ID] == agent.id, kc.ACTION].item()
             reward = -1 * human_df.loc[human_df[kc.AGENT_ID] == agent.id, "travel_time"].item() / self.overall_min_travel_time
 
             self.action_table_humans[agent.id].append(action)
             self.reward_table_humans[agent.id].append(reward)
 
-            observation = 0
-            agent.learn(action, reward, observation)    
+            if self.human_learning == True:
+                print("[INFO] Humans are about to learn!")
+                observation = 0
+                agent.learn(action, reward, observation)    
 
 
     def plot_rewards(self):
         sns.set_style("whitegrid")
 
         ## Choose 1 random agent and plot its rewards
-        random_agents = random.sample(self.possible_agents, 1)
+        if(self.possible_agents != []):
+            random_agents = random.sample(self.possible_agents, 1)
+        else:
+            random_human_agent = random.choice(self.human_agents)
+            random_agents = random_human_agent.id
+            random_agents = [random_agents]
+
         plt.figure(figsize=(20, 12)) 
 
         ## Save the plot in the results folder
@@ -371,7 +419,8 @@ class TrafficEnvironment(ParallelEnv):
 
         # Iterate over the selected agents and plot their rewards
         for agent_index in random_agents:
-            plt.plot(self.reward_table[agent_index], linestyle='-', label=f'Machine Agent {agent_index}')
+            if(self.possible_agents!= []):
+                plt.plot(self.reward_table[agent_index], linestyle='-', label=f'Machine Agent {agent_index}')
             plt.plot(self.reward_table_humans[int(agent_index)], linestyle='-', label=f'Human Agent {agent_index}')
 
         plt.xlabel('Episode', fontsize=12) 
