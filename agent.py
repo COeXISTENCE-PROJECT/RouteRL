@@ -40,6 +40,11 @@ class HumanAgent(Agent):
 
         self.kind = kc.TYPE_HUMAN
         self.mutate_to = mutate_to
+        self.utility = None
+        self.type = params[kc.LEARNING_TYPE]
+        self.alpha_nulla = params[kc.ALPHA_NULLA]
+        self.alpha_sigma = params[kc.ALPHA_SIGMA]
+        self.remember = params[kc.REMEMBER]
 
         beta_randomness = params[kc.BETA_RANDOMNESS]
         self.beta = random.uniform(params[kc.BETA] - beta_randomness, params[kc.BETA] + beta_randomness)
@@ -53,13 +58,29 @@ class HumanAgent(Agent):
         the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
         """
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
+        self.utility = utilities
         prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
         action = np.random.choice(list(range(len(self.cost))), p=prob_dist) 
-        return action        
+        return action       
 
 
     def learn(self, action, reward, observation):
-        self.cost[action]=(1-self.alpha) * self.cost[action] + self.alpha * reward
+        if self.type == 'culo':
+            alpha_nulla = 1
+            alpha_sigma = self.alpha_sigma
+        elif self.type == 'markow':
+            alpha_nulla = self.alpha_nulla
+            alpha_sigma = 1 - alpha_nulla
+        elif self.type == 'weight':
+            alpha_nulla = 0
+            alpha_sigma = 0
+            for i in range(1,self.remember+1):
+                    a = 1/i
+                    alpha_sigma += a * self.alpha_sigma
+        else:
+            print('Correct model definition missing')
+        self.cost[action] = alpha_nulla * self.cost[action] + alpha_sigma * reward
+        #self.cost[action]=(1-self.alpha) * self.cost[action] + self.alpha * reward
 
 
     def calculate_prob(self, utilities, n):

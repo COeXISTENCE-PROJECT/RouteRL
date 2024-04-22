@@ -62,6 +62,10 @@ class Keychain:
     ALPHA = "alpha"
     BETA = "beta"
     BETA_RANDOMNESS = "beta_randomness"
+    REMEMBER = 'remember'
+    ALPHA_NULLA = 'alpha_nulla'
+    ALPHA_SIGMA = 'alpha_sigma'
+    LEARNING_TYPE = 'learning_type'
 
     # Training
     NUM_EPISODES = "num_episodes"
@@ -111,6 +115,7 @@ class Keychain:
     AGENT_START_TIME = "start_time"
     TO_MUTATE = "to_mutate"
     ACTION = "action"
+    Utility = 'utility'
     SUMO_ACTION = "sumo_action"
     REWARD = "reward"
     COST = "cost"
