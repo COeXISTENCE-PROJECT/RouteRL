@@ -18,6 +18,10 @@ import numpy as np
 from keychain import Keychain as kc
 from services.simulator import Simulator
 from services import SumoController
+import logging
+
+# Configure logging to show messages of all levels
+logging.basicConfig(level=logging.DEBUG)
 
 
 ## link https://pettingzoo.farama.org/tutorials/custom_environment/1-project-structure/
@@ -32,10 +36,10 @@ class TrafficEnvironment(ParallelEnv):
 
         self.simulation_params = simulation_params
         self.simulator = Simulator(simulation_params)
-        print("[SUCCESS] Environment initiated!")
+        logging.info("Environment initiated!")
 
         self.free_flows_dict = self.calculate_free_flow_times()
-        print("\n[SUCCESS] Free flow times calculated!")
+        logging.info("Free flow times calculated!")
 
         self.agent_params = agent_params
         self.simulation_params = simulation_params
@@ -53,7 +57,7 @@ class TrafficEnvironment(ParallelEnv):
         else:
             self.possible_agents = []
             self.n_agents = 0
-            print("[INFO] There are no machines in this environment!")
+            logging.info("There are no machines in this environment!")
 
         self.agents = self.possible_agents
 
@@ -64,7 +68,7 @@ class TrafficEnvironment(ParallelEnv):
 
 
     def say_hi(self):
-        print("Hi from TrafficEnvironment!")
+        logging.info("Hi from TrafficEnvironment!")
 
     def start(self):
         self.simulator.start_sumo()
@@ -77,12 +81,10 @@ class TrafficEnvironment(ParallelEnv):
         try:
             self.simulator.stop_sumo()
         except:
-            print("[INFO] Sumo was not running!")
+            logging.error("Sumo was not running!")
         self.simulator.sumo_controller = SumoController(self.simulation_params)
-        print(f"New sumo label: {self.simulator.sumo_controller.label}")
+        logging.info(f"New sumo label: {self.simulator.sumo_controller.label}")
 
-        
-        
 
     def initializeTheAgents(self, random_human):
         # Note: observations must be the same type as the weights of the NN, float32
@@ -91,21 +93,17 @@ class TrafficEnvironment(ParallelEnv):
             agent: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=np.float32) for agent in self.possible_agents 
         }
 
-        print("[INFO] Machine's observation space is:", self.observation_spaces, "\n\n")
+        logging.info("Machine's observation space is: %s ", self.observation_spaces)
 
         self.num_origins = len(self.agent_params[kc.DESTINATIONS])
         self.num_destinations = len(self.agent_params[kc.DESTINATIONS])
         self.num_paths = self.simulation_params[kc.NUMBER_OF_PATHS]
 
-        """self.state_spaces = {
-            Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(self.num_origins, self.num_destinations, self.num_paths), dtype=np.float32) 
-        }"""
-        
         self.action_spaces = {
             agent: gym.spaces.Discrete(self.simulation_params[kc.NUMBER_OF_PATHS]) for agent in self.possible_agents
         }
 
-        print("[INFO] Machine's action space is:", self.action_spaces, "\n\n")
+        logging.info("Machine's action space is: %s", self.action_spaces)
 
         ## Save rewards and actions of each agent for the plots
         self.reward_table = {
@@ -135,14 +133,18 @@ class TrafficEnvironment(ParallelEnv):
         self.destination = [random.randrange(self.num_destinations) for i in range(len(self.possible_agents))]"""
 
         for agent in self.possible_agents:
-            print("Agent with id", agent, "has origin", self.origin[int(agent) - 1], "and destination", self.destination[int(agent) - 1], "and start time", self.start_times[int(agent) - 1])
-        
+            logging.info("Agent with id %s has origin %s and destination %s and start time %s",
+             agent, self.origin[int(agent) - 1], self.destination[int(agent) - 1],
+             self.start_times[int(agent) - 1])
+
+
+
         self.min_reward = - math.inf
 
         ## Divide all travel times with this value -> Normalization
         self.overall_min_travel_time = self.min_travel_time()
 
-        print("[INFO] Minimum travel time is: ", self.overall_min_travel_time)
+        logging.info("Minimum travel time is: %s", self.overall_min_travel_time)
 
 
     def state(self):
@@ -157,14 +159,11 @@ class TrafficEnvironment(ParallelEnv):
             # Increment the count for the corresponding path in the matrix
             agent_counts[agent.origin][agent.destination][action] += 1
 
-        # Print the resulting matrix
-        #print("[INFO] state was used: \n", agent_counts)
-
         return agent_counts
 
 
     def reset(self, seed=None, options=None):
-        print("[INFO] RESET")
+        logging.info("RESET")
         self.remake_sumo_controller()
         self.simulator.start_sumo()
         self.agents = copy(self.possible_agents)
@@ -180,12 +179,12 @@ class TrafficEnvironment(ParallelEnv):
 
 
     def step(self, machine_joint_action):
-        print("[INFO] STEP")
+        logging.info("STEP")
         self.remake_sumo_controller()
         self.simulator.start_sumo()
         if not machine_joint_action and not self.human_agents:
             self.possible_agents = []
-            print("[INFO] No more agents to simulate!")
+            logging.info("No more agents to simulate!")
             return {}, {}, {}, {}, {}
                 
         ## Preprocess the human and machine joint actions
@@ -232,7 +231,7 @@ class TrafficEnvironment(ParallelEnv):
     
 
     def close(self):
-        print("[INFO] CLOSE")
+        logging.info("CLOSE")
         self.simulator.reset_sumo()
         self.plot_rewards()
         #self.plot_actions()
@@ -281,7 +280,7 @@ class TrafficEnvironment(ParallelEnv):
 
     def calculate_free_flow_times(self):
         free_flow_cost = self.simulator.calculate_free_flow_times()
-        print('[INFO] Free-flow times: ', free_flow_cost)
+        logging.info('Free-flow times: %s', free_flow_cost)
 
         return free_flow_cost
     
@@ -304,7 +303,7 @@ class TrafficEnvironment(ParallelEnv):
     
     
     def machine_learning(self, sumo_df, machine_joint_action, state_table):
-        print("[INFO] Machines are about to learn!")
+        logging.info("Machines are about to learn!")
 
         sumo_df['id'] = sumo_df['id'].astype(str)
         sumo_df_machines = sumo_df.head(self.agent_params[kc.NUM_AGENTS])
@@ -382,12 +381,12 @@ class TrafficEnvironment(ParallelEnv):
         return joint_action_df, human_joint_action, state_table
     
     def mutation(self):
-        print("[INFO] Mutation is about to happen!\n")
+        logging.info("Mutation is about to happen!\n")
 
-        print("[INFO] There were", len(self.human_agents), "human agents.\n")
+        logging.info("There were %s human agents.\n", len(self.human_agents))
         random_human = random.choice(self.human_agents)
         self.human_agents.remove(random_human)
-        print("[INFO] Now there are", len(self.human_agents), "human agents.\n")
+        logging.info("Now there are %s human agents.\n", len(self.human_agents))
 
         self.possible_agents = [str(i) for i in range(1, 2)]
         self.n_agents = len(self.possible_agents)
@@ -419,7 +418,7 @@ class TrafficEnvironment(ParallelEnv):
             self.reward_table_humans[agent.id].append(reward)
 
             if self.human_learning == True:
-                print("[INFO] Humans are about to learn!")
+                logging.info("Humans are about to learn!")
                 observation = 0
                 agent.learn(action, reward, observation)    
 

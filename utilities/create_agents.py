@@ -6,7 +6,10 @@ from prettytable import PrettyTable
 from agent import MachineAgent, HumanAgent
 from keychain import Keychain as kc
 from utilities import make_dir
+import logging
 
+# Configure logging to show messages of all levels
+logging.basicConfig(level=logging.DEBUG)
 
 def create_agent_objects(params, free_flow_times):
 
@@ -48,7 +51,7 @@ def create_agent_objects(params, free_flow_times):
         """else:
             print('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_KIND])"""
 
-    print(f'[SUCCESS] Created agent objects (%d)' % (len(agents)))
+    logging.info(f'[SUCCESS] Created agent objects (%d)' % (len(agents)))
     #print_agents(agents, agent_attributes, print_every=50)
     return agents
 
@@ -77,7 +80,7 @@ def generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulatio
 
     save_to = make_dir(kc.RECORDS_FOLDER, kc.AGENTS_DATA_FILE_NAME)
     agents_df.to_csv(save_to, index = False)
-    print('[SUCCESS] Generated agent data and saved to: ' + save_to)
+    #print('[SUCCESS] Generated agent data and saved to: ' + save_to)
     return agents_df
 
 

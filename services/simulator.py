@@ -6,12 +6,15 @@ import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 
 from keychain import Keychain as kc
+import logging
 from services import SumoController
 from utilities import list_to_string
 from utilities import make_dir
 from utilities import path_generator
 from utilities import remove_double_quotes
 
+# Configure logging to show messages of all levels
+logging.basicConfig(level=logging.DEBUG)
 
 class Simulator:
 
@@ -44,7 +47,7 @@ class Simulator:
 
         self.last_simulation_duration = 0
 
-        print("[SUCCESS] Simulator is ready to simulate!") # RK: replace with logger.log()
+        logging.info("Simulator is ready to simulate!") # RK: replace with logger.log()
 
 
     def start_sumo(self):
@@ -69,7 +72,7 @@ class Simulator:
                 paths_df.loc[len(paths_df.index)] = [od[0], od[1], list_to_string(path, "-> ")]
         save_to = make_dir(kc.RECORDS_FOLDER, kc.PATHS_CSV_FILE_NAME)
         paths_df.to_csv(save_to, index=True)
-        print("[SUCCESS] Generated & saved %d paths to: %s" % (len(paths_df), save_to))
+        #logging.info("Generated & saved %d paths to: %s" % (len(paths_df), save_to))
         
         # XML file, for sumo
         with open(self.routes_xml_save_path, "w") as rou:
@@ -88,7 +91,7 @@ class Simulator:
             for dest_id, dest_sim_code in destinations.items():
                 route = self.find_best_paths(origin_sim_code, dest_sim_code, 'time') # here the 'time' shall be generic and variable from kc (default 'time' to be overriden)
                 routes[(origin_id, dest_id)] = route
-        print(f"[SUCCESS] Generated {len(routes)} routes")
+        logging.info(f"[SUCCESS] Generated {len(routes)} routes")
         return routes
     
 
