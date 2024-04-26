@@ -217,14 +217,17 @@ class Simulator:
 
         # Simulation loop
         while should_continue:
+            traci.switch(self.sumo_controller.label)
             timestep = int(traci.simulation.getTime()) # RK: do we need this? or maybe add simulationStep everytime>
 
             # Add vehicles to the simulation
             while agents_stack[-1][kc.AGENT_START_TIME] == timestep:
                 row = agents_stack.pop()
+                traci.switch(self.sumo_controller.label)
                 traci.vehicle.add(row[kc.AGENT_ID], row[kc.SUMO_ACTION])
 
             # Collect vehicles that have reached their destination
+            traci.switch(self.sumo_controller.label)
             arrived_now = traci.simulation.getArrivedIDList()   # returns a list of arrived vehicle ids
             arrived_now = [int(value) for value in arrived_now]   # Convert values to int
 
@@ -235,6 +238,7 @@ class Simulator:
             # Did all vehicles arrive?
             should_continue = len(arrivals[kc.AGENT_ID]) < len(joint_action)
             # Advance the simulation
+            traci.switch(self.sumo_controller.label)
             traci.simulationStep()
         
         # Needed for plots

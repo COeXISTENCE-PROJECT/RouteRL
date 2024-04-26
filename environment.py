@@ -17,6 +17,7 @@ import numpy as np
 
 from keychain import Keychain as kc
 from services.simulator import Simulator
+from services import SumoController
 
 
 ## link https://pettingzoo.farama.org/tutorials/custom_environment/1-project-structure/
@@ -29,6 +30,7 @@ class TrafficEnvironment(ParallelEnv):
 
     def __init__(self, environment_params, simulation_params, agent_params, nomachines, render_mode=None):
 
+        self.simulation_params = simulation_params
         self.simulator = Simulator(simulation_params)
         print("[SUCCESS] Environment initiated!")
 
@@ -59,6 +61,25 @@ class TrafficEnvironment(ParallelEnv):
         self.human_agents = create_agent_objects(agent_params, self.calculate_free_flow_times())
 
         self.initializeTheAgents(None)
+
+
+    def say_hi(self):
+        print("Hi from TrafficEnvironment!")
+
+    def start(self):
+        self.simulator.start_sumo()
+
+    def stop(self):
+        self.simulator.stop_sumo()
+
+    
+    def remake_sumo_controller(self):
+        try:
+            self.simulator.stop_sumo()
+        except:
+            print("[INFO] Sumo was not running!")
+        self.simulator.sumo_controller = SumoController(self.simulation_params)
+        print(f"New sumo label: {self.simulator.sumo_controller.label}")
 
         
         
@@ -123,6 +144,7 @@ class TrafficEnvironment(ParallelEnv):
 
         print("[INFO] Minimum travel time is: ", self.overall_min_travel_time)
 
+
     def state(self):
         matrix_shape = (self.num_origins, self.num_destinations, self.num_paths)
         agent_counts = np.zeros(matrix_shape, dtype=int)
@@ -136,13 +158,15 @@ class TrafficEnvironment(ParallelEnv):
             agent_counts[agent.origin][agent.destination][action] += 1
 
         # Print the resulting matrix
-        print("[INFO] state was used: \n", agent_counts)
+        #print("[INFO] state was used: \n", agent_counts)
 
         return agent_counts
 
 
     def reset(self, seed=None, options=None):
-        self.simulator.reset_sumo()
+        print("[INFO] RESET")
+        self.remake_sumo_controller()
+        self.simulator.start_sumo()
         self.agents = copy(self.possible_agents)
 
         observations = {
@@ -156,7 +180,9 @@ class TrafficEnvironment(ParallelEnv):
 
 
     def step(self, machine_joint_action):
-
+        print("[INFO] STEP")
+        self.remake_sumo_controller()
+        self.simulator.start_sumo()
         if not machine_joint_action and not self.human_agents:
             self.possible_agents = []
             print("[INFO] No more agents to simulate!")
@@ -206,6 +232,8 @@ class TrafficEnvironment(ParallelEnv):
     
 
     def close(self):
+        print("[INFO] CLOSE")
+        self.simulator.reset_sumo()
         self.plot_rewards()
         #self.plot_actions()
 
