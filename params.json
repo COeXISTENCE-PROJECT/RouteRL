@@ -46,7 +46,8 @@
             "alpha" : 0.2,
             "beta" : -0.5,
             "beta_randomness" : 0.3,
-            "learning_type" : "culo",
+            "learning_type" : "weight",
+            "random_type" : "gumbel",
             "alpha_nulla" : 0.2,
             "alpha_sigma" : 0.2,
             "remember" : 5

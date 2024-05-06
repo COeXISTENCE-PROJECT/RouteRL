@@ -41,6 +41,7 @@ class HumanAgent(Agent):
         self.kind = kc.TYPE_HUMAN
         self.mutate_to = mutate_to
         self.utility = None
+        self.rand = params[kc.RANDOM_TYPE]
         self.type = params[kc.LEARNING_TYPE]
         self.alpha_nulla = params[kc.ALPHA_NULLA]
         self.alpha_sigma = params[kc.ALPHA_SIGMA]
@@ -51,16 +52,32 @@ class HumanAgent(Agent):
         self.alpha = params[kc.ALPHA]
 
         self.cost = np.array(initial_knowledge, dtype=float)
+        self.days = []
+        for i in range(3):
+            self.days.append([])
+
+        def dayer():
+            for i in range(len(self.cost)):
+                for r in range(self.remember):
+                    self.days[i].append(self.cost[i])
+        dayer()
 
 
     def act(self, state):  
         """ 
         the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
         """
-        utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
+        if self.rand == 'gumbel':
+            utilities = list(map(lambda x: x + np.random.gumbel(), self.cost))#plus random value and based on the noise we use argmax no exp
+        elif self.rand == 'normal':
+            utilities = list(map(lambda x: x + np.random.normal(), self.cost))
+        else:
+            print('default: Gumbel distribution')
+            utilities = list(map(lambda x: x + np.random.gumbel(), self.cost))
         self.utility = utilities
-        prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
-        action = np.random.choice(list(range(len(self.cost))), p=prob_dist) 
+        #prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
+        #action = np.random.choice(list(range(len(self.cost))), p=prob_dist)
+        action =  utilities.index(min(utilities))
         return action       
 
 
@@ -73,12 +90,18 @@ class HumanAgent(Agent):
             alpha_sigma = 1 - alpha_nulla
         elif self.type == 'weight':
             alpha_nulla = 0
-            alpha_sigma = 0
-            for i in range(1,self.remember+1):
-                    a = 1/i
-                    alpha_sigma += a * self.alpha_sigma
+            alpha_sigma = self.alpha_sigma
+            if self.cost[action] != reward:
+                del(self.days[action][len(self.days[action])-1])
+                self.days[action].insert(0,self.cost[action])
+            for i in range(self.remember):
+                    a = 1/i+1
+                    reward = 0
+                    reward += a * self.days[action][i]
         else:
-            print('Correct model definition missing')
+            print('Correct model definition missing - default markow')
+            alpha_nulla = self.alpha_nulla
+            alpha_sigma = 1 - alpha_nulla
         self.cost[action] = alpha_nulla * self.cost[action] + alpha_sigma * reward
         #self.cost[action]=(1-self.alpha) * self.cost[action] + self.alpha * reward
 

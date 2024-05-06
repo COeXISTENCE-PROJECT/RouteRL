@@ -66,6 +66,7 @@ class Keychain:
     ALPHA_NULLA = 'alpha_nulla'
     ALPHA_SIGMA = 'alpha_sigma'
     LEARNING_TYPE = 'learning_type'
+    RANDOM_TYPE = 'random_type'
 
     # Training
     NUM_EPISODES = "num_episodes"
