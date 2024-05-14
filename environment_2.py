@@ -86,7 +86,7 @@ class TrafficEnvironment(ParallelEnv):
         logging.info(f"New sumo label: {self.simulator.sumo_controller.label}")
 
 
-    def initializeTheAgents(self, random_human):
+    def initializeTheAgents(self, random_humans_deleted):
         # Note: observations must be the same type as the weights of the NN, float32
         # The observation space represents the count of agents choosing each path with the same origin/destination pair as the current agent.
         self.observation_spaces = {
@@ -126,11 +126,14 @@ class TrafficEnvironment(ParallelEnv):
         step_size = 6
         
         #self.start_times = [i * step_size for i in range(len(self.possible_agents))]
-        self.start_times = [random_human.start_time for i in range(len(self.possible_agents))]
-        self.origin = [random_human.origin for i in range(len(self.possible_agents))]
-        self.destination = [random_human.destination for i in range(len(self.possible_agents))]
-        """self.origin = [random.randrange(self.num_origins) for i in range(len(self.possible_agents))]
-        self.destination = [random.randrange(self.num_destinations) for i in range(len(self.possible_agents))]"""
+        self.start_times = []
+        self.origin = []
+        self.destination = []
+
+        for i in range(len(self.possible_agents)):
+            self.start_times.append(random_humans_deleted[i].start_time)
+            self.origin.append(random_humans_deleted[i].origin)
+            self.destination.append(random_humans_deleted[i].destination)
 
         for agent in self.possible_agents:
             logging.info("Agent with id %s has origin %s and destination %s and start time %s",
@@ -175,8 +178,7 @@ class TrafficEnvironment(ParallelEnv):
         infos = {a: {}  for a in self.possible_agents}
 
         return observations, infos
-
-
+    
 
     def step(self, machine_joint_action):
         logging.info("STEP")
@@ -199,6 +201,7 @@ class TrafficEnvironment(ParallelEnv):
         ## Return observations
         if self.nomachines == False:
             observations = self.return_observation()
+            print("after observations\n\n", observations)
 
             ## Machine learning
             rewards, terminated, truncated, info = self.machine_learning(sumo_df, machine_joint_action, state_table)
@@ -224,8 +227,6 @@ class TrafficEnvironment(ParallelEnv):
         return overall_min_travel_time
         
 
-
-
     def observe(self, agent):
         return Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=int)
     
@@ -233,7 +234,7 @@ class TrafficEnvironment(ParallelEnv):
     def close(self):
         logging.info("CLOSE")
         self.simulator.reset_sumo()
-        self.plot_rewards()
+        #self.plot_rewards()
         #self.plot_actions()
 
         ## Save the minimum rewards observed in every environment
@@ -262,18 +263,33 @@ class TrafficEnvironment(ParallelEnv):
     def return_observation(self):
         ### Works for one agent - if more agents needs adjustment
 
-        matrix_shape = (self.num_paths)
-        agent_counts = np.zeros(matrix_shape, dtype=int)
-        # Iterate over agents and observations
-        for agent in self.human_agents:
-
-            if(agent.origin == self.origin[0] and agent.destination == self.destination[0]):
-                action = agent.act(0)
-                agent_counts[action] += 1
-
+        
         observations = {
-            agents: agent_counts for agents in self.possible_agents
+            agents: [] for agents in self.possible_agents
         }
+        observation_matrix = (self.num_paths)
+
+        print("self.possible_agents", self.possible_agents)
+        for possible_agent in self.possible_agents:
+            
+            num_of_agents = np.zeros(observation_matrix, dtype=int)
+
+            print("possible agent is: ", possible_agent)
+
+            # Iterate over agents and observations
+            for agent in self.human_agents:
+
+                print("self.origin is: ", self.origin)
+                print("self.destination is: ", self.destination)
+
+                if(agent.origin == self.origin[int(possible_agent) - 1] and agent.destination == self.destination[int(possible_agent) - 1]):
+                    print("possible agent :", possible_agent)
+                    print("origin and destination of the machine agent is: ", self.origin[int(possible_agent) - 1], self.destination[int(possible_agent) - 1])
+                    action = agent.act(0)
+                    num_of_agents[action] += 1
+
+            observations[possible_agent] = num_of_agents
+
 
         return observations
         
@@ -306,17 +322,36 @@ class TrafficEnvironment(ParallelEnv):
         logging.info("Machines are about to learn!")
 
         sumo_df['id'] = sumo_df['id'].astype(str)
-        sumo_df_machines = sumo_df.head(self.agent_params[kc.NUM_AGENTS])
-        state_table = state_table.head(self.agent_params[kc.NUM_AGENTS])
+        sumo_df_machines = sumo_df.head(len(self.possible_agents)) # take only the machine agents
+        state_table = state_table.head(len(self.possible_agents))
         
         ## Individual reward to each machine agent
         rewards = {}
 
         ## Joint reward for all machine agents
+        print("sumo_df_machines is: \n", sumo_df_machines, "\n\n")
         joint_reward = self.calculate_rewards(sumo_df_machines)
 
-        for agent_name in self.possible_agents:
-            rewards[agent_name] = joint_reward
+        for index, row in sumo_df_machines.iterrows():
+            travel_time = row['travel_time']
+            id = row['id']
+            rewards[id] = -1 * travel_time #/ self.overall_min_travel_time
+
+
+        """for agent_name in self.possible_agents:
+            print("agent_name is: " , agent_name, type(agent_name))
+            print("sumo_df_machines is: ", sumo_df_machines['id'].iloc[agent_name], type(sumo_df_machines['id'].to_string()), "\n\n")
+
+            # Find the corresponding travel time for the agent
+            travel_time = sumo_df_machines.loc[sumo_df_machines['id'].to_string() == agent_name, 'travel_time'].values[0]
+            
+            # Assign the travel time to the rewards dictionary
+            rewards[agent_name] = travel_time"""
+
+        """for agent_name in self.possible_agents:
+            rewards[agent_name] = joint_reward"""
+
+        print("reward is: \n\n", rewards)
 
         ## Saves the actions and rewards of each agent for this episode
         for id, action in machine_joint_action.items():
@@ -380,20 +415,26 @@ class TrafficEnvironment(ParallelEnv):
 
         return joint_action_df, human_joint_action, state_table
     
-    def mutation(self):
+    def mutation(self, number_of_machines):
         logging.info("Mutation is about to happen!\n")
 
         logging.info("There were %s human agents.\n", len(self.human_agents))
-        random_human = random.choice(self.human_agents)
-        self.human_agents.remove(random_human)
-        logging.info("Now there are %s human agents.\n", len(self.human_agents))
+        random_humans_deleted = []
 
-        self.possible_agents = [str(i) for i in range(1, 2)]
+        for i in range(0, number_of_machines):
+            random_human = random.choice(self.human_agents)
+            self.human_agents.remove(random_human)
+            random_humans_deleted.append(random_human)
+        
+        self.possible_agents = [str(i) for i in range(0, number_of_machines)]
+        print("self.possible agents after mutation", self.possible_agents)
         self.n_agents = len(self.possible_agents)
         self.nomachines = False
         self.humans_learning = False
 
-        self.initializeTheAgents(random_human)
+        logging.info("Now there are %s human agents.\n", len(self.human_agents))
+
+        self.initializeTheAgents(random_humans_deleted)
     
  
     def human_learning(self, sumo_df, human_joint_action):
@@ -412,7 +453,7 @@ class TrafficEnvironment(ParallelEnv):
         for agent in self.human_agents:
             
             action = human_joint_action.loc[human_joint_action[kc.AGENT_ID] == agent.id, kc.ACTION].item()
-            reward = -1 * human_df.loc[human_df[kc.AGENT_ID] == agent.id, "travel_time"].item() #/ self.overall_min_travel_time
+            reward = -1 * human_df.loc[human_df[kc.AGENT_ID] == agent.id, "travel_time"].item() / self.overall_min_travel_time
 
             self.action_table_humans[agent.id].append(action)
             self.reward_table_humans[agent.id].append(reward)
@@ -506,8 +547,8 @@ class TrafficEnvironment(ParallelEnv):
 
 
     def calculate_rewards(self, sumo_df):
-        print("sumo_df is: ", sumo_df)
-        average_reward = -1 * sumo_df['travel_time'].mean() #/ self.overall_min_travel_time
+        print("sumo_df is: \n\n", sumo_df)
+        average_reward = -1 * sumo_df['travel_time'].mean() / self.overall_min_travel_time
 
         if average_reward > self.min_reward:
             self.min_reward = average_reward
