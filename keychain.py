@@ -43,7 +43,8 @@ class Keychain:
 
     # Agent generation
     AGENTS_DATA_PATH = "agents_data_path"
-    NUM_AGENTS = "num_agents"
+    NUM_HUMAN_AGENTS = "num_human_agents"
+    NUM_MACHINE_AGENTS = "num_machine_agents"
     RATIO_MUTATING = "ratio_mutating"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
 

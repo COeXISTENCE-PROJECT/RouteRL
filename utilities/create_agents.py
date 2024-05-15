@@ -18,7 +18,7 @@ def create_agent_objects(params, free_flow_times):
     """
 
     # Getting parameters
-    num_agents = params[kc.NUM_AGENTS]
+    num_agents = params[kc.NUM_HUMAN_AGENTS]
     ratio_mutating = params[kc.RATIO_MUTATING]
     simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]
     num_origins = len(params[kc.ORIGINS])

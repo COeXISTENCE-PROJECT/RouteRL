@@ -20,7 +20,8 @@
 
     "agent_generation_parameters" :
     {
-        "num_agents" : 200,
+        "num_human_agents" : 200,
+        "num_machine_agents" : 1,
         "ratio_mutating" : 0.2,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",

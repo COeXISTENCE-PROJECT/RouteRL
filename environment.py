@@ -90,7 +90,7 @@ class TrafficEnvironment(ParallelEnv):
         # Note: observations must be the same type as the weights of the NN, float32
         # The observation space represents the count of agents choosing each path with the same origin/destination pair as the current agent.
         self.observation_spaces = {
-            agent: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=np.float32) for agent in self.possible_agents 
+            agent: Box(low=0, high=self.agent_params[kc.NUM_HUMAN_AGENTS], shape=(3,), dtype=np.float32) for agent in self.possible_agents 
         }
 
         logging.info("Machine's observation space is: %s ", self.observation_spaces)
@@ -196,6 +196,8 @@ class TrafficEnvironment(ParallelEnv):
         ## Human learning
         self.human_learning(sumo_df, human_joint_action)
 
+        print("inside step reward for humans is: ", self.reward_table_humans)
+
         ## Return observations
         if self.nomachines == False:
             observations = self.return_observation()
@@ -224,8 +226,6 @@ class TrafficEnvironment(ParallelEnv):
         return overall_min_travel_time
         
 
-
-
     def observe(self, agent):
         return Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=int)
     
@@ -241,9 +241,12 @@ class TrafficEnvironment(ParallelEnv):
 
         """with open(file_path, 'a') as file:
             file.write(str(self.min_reward) + '\n')"""
+        
+        print(self.reward_table)
+        print(self.reward_table_humans)
 
         ## Empty the reward and action tables
-        self.reward_table = {
+        """self.reward_table = {
             agent:[] for agent in self.possible_agents
         }
 
@@ -257,7 +260,7 @@ class TrafficEnvironment(ParallelEnv):
 
         self.reward_table_humans = {
             agent.id:[] for agent in self.human_agents
-        }
+        }"""
 
     def return_observation(self):
         ### Works for one agent - if more agents needs adjustment
@@ -288,13 +291,13 @@ class TrafficEnvironment(ParallelEnv):
     def human_actions(self):
         ## Human agent's action
         observations = {
-            a: Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=np.float32).sample() for a in self.human_agents
+            a: Box(low=0, high=self.agent_params[kc.NUM_HUMAN_AGENTS], shape=(3,), dtype=np.float32).sample() for a in self.human_agents
         }
 
         human_joint_action = self.get_human_joint_action(self.human_agents, observations)
 
         ## Change the id numbers so they don't collide with machine agents
-        human_joint_action['id'] = human_joint_action['id'] + self.agent_params[kc.NUM_AGENTS] 
+        human_joint_action['id'] = human_joint_action['id'] + self.agent_params[kc.NUM_HUMAN_AGENTS] 
 
         ## Remove the kind column
         human_joint_action.drop(columns=['kind'], inplace=True) 
@@ -306,23 +309,26 @@ class TrafficEnvironment(ParallelEnv):
         logging.info("Machines are about to learn!")
 
         sumo_df['id'] = sumo_df['id'].astype(str)
-        sumo_df_machines = sumo_df.head(self.agent_params[kc.NUM_AGENTS])
-        state_table = state_table.head(self.agent_params[kc.NUM_AGENTS])
+        sumo_df_machines = sumo_df.head(self.agent_params[kc.NUM_MACHINE_AGENTS])
+        state_table = state_table.head(self.agent_params[kc.NUM_MACHINE_AGENTS])
         
         ## Individual reward to each machine agent
         rewards = {}
 
-        ## Joint reward for all machine agents
-        joint_reward = self.calculate_rewards(sumo_df_machines)
+        ## Calculate the rewards for each machine agent
+        for index, row in sumo_df_machines.iterrows():
+            if row['id'] in self.possible_agents:
+                rewards[row['id']] = -1 * row['travel_time'] #/ self.overall_min_travel_time
 
-        for agent_name in self.possible_agents:
-            rewards[agent_name] = joint_reward
+        print("reward is: ", rewards)
+        print("sumo df machines is: ", sumo_df_machines)
+        print("machine joint action is: ", machine_joint_action)
+
 
         ## Saves the actions and rewards of each agent for this episode
         for id, action in machine_joint_action.items():
             self.action_table[id].append(action)
             self.reward_table[id].append(rewards[id])
-
 
         ## Return variables
         terminated = {
@@ -399,7 +405,7 @@ class TrafficEnvironment(ParallelEnv):
     def human_learning(self, sumo_df, human_joint_action):
 
         ## Separate the human agents from the machine agents
-        split_value = self.agent_params[kc.NUM_AGENTS]
+        split_value = self.agent_params[kc.NUM_HUMAN_AGENTS]
 
         ## Keep the human agents
         human_df = sumo_df[sumo_df['id'] >= split_value]
@@ -430,9 +436,10 @@ class TrafficEnvironment(ParallelEnv):
         if(self.possible_agents != []):
             random_agents = random.sample(self.possible_agents, 1)
         else:
-            random_human_agent = random.choice(self.human_agents)
-            random_agents = random_human_agent.id
-            random_agents = [random_agents]
+            while(1):
+                random_human_agent = random.choice(self.human_agents)
+                random_agents = random_human_agent.id
+                random_agents = [random_agents]
 
         plt.figure(figsize=(20, 12)) 
 
@@ -443,7 +450,7 @@ class TrafficEnvironment(ParallelEnv):
 
         filename = f"results/rewards{file_number}.png"
 
-
+        ### Plot an agent that has the same origin-destination pair with the one learning
         # Iterate over the selected agents and plot their rewards
         for agent_index in random_agents:
             if(self.possible_agents!= []):
@@ -452,7 +459,7 @@ class TrafficEnvironment(ParallelEnv):
 
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Reward', fontsize=12) 
-        plt.title(f'Reward Table Over Episodes for {self.agent_params[kc.NUM_AGENTS]} agents', fontsize=14) 
+        plt.title(f'Reward Table Over Episodes for {self.agent_params[kc.NUM_HUMAN_AGENTS]} agents', fontsize=14) 
         plt.grid(True, linestyle='--', alpha=0.7)  
         plt.legend()
         plt.tight_layout() 
@@ -485,7 +492,7 @@ class TrafficEnvironment(ParallelEnv):
 
         plt.xlabel('Episode', fontsize=12) 
         plt.ylabel('Action', fontsize=12) 
-        plt.title(f'Actions Over Episodes for {self.agent_params[kc.NUM_AGENTS]} agents', fontsize=14)  
+        plt.title(f'Actions Over Episodes for {self.agent_params[kc.NUM_HUMAN_AGENTS]} agents', fontsize=14)  
         plt.grid(True, linestyle='--', alpha=0.7)  
         plt.legend() 
         plt.tight_layout() 
@@ -506,7 +513,6 @@ class TrafficEnvironment(ParallelEnv):
 
 
     def calculate_rewards(self, sumo_df):
-        print("sumo_df is: ", sumo_df)
         average_reward = -1 * sumo_df['travel_time'].mean() #/ self.overall_min_travel_time
 
         if average_reward > self.min_reward:
@@ -517,7 +523,7 @@ class TrafficEnvironment(ParallelEnv):
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
-        return Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(self.simulation_params[kc.NUMBER_OF_PATHS],), dtype=np.float32)
+        return Box(low=0, high=self.agent_params[kc.NUM_HUMAN_AGENTS], shape=(self.simulation_params[kc.NUMBER_OF_PATHS],), dtype=np.float32)
 
 
     @functools.lru_cache(maxsize=None)
