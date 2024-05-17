@@ -19,12 +19,9 @@ from keychain import Keychain as kc
 from services.simulator import Simulator
 from services import SumoController
 import logging
-import scienceplots
 
 # Configure logging to show messages of all levels
 logging.basicConfig(level=logging.DEBUG)
-#plt.style.use('science')
-
 
 
 ## link https://pettingzoo.farama.org/tutorials/custom_environment/1-project-structure/
@@ -49,7 +46,6 @@ class TrafficEnvironment(ParallelEnv):
         self.nomachines = nomachines
         self.render_mode = render_mode
         self.humans_learning = True
-        self.human_joint_action = pd.DataFrame()
 
         if nomachines == False:
 
@@ -87,7 +83,7 @@ class TrafficEnvironment(ParallelEnv):
         except:
             logging.error("Sumo was not running!")
         self.simulator.sumo_controller = SumoController(self.simulation_params)
-        #logging.info(f"New sumo label: {self.simulator.sumo_controller.label}")
+        logging.info(f"New sumo label: {self.simulator.sumo_controller.label}")
 
 
     def initializeTheAgents(self, random_human):
@@ -186,12 +182,11 @@ class TrafficEnvironment(ParallelEnv):
         logging.info("STEP")
         self.remake_sumo_controller()
         self.simulator.start_sumo()
-
         if not machine_joint_action and not self.human_agents:
             self.possible_agents = []
             logging.info("No more agents to simulate!")
             return {}, {}, {}, {}, {}
-        
+                
         ## Preprocess the human and machine joint actions
         joint_action_df, human_joint_action, state_table = self.prepare_joint_action(machine_joint_action)
 
@@ -201,18 +196,12 @@ class TrafficEnvironment(ParallelEnv):
         ## Human learning
         self.human_learning(sumo_df, human_joint_action)
 
-        ## Prepare the next action that will be taken by the human agents -> so it can be passed as observation  machine's learning
-        self.human_joint_action = self.human_actions()
-
         ## Return observations
         if self.nomachines == False:
-            
-            ## Return observations
             observations = self.return_observation()
 
             ## Machine learning
             rewards, terminated, truncated, info = self.machine_learning(sumo_df, machine_joint_action, state_table)
-
 
             return observations, rewards, terminated, truncated, info
 
@@ -235,8 +224,10 @@ class TrafficEnvironment(ParallelEnv):
         return overall_min_travel_time
         
 
+
+
     def observe(self, agent):
-        return Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=int)
+        return Box(low=0, high=self.agent_params[kc.NUM_HUMAN_AGENTS], shape=(3,), dtype=int)
     
 
     def close(self):
@@ -250,23 +241,39 @@ class TrafficEnvironment(ParallelEnv):
 
         """with open(file_path, 'a') as file:
             file.write(str(self.min_reward) + '\n')"""
-        
+
+        ## Empty the reward and action tables
+        self.reward_table = {
+            agent:[] for agent in self.possible_agents
+        }
+
+        self.action_table = {
+            agent:[] for agent in self.possible_agents
+        }
+
+        self.action_table_humans = {
+            agent.id:[] for agent in self.human_agents
+        }
+
+        self.reward_table_humans = {
+            agent.id:[] for agent in self.human_agents
+        }
 
     def return_observation(self):
+        ### Works for one agent - if more agents needs adjustment
+
         matrix_shape = (self.num_paths)
         agent_counts = np.zeros(matrix_shape, dtype=int)
+        # Iterate over agents and observations
+        for agent in self.human_agents:
 
-        for index, row in self.human_joint_action.iterrows():
-
-            if(row['origin'] == self.origin[0] and row['destination'] == self.destination[0] and row['start_time'] <= self.start_times[0]):
-                action = row['action']
+            if(agent.origin == self.origin[0] and agent.destination == self.destination[0]):
+                action = agent.act(0)
                 agent_counts[action] += 1
 
         observations = {
             agents: agent_counts for agents in self.possible_agents
         }
-
-        print("observations are : ", observations, '\n\n')
 
         return observations
         
@@ -284,14 +291,7 @@ class TrafficEnvironment(ParallelEnv):
             a: Box(low=0, high=self.agent_params[kc.NUM_HUMAN_AGENTS], shape=(3,), dtype=np.float32).sample() for a in self.human_agents
         }
 
-        joint_action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
-        human_joint_action = pd.DataFrame(columns = joint_action_cols)
-
-        # Every agent picks action
-        for agent, observation in zip(self.human_agents, observations):
-            action = agent.act(observation)
-            action_data = [agent.id, agent.kind, action, agent.origin, agent.destination, agent.start_time]
-            human_joint_action.loc[len(human_joint_action.index)] = {key : value for key, value in zip(joint_action_cols, action_data)}
+        human_joint_action = self.get_human_joint_action(self.human_agents, observations)
 
         ## Change the id numbers so they don't collide with machine agents
         human_joint_action['id'] = human_joint_action['id'] + self.agent_params[kc.NUM_HUMAN_AGENTS] 
@@ -304,23 +304,27 @@ class TrafficEnvironment(ParallelEnv):
     
     def machine_learning(self, sumo_df, machine_joint_action, state_table):
         logging.info("Machines are about to learn!")
+        print("machine_joint_action is: ", machine_joint_action, "\n\n")
 
         sumo_df['id'] = sumo_df['id'].astype(str)
-        sumo_df_machines = sumo_df.head(self.agent_params[kc.NUM_MACHINE_AGENTS])
-        state_table = state_table.head(self.agent_params[kc.NUM_MACHINE_AGENTS])
+        sumo_df_machines = sumo_df.head(self.agent_params[kc.NUM_HUMAN_AGENTS])
+        state_table = state_table.head(self.agent_params[kc.NUM_HUMAN_AGENTS])
         
         ## Individual reward to each machine agent
         rewards = {}
 
-        ## Calculate the rewards for each machine agent
-        for index, row in sumo_df_machines.iterrows():
-            if row['id'] in self.possible_agents:
-                rewards[row['id']] = -1 * row['travel_time'] #/ self.overall_min_travel_time
+        ## Joint reward for all machine agents
+        joint_reward = self.calculate_rewards(sumo_df_machines)
+
+        for agent_name in self.possible_agents:
+            rewards[agent_name] = joint_reward
 
         ## Saves the actions and rewards of each agent for this episode
         for id, action in machine_joint_action.items():
+            print("action is: ", action, "\n\n", self.action_table, "\n\n")
             self.action_table[id].append(action)
             self.reward_table[id].append(rewards[id])
+
 
         ## Return variables
         terminated = {
@@ -350,9 +354,8 @@ class TrafficEnvironment(ParallelEnv):
         }
 
         ## Human agent's action
-        ## If we are in the first iteration and human_joint_action is empty
-        if(self.human_joint_action.empty == True):
-            self.human_joint_action = self.human_actions()
+        human_joint_action = self.human_actions()
+
 
         # Create the DataFrame
         joint_action_df = pd.DataFrame(data)
@@ -360,7 +363,7 @@ class TrafficEnvironment(ParallelEnv):
 
 
         ## Combine human agents with machine agents
-        joint_action_df = pd.concat([joint_action_df, self.human_joint_action], ignore_index=True)  
+        joint_action_df = pd.concat([joint_action_df, human_joint_action], ignore_index=True)  
 
         ## Create a dataframe that will contain the state table
         # Group by 'origin', 'destination', and 'action', and count the occurrences
@@ -377,20 +380,15 @@ class TrafficEnvironment(ParallelEnv):
         state_table = pd.merge(joint_action_df, state_table, on=['origin', 'destination'], how='inner')
 
 
-        return joint_action_df, self.human_joint_action, state_table
+        return joint_action_df, human_joint_action, state_table
     
     def mutation(self):
-
         logging.info("Mutation is about to happen!\n")
 
         logging.info("There were %s human agents.\n", len(self.human_agents))
         random_human = random.choice(self.human_agents)
         self.human_agents.remove(random_human)
         logging.info("Now there are %s human agents.\n", len(self.human_agents))
-
-        self.table_before_mutation = self.reward_table_humans
-        self.empty_reward_action_tables()
-        print("self.table_before_mutation is: ", self.table_before_mutation, "\n\n\n")
 
         self.possible_agents = [str(i) for i in range(1, 2)]
         self.n_agents = len(self.possible_agents)
@@ -416,7 +414,7 @@ class TrafficEnvironment(ParallelEnv):
         for agent in self.human_agents:
             
             action = human_joint_action.loc[human_joint_action[kc.AGENT_ID] == agent.id, kc.ACTION].item()
-            reward = -1 * human_df.loc[human_df[kc.AGENT_ID] == agent.id, "travel_time"].item() #/ self.overall_min_travel_time
+            reward = -1 * human_df.loc[human_df[kc.AGENT_ID] == agent.id, "travel_time"].item() / self.overall_min_travel_time
 
             self.action_table_humans[agent.id].append(action)
             self.reward_table_humans[agent.id].append(reward)
@@ -424,158 +422,93 @@ class TrafficEnvironment(ParallelEnv):
             if self.human_learning == True:
                 logging.info("Humans are about to learn!")
                 observation = 0
-                agent.learn(action, reward, observation)  
-
-    def compare_machine_human(self):
-        ## Compare rewards of different vehicles
-        print(self.reward_table)
-        print(self.reward_table_humans)
-
-        for index, row in self.human_joint_action.iterrows():
-
-            if(row['origin'] == self.origin[0] and row['destination'] == self.destination[0] and row['start_time'] <= self.start_times[0]):
-                print("row['id'] is: ", row['id'], type(row['id']), "\n\n\n")
-
-                average = sum(self.reward_table_humans[row['id']]) / len(self.reward_table_humans[row['id']])
-                print("average is: ", average, "for agent id: ", row['id'],  "\n\n\n")
-
-
-                
-
-        averages_humans = {}
-        for key, values in self.reward_table_humans.items():
-            avg = sum(values) / len(values)
-            averages_humans[key] = avg
-
-        for key, values in self.reward_table.items():
-            avg = sum(values) / len(values)
-            averages_machine = avg
-
-        # Count averages higher than your_value
-        count_higher = sum(1 for avg in averages_humans.values() if avg > averages_machine)
-
-        # Calculate percentage
-        percentage_higher = (count_higher / len(averages_humans)) * 100
-
-        print(f"Percentage of averages higher than {averages_machine}: {percentage_higher:.2f}%")
-        
-
-        print("averages are : ", averages_humans, "\n\n")   
+                agent.learn(action, reward, observation)    
 
 
     def plot_rewards(self):
         sns.set_style("whitegrid")
 
         ## Choose 1 random agent and plot its rewards
-        if self.possible_agents:
+        if(self.possible_agents != []):
             random_agents = random.sample(self.possible_agents, 1)
-
-            human_agents = [agent for agent in self.human_agents if agent.origin == self.origin[0] and agent.destination == self.destination[0]]
-            print("len of human agents is: ", len(human_agents), "\n\n\n")
-            human_agents = random.sample(human_agents, 3)
-            for human in human_agents:
-                print("human agent origin is: ", human.origin, human.destination, "\n\n\n")
-
-        else:
-            random_human_agent = random.choice(self.human_agents)
-            random_agents = [random_human_agent.id]
-
-        plt.figure(figsize=(10, 6))  # Adjust the figure size for better presentation
-
-        ### Plot an agent that has the same origin-destination pair with the one learning
-        # Iterate over the selected agents and plot their rewards
-        colors = plt.cm.viridis(np.linspace(0, 1, len(human_agents)))  # Generate a set of colors for human agents
-        for idx, human in enumerate(human_agents):
-            color = colors[idx]  # Get a color for the current human agent
-            plt.plot(self.table_before_mutation[human.id], linestyle='-', color=color, linewidth=1.5, label=f'Human Agent {human.id}')
-
-        # Draw the vertical line
-        max_len_before_mutation = 9
-        plt.axvline(x=10, color='k', linestyle='--', label='Mutation Time', linewidth=1)
-
-        # Plot the rest of the values
-        for agent_index in random_agents:
-            if self.possible_agents:
-                for idx, human in enumerate(human_agents):
-                    color = colors[idx]  # Get the same color for the current human agent
-                    # Plot a line segment connecting the last point of self.table_before_mutation and the first point of self.reward_table_humans
-                    x_values = [max_len_before_mutation, max_len_before_mutation + 1]
-                    y_values = [self.table_before_mutation[human.id][-1], self.reward_table_humans[human.id][0]]
-                    plt.plot(x_values, y_values, linestyle='-', color=color, linewidth=1.5)
-                    # Plot the rest of the rewards
-                    plt.plot(np.arange(max_len_before_mutation + 1, max_len_before_mutation + len(self.reward_table_humans[human.id]) + 1), self.reward_table_humans[human.id], linestyle='-', color=color, linewidth=1.5)
-                # Plot machine agent's rewards
-                plt.plot(np.arange(max_len_before_mutation + 1, max_len_before_mutation + len(self.reward_table[agent_index]) + 1), self.reward_table[agent_index], linestyle='-', linewidth=4, label=f'Machine Agent')
-            else:
-                plt.plot(np.arange(max_len_before_mutation, max_len_before_mutation + len(self.reward_table_humans[int(agent_index)])), self.reward_table_humans[int(agent_index)], linestyle='-', linewidth=1.5)
-
-
-        plt.xlabel('Episode', fontsize=14)  # Increase font size for better readability
-        plt.ylabel('Reward', fontsize=14)  # Increase font size for better readability
-        plt.title(f'Reward Table Over Episodes for {self.agent_params[kc.NUM_HUMAN_AGENTS]} agents', fontsize=16)  # Increase font size for better readability
-        plt.grid(True, linestyle='--', alpha=0.3)  # Reduce opacity of grid lines
-        plt.legend(loc='upper right', fontsize=12)  # Adjust legend position and font size
-        plt.tight_layout()  # Ensure tight layout
-        #plt.savefig(filename)  # Uncomment if you want to save the plot
-        plt.show()
-
-        
-    def plot_actions(self):
-        sns.set_style("whitegrid")
-
-        if self.possible_agents:
-            random_agents = random.sample(self.possible_agents, 1)
-
-            human_agents = [agent for agent in self.human_agents if agent.origin == self.origin[0] and agent.destination == self.destination[0]]
-            print("len of human agents is: ", len(human_agents), "\n\n\n")
-            human_agent = random.choice(human_agents)
-            print("human agent origin is: ", human_agent.origin, human_agent.destination, "\n\n\n")
-
         else:
             random_human_agent = random.choice(self.human_agents)
             random_agents = random_human_agent.id
             random_agents = [random_agents]
 
-        plt.figure(figsize=(10, 6))  # Adjust figure size
+        plt.figure(figsize=(20, 12)) 
 
+        ## Save the plot in the results folder
+        file_number = 1
+        while os.path.exists(f"results/rewards{file_number}.png"):
+            file_number += 1
+
+        filename = f"results/rewards{file_number}.png"
+
+
+        # Iterate over the selected agents and plot their rewards
         for agent_index in random_agents:
-            if self.possible_agents:
-                plt.plot(self.action_table[agent_index], linestyle='-', linewidth=2, label=f'Machine Agent {agent_index}')
-                plt.plot(self.action_table_humans[human_agent.id], linestyle='-', linewidth=2, label=f'Human Agent {human_agent.id}')
-            else:
-                plt.plot(self.action_table_humans[int(agent_index)], linestyle='-', linewidth=2, label=f'Human Agent {agent_index}')
+            if(self.possible_agents!= []):
+                plt.plot(self.reward_table[agent_index], linestyle='-', label=f'Machine Agent {agent_index}')
+            plt.plot(self.reward_table_humans[int(agent_index)], linestyle='-', label=f'Human Agent {agent_index}')
 
-        plt.xlabel('Episode', fontsize=14)  # Increase font size for readability
-        plt.ylabel('Action', fontsize=14)  # Increase font size for readability
-        plt.title(f'Actions Over Episodes for {self.agent_params[kc.NUM_HUMAN_AGENTS]} agents', fontsize=16)  # Increase font size for readability
-        plt.grid(True, linestyle='--', alpha=0.5)  # Reduce opacity of grid lines
-        plt.legend(loc='upper right', fontsize=12)  # Adjust legend position and font size
-        plt.tight_layout()  # Ensure tight layout
-        # plt.savefig(filename)  # Uncomment to save the plot
+        plt.xlabel('Episode', fontsize=12) 
+        plt.ylabel('Reward', fontsize=12) 
+        plt.title(f'Reward Table Over Episodes for {self.agent_params[kc.NUM_HUMAN_AGENTS]} agents', fontsize=14) 
+        plt.grid(True, linestyle='--', alpha=0.7)  
+        plt.legend()
+        plt.tight_layout() 
+        plt.savefig(filename)
         plt.show()
 
-    def empty_reward_action_tables(self):
 
-        ## Empty the reward and action tables
-        self.reward_table = {
-            agent:[] for agent in self.possible_agents
-        }
+    def plot_actions(self):
+        sns.set_style("whitegrid")
 
-        self.action_table = {
-            agent:[] for agent in self.possible_agents
-        }
+        ## Choose 2 random agents and plot their actions
+        if(len(self.possible_agents) < 2):
+            random_agents = self.possible_agents
+        else:
+            random_agents = random.sample(self.possible_agents, 3)
 
-        self.action_table_humans = {
-            agent.id:[] for agent in self.human_agents
-        }
+        ## Save the plot in the results folder
+        file_number = 1
+        while os.path.exists(f"results/actions{file_number}.png"):
+            file_number += 1
 
-        self.reward_table_humans = {
-            agent.id:[] for agent in self.human_agents
-        }
+        filename = f"results/actions{file_number}.png"
+
+        plt.figure(figsize=(20, 12)) 
+
+        ## Iterate over the selected agents and plot their actions
+        for agent_index in random_agents:
+            plt.plot(self.action_table[agent_index], linestyle='-', label=f'Agent {agent_index}')
+            plt.plot(self.action_table_humans[int(agent_index)], linestyle='-', label=f'Agent {agent_index}')
+
+        plt.xlabel('Episode', fontsize=12) 
+        plt.ylabel('Action', fontsize=12) 
+        plt.title(f'Actions Over Episodes for {self.agent_params[kc.NUM_HUMAN_AGENTS]} agents', fontsize=14)  
+        plt.grid(True, linestyle='--', alpha=0.7)  
+        plt.legend() 
+        plt.tight_layout() 
+        plt.savefig(filename)
+        plt.show()
+
+        
+    def get_human_joint_action(self, agents, observations):
+        joint_action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
+        joint_action = pd.DataFrame(columns = joint_action_cols)
+
+        # Every agent picks action
+        for agent, observation in zip(agents, observations):
+            action = agent.act(observation)
+            action_data = [agent.id, agent.kind, action, agent.origin, agent.destination, agent.start_time]
+            joint_action.loc[len(joint_action.index)] = {key : value for key, value in zip(joint_action_cols, action_data)}
+        return joint_action   
 
 
     def calculate_rewards(self, sumo_df):
-        average_reward = -1 * sumo_df['travel_time'].mean() #/ self.overall_min_travel_time
+        average_reward = -1 * sumo_df['travel_time'].mean() / self.overall_min_travel_time
 
         if average_reward > self.min_reward:
             self.min_reward = average_reward
