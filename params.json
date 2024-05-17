@@ -2,9 +2,9 @@
 
     "training_parameters":
     {
-        "num_episodes" : 2000,
-        "mutation_time" : 100,
-        "second_mutation_time" : 800,
+        "num_episodes" : 3000,
+        "mutation_time" : 200,
+        "second_mutation_time" : 500,
         "remember_every" : 20,
         "frequent_progressbar_update" : true,
 
@@ -22,9 +22,9 @@
 
     "agent_generation_parameters" :
     {
-        "num_agents" : 1000,
-        "ratio_mutating" : 0.2,
-        "ratio_mutating_2" : 0.1,
+        "num_agents" : 2000,
+        "ratio_mutating" : 0.25,
+        "ratio_mutating_2" : 0.25,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",
         "origins" : "${simulation_parameters.origins}",
@@ -73,7 +73,7 @@
         "routes_xml_save_path" : "Network_and_config/route.rou.xml",
 
         "number_of_paths" : 3,
-        "simulation_timesteps" : 3600,
+        "simulation_timesteps" : 1800,
         "beta" : -0.1,
 
         "origins" : ["279952229#0", "115604053"],

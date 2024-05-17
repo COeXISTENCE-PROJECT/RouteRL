@@ -3,7 +3,7 @@ import random
 
 from prettytable import PrettyTable
 
-from agent import MachineAgent, MaliciousMachineAgent, HumanAgent
+from agent import MachineAgent, MaliciousMachineAgent, HumanAgent, DeepMachineAgent
 from keychain import Keychain as kc
 from utilities import make_dir
 

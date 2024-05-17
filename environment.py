@@ -1,7 +1,5 @@
-import functools
 import pandas as pd
 
-from gymnasium.spaces import Box, Discrete
 from prettytable import PrettyTable
 
 from keychain import Keychain as kc
@@ -18,14 +16,6 @@ class TrafficEnvironment:
         self.action_space_size = environment_params[kc.ACTION_SPACE_SIZE]
 
         self.possible_agents = [agent.id for agent in self.agents] 
-
-        self.observation_spaces = {
-            agent: Box(low=0, high=1, shape=(1,), dtype=float) for agent in self.possible_agents
-        }
-        self.action_spaces = {
-            agent: Discrete(3) for agent in self.possible_agents
-        }
-        self.render_mode = render_mode
 
         self.joint_action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
         self.joint_action = pd.DataFrame(columns = self.joint_action_cols)
@@ -44,13 +34,7 @@ class TrafficEnvironment:
     def reset(self):
         self.joint_action = pd.DataFrame(columns = self.joint_action_cols)
         self.options_last_picked = dict()
-
         self.simulator.reset_sumo()
-
-        observations = {a: Box(low=0, high=1, shape=(1,), dtype=float).sample() for a in self.possible_agents}
-        infos = {a: {}  for a in self.possible_agents}
-
-        return observations, infos
 
 
     def calculate_free_flow_times(self):
@@ -60,13 +44,18 @@ class TrafficEnvironment:
         return free_flow_times
     
 
-    def get_observation(self, origin, destination):
-        observation = list()
-        for possible_action in range(self.action_space_size):
-            action_key = f"{origin}_{destination}_{possible_action}"
-            obs = self.options_last_picked.get(action_key, -1)
-            observation.append(obs)
-        return observation
+    def get_observation(self, agent_type, origin, destination):
+        if agent_type == kc.TYPE_HUMAN:
+            return None
+        if agent_type == kc.TYPE_MACHINE:
+            observation = list()
+            for possible_action in range(self.action_space_size):
+                action_key = f"{origin}_{destination}_{possible_action}"
+                obs = self.options_last_picked.get(action_key, -1)
+                observation.append(obs)
+            return observation
+        if agent_type == kc.TYPE_MACHINE_2:
+            return self.joint_action.loc[(self.joint_action[kc.AGENT_KIND] == kc.TYPE_MACHINE) & (self.joint_action[kc.AGENT_ORIGIN] == origin) & (self.joint_action[kc.AGENT_DESTINATION] == destination)]
     
 
     def register_action(self, agent, action):
@@ -85,20 +74,9 @@ class TrafficEnvironment:
         sumo_df = self.simulator.run_simulation_iteration(self.joint_action)
         joint_observation = self.prepare_observations(sumo_df, self.joint_action)
 
-        terminated = {
-            terminated: True for terminated in self.possible_agents
-        }
-
-        truncated = {
-            truncated: 1 for truncated in self.possible_agents
-        }
-
         info = {kc.LAST_SIM_DURATION: self.get_last_sim_duration()}
 
-        if any(terminated.values()) or all(truncated.values()):
-            self.agents = []
-
-        return joint_observation, terminated, truncated, info
+        return joint_observation, info
 
 
     def prepare_observations(self, sumo_df, joint_action):
@@ -110,10 +88,12 @@ class TrafficEnvironment:
         observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME] *= 0.4
         observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME] += (machines_mean_travel_times * 0.6)
 
-        # Malicious machines rewards (to maximize) = 0.1 x -own_time + 0.9 x humans_mean_time
-        humans_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_HUMAN, kc.TRAVEL_TIME].mean()
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] *= -0.1
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] += (humans_mean_travel_times * 0.9)
+        # Malicious machines rewards (to maximize) = 0.2 x -own_time + 0.3 x -machines2_mean_travel_time + 0.5 x machines_mean_time
+        machines_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME].mean()
+        machines2_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME].mean()
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] *= -0.2
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] += (-1 * (machines2_mean_travel_times * 0.3))
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] += (machines_mean_travel_times * 0.5)
 
         return observation_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
 
@@ -145,13 +125,3 @@ class TrafficEnvironment:
         save_to = make_dir(kc.RECORDS_FOLDER, kc.FREE_FLOW_TIMES_CSV_FILE_NAME)
         free_flow_pd.to_csv(save_to, index = False)
         print(f"[SUCCESS] Free-flow travel times calculated and saved to: {save_to}")
-
-
-    @functools.lru_cache(maxsize=None)
-    def observation_space(self, agent):
-        return Box(low=0, high=1, shape=(1,), dtype=float)
-
-
-    @functools.lru_cache(maxsize=None)
-    def action_space(self, agent):
-        return Discrete(3)

@@ -49,9 +49,9 @@ class Trainer:
             # Until the episode concludes
             while not done:
                 self.submit_actions(env, agents)
-                observation, terminated, truncated, info = env.step()
+                observation, info = env.step()
                 self.teach_agents(agents, env.joint_action, observation)
-                done = all(terminated.values())
+                done = True     # can condition this
 
             self.record(episode, training_start_time, env.joint_action, observation, agents, info[kc.LAST_SIM_DURATION])
             if self.frequent_progressbar: show_progress_bar("TRAINING", training_start_time, episode, self.num_episodes)
@@ -63,7 +63,7 @@ class Trainer:
 
     def submit_actions(self, env, agents):
         for agent in agents:
-            observation = env.get_observation(agent.origin, agent.destination)
+            observation = env.get_observation(agent.kind, agent.origin, agent.destination)
             action = agent.act(observation)
             env.register_action(agent, action)
 
