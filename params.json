@@ -2,9 +2,9 @@
 
     "training_parameters":
     {
-        "num_episodes" : 3000,
-        "mutation_time" : 200,
-        "second_mutation_time" : 500,
+        "num_episodes" : 5000,
+        "mutation_time" : 500,
+        "second_mutation_time" : 2000,
         "remember_every" : 20,
         "frequent_progressbar_update" : true,
 
