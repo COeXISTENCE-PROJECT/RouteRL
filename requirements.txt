@@ -1,9 +1,9 @@
 beautifulsoup4==4.12.3
-gymnasium==0.29.1
 matplotlib==3.8.2
 networkx==3.2.1
 numpy==1.26.4
-pandas==2.2.1
+pandas==2.2.2
 prettytable==3.10.0
 seaborn==0.13.2
+torch==2.2.2
 traci==1.19.0
