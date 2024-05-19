@@ -88,12 +88,13 @@ class TrafficEnvironment:
         observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME] *= 0.4
         observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME] += (machines_mean_travel_times * 0.6)
 
-        # Malicious machines rewards (to maximize) = 0.2 x -own_time + 0.3 x -machines2_mean_travel_time + 0.5 x machines_mean_time
+        # Malicious machines rewards (to maximize) = 0.3 x -machines2_mean_travel_time + 0.7 x machines_mean_time
         machines_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME].mean()
         machines2_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME].mean()
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] *= -0.2
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] += (-1 * (machines2_mean_travel_times * 0.3))
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] += (machines_mean_travel_times * 0.5)
+        #observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] *= -0.2
+        #observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] += (-1 * (machines2_mean_travel_times * 0.3))
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] = (-1 * (machines2_mean_travel_times * 0.3))
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] += (machines_mean_travel_times * 0.7)
 
         return observation_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
 

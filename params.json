@@ -3,8 +3,8 @@
     "training_parameters":
     {
         "num_episodes" : 5000,
-        "mutation_time" : 500,
-        "second_mutation_time" : 2000,
+        "mutation_time" : 200,
+        "second_mutation_time" : 1000,
         "remember_every" : 20,
         "frequent_progressbar_update" : true,
 
@@ -54,6 +54,12 @@
             "alpha" : 0.2,
             "beta" : -0.5,
             "beta_randomness" : 0.3
+        },
+
+        "dqn_agent_parameters":
+        {
+            "epsilon" : 0.99,
+            "epsilon_decay_rate" : 0.999
         }
     },
 
@@ -73,7 +79,7 @@
         "routes_xml_save_path" : "Network_and_config/route.rou.xml",
 
         "number_of_paths" : 3,
-        "simulation_timesteps" : 1800,
+        "simulation_timesteps" : 3600,
         "beta" : -0.1,
 
         "origins" : ["279952229#0", "115604053"],

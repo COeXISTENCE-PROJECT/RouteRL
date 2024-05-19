@@ -243,9 +243,9 @@ from collections import deque
 class DQN(nn.Module):
     def __init__(self, state_size, action_space_size):
         super(DQN, self).__init__()
-        self.fc1 = nn.Linear(state_size, 64)
-        self.fc2 = nn.Linear(64, 64)
-        self.fc3 = nn.Linear(64, action_space_size)
+        self.fc1 = nn.Linear(state_size, 32)
+        self.fc2 = nn.Linear(32, 32)
+        self.fc3 = nn.Linear(32, action_space_size)
 
     def forward(self, x):
         x = torch.relu(self.fc1(x))
@@ -253,24 +253,22 @@ class DQN(nn.Module):
         x = self.fc3(x)
         return x
 
-class DeepMachineAgent(Agent):
+class MaliciousDQNAgent(Agent):
     def __init__(self, id, start_time, origin, destination, params, action_space_size):
         super().__init__(id, start_time, origin, destination)
 
-        self.kind = kc.TYPE_MACHINE
+        self.kind = kc.TYPE_MACHINE_2
 
         self.epsilon = params[kc.EPSILON]
         self.epsilon_decay_rate = params[kc.EPSILON_DECAY_RATE]
+
         self.action_space_size = action_space_size
         self.state_size = action_space_size
 
         self.memory = deque(maxlen=256)
         self.batch_size = 32
-        self.target_update_frequency = 3
 
         self.q_network = DQN(self.state_size, action_space_size)
-        self.target_network = DQN(self.state_size, action_space_size)
-        self.update_target_network()
 
         self.optimizer = optim.Adam(self.q_network.parameters(), lr=0.03)
         self.loss_fn = nn.MSELoss()
@@ -291,32 +289,34 @@ class DeepMachineAgent(Agent):
         return self.last_action
 
     def get_state(self, observation):
-        #return list_to_string(observation, separator="_")
-        return observation
+        state = [0] * self.action_space_size
+        if not observation.empty:
+            for idx, row in observation.iterrows():
+                action = row[kc.ACTION]
+                start_time = row[kc.AGENT_START_TIME]
+                state[action] += start_time
+            if sum(state):
+                state = [x / sum(state) for x in state]
+            state = [round(p / 0.05) * 0.05 for p in state]
+        return state
+    
 
     def learn(self, action, observation):
         reward = self.get_reward(observation)
-        next_state = [self.get_state(observation)]
-        done = True  # This should be set to True if the episode is finished
-
-        self.memory.append((self.last_state, action, reward, next_state, done))
+        self.memory.append((self.last_state, action, reward))
 
         if len(self.memory) < self.batch_size:
             return
 
         batch = random.sample(self.memory, self.batch_size)
-        states, actions, rewards, next_states, dones = zip(*batch)
+        states, actions, rewards, = zip(*batch)
 
         states_tensor = torch.FloatTensor(states)
         actions_tensor = torch.LongTensor(actions).unsqueeze(1)
         rewards_tensor = torch.FloatTensor(rewards).unsqueeze(1)
-        next_states_tensor = torch.FloatTensor(next_states)
-        dones_tensor = torch.FloatTensor(dones).unsqueeze(1)
 
         current_q_values = self.q_network(states_tensor).gather(1, actions_tensor)
-        with torch.no_grad():
-            max_next_q_values = self.target_network(next_states_tensor).max(1)[0].unsqueeze(1)
-            target_q_values = rewards_tensor + self.gamma * max_next_q_values * (1 - dones_tensor)
+        target_q_values = rewards_tensor
 
         loss = self.loss_fn(current_q_values, target_q_values)
         self.optimizer.zero_grad()
@@ -324,11 +324,6 @@ class DeepMachineAgent(Agent):
         self.optimizer.step()
 
         self.decay_epsilon()
-        if self.target_update_frequency == 0:
-            self.target_update_frequency = 3
-            self.update_target_network()
-        else:
-            self.target_update_frequency -= 1
 
     def get_reward(self, observation):
         reward = observation.loc[observation[kc.AGENT_ID] == self.id, kc.TRAVEL_TIME].item()
@@ -336,9 +331,6 @@ class DeepMachineAgent(Agent):
 
     def decay_epsilon(self):
         self.epsilon *= self.epsilon_decay_rate
-
-    def update_target_network(self):
-        self.target_network.load_state_dict(self.q_network.state_dict())
 
     def receive_initial_knowledge(self, initial_knowledge):
         pass

@@ -51,6 +51,7 @@ class Keychain:
     ACTION_SPACE_SIZE = "action_space_size"
     MACHINE_AGENT_PARAMETERS = "machine_agent_parameters"
     MACHINE2_AGENT_PARAMETERS = "machine2_agent_parameters"
+    DQN_AGENT_PARAMETERS = "dqn_agent_parameters"
     HUMAN_AGENT_PARAMETERS = "human_agent_parameters"
 
     GAMMA = "gamma"
