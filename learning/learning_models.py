@@ -71,7 +71,6 @@ class QLearning(LearningModel):
         state = list_to_string(state, separator="_")
         q_row = self.q_table.loc[self.q_table[kc.STATE] == state, kc.Q_TABLE].item()
         prev_knowledge = q_row[action]
-        # Are we sure this works??
         q_row[action] = prev_knowledge + (self.alpha * (reward - prev_knowledge)) 
         self.decay_epsilon()
 
