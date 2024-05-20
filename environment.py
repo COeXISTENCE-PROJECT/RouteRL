@@ -430,37 +430,33 @@ class TrafficEnvironment(ParallelEnv):
         ## Compare rewards of different vehicles
         print(self.reward_table)
         print(self.reward_table_humans)
+        print(self.human_joint_action)
+        listofhumans = []
 
         for index, row in self.human_joint_action.iterrows():
 
-            if(row['origin'] == self.origin[0] and row['destination'] == self.destination[0] and row['start_time'] <= self.start_times[0]):
-                print("row['id'] is: ", row['id'], type(row['id']), "\n\n\n")
+            if(row['origin'] == self.origin[0] and row['destination'] == self.destination[0] and row['start_time'] < self.start_times[0]):
 
-                average = sum(self.reward_table_humans[row['id']]) / len(self.reward_table_humans[row['id']])
-                print("average is: ", average, "for agent id: ", row['id'],  "\n\n\n")
+                human_avg = sum(self.reward_table_humans[index]) / len(self.reward_table_humans[index])
+                listofhumans.append(human_avg)
+
+        print("list of humans is: ", listofhumans, "\n\n\n")
 
 
-                
+        if listofhumans:
+            # Reference reward from self.reward_table
+            reference_reward = sum(self.reward_table['1']) / len(self.reward_table['1'])
+            print("reference reward is: ", reference_reward, "\n\n\n")
 
-        averages_humans = {}
-        for key, values in self.reward_table_humans.items():
-            avg = sum(values) / len(values)
-            averages_humans[key] = avg
+            # Count the number of rewards in listofhumans that are less than the reference_reward
+            count_lower = sum(1 for reward in listofhumans if reward < reference_reward)
 
-        for key, values in self.reward_table.items():
-            avg = sum(values) / len(values)
-            averages_machine = avg
+            # Calculate the percentage of rewards lower than the reference_reward
+            percentage_lower = (count_lower / len(listofhumans)) * 100
 
-        # Count averages higher than your_value
-        count_higher = sum(1 for avg in averages_humans.values() if avg > averages_machine)
-
-        # Calculate percentage
-        percentage_higher = (count_higher / len(averages_humans)) * 100
-
-        print(f"Percentage of averages higher than {averages_machine}: {percentage_higher:.2f}%")
-        
-
-        print("averages are : ", averages_humans, "\n\n")   
+            print("Percentage of rewards lower than the reference value: ", percentage_lower, "%")
+        else:
+            print("No matching human actions found.")
 
 
     def plot_rewards(self):
@@ -480,7 +476,7 @@ class TrafficEnvironment(ParallelEnv):
             random_human_agent = random.choice(self.human_agents)
             random_agents = [random_human_agent.id]
 
-        plt.figure(figsize=(10, 6))  # Adjust the figure size for better presentation
+        plt.figure(figsize=(300, 60))  # Adjust the figure size for better presentation
 
         ### Plot an agent that has the same origin-destination pair with the one learning
         # Iterate over the selected agents and plot their rewards
@@ -490,7 +486,7 @@ class TrafficEnvironment(ParallelEnv):
             plt.plot(self.table_before_mutation[human.id], linestyle='-', color=color, linewidth=1.5, label=f'Human Agent {human.id}')
 
         # Draw the vertical line
-        max_len_before_mutation = 9
+        max_len_before_mutation = 299
         plt.axvline(x=10, color='k', linestyle='--', label='Mutation Time', linewidth=1)
 
         # Plot the rest of the values
