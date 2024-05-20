@@ -4,9 +4,16 @@ import os
 import random
 import sys
 import time
-
+import torch
 
 from prettytable import PrettyTable
+
+
+
+def check_device():
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"[INFO] Running on device: {device}")
+
 
 
 def confirm_env_variable(env_var, append=None):

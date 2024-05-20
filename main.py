@@ -5,6 +5,7 @@ from services import Trainer
 from utilities import confirm_env_variable
 from utilities import get_params
 from utilities import set_seeds
+from utilities import check_device
 
 
 def main(params):
@@ -15,6 +16,7 @@ def main(params):
 
 
 if __name__ == "__main__":
+    check_device()
     set_seeds()
     confirm_env_variable(kc.SUMO_HOME, append="tools")
     params = get_params(kc.PARAMS_PATH)

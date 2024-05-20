@@ -16,7 +16,8 @@ class Recorder:
 
         self.episodes_folder = make_dir([kc.RECORDS_FOLDER, kc.EPISODES_LOGS_FOLDER])
         self.agents_folder = make_dir([kc.RECORDS_FOLDER, kc.AGENTS_LOGS_FOLDER])
-        self.sim_length_file_path = self.get_sim_length_file_path()
+        self.sim_length_file_path = self.get_txt_file_path(kc.SIMULATION_LENGTH_LOG_FILE_NAME)
+        self.loss_file_path = self.get_txt_file_path(kc.LOSSES_LOG_FILE_NAME)
 
         self.saved_episodes = list()
 
@@ -25,8 +26,8 @@ class Recorder:
 
 #################### INIT HELPERS
     
-    def get_sim_length_file_path(self):
-        log_file_path = make_dir(kc.RECORDS_FOLDER, kc.SIMULATION_LENGTH_LOG_FILE_NAME)
+    def get_txt_file_path(self, filename):
+        log_file_path = make_dir(kc.RECORDS_FOLDER, filename)
         if os.path.exists(log_file_path):
             os.remove(log_file_path)
         return log_file_path
@@ -36,17 +37,17 @@ class Recorder:
 
 #################### REMEMBER FUNCTIONS
     
-    def remember_all(self, episode, joint_action, joint_reward, agents, last_sim_duration):
+    def remember_all(self, episode, joint_action, joint_observation, agents, last_sim_duration):
         self.saved_episodes.append(episode)
-        self.remember_episode(episode, joint_action, joint_reward)
+        self.remember_episode(episode, joint_action, joint_observation)
         #self.remember_agents_status(episode, agents)
         self.remember_last_sim_duration(last_sim_duration)
 
 
-    def remember_episode(self, episode, joint_action, joint_reward):
+    def remember_episode(self, episode, joint_action, joint_observation):
         origins, dests, actions = joint_action[kc.AGENT_ORIGIN], joint_action[kc.AGENT_DESTINATION], joint_action[kc.ACTION]
         joint_action[kc.SUMO_ACTION] = [f"{origins[i]}_{dests[i]}_{action}" for i, action in enumerate(actions)]
-        merged_df = pd.merge(joint_action, joint_reward, on=kc.AGENT_ID)
+        merged_df = pd.merge(joint_action, joint_observation, on=kc.AGENT_ID)
         merged_df.to_csv(make_dir(self.episodes_folder, f"ep{episode}.csv"), index = False)
 
 
@@ -68,6 +69,21 @@ class Recorder:
     def remember_last_sim_duration(self, last_sim_duration):
         with open(self.sim_length_file_path, "a") as file:
             file.write(f"{last_sim_duration}\n")
+
+    def save_losses(self, agents):
+        losses = list()
+        for a in agents:
+            loss = getattr(a.model, 'loss', None)
+            if loss is not None:
+                losses.append(loss)
+        mean_losses = [0] * len(losses[-1])
+        for loss in losses:
+            for i, l in enumerate(loss):
+                mean_losses[i] += l
+        mean_losses = [m / len(losses) for m in mean_losses]
+        with open(self.loss_file_path, "w") as file:
+            for m_l in mean_losses:
+                file.write(f"{m_l}\n")
 
 ####################
             

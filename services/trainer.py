@@ -9,7 +9,7 @@ from services import Plotter
 from services import Recorder
 from utilities import show_progress_bar
 
-
+import matplotlib.pyplot as plt
 class Trainer:
 
     """
@@ -27,7 +27,6 @@ class Trainer:
 
         self.recorder = Recorder(params[kc.RECORDER_PARAMETERS])
         self.plotter = Plotter(self.mutation_time, self.second_mutation_time, self.recorder, params[kc.PLOTTER_PARAMETERS])
-
 
 
     # Training loop
@@ -49,15 +48,16 @@ class Trainer:
             # Until the episode concludes
             while not done:
                 self.submit_actions(env, agents)
-                observation, info = env.step()
-                self.teach_agents(agents, env.joint_action, observation)
+                observation_df, info = env.step()
+                self.teach_agents(agents, env.joint_action, observation_df)
                 done = True     # can condition this
 
-            self.record(episode, training_start_time, env.joint_action, observation, agents, info[kc.LAST_SIM_DURATION])
+            self.record(episode, training_start_time, env.joint_action, observation_df, agents, info[kc.LAST_SIM_DURATION])
             if self.frequent_progressbar: show_progress_bar("TRAINING", training_start_time, episode, self.num_episodes)
 
         self.show_training_time(training_start_time)
         env.stop()
+        self.save_losses(agents)
 
 
 
@@ -68,15 +68,16 @@ class Trainer:
             env.register_action(agent, action)
 
 
-    def teach_agents(self, agents, joint_action_df, observation):
+    def teach_agents(self, agents, joint_action_df, observation_df):
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = [executor.submit(self.learn_agent, agent, joint_action_df, observation) for agent in agents]
+            futures = [executor.submit(self.learn_agent, agent, joint_action_df, observation_df) for agent in agents]
             concurrent.futures.wait(futures)
         
 
-    def learn_agent(self, agent, joint_action_df, observation):
+    def learn_agent(self, agent, joint_action_df, observation_df):
         action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION].item()
-        agent.learn(action, observation)
+        reward = observation_df.loc[observation_df[kc.AGENT_ID] == agent.id, kc.REWARD].item()
+        agent.learn(action, reward)
     
 
     def record(self, episode, start_time, joint_action_df, joint_reward_df, agents, last_sim_duration):
@@ -91,9 +92,9 @@ class Trainer:
             if getattr(agent, 'mutate_type', None) == mutate_to:
                 agents[idx] = agent.mutate()
         counts = Counter([agent.kind for agent in agents])
-        mutated_to = "machines" if episode == self.mutation_time else "malicious machines"
+        mutated_to = "machines" if episode == self.mutation_time else "disruptive machines"
         print(f"\n[INFO] Some humans mutated to {mutated_to} at episode {episode}!")
-        print(f"[INFO] Number of humans: {counts[kc.TYPE_HUMAN]}, machines: {counts[kc.TYPE_MACHINE]}, malicious machines: {counts[kc.TYPE_MACHINE_2]}")
+        print(f"[INFO] Number of humans: {counts[kc.TYPE_HUMAN]}, machines: {counts[kc.TYPE_MACHINE]}, disruptive machines: {counts[kc.TYPE_MACHINE_2]}")
         return agents
 
 
@@ -105,3 +106,7 @@ class Trainer:
 
     def show_training_results(self):
         self.plotter.visualize_all(self.recorder.saved_episodes)
+
+
+    def save_losses(self, agents):
+        self.recorder.save_losses(agents)

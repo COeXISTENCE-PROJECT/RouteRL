@@ -1,6 +1,6 @@
 import networkx as nx
 
-from human_learning import logit
+from learning import logit
 
 
 def path_generator(network, origin, destination, weight, avoid_nodes, beta):

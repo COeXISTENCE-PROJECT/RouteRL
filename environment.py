@@ -70,33 +70,29 @@ class TrafficEnvironment:
 
 
     def step(self):        
-
         sumo_df = self.simulator.run_simulation_iteration(self.joint_action)
-        joint_observation = self.prepare_observations(sumo_df, self.joint_action)
-
+        joint_observation = self.prepare_rewards(sumo_df, self.joint_action)
         info = {kc.LAST_SIM_DURATION: self.get_last_sim_duration()}
-
         return joint_observation, info
 
 
-    def prepare_observations(self, sumo_df, joint_action):
+    def prepare_rewards(self, sumo_df, joint_action):
         # Calculate reward from cost (skipped)
         observation_df = sumo_df.merge(joint_action, on=kc.AGENT_ID)
+        observation_df[kc.REWARD] = observation_df[kc.TRAVEL_TIME]
 
-        # Machines rewards (to minimize) = 0.4 x own_time + 0.6 x machines_mean_time
+        # It will remain the same for humans
+        # Machines rewards (to minimize) = 0.5 x own_time + 0.5 x machines_mean_time
         machines_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME].mean()
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME] *= 0.4
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME] += (machines_mean_travel_times * 0.6)
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.REWARD] *= 0.5
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.REWARD] += (machines_mean_travel_times * 0.5)
 
-        # Malicious machines rewards (to maximize) = 0.3 x -machines2_mean_travel_time + 0.7 x machines_mean_time
-        machines_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME].mean()
+        # Disruptive machines rewards (to minimize) = machines2_mean_travel_time - machines_mean_time
         machines2_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME].mean()
-        #observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] *= -0.2
-        #observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] += (-1 * (machines2_mean_travel_times * 0.3))
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] = (-1 * (machines2_mean_travel_times * 0.3))
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME] += (machines_mean_travel_times * 0.7)
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.REWARD] = machines2_mean_travel_times
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.REWARD] -= machines_mean_travel_times
 
-        return observation_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
+        return observation_df[[kc.AGENT_ID, kc.TRAVEL_TIME, kc.REWARD]]
 
 
     def get_last_sim_duration(self):

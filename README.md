@@ -12,7 +12,7 @@ See [here](server_scripts/how_to.md).
 ## Training results
 
 ### Number of agents
-3000 agents - Humans: 1520 | Machines: 882 | Malicious machines: 598
+3000 agents - Humans: 1520 | Machines: 882 | Disruptive machines: 598
 ### Training episodes
 6000 Episodes, first mutation at 1000, second at 3000
 ### Training duration

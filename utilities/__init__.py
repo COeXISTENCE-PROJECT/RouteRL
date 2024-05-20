@@ -1,3 +1,4 @@
+from .utils import check_device
 from .utils import confirm_env_variable
 from .utils import df_to_prettytable
 from .utils import get_params
