@@ -56,6 +56,10 @@ class Keychain:
     MACHINE_PARAMETERS = "machine_parameters"
     DISRUPTIVE_MACHINE_PARAMETERS = "disruptive_machine_parameters"
 
+    MODEL = "model"
+    GAWRON = "gawron"
+    DQN = "dqn"
+    Q = "q"
     ALPHA = "alpha"
     BETA = "beta"
     BETA_RANDOMNESS = "beta_randomness"
