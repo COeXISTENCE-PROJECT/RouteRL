@@ -143,15 +143,15 @@ class DQN(LearningModel):
 class Network(nn.Module):
     def __init__(self, state_size, action_space_size, num_hidden, widths):
         super(Network, self).__init__()
-        assert len(widths) == (num_hidden + 1), ("DQN widths and number of layers mismatch!")
+        assert len(widths) == (num_hidden + 1), "DQN widths and number of layers mismatch!"
         
-        self.fc_in = nn.Linear(state_size, widths[0])
-        self.fc_hidden = [nn.Linear(widths[x], widths[x+1]) for x in range(num_hidden)]
-        self.fc_out = nn.Linear(widths[-1], action_space_size)
+        self.input_layer = nn.Linear(state_size, widths[0])
+        self.hidden_layers = nn.ModuleList([nn.Linear(widths[x], widths[x+1]) for x in range(num_hidden)])
+        self.out_layer = nn.Linear(widths[-1], action_space_size)
 
     def forward(self, x):
-        x = torch.relu(self.fc_in(x))
-        for hidden_layer in self.fc_hidden:
+        x = torch.relu(self.input_layer(x))
+        for hidden_layer in self.hidden_layers:
             x = torch.relu(hidden_layer(x))
-        x = self.fc_out(x)
+        x = self.out_layer(x)
         return x
