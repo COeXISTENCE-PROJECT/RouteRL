@@ -1,10 +1,10 @@
 {
-
+    
     "training_parameters":
     {
         "num_episodes" : 5000,
-        "mutation_time" : 200,
-        "second_mutation_time" : 1000,
+        "mutation_time" : 500,
+        "second_mutation_time" : 2000,
         "remember_every" : 20,
         "frequent_progressbar_update" : false,
 
@@ -27,10 +27,10 @@
         "ratio_mutating_2" : 0.25,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",
-        "origins" : "${simulation_parameters.origins}",
-        "destinations" : "${simulation_parameters.destinations}",
+        "origins" : "${path_generation_parameters.origins}",
+        "destinations" : "${path_generation_parameters.destinations}",
 
-        "action_space_size" : "${simulation_parameters.number_of_paths}",
+        "action_space_size" : "${path_generation_parameters.number_of_paths}",
         "ONUR_COMMENT1" : "DO NOT PUT DEPENDENT VARS BELOW THIS LEVEL",
 
         "human_parameters" :
@@ -65,24 +65,36 @@
 
     "environment_parameters":
     {
-        "action_space_size" : "${simulation_parameters.number_of_paths}"
+        "action_space_size" : "${path_generation_parameters.number_of_paths}"
     },
+
 
     "simulation_parameters":
     {
+        "number_of_paths" : "${path_generation_parameters.number_of_paths}",
+        "simulation_timesteps" : 1800,
+
         "sumo_type" : "sumo",
         "sumo_config_path" : "network_and_config/csomor1.sumocfg",
+        "paths_csv_save_path" : "${path_generation_parameters.paths_csv_save_path}",
+        "routes_xml_save_path" : "${path_generation_parameters.routes_xml_save_path}"
+    },
+
+
+    "path_generation_parameters":
+    {
+        "number_of_paths" : 3,
+        "beta" : -0.1,
+        "weight" : "time",
+
+        "origins" : ["279952229#0", "115604053"],
+        "destinations" : ["-115602933#2", "-441496282#1"],
+
         "connection_file_path" : "network_and_config/csomor1.con.xml",
         "edge_file_path" : "network_and_config/csomor1.edg.xml",
         "route_file_path" : "network_and_config/csomor1.rou.xml",
         "routes_xml_save_path" : "network_and_config/route.rou.xml",
-
-        "number_of_paths" : 3,
-        "simulation_timesteps" : 1800,
-        "beta" : -0.1,
-
-        "origins" : ["279952229#0", "115604053"],
-        "destinations" : ["-115602933#2", "-441496282#1"]
+        "paths_csv_save_path" : "network_and_config/paths.csv"
     }
     
 }

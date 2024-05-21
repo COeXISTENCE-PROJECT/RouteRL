@@ -577,6 +577,7 @@ class Plotter:
         plt.plot(losses)
         plt.xlabel('Training Progress')
         plt.ylabel('MSE Loss')
+        plt.ylim(0.0, 1.0)
         plt.title('MSE Loss Over Training Progress (n = 10)')
 
         #plt.show()

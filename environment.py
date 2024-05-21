@@ -4,18 +4,14 @@ from prettytable import PrettyTable
 
 from keychain import Keychain as kc
 from services import Simulator
-from utilities import create_agent_objects
 from utilities import make_dir
 
 
 class TrafficEnvironment:
 
-    def __init__(self, environment_params, simulation_params, agent_params, render_mode=None):
+    def __init__(self, environment_params, simulation_params):
         self.simulator = Simulator(simulation_params)
-        self.agents = create_agent_objects(agent_params, self.calculate_free_flow_times())
         self.action_space_size = environment_params[kc.ACTION_SPACE_SIZE]
-
-        self.possible_agents = [agent.id for agent in self.agents] 
 
         self.joint_action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
         self.joint_action = pd.DataFrame(columns = self.joint_action_cols)
@@ -26,21 +22,21 @@ class TrafficEnvironment:
 
 
     def start(self):
-        self.simulator.start_sumo()
+        self.simulator.start()
 
     def stop(self):
-        self.simulator.stop_sumo()
+        self.simulator.stop()
 
     def reset(self):
         self.joint_action = pd.DataFrame(columns = self.joint_action_cols)
         self.options_last_picked = dict()
-        self.simulator.reset_sumo()
+        self.simulator.reset()
 
 
     def calculate_free_flow_times(self):
         free_flow_times = self.simulator.calculate_free_flow_times()
-        self.print_free_flow_times(free_flow_times)
-        self.save_free_flow_times_csv(free_flow_times)
+        self._print_free_flow_times(free_flow_times)
+        self._save_free_flow_times_csv(free_flow_times)
         return free_flow_times
     
 
@@ -61,22 +57,22 @@ class TrafficEnvironment:
     def register_action(self, agent, action):
         action_data = [agent.id, agent.kind, action, agent.origin, agent.destination, agent.start_time]
         self.joint_action.loc[len(self.joint_action.index)] = {key : value for key, value in zip(self.joint_action_cols, action_data)}
-        self.update_options_last_picked(agent, action)
+        self._update_options_last_picked(agent, action)
 
     
-    def update_options_last_picked(self, agent, action):
+    def _update_options_last_picked(self, agent, action):
         action_key = f"{agent.origin}_{agent.destination}_{action}"
         self.options_last_picked[action_key] = max(self.options_last_picked.get(action_key, -1), agent.start_time)
 
 
-    def step(self):        
-        sumo_df = self.simulator.run_simulation_iteration(self.joint_action)
-        joint_observation = self.prepare_rewards(sumo_df, self.joint_action)
+    def step(self):   
+        sumo_df = self.simulator.simulate_episode(self.joint_action)
+        joint_observation = self._prepare_rewards(sumo_df, self.joint_action)
         info = {kc.LAST_SIM_DURATION: self.get_last_sim_duration()}
         return joint_observation, info
 
 
-    def prepare_rewards(self, sumo_df, joint_action):
+    def _prepare_rewards(self, sumo_df, joint_action):
         # Calculate reward from cost (skipped)
         observation_df = sumo_df.merge(joint_action, on=kc.AGENT_ID)
         observation_df[kc.REWARD] = observation_df[kc.TRAVEL_TIME]
@@ -99,7 +95,7 @@ class TrafficEnvironment:
         return self.simulator.get_last_sim_duration()
 
 
-    def print_free_flow_times(self, free_flow_times):
+    def _print_free_flow_times(self, free_flow_times):
         table = PrettyTable()
         table.field_names = ["Origin", "Destination", "Index", "FF Time"]
 
@@ -112,7 +108,7 @@ class TrafficEnvironment:
         print(table)
 
 
-    def save_free_flow_times_csv(self, free_flow_times):
+    def _save_free_flow_times_csv(self, free_flow_times):
         cols = [kc.ORIGINS, kc.DESTINATIONS, kc.PATH_INDEX, kc.FREE_FLOW_TIME]
         free_flow_pd = pd.DataFrame(columns=cols)
 
@@ -121,4 +117,4 @@ class TrafficEnvironment:
                 free_flow_pd.loc[len(free_flow_pd.index)] = [od[0], od[1], idx, time]
         save_to = make_dir(kc.RECORDS_FOLDER, kc.FREE_FLOW_TIMES_CSV_FILE_NAME)
         free_flow_pd.to_csv(save_to, index = False)
-        print(f"[SUCCESS] Free-flow travel times calculated and saved to: {save_to}")
+        print(f"[SUCCESS] Free-flow travel times saved to: {save_to}")

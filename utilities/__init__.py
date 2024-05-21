@@ -1,5 +1,4 @@
 from .utils import check_device
-from .utils import confirm_env_variable
 from .utils import df_to_prettytable
 from .utils import get_params
 from .utils import list_to_string
@@ -13,6 +12,3 @@ from .utils import resolve_param_dependencies
 from .utils import running_average
 
 from .create_agents import create_agent_objects
-
-from .path_generator import path_generator
-from .path_generator import cursed_path_generator

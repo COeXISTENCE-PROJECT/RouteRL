@@ -42,15 +42,11 @@ class Trainer:
 
             if episode in self.mutation_times:
                 agents = self.mutate_agents(episode, agents)
-            env.reset()
-            done = False
 
-            # Until the episode concludes
-            while not done:
-                self.submit_actions(env, agents)
-                observation_df, info = env.step()
-                self.teach_agents(agents, env.joint_action, observation_df)
-                done = True     # can condition this
+            env.reset()
+            self.submit_actions(env, agents)
+            observation_df, info = env.step()
+            self.teach_agents(agents, env.joint_action, observation_df)
 
             self.record(episode, training_start_time, env.joint_action, observation_df, agents, info[kc.LAST_SIM_DURATION])
             if self.frequent_progressbar: show_progress_bar("TRAINING", training_start_time, episode, self.num_episodes)
@@ -80,9 +76,9 @@ class Trainer:
         agent.learn(action, reward)
     
 
-    def record(self, episode, start_time, joint_action_df, joint_reward_df, agents, last_sim_duration):
+    def record(self, episode, start_time, joint_action_df, joint_observation_df, agents, last_sim_duration):
         if (not (episode % self.remember_every)) or (episode in self.remember_also):
-            self.recorder.remember_all(episode, joint_action_df, joint_reward_df, agents, last_sim_duration)
+            self.recorder.remember_all(episode, joint_action_df, joint_observation_df, agents, last_sim_duration)
             show_progress_bar("TRAINING", start_time, episode, self.num_episodes)
 
 
@@ -100,8 +96,10 @@ class Trainer:
 
     def show_training_time(self, start_time):
         now = time.time()
-        training_time = time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(now - start_time))
-        print(f"\n[COMPLETE] Training completed in: {training_time}")
+        elapsed = now - start_time
+        training_time = time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(elapsed))
+        sec_ep = "{:.2f}".format(elapsed/self.num_episodes)
+        print(f"\n[COMPLETE] Training completed in: {training_time} ({sec_ep} s/e)")
 
 
     def show_training_results(self):

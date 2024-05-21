@@ -9,7 +9,6 @@ class Keychain:
 
     PARAMS_PATH = "params.json"
 
-
     RECORDS_FOLDER = "training_records"
     EPISODES_LOGS_FOLDER = "episodes"
     AGENTS_LOGS_FOLDER = "agents"
@@ -43,13 +42,13 @@ class Keychain:
     TRAINING_PARAMETERS = "training_parameters"
     ENVIRONMENT_PARAMETERS = "environment_parameters"
     SIMULATION_PARAMETERS = "simulation_parameters"
+    PATH_GENERATION_PARAMETERS = "path_generation_parameters"
 
     # Agent generation
     AGENTS_DATA_PATH = "agents_data_path"
     NUM_AGENTS = "num_agents"
     RATIO_MUTATING = "ratio_mutating"
     RATIO_MUTATING_2 = "ratio_mutating_2"
-    SIMULATION_TIMESTEPS = "simulation_timesteps"
 
     ACTION_SPACE_SIZE = "action_space_size"
     HUMAN_PARAMETERS = "human_parameters"
@@ -83,14 +82,19 @@ class Keychain:
     # Simulation
     SUMO_TYPE = "sumo_type"
     SUMO_CONFIG_PATH = "sumo_config_path"
+    SIMULATION_TIMESTEPS = "simulation_timesteps"
+
+    # Path generation
     CONNECTION_FILE_PATH = "connection_file_path"
     EDGE_FILE_PATH = "edge_file_path" 
     ROUTE_FILE_PATH = "route_file_path"
     ROUTES_XML_SAVE_PATH = "routes_xml_save_path"
+    PATHS_CSV_SAVE_PATH = "paths_csv_save_path"
     PATHS_SAVE_PATH = "paths_save_path"
     NUMBER_OF_PATHS = "number_of_paths"
     ORIGINS = "origins"
     DESTINATIONS = "destinations"
+    WEIGHT = "weight"
 
     # Recorder
     RECORDER_PARAMETERS = "recorder_parameters"
@@ -134,6 +138,9 @@ class Keychain:
     PATH_INDEX = "path_index"
     FREE_FLOW_TIME = "free_flow_time"
     LAST_SIM_DURATION = "last_sim_duration"
+    ORIGIN = "origin"
+    DESTINATION = "destination"
+    PATH = "path"
 
     # Agent type encodings
     TYPE_HUMAN = "h"

@@ -4,5 +4,4 @@ plots/
 training_records/
 summary.xml
 tripinfo.xml
-route.rou.xml
 playground.py

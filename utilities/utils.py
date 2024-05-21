@@ -2,7 +2,6 @@ import json
 import numpy as np
 import os
 import random
-import sys
 import time
 import torch
 
@@ -13,18 +12,6 @@ from prettytable import PrettyTable
 def check_device():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"[INFO] Running on device: {device}")
-
-
-
-def confirm_env_variable(env_var, append=None):
-    if env_var in os.environ:
-        print("[CONFIRMED] Environment variable exists: %s" % env_var)
-        if append:
-            path = os.path.join(os.environ[env_var], append)
-            sys.path.append(path)
-            print("[SUCCESS] Added module directory: %s" % path)
-    else:
-        raise ImportError("Please declare the environment variable '%s'" % env_var)
     
 
 
@@ -130,13 +117,14 @@ def string_to_list(text, seperator, brackets=False):
 
 
 
-def df_to_prettytable(df, header_message="DATA", print_every=1):
+def df_to_prettytable(df, header_message=None, print_every=1):
     table = PrettyTable()
     table.field_names = df.columns.tolist()
     for index, row in df.iterrows():
         if not (index % print_every):
             table.add_row(row.tolist())
-    print(f"##### {header_message} #####")
+    if header_message:
+        print(f"##### {header_message} #####")
     print(table)
 
 
