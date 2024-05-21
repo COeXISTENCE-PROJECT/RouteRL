@@ -68,6 +68,7 @@ class Keychain:
     NUM_EPISODES = "num_episodes"
     REMEMBER_EVERY = "remember_every"
     MUTATION_TIME = "mutation_time"
+    HUMAN_LEARNING_LENGTH = "human_learning_length"
 
     # Environment
     TRANSPORT_PENALTY = "transport_penalty"

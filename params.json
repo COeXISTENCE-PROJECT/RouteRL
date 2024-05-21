@@ -5,6 +5,7 @@
         "num_episodes" : 200,
         "mutation_time" : 50,
         "remember_every" : 5,
+        "human_learning_length" : 200,
 
         "recorder_parameters":
         {

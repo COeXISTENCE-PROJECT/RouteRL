@@ -35,7 +35,7 @@ class TrafficEnvironment(ParallelEnv):
         "is_parallelizable": True,
     }
 
-    def __init__(self, environment_params, simulation_params, agent_params, nomachines, render_mode=None):
+    def __init__(self, training_params, environment_params, simulation_params, agent_params, nomachines, render_mode=None):
 
         self.simulation_params = simulation_params
         self.simulator = Simulator(simulation_params)
@@ -46,6 +46,7 @@ class TrafficEnvironment(ParallelEnv):
 
         self.agent_params = agent_params
         self.simulation_params = simulation_params
+        self.training_params = training_params
         self.nomachines = nomachines
         self.render_mode = render_mode
         self.humans_learning = True
@@ -253,20 +254,25 @@ class TrafficEnvironment(ParallelEnv):
         
 
     def return_observation(self):
-        matrix_shape = (self.num_paths)
+        matrix_shape = (self.num_paths,)
         agent_counts = np.zeros(matrix_shape, dtype=int)
+        num_agents_same_od = 0
 
         for index, row in self.human_joint_action.iterrows():
-
-            if(row['origin'] == self.origin[0] and row['destination'] == self.destination[0] and row['start_time'] <= self.start_times[0]):
+            if (row['origin'] == self.origin[0] and 
+                row['destination'] == self.destination[0] and 
+                row['start_time'] <= self.start_times[0]):
+                
+                num_agents_same_od += 1
                 action = row['action']
                 agent_counts[action] += 1
 
         observations = {
-            agents: agent_counts for agents in self.possible_agents
+            ## normalize the observatio table
+            agents: agent_counts/num_agents_same_od for agents in self.possible_agents
         }
 
-        print("observations are : ", observations, '\n\n')
+        print("Observations are:", observations, '\n')
 
         return observations
         
@@ -461,6 +467,7 @@ class TrafficEnvironment(ParallelEnv):
 
     def plot_rewards(self):
         sns.set_style("whitegrid")
+        max_len_before_mutation = self.training_params[kc.HUMAN_LEARNING_LENGTH]
 
         ## Choose 1 random agent and plot its rewards
         if self.possible_agents:
@@ -475,9 +482,8 @@ class TrafficEnvironment(ParallelEnv):
         else:
             random_human_agent = random.choice(self.human_agents)
             random_agents = [random_human_agent.id]
-
-
-        plt.figure(figsize=(100, 60))  # Adjust the figure size for better presentation
+        
+        plt.figure(figsize=(max_len_before_mutation, 20), dpi=1000)  # Adjust the figure size for better presentation
 
         ### Plot an agent that has the same origin-destination pair with the one learning
         # Iterate over the selected agents and plot their rewards
@@ -487,8 +493,8 @@ class TrafficEnvironment(ParallelEnv):
             plt.plot(self.table_before_mutation[human.id], linestyle='-', color=color, linewidth=1.5, label=f'Human Agent {human.id}')
 
         # Draw the vertical line
-        max_len_before_mutation = 299
-        plt.axvline(x=10, color='k', linestyle='--', label='Mutation Time', linewidth=1)
+        
+        plt.axvline(x=10, color='k', linestyle='--', label='Mutation Time', linewidth=5)
 
         # Plot the rest of the values
         for agent_index in random_agents:
@@ -506,14 +512,13 @@ class TrafficEnvironment(ParallelEnv):
             else:
                 plt.plot(np.arange(max_len_before_mutation, max_len_before_mutation + len(self.reward_table_humans[int(agent_index)])), self.reward_table_humans[int(agent_index)], linestyle='-', linewidth=1.5)
 
-
-        plt.xlabel('Episode', fontsize=16)  # Increase font size for better readability
-        plt.ylabel('Reward', fontsize=16)  # Increase font size for better readability
-        plt.title(f'Reward Table Over Episodes for {self.agent_params[kc.NUM_HUMAN_AGENTS]} agents', fontsize=16)  # Increase font size for better readability
-        plt.grid(True, linestyle='--', alpha=0.6)  # Reduce opacity of grid lines
-        plt.legend(loc='upper right', fontsize=14)  # Adjust legend position and font size
-        plt.tight_layout()  # Ensure tight layout
-        #plt.savefig(filename)  # Uncomment if you want to save the plot
+        plt.tick_params(axis='both', which='major', labelsize=10)
+        plt.xlabel('Episode', fontsize=10)
+        plt.ylabel('Reward', fontsize=10)  
+        plt.title(f'Reward Table Over Episodes for {self.agent_params[kc.NUM_HUMAN_AGENTS]} agents', fontsize=10) 
+        plt.grid(True, linestyle='--', alpha=1)  
+        plt.legend(loc='upper right', fontsize=10) 
+        plt.tight_layout()
         plt.show()
 
         
