@@ -476,7 +476,8 @@ class TrafficEnvironment(ParallelEnv):
             random_human_agent = random.choice(self.human_agents)
             random_agents = [random_human_agent.id]
 
-        plt.figure(figsize=(300, 60))  # Adjust the figure size for better presentation
+
+        plt.figure(figsize=(100, 60))  # Adjust the figure size for better presentation
 
         ### Plot an agent that has the same origin-destination pair with the one learning
         # Iterate over the selected agents and plot their rewards
@@ -501,16 +502,16 @@ class TrafficEnvironment(ParallelEnv):
                     # Plot the rest of the rewards
                     plt.plot(np.arange(max_len_before_mutation + 1, max_len_before_mutation + len(self.reward_table_humans[human.id]) + 1), self.reward_table_humans[human.id], linestyle='-', color=color, linewidth=1.5)
                 # Plot machine agent's rewards
-                plt.plot(np.arange(max_len_before_mutation + 1, max_len_before_mutation + len(self.reward_table[agent_index]) + 1), self.reward_table[agent_index], linestyle='-', linewidth=4, label=f'Machine Agent')
+                plt.plot(np.arange(max_len_before_mutation + 1, max_len_before_mutation + len(self.reward_table[agent_index]) + 1), self.reward_table[agent_index], linestyle='-', linewidth=2.5, label=f'Machine Agent')
             else:
                 plt.plot(np.arange(max_len_before_mutation, max_len_before_mutation + len(self.reward_table_humans[int(agent_index)])), self.reward_table_humans[int(agent_index)], linestyle='-', linewidth=1.5)
 
 
-        plt.xlabel('Episode', fontsize=14)  # Increase font size for better readability
-        plt.ylabel('Reward', fontsize=14)  # Increase font size for better readability
+        plt.xlabel('Episode', fontsize=16)  # Increase font size for better readability
+        plt.ylabel('Reward', fontsize=16)  # Increase font size for better readability
         plt.title(f'Reward Table Over Episodes for {self.agent_params[kc.NUM_HUMAN_AGENTS]} agents', fontsize=16)  # Increase font size for better readability
-        plt.grid(True, linestyle='--', alpha=0.3)  # Reduce opacity of grid lines
-        plt.legend(loc='upper right', fontsize=12)  # Adjust legend position and font size
+        plt.grid(True, linestyle='--', alpha=0.6)  # Reduce opacity of grid lines
+        plt.legend(loc='upper right', fontsize=14)  # Adjust legend position and font size
         plt.tight_layout()  # Ensure tight layout
         #plt.savefig(filename)  # Uncomment if you want to save the plot
         plt.show()
