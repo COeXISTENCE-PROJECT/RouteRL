@@ -76,14 +76,15 @@ class Recorder:
             loss = getattr(a.model, 'loss', None)
             if loss is not None:
                 losses.append(loss)
-        mean_losses = [0] * len(losses[-1])
-        for loss in losses:
-            for i, l in enumerate(loss):
-                mean_losses[i] += l
-        mean_losses = [m / len(losses) for m in mean_losses]
-        with open(self.loss_file_path, "w") as file:
-            for m_l in mean_losses:
-                file.write(f"{m_l}\n")
+        if losses:
+            mean_losses = [0] * len(losses[-1])
+            for loss in losses:
+                for i, l in enumerate(loss):
+                    mean_losses[i] += l
+            mean_losses = [m / len(losses) for m in mean_losses]
+            with open(self.loss_file_path, "w") as file:
+                for m_l in mean_losses:
+                    file.write(f"{m_l}\n")
 
 ####################
             

@@ -59,6 +59,7 @@ class Keychain:
     GAWRON = "gawron"
     DQN = "dqn"
     Q = "q"
+    APPEARANCE_PHASE = "appearance_phase"
     ALPHA = "alpha"
     BETA = "beta"
     BETA_RANDOMNESS = "beta_randomness"
@@ -73,6 +74,7 @@ class Keychain:
     # Training
     NUM_EPISODES = "num_episodes"
     REMEMBER_EVERY = "remember_every"
+    PHASES = "phases"
     MUTATION_TIME = "mutation_time"
     SECOND_MUTATION_TIME = "second_mutation_time"
     FREQUENT_PROGRESSBAR_UPDATE = "frequent_progressbar_update"
@@ -143,8 +145,8 @@ class Keychain:
     PATH = "path"
 
     # Agent type encodings
-    TYPE_HUMAN = "h"
-    TYPE_MACHINE = "m"
-    TYPE_MACHINE_2 = "m2"
+    TYPE_HUMAN = "Human"
+    TYPE_MACHINE = "Machine"
+    TYPE_MACHINE_2 = "Machine_2"
 
     ###########################################################

@@ -18,15 +18,16 @@ class Trainer:
 
     def __init__(self, params):
         self.num_episodes = params[kc.NUM_EPISODES]
-        self.mutation_time, self.second_mutation_time  = params[kc.MUTATION_TIME], params[kc.SECOND_MUTATION_TIME]
-        self.mutation_times = [self.mutation_time, self.second_mutation_time]
+        self.phases = [1] + params[kc.PHASES]
 
         self.frequent_progressbar = params[kc.FREQUENT_PROGRESSBAR_UPDATE]
         self.remember_every = params[kc.REMEMBER_EVERY]
-        self.remember_also = {1, self.num_episodes, self.mutation_time-1, self.mutation_time, self.second_mutation_time-1, self.second_mutation_time}
+        self.remember_episodes = [ep for ep in range(self.remember_every, self.num_episodes+1, self.remember_every)]
+        self.remember_episodes += [1, self.num_episodes] + [ep-1 for ep in self.phases] + [ep for ep in self.phases]
+        self.remember_episodes = set(self.remember_episodes)
 
         self.recorder = Recorder(params[kc.RECORDER_PARAMETERS])
-        self.plotter = Plotter(self.mutation_time, self.second_mutation_time, self.recorder, params[kc.PLOTTER_PARAMETERS])
+        self.plotter = Plotter(self.phases, self.recorder, params[kc.PLOTTER_PARAMETERS])
 
 
     # Training loop
@@ -36,12 +37,14 @@ class Trainer:
 
         print(f"\n[INFO] Training is starting with {self.num_episodes} episodes.")
         training_start_time = time.time()
-
+        curr_phase = -1
         # Until we simulate num_episode episodes
         for episode in range(1, self.num_episodes+1):
 
-            if episode in self.mutation_times:
-                agents = self.mutate_agents(episode, agents)
+            if episode in self.phases:
+                curr_phase += 1
+                print(f"\n[INFO] Phase {curr_phase} started at episode {episode}!")
+                agents = self.mutate_agents(episode, curr_phase, agents)
 
             env.reset()
             self.submit_actions(env, agents)
@@ -77,20 +80,24 @@ class Trainer:
     
 
     def record(self, episode, start_time, joint_action_df, joint_observation_df, agents, last_sim_duration):
-        if (not (episode % self.remember_every)) or (episode in self.remember_also):
+        if (episode in self.remember_episodes):
             self.recorder.remember_all(episode, joint_action_df, joint_observation_df, agents, last_sim_duration)
             show_progress_bar("TRAINING", start_time, episode, self.num_episodes)
 
 
-    def mutate_agents(self, episode, agents):
-        mutate_to = kc.TYPE_MACHINE if episode == self.mutation_time else kc.TYPE_MACHINE_2
+    def mutate_agents(self, episode, curr_phase, agents):
+        anyone_mutated = False
         for idx, agent in enumerate(agents):
-            if getattr(agent, 'mutate_type', None) == mutate_to:
+            if getattr(agent, 'mutate_phase', None) == curr_phase:
                 agents[idx] = agent.mutate()
-        counts = Counter([agent.kind for agent in agents])
-        mutated_to = "machines" if episode == self.mutation_time else "disruptive machines"
-        print(f"\n[INFO] Some humans mutated to {mutated_to} at episode {episode}!")
-        print(f"[INFO] Number of humans: {counts[kc.TYPE_HUMAN]}, machines: {counts[kc.TYPE_MACHINE]}, disruptive machines: {counts[kc.TYPE_MACHINE_2]}")
+                anyone_mutated = True
+        if anyone_mutated:
+            counts = Counter([agent.kind for agent in agents])
+            info_text = "[INFO] Some humans mutated: "
+            info_text +=f" Humans: {counts[kc.TYPE_HUMAN]} " if counts[kc.TYPE_HUMAN] else ""
+            info_text +=f" Machines: {counts[kc.TYPE_MACHINE]} " if counts[kc.TYPE_MACHINE] else ""
+            info_text +=f" Disruptive Machines: {counts[kc.TYPE_MACHINE_2]}" if counts[kc.TYPE_MACHINE_2] else ""
+            print(info_text)
         return agents
 
 

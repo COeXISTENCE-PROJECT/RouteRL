@@ -35,12 +35,19 @@ class Agent(ABC):
 
 
 class HumanAgent(Agent):
-    def __init__(self, id, start_time, origin, destination, params, initial_knowledge, mutate_to=None, mutate_type=None):
+    def __init__(self, id, start_time, origin, destination, params, initial_knowledge, mutate_to=None):
         kind = kc.TYPE_HUMAN
         super().__init__(id, kind, start_time, origin, destination)
         self.mutate_to = mutate_to
-        self.mutate_type = mutate_type
         self.model = Gawron(params, initial_knowledge)
+
+    @property
+    def mutate_type(self):
+        return getattr(self.mutate_to, 'kind', None)
+    
+    @property
+    def mutate_phase(self):
+        return getattr(self.mutate_to, 'appearance_phase', None)
 
     def act(self, observation):  
         return self.model.act(observation)  
@@ -62,6 +69,7 @@ class MachineAgent(Agent):
         super().__init__(id, kind, start_time, origin, destination)
         self.model = QLearning(params, action_space_size)
         self.last_state = None
+        self.appearance_phase = params[kc.APPEARANCE_PHASE]
 
     def act(self, observation):
         state = self.get_state(observation)
@@ -84,6 +92,7 @@ class DisruptiveMachineAgent(Agent):
         self.state_size = action_space_size
         self.model = DQN(params, self.state_size, self.action_space_size)
         self.last_state = None
+        self.appearance_phase = params[kc.APPEARANCE_PHASE]
 
     def act(self, observation):
         state = self.get_state(observation)

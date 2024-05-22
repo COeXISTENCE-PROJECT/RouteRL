@@ -3,9 +3,8 @@
     "training_parameters":
     {
         "num_episodes" : 5000,
-        "mutation_time" : 500,
-        "second_mutation_time" : 2000,
         "remember_every" : 20,
+        "phases" : [500],
         "frequent_progressbar_update" : false,
 
         "recorder_parameters":
@@ -43,6 +42,8 @@
 
         "machine_parameters" :
         {
+            "appearance_phase" : -1,
+            "behavior" : "social",
             "model" : "Q",
             "alpha" : 0.3,
             "epsilon" : 0.85,
@@ -51,6 +52,8 @@
 
         "disruptive_machine_parameters" :
         {
+            "appearance_phase" : 1,
+            "behavior" : "disruptive",
             "model" : "DQN",
             "epsilon" : 0.99,
             "epsilon_decay_rate" : 0.997,

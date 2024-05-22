@@ -83,10 +83,12 @@ class TrafficEnvironment:
         observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.REWARD] *= 0.5
         observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.REWARD] += (machines_mean_travel_times * 0.5)
 
-        # Disruptive machines rewards (to minimize) = machines2_mean_travel_time - machines_mean_time
+        # Disruptive machines rewards (to minimize) = 0.3 x own_time + 0.3 x machines2_mean_travel_time - 0.4 x humans_mean_time
         machines2_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME].mean()
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.REWARD] = machines2_mean_travel_times
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.REWARD] -= machines_mean_travel_times
+        humans_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_HUMAN, kc.TRAVEL_TIME].mean()
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.REWARD] *= 0.3
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.REWARD] += (0.3 * machines2_mean_travel_times)
+        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.REWARD] -= (0.4 * humans_mean_travel_times)
 
         return observation_df[[kc.AGENT_ID, kc.TRAVEL_TIME, kc.REWARD]]
 

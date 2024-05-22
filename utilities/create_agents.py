@@ -41,13 +41,13 @@ def create_agent_objects(params, free_flow_times):
             agent_params = params[kc.HUMAN_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
             mutate_to = MachineAgent(id, start_time, origin, destination, params[kc.MACHINE_PARAMETERS], action_space_size)
-            new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, mutate_to, kc.TYPE_MACHINE)
+            new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, mutate_to)
             agents.append(new_agent)
         elif row_dict[kc.AGENT_KIND] == kc.TYPE_MACHINE_2:
             agent_params = params[kc.HUMAN_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
             mutate_to = DisruptiveMachineAgent(id, start_time, origin, destination, params[kc.DISRUPTIVE_MACHINE_PARAMETERS], action_space_size)
-            new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, mutate_to, kc.TYPE_MACHINE_2)
+            new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, mutate_to)
             agents.append(new_agent)
         elif row_dict[kc.AGENT_KIND] == kc.TYPE_HUMAN:
             agent_params = params[kc.HUMAN_PARAMETERS]
