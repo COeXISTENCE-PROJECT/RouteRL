@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import random
 
@@ -72,15 +73,24 @@ def generate_agents_data(num_agents, ratio_mutating, ratio_mutating2, agent_attr
 
     agents_df = pd.DataFrame(columns=agent_attributes)  # Where we store our agents
 
+    # Generating agent data
     for id in range(num_agents):
-        # Generating agent data
+        
+        # Decide on agent type 
         kind_token, agent_type = random.random(), kc.TYPE_HUMAN
         if kind_token < ratio_mutating:
             agent_type = kc.TYPE_MACHINE
         elif kind_token < (ratio_mutating + ratio_mutating2):
             agent_type = kc.TYPE_MACHINE_2
+
+        # Randomly assign origin & destination
         origin, destination = random.randrange(num_origins), random.randrange(num_destinations)
-        start_time = random.randrange(simulation_timesteps)
+
+        # Randomly assign start time (normal dist)
+        mean_timestep = simulation_timesteps / 2
+        std_dev_timestep = simulation_timesteps / 6
+        start_time = int(np.random.normal(mean_timestep, std_dev_timestep))
+        start_time = max(0, min(simulation_timesteps, start_time))
 
         # Registering to the dataframe
         agent_features = [id, origin, destination, start_time, agent_type]

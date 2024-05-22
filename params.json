@@ -75,7 +75,7 @@
     "simulation_parameters":
     {
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
-        "simulation_timesteps" : 1800,
+        "simulation_timesteps" : 3600,
 
         "sumo_type" : "sumo",
         "sumo_config_path" : "network_and_config/csomor1.sumocfg",
