@@ -395,7 +395,7 @@ class TrafficEnvironment(ParallelEnv):
         logging.info("Now there are %s human agents.\n", len(self.human_agents))
 
         self.table_before_mutation = self.reward_table_humans
-        self.empty_reward_action_tables()
+        #self.empty_reward_action_tables()
         print("self.table_before_mutation is: ", self.table_before_mutation, "\n\n\n")
 
         self.possible_agents = [str(i) for i in range(1, 2)]
@@ -467,65 +467,87 @@ class TrafficEnvironment(ParallelEnv):
 
     def plot_rewards(self):
         sns.set_style("whitegrid")
-        max_len_before_mutation = self.training_params[kc.HUMAN_LEARNING_LENGTH]
+        mutation_episode = self.training_params[kc.HUMAN_LEARNING_LENGTH]
+        print("mutation episode is: ", mutation_episode, "\n\n\n")
 
-        ## Choose 1 random agent and plot its rewards
+        ## If there are machine agents in the environment
         if self.possible_agents:
             random_agents = random.sample(self.possible_agents, 1)
 
+            ## Plot humans that have the same origin destination pair with the machine agent
             human_agents = [agent for agent in self.human_agents if agent.origin == self.origin[0] and agent.destination == self.destination[0]]
-            print("len of human agents is: ", len(human_agents), "\n\n\n")
             human_agents = random.sample(human_agents, 3)
-            for human in human_agents:
-                print("human agent origin is: ", human.origin, human.destination, "\n\n\n")
 
         else:
-            random_human_agent = random.choice(self.human_agents)
-            random_agents = [random_human_agent.id]
-        
-        plt.figure(figsize=(max_len_before_mutation, 20), dpi=1000)  # Adjust the figure size for better presentation
+            human_agents = random.sample(self.human_agents, 3)
+
+
+        plt.figure(figsize=(10, 7), dpi=200) 
+
 
         ### Plot an agent that has the same origin-destination pair with the one learning
         # Iterate over the selected agents and plot their rewards
-        colors = plt.cm.viridis(np.linspace(0, 1, len(human_agents)))  # Generate a set of colors for human agents
+        #colors = plt.cm.Dark2(np.linspace(0, 1, len(human_agents))) 
+        colors = ['red', 'blue', 'green', 'black']
         for idx, human in enumerate(human_agents):
-            color = colors[idx]  # Get a color for the current human agent
-            plt.plot(self.table_before_mutation[human.id], linestyle='-', color=color, linewidth=1.5, label=f'Human Agent {human.id}')
+            color = colors[idx] 
+            plt.plot(self.reward_table_humans[human.id], linestyle='-', color=color, linewidth=1.5, label=f'Human Agent {human.id}')
 
-        # Draw the vertical line
-        
-        plt.axvline(x=10, color='k', linestyle='--', label='Mutation Time', linewidth=5)
 
-        # Plot the rest of the values
-        for agent_index in random_agents:
-            if self.possible_agents:
-                for idx, human in enumerate(human_agents):
-                    color = colors[idx]  # Get the same color for the current human agent
-                    # Plot a line segment connecting the last point of self.table_before_mutation and the first point of self.reward_table_humans
-                    x_values = [max_len_before_mutation, max_len_before_mutation + 1]
-                    y_values = [self.table_before_mutation[human.id][-1], self.reward_table_humans[human.id][0]]
-                    plt.plot(x_values, y_values, linestyle='-', color=color, linewidth=1.5)
-                    # Plot the rest of the rewards
-                    plt.plot(np.arange(max_len_before_mutation + 1, max_len_before_mutation + len(self.reward_table_humans[human.id]) + 1), self.reward_table_humans[human.id], linestyle='-', color=color, linewidth=1.5)
-                # Plot machine agent's rewards
-                plt.plot(np.arange(max_len_before_mutation + 1, max_len_before_mutation + len(self.reward_table[agent_index]) + 1), self.reward_table[agent_index], linestyle='-', linewidth=2.5, label=f'Machine Agent')
-            else:
-                plt.plot(np.arange(max_len_before_mutation, max_len_before_mutation + len(self.reward_table_humans[int(agent_index)])), self.reward_table_humans[int(agent_index)], linestyle='-', linewidth=1.5)
+        if self.possible_agents:
 
-        plt.tick_params(axis='both', which='major', labelsize=10)
-        plt.xlabel('Episode', fontsize=10)
-        plt.ylabel('Reward', fontsize=10)  
-        plt.title(f'Reward Table Over Episodes for {self.agent_params[kc.NUM_HUMAN_AGENTS]} agents', fontsize=10) 
+            # Draw the mutation vertical line
+            plt.axvline(x=mutation_episode, color='k', linestyle='--', label='Mutation Time', linewidth=5)
+
+            # Plot the rest of the values
+            for agent_index in random_agents:
+                if self.possible_agents:
+                    for idx, human in enumerate(human_agents):
+                        color = colors[idx]  # Get the same color for the current human agent
+                        # Plot a line segment connecting the last point of self.table_before_mutation and the first point of self.reward_table_humans
+                        x_values = [mutation_episode, mutation_episode + 1]
+                        y_values = [self.table_before_mutation[human.id][-1], self.reward_table_humans[human.id][0]]
+                        plt.plot(x_values, y_values, linestyle='-', color=color, linewidth=1.5)
+                        # Plot the rest of the rewards
+                        plt.plot(np.arange(mutation_episode + 1, mutation_episode + len(self.reward_table_humans[human.id]) + 1), self.reward_table_humans[human.id], linestyle='-', color=color, linewidth=1.5)
+                    # Plot machine agent's rewards
+                    plt.plot(np.arange(mutation_episode + 1, mutation_episode + len(self.reward_table[agent_index]) + 1), self.reward_table[agent_index], linestyle='-', linewidth=2.5, label=f'Machine Agent')
+                else:
+                    plt.plot(np.arange(mutation_episode, mutation_episode + len(self.reward_table_humans[int(agent_index)])), self.reward_table_humans[int(agent_index)], linestyle='-', linewidth=1.5)
+
+        plt.tick_params(axis='both', which='major', labelsize=14)
+        plt.xlabel('Episode', fontsize=14)
+        plt.ylabel('Reward', fontsize=14)  
+        plt.title(f'Reward Table Over Episodes for {self.agent_params[kc.NUM_HUMAN_AGENTS]} agents', fontsize=16) 
         plt.grid(True, linestyle='--', alpha=1)  
-        plt.legend(loc='upper right', fontsize=10) 
+        plt.legend(loc='upper right', fontsize=12) 
         plt.tight_layout()
         plt.show()
 
         
     def plot_actions(self):
         sns.set_style("whitegrid")
+        mutation_episode = self.training_params[kc.HUMAN_LEARNING_LENGTH]
 
+        ## If there are machine agents in the environment
         if self.possible_agents:
+            random_agents = random.sample(self.possible_agents, 1)
+
+            ## Plot humans that have the same origin destination pair with the machine agent
+            human_agents = [agent for agent in self.human_agents if agent.origin == self.origin[0] and agent.destination == self.destination[0]]
+            human_agents = random.sample(human_agents, 3)
+            
+        else:
+            human_agents = random.sample(self.human_agents, 3)
+
+        plt.figure(figsize=(10, 7), dpi=200) 
+
+        colors = ['red', 'blue', 'green']
+        for idx, human in enumerate(human_agents):
+            color = colors[idx]  # Get a color for the current human agent
+            plt.plot(self.action_table_humans[human.id], linestyle='-', color=color, linewidth=1.5, label=f'Human Agent {human.id}')
+
+        """if self.possible_agents:
             random_agents = random.sample(self.possible_agents, 1)
 
             human_agents = [agent for agent in self.human_agents if agent.origin == self.origin[0] and agent.destination == self.destination[0]]
@@ -537,6 +559,8 @@ class TrafficEnvironment(ParallelEnv):
             random_human_agent = random.choice(self.human_agents)
             random_agents = random_human_agent.id
             random_agents = [random_agents]
+        
+
 
         plt.figure(figsize=(10, 6))  # Adjust figure size
 
@@ -545,7 +569,7 @@ class TrafficEnvironment(ParallelEnv):
                 plt.plot(self.action_table[agent_index], linestyle='-', linewidth=2, label=f'Machine Agent {agent_index}')
                 plt.plot(self.action_table_humans[human_agent.id], linestyle='-', linewidth=2, label=f'Human Agent {human_agent.id}')
             else:
-                plt.plot(self.action_table_humans[int(agent_index)], linestyle='-', linewidth=2, label=f'Human Agent {agent_index}')
+                plt.plot(self.action_table_humans[int(agent_index)], linestyle='-', linewidth=2, label=f'Human Agent {agent_index}')"""
 
         plt.xlabel('Episode', fontsize=14)  # Increase font size for readability
         plt.ylabel('Action', fontsize=14)  # Increase font size for readability
