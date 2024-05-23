@@ -16,8 +16,6 @@ class TrafficEnvironment:
         self.joint_action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
         self.joint_action = pd.DataFrame(columns = self.joint_action_cols)
 
-        self.options_last_picked = dict()
-
         print("[SUCCESS] Environment initiated!")
 
 
@@ -29,7 +27,6 @@ class TrafficEnvironment:
 
     def reset(self):
         self.joint_action = pd.DataFrame(columns = self.joint_action_cols)
-        self.options_last_picked = dict()
         self.simulator.reset()
 
 
@@ -47,12 +44,6 @@ class TrafficEnvironment:
     def register_action(self, agent, action):
         action_data = [agent.id, agent.kind, action, agent.origin, agent.destination, agent.start_time]
         self.joint_action.loc[len(self.joint_action.index)] = {key : value for key, value in zip(self.joint_action_cols, action_data)}
-        self._update_options_last_picked(agent, action)
-
-    
-    def _update_options_last_picked(self, agent, action):
-        action_key = f"{agent.origin}_{agent.destination}_{action}"
-        self.options_last_picked[action_key] = max(self.options_last_picked.get(action_key, -1), agent.start_time)
 
 
     def step(self):
