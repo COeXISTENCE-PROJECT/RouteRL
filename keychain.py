@@ -149,6 +149,7 @@ class Keychain:
     # Behavior encodings
     SELFISH = "selfish"
     COMPETITIVE = "competitive"
+    COLLABORATIVE = "collaborative"
     SOCIAL = "social"
     ALTURISTIC = "alturistic"
 

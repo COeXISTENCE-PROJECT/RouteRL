@@ -107,9 +107,9 @@ class HumanAgent(BaseAgent):
         return self.model.act(observation)  
 
     def learn(self, action, observation):
+        reward = self.get_reward(observation)
+        self.last_reward = reward
         if self.is_learning:
-            reward = self.get_reward(observation)
-            self.last_reward = reward
             self.model.learn(None, action, reward)
 
     def get_state(self, observation):
@@ -163,9 +163,9 @@ class MachineAgent(BaseAgent):
         return self.model.act(state)
 
     def learn(self, action, observation):
+        reward = self.get_reward(observation)
+        self.last_reward = reward
         if self.is_learning:
-            reward = self.get_reward(observation)
-            self.last_reward = reward
             self.model.learn(self.last_state, action, reward)
 
     def get_state(self, observation):
@@ -204,6 +204,8 @@ class MachineAgent(BaseAgent):
             a, b, c, d = 1, 0, 0, 0
         elif self.behavior == kc.COMPETITIVE:
             a, b, c, d = 2, 0, -1, 0
+        elif self.behavior == kc.COLLABORATIVE:
+            a, b, c, d = 0.5, 0.5, 0, 0
         elif self.behavior == kc.SOCIAL:
             a, b, c, d = 0.5, 0, 0, 0.5
         elif self.behavior == kc.ALTURISTIC:
