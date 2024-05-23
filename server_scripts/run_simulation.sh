@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=traffic_simulation
-#SBATCH --qos=normal
+#SBATCH --qos=big
 #SBATCH --gres=gpu:1
-#SBATCH --mem=32G
+#SBATCH --mem=64G
 #SBATCH --cpus-per-task=4
 #SBATCH --partition=dgx
 
