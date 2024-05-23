@@ -2,10 +2,10 @@
     
     "training_parameters":
     {
-        "num_episodes" : 20,
-        "remember_every" : 1,
-        "phases" : [5, 15],
-        "frequent_progressbar_update" : true,
+        "num_episodes" : 5000,
+        "remember_every" : 25,
+        "phases" : [1000, 3000],
+        "frequent_progressbar_update" : false,
 
         "recorder_parameters":
         {
@@ -22,7 +22,7 @@
     "agent_generation_parameters" :
     {
         "num_agents" : 1200,
-        "ratio_mutating" : 0.25,
+        "ratio_mutating" : 0.33,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",
         "origins" : "${path_generation_parameters.origins}",
@@ -44,13 +44,13 @@
         {
             "appearance_phase" : 1,
             "learning_phases" : [1, 2],
-            "behavior" : "disruptive",
+            "behavior" : "selfish",
             "model" : "DQN",
-            "observed_span" : 600,
+            "observed_span" : 300,
             "epsilon" : 0.99,
             "epsilon_decay_rate" : 0.998,
             "buffer_size" : 256,
-            "batch_size" : 2,
+            "batch_size" : 32,
             "learning_rate" : 0.003,
             "num_hidden" : 2,
             "widths" : [32, 64, 32]
