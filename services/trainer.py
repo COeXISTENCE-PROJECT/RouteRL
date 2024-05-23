@@ -44,14 +44,14 @@ class Trainer:
             if episode in self.phases:
                 curr_phase += 1
                 print(f"\n[INFO] Phase {curr_phase} started at episode {episode}!")
-                agents = self.mutate_agents(episode, curr_phase, agents)
+                agents = self.realize_phase(curr_phase, agents)
 
             env.reset()
             self.submit_actions(env, agents)
             observation_df, info = env.step()
             self.teach_agents(agents, env.joint_action, observation_df)
 
-            self.record(episode, training_start_time, env.joint_action, observation_df, agents, info[kc.LAST_SIM_DURATION])
+            self.record(episode, training_start_time, env.joint_action, observation_df, self.get_rewards(agents), agents, info[kc.LAST_SIM_DURATION])
             if self.frequent_progressbar: show_progress_bar("TRAINING", training_start_time, episode, self.num_episodes)
 
         self.show_training_time(training_start_time)
@@ -62,42 +62,49 @@ class Trainer:
 
     def submit_actions(self, env, agents):
         for agent in agents:
-            observation = env.get_observation(agent.kind, agent.origin, agent.destination)
+            observation = env.get_observation()
             action = agent.act(observation)
             env.register_action(agent, action)
 
 
     def teach_agents(self, agents, joint_action_df, observation_df):
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = [executor.submit(self.learn_agent, agent, joint_action_df, observation_df) for agent in agents]
-            concurrent.futures.wait(futures)
+            teach_tasks = [executor.submit(self.learn_agent, agent, joint_action_df, observation_df) for agent in agents]
+            concurrent.futures.wait(teach_tasks)
         
 
     def learn_agent(self, agent, joint_action_df, observation_df):
         action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION].item()
-        reward = observation_df.loc[observation_df[kc.AGENT_ID] == agent.id, kc.REWARD].item()
-        agent.learn(action, reward)
+        agent.learn(action, observation_df)
+
+
+    def get_rewards(self, agents):
+        rewards_df = pd.DataFrame(columns=[kc.AGENT_ID, kc.REWARD])
+        for agent in agents:
+            reward = agent.last_reward
+            rewards_df.loc[len(rewards_df.index)] = [agent.id, reward]
+        return rewards_df
     
 
-    def record(self, episode, start_time, joint_action_df, joint_observation_df, agents, last_sim_duration):
+    def record(self, episode, start_time, joint_action_df, joint_observation_df, rewards_df, agents, last_sim_duration):
         if (episode in self.remember_episodes):
-            self.recorder.remember_all(episode, joint_action_df, joint_observation_df, agents, last_sim_duration)
+            self.recorder.remember_all(episode, joint_action_df, joint_observation_df, rewards_df, agents, last_sim_duration)
             show_progress_bar("TRAINING", start_time, episode, self.num_episodes)
 
 
-    def mutate_agents(self, episode, curr_phase, agents):
-        anyone_mutated = False
+    def realize_phase(self, curr_phase, agents):
         for idx, agent in enumerate(agents):
             if getattr(agent, 'mutate_phase', None) == curr_phase:
                 agents[idx] = agent.mutate()
-                anyone_mutated = True
-        if anyone_mutated:
-            counts = Counter([agent.kind for agent in agents])
-            info_text = "[INFO] Some humans mutated: "
-            info_text +=f" Humans: {counts[kc.TYPE_HUMAN]} " if counts[kc.TYPE_HUMAN] else ""
-            info_text +=f" Machines: {counts[kc.TYPE_MACHINE]} " if counts[kc.TYPE_MACHINE] else ""
-            info_text +=f" Disruptive Machines: {counts[kc.TYPE_MACHINE_2]}" if counts[kc.TYPE_MACHINE_2] else ""
-            print(info_text)
+        for agent in agents:
+            agent.is_learning = curr_phase
+        counts = Counter([agent.kind for agent in agents])
+        info_text = "[INFO]"
+        info_text +=f" Humans: {counts[kc.TYPE_HUMAN]} " if counts[kc.TYPE_HUMAN] else ""
+        info_text +=f" Machines: {counts[kc.TYPE_MACHINE]} " if counts[kc.TYPE_MACHINE] else ""
+        print(info_text)
+        learning_situation = [agent.is_learning for agent in agents]
+        print(f"[INFO] Number of learning agents: {sum(learning_situation)}")
         return agents
 
 

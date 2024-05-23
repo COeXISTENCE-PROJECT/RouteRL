@@ -4,7 +4,7 @@ import random
 
 from prettytable import PrettyTable
 
-from agent import MachineAgent, DisruptiveMachineAgent, HumanAgent
+from agent import MachineAgent, HumanAgent
 from keychain import Keychain as kc
 from utilities import make_dir
 
@@ -18,7 +18,6 @@ def create_agent_objects(params, free_flow_times):
     # Getting parameters
     num_agents = params[kc.NUM_AGENTS]
     ratio_mutating = params[kc.RATIO_MUTATING]
-    ratio_mutating_2 = params[kc.RATIO_MUTATING_2]
     simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]
     num_origins = len(params[kc.ORIGINS])
     num_destinations = len(params[kc.DESTINATIONS])
@@ -27,7 +26,7 @@ def create_agent_objects(params, free_flow_times):
     action_space_size = params[kc.ACTION_SPACE_SIZE]
     
     # Generating agent data
-    agents_data_df = generate_agents_data(num_agents, ratio_mutating, ratio_mutating_2,
+    agents_data_df = generate_agents_data(num_agents, ratio_mutating,
                                           agent_attributes, simulation_timesteps, num_origins, num_destinations)
     agents = list() # Where we will store & return agents
     
@@ -44,12 +43,6 @@ def create_agent_objects(params, free_flow_times):
             mutate_to = MachineAgent(id, start_time, origin, destination, params[kc.MACHINE_PARAMETERS], action_space_size)
             new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, mutate_to)
             agents.append(new_agent)
-        elif row_dict[kc.AGENT_KIND] == kc.TYPE_MACHINE_2:
-            agent_params = params[kc.HUMAN_PARAMETERS]
-            initial_knowledge = free_flow_times[(origin, destination)]
-            mutate_to = DisruptiveMachineAgent(id, start_time, origin, destination, params[kc.DISRUPTIVE_MACHINE_PARAMETERS], action_space_size)
-            new_agent = HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, mutate_to)
-            agents.append(new_agent)
         elif row_dict[kc.AGENT_KIND] == kc.TYPE_HUMAN:
             agent_params = params[kc.HUMAN_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
@@ -63,7 +56,7 @@ def create_agent_objects(params, free_flow_times):
 
 
 
-def generate_agents_data(num_agents, ratio_mutating, ratio_mutating2, agent_attributes, simulation_timesteps, num_origins, num_destinations):
+def generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulation_timesteps, num_origins, num_destinations):
 
     """
     Generates agents data
@@ -80,8 +73,6 @@ def generate_agents_data(num_agents, ratio_mutating, ratio_mutating2, agent_attr
         kind_token, agent_type = random.random(), kc.TYPE_HUMAN
         if kind_token < ratio_mutating:
             agent_type = kc.TYPE_MACHINE
-        elif kind_token < (ratio_mutating + ratio_mutating2):
-            agent_type = kc.TYPE_MACHINE_2
 
         # Randomly assign origin & destination
         origin, destination = random.randrange(num_origins), random.randrange(num_destinations)

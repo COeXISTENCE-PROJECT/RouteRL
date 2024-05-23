@@ -4,7 +4,7 @@
     {
         "num_episodes" : 5000,
         "remember_every" : 20,
-        "phases" : [500],
+        "phases" : [500, 2000],
         "frequent_progressbar_update" : false,
 
         "recorder_parameters":
@@ -21,9 +21,8 @@
 
     "agent_generation_parameters" :
     {
-        "num_agents" : 2000,
+        "num_agents" : 1200,
         "ratio_mutating" : 0.25,
-        "ratio_mutating_2" : 0.25,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",
         "origins" : "${path_generation_parameters.origins}",
@@ -34,6 +33,7 @@
 
         "human_parameters" :
         {
+            "learning_phases" : [0, 2],
             "model" : "gawron",
             "alpha" : 0.2,
             "beta" : -0.5,
@@ -42,21 +42,12 @@
 
         "machine_parameters" :
         {
-            "appearance_phase" : -1,
-            "behavior" : "social",
-            "model" : "Q",
-            "alpha" : 0.3,
-            "epsilon" : 0.85,
-            "epsilon_decay_rate" : 0.999
-        },
-
-        "disruptive_machine_parameters" :
-        {
             "appearance_phase" : 1,
+            "learning_phases" : [1, 2],
             "behavior" : "disruptive",
             "model" : "DQN",
             "epsilon" : 0.99,
-            "epsilon_decay_rate" : 0.997,
+            "epsilon_decay_rate" : 0.998,
             "buffer_size" : 256,
             "batch_size" : 32,
             "learning_rate" : 0.003,

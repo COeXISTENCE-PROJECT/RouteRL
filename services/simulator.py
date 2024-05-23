@@ -71,9 +71,13 @@ class Simulator:
             ff_dict[(row[kc.ORIGIN], row[kc.DESTINATION])].append(row[kc.FREE_FLOW_TIME])
         return ff_dict
 
+    @property
+    def last_simulation_duration(self):
+        return self._last_simulation_duration
     
-    def get_last_sim_duration(self):
-        return self.last_simulation_duration
+    @last_simulation_duration.setter
+    def last_simulation_duration(self, duration):
+        self._last_simulation_duration = duration
     
 
     def _joint_action_to_sorted_stack(self, joint_action):

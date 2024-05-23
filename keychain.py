@@ -48,18 +48,15 @@ class Keychain:
     AGENTS_DATA_PATH = "agents_data_path"
     NUM_AGENTS = "num_agents"
     RATIO_MUTATING = "ratio_mutating"
-    RATIO_MUTATING_2 = "ratio_mutating_2"
 
     ACTION_SPACE_SIZE = "action_space_size"
     HUMAN_PARAMETERS = "human_parameters"
     MACHINE_PARAMETERS = "machine_parameters"
-    DISRUPTIVE_MACHINE_PARAMETERS = "disruptive_machine_parameters"
 
     MODEL = "model"
-    GAWRON = "gawron"
-    DQN = "dqn"
-    Q = "q"
     APPEARANCE_PHASE = "appearance_phase"
+    LEARNING_PHASES = "learning_phases"
+    BEHAVIOR = "behavior"
     ALPHA = "alpha"
     BETA = "beta"
     BETA_RANDOMNESS = "beta_randomness"
@@ -145,8 +142,18 @@ class Keychain:
     PATH = "path"
 
     # Agent type encodings
-    TYPE_HUMAN = "Human"
-    TYPE_MACHINE = "Machine"
-    TYPE_MACHINE_2 = "Machine_2"
+    TYPE_HUMAN = "human"
+    TYPE_MACHINE = "machine"
 
+    # Behavior encodings
+    SELFISH = "selfish"
+    DISRUPTIVE = "disruptive"
+    SOCIAL = "social"
+    ALTURISTIC = "alturistic"
+
+    # Model encodings
+    GAWRON = "gawron"
+    DQN = "dqn"
+    Q = "q"
+    
     ###########################################################

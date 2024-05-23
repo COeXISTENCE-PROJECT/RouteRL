@@ -40,19 +40,9 @@ class TrafficEnvironment:
         return free_flow_times
     
 
-    def get_observation(self, agent_type, origin, destination):
-        if agent_type == kc.TYPE_HUMAN:
-            return None
-        if agent_type == kc.TYPE_MACHINE:
-            observation = list()
-            for possible_action in range(self.action_space_size):
-                action_key = f"{origin}_{destination}_{possible_action}"
-                obs = self.options_last_picked.get(action_key, -1)
-                observation.append(obs)
-            return observation
-        if agent_type == kc.TYPE_MACHINE_2:
-            return self.joint_action.loc[(self.joint_action[kc.AGENT_KIND] == kc.TYPE_MACHINE) & (self.joint_action[kc.AGENT_ORIGIN] == origin) & (self.joint_action[kc.AGENT_DESTINATION] == destination)]
-    
+    def get_observation(self):
+        return self.joint_action
+
 
     def register_action(self, agent, action):
         action_data = [agent.id, agent.kind, action, agent.origin, agent.destination, agent.start_time]
@@ -65,36 +55,16 @@ class TrafficEnvironment:
         self.options_last_picked[action_key] = max(self.options_last_picked.get(action_key, -1), agent.start_time)
 
 
-    def step(self):   
+    def step(self):
         sumo_df = self.simulator.simulate_episode(self.joint_action)
-        joint_observation = self._prepare_rewards(sumo_df, self.joint_action)
+        sumo_df = sumo_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
+        joint_observation = sumo_df.merge(self.joint_action, on=kc.AGENT_ID)
         info = {kc.LAST_SIM_DURATION: self.get_last_sim_duration()}
         return joint_observation, info
 
 
-    def _prepare_rewards(self, sumo_df, joint_action):
-        # Calculate reward from cost (skipped)
-        observation_df = sumo_df.merge(joint_action, on=kc.AGENT_ID)
-        observation_df[kc.REWARD] = observation_df[kc.TRAVEL_TIME]
-
-        # It will remain the same for humans
-        # Machines rewards (to minimize) = 0.5 x own_time + 0.5 x machines_mean_time
-        machines_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.TRAVEL_TIME].mean()
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.REWARD] *= 0.5
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE, kc.REWARD] += (machines_mean_travel_times * 0.5)
-
-        # Disruptive machines rewards (to minimize) = 0.3 x own_time + 0.3 x machines2_mean_travel_time - 0.4 x humans_mean_time
-        machines2_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.TRAVEL_TIME].mean()
-        humans_mean_travel_times = observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_HUMAN, kc.TRAVEL_TIME].mean()
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.REWARD] *= 0.3
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.REWARD] += (0.3 * machines2_mean_travel_times)
-        observation_df.loc[observation_df[kc.AGENT_KIND] == kc.TYPE_MACHINE_2, kc.REWARD] -= (0.4 * humans_mean_travel_times)
-
-        return observation_df[[kc.AGENT_ID, kc.TRAVEL_TIME, kc.REWARD]]
-
-
     def get_last_sim_duration(self):
-        return self.simulator.get_last_sim_duration()
+        return self.simulator.last_simulation_duration
 
 
     def _print_free_flow_times(self, free_flow_times):

@@ -13,7 +13,7 @@ from utilities import list_to_string
 
 
 
-class LearningModel(ABC):
+class BaseLearningModel(ABC):
     def __init__(self):
         pass
 
@@ -27,8 +27,9 @@ class LearningModel(ABC):
 
 
 
-class Gawron(LearningModel):
+class Gawron(BaseLearningModel):
     def __init__(self, params, initial_knowledge):
+        super().__init__()
         beta_randomness = params[kc.BETA_RANDOMNESS]
         self.beta = random.uniform(params[kc.BETA] - beta_randomness, params[kc.BETA] + beta_randomness)
         self.alpha = params[kc.ALPHA]
@@ -49,8 +50,9 @@ class Gawron(LearningModel):
 
 
 
-class QLearning(LearningModel):
+class QLearning(BaseLearningModel):
     def __init__(self, params, action_space_size):
+        super().__init__()
         self.alpha = params[kc.ALPHA]
         self.epsilon = params[kc.EPSILON]
         self.epsilon_decay_rate = params[kc.EPSILON_DECAY_RATE]
@@ -83,8 +85,9 @@ class QLearning(LearningModel):
 
 
 
-class DQN(LearningModel):
+class DQN(BaseLearningModel):
     def __init__(self, params, state_size, action_space_size):
+        super().__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.state_size = state_size
         self.action_space_size = action_space_size

@@ -37,17 +37,17 @@ class Recorder:
 
 #################### REMEMBER FUNCTIONS
     
-    def remember_all(self, episode, joint_action, joint_observation, agents, last_sim_duration):
+    def remember_all(self, episode, joint_action, joint_observation, rewards_df, agents, last_sim_duration):
         self.saved_episodes.append(episode)
-        self.remember_episode(episode, joint_action, joint_observation)
+        self.remember_episode(episode, joint_action, joint_observation, rewards_df)
         #self.remember_agents_status(episode, agents)
         self.remember_last_sim_duration(last_sim_duration)
 
 
-    def remember_episode(self, episode, joint_action, joint_observation):
-        origins, dests, actions = joint_action[kc.AGENT_ORIGIN], joint_action[kc.AGENT_DESTINATION], joint_action[kc.ACTION]
-        joint_action[kc.SUMO_ACTION] = [f"{origins[i]}_{dests[i]}_{action}" for i, action in enumerate(actions)]
-        merged_df = pd.merge(joint_action, joint_observation, on=kc.AGENT_ID)
+    def remember_episode(self, episode, joint_action, joint_observation, rewards_df):
+        joint_observation[kc.SUMO_ACTION] = joint_observation.apply(lambda row: f"{row[kc.AGENT_ORIGIN]}_{row[kc.AGENT_DESTINATION]}_{row[kc.ACTION]}", axis=1)
+        #merged_df = pd.merge(joint_action, joint_observation, on=kc.AGENT_ID)
+        merged_df = pd.merge(joint_observation, rewards_df, on=kc.AGENT_ID)
         merged_df.to_csv(make_dir(self.episodes_folder, f"ep{episode}.csv"), index = False)
 
 
@@ -76,7 +76,7 @@ class Recorder:
             loss = getattr(a.model, 'loss', None)
             if loss is not None:
                 losses.append(loss)
-        if losses:
+        if len(losses):
             mean_losses = [0] * len(losses[-1])
             for loss in losses:
                 for i, l in enumerate(loss):
