@@ -131,6 +131,7 @@ class MachineAgent(BaseAgent):
         learning_phases = params[kc.LEARNING_PHASES]
         super().__init__(id, kind, start_time, origin, destination, behavior, learning_phases)
         self.appearance_phase = params[kc.APPEARANCE_PHASE]
+        self.observed_span = params[kc.OBSERVED_SPAN]
         self.action_space_size = action_space_size
         self.state_size = action_space_size
         self.model = DQN(params, self.state_size, self.action_space_size)
@@ -169,9 +170,9 @@ class MachineAgent(BaseAgent):
 
     def get_state(self, observation):
         state = [0] * self.state_size
-        min_start_time = self.start_time - 10
+        min_start_time = self.start_time - self.observed_span
         observation = observation.loc[(observation[kc.AGENT_ORIGIN] == self.origin) & (observation[kc.AGENT_DESTINATION] == self.destination)]
-        prior_agents = observation.loc[observation[kc.AGENT_START_TIME] >= min_start_time]
+        prior_agents = observation.loc[observation[kc.AGENT_START_TIME] > min_start_time]
         if not prior_agents.empty:
             for _, row in prior_agents.iterrows():
                 action = row[kc.ACTION]
@@ -181,7 +182,7 @@ class MachineAgent(BaseAgent):
         return state
     
     def get_reward(self, observation):
-        min_start_time, max_start_time = self.start_time - 10, self.start_time + 10
+        min_start_time, max_start_time = self.start_time - self.observed_span, self.start_time + self.observed_span
         observation = observation.loc[(observation[kc.AGENT_ORIGIN] == self.origin) & (observation[kc.AGENT_DESTINATION] == self.destination)]
         vicinity_obs = observation.loc[(observation[kc.AGENT_START_TIME] >= min_start_time) & (observation[kc.AGENT_START_TIME] <= max_start_time)]
 
@@ -193,16 +194,16 @@ class MachineAgent(BaseAgent):
         others_tt = others_obs.mean() if not others_obs.empty else 0
         all_tt = vicinity_obs[kc.TRAVEL_TIME].mean()
         
-        a, b, c, d = self.reward_coefs()
+        a, b, c, d = self._reward_coefs()
         reward = a * own_tt + b * group_tt + c * others_tt + d * all_tt
         return reward
     
-    def reward_coefs(self):
+    def _reward_coefs(self):
         a, b, c, d = 0, 0, 0, 0
         if self.behavior == kc.SELFISH:
             a, b, c, d = 1, 0, 0, 0
-        elif self.behavior == kc.DISRUPTIVE:
-            a, b, c, d = 1, 0, -1, 0
+        elif self.behavior == kc.COMPETITIVE:
+            a, b, c, d = 2, 0, -1, 0
         elif self.behavior == kc.SOCIAL:
             a, b, c, d = 0.5, 0, 0, 0.5
         elif self.behavior == kc.ALTURISTIC:

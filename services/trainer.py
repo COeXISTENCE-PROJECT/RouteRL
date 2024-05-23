@@ -36,23 +36,23 @@ class Trainer:
         agents = sorted(agents, key=lambda x: x.start_time)
 
         print(f"\n[INFO] Training is starting with {self.num_episodes} episodes.")
-        training_start_time = time.time()
+        training_start_time, phase_start_time = time.time(), time.time()
         curr_phase = -1
         # Until we simulate num_episode episodes
         for episode in range(1, self.num_episodes+1):
 
             if episode in self.phases:
                 curr_phase += 1
-                print(f"\n[INFO] Phase {curr_phase} started at episode {episode}!")
+                print(f"\n[INFO] Phase {curr_phase+1} started at episode {episode}!")
                 agents = self.realize_phase(curr_phase, agents)
+                phase_start_time = time.time()
 
             env.reset()
             self.submit_actions(env, agents)
             observation_df, info = env.step()
             self.teach_agents(agents, env.joint_action, observation_df)
 
-            self.record(episode, training_start_time, env.joint_action, observation_df, self.get_rewards(agents), agents, info[kc.LAST_SIM_DURATION])
-            if self.frequent_progressbar: show_progress_bar("TRAINING", training_start_time, episode, self.num_episodes)
+            self.record(episode, phase_start_time, curr_phase, env.joint_action, observation_df, self.get_rewards(agents), agents, info[kc.LAST_SIM_DURATION])
 
         self.show_training_time(training_start_time)
         env.stop()
@@ -86,10 +86,16 @@ class Trainer:
         return rewards_df
     
 
-    def record(self, episode, start_time, joint_action_df, joint_observation_df, rewards_df, agents, last_sim_duration):
+    def record(self, episode, start_time, curr_phase, joint_action_df, joint_observation_df, rewards_df, agents, last_sim_duration):
         if (episode in self.remember_episodes):
             self.recorder.remember_all(episode, joint_action_df, joint_observation_df, rewards_df, agents, last_sim_duration)
-            show_progress_bar("TRAINING", start_time, episode, self.num_episodes)
+        elif not self.frequent_progressbar:
+            return
+        msg = f"PHASE {curr_phase+1}/{len(self.phases)}"
+        curr_progress = episode-self.phases[curr_phase]
+        target = (self.phases[curr_phase+1]-1) if (curr_phase+1 < len(self.phases)) else self.num_episodes
+        target -= self.phases[curr_phase]
+        show_progress_bar(msg, start_time, curr_progress, target)
 
 
     def realize_phase(self, curr_phase, agents):

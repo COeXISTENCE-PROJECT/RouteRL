@@ -2,10 +2,10 @@
     
     "training_parameters":
     {
-        "num_episodes" : 5000,
-        "remember_every" : 20,
-        "phases" : [500, 2000],
-        "frequent_progressbar_update" : false,
+        "num_episodes" : 20,
+        "remember_every" : 1,
+        "phases" : [5, 15],
+        "frequent_progressbar_update" : true,
 
         "recorder_parameters":
         {
@@ -46,10 +46,11 @@
             "learning_phases" : [1, 2],
             "behavior" : "disruptive",
             "model" : "DQN",
+            "observed_span" : 600,
             "epsilon" : 0.99,
             "epsilon_decay_rate" : 0.998,
             "buffer_size" : 256,
-            "batch_size" : 32,
+            "batch_size" : 2,
             "learning_rate" : 0.003,
             "num_hidden" : 2,
             "widths" : [32, 64, 32]

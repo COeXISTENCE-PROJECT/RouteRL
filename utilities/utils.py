@@ -69,7 +69,7 @@ def make_dir(folders, filename=None):    # Make dir if not exists, make full pat
 
 
 
-def show_progress_bar(name_of_operation, start_time, progress, target, end_line=''):    # Just printing progress bar with ETA
+def show_progress_bar(message, start_time, progress, target, end_line=''):    # Just printing progress bar with ETA
     bar_length = 50
     progress_fraction = progress / target
     filled_length = int(bar_length * progress_fraction)
@@ -77,7 +77,7 @@ def show_progress_bar(name_of_operation, start_time, progress, target, end_line=
     elapsed_time = time.time() - start_time
     remaining_time = ((elapsed_time / progress_fraction) - elapsed_time) if progress_fraction else 0
     remaining_time = time.strftime("%H:%M:%S", time.gmtime(remaining_time))
-    print(f'\r[%s PROGRESS]: |%s| %.2f%%, ETA: %s' % (name_of_operation.upper(), bar, progress_fraction * 100, remaining_time), end=end_line)
+    print(f'\r[%s]: |%s| %.2f%%, ETA: %s' % (message.upper(), bar, progress_fraction * 100, remaining_time), end=end_line)
 
 
 

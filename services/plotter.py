@@ -35,7 +35,8 @@ class Plotter:
         self.default_width, self.default_height = 12, 6
         self.multimode_width, self.multimode_height = 8, 5
         self.default_num_columns = 2
-        self.phase_colors = ['tab:purple', 'tab:gray', 'tab:brown', 'tab:red', 'tab:orange', 'tab:olive']
+        self.colors = ['firebrick', 'teal', 'peru', 'navy', 'salmon', 'slategray', 'darkviolet', 'goldenrod', 'darkolivegreen', 'mediumturquoise']
+        self.phase_colors = list(reversed(self.colors))
 
         print(f"[SUCCESS] Plotter is now here to plot!")
 
@@ -81,8 +82,8 @@ class Plotter:
             ax = axes[idx]
             subset = free_flows[free_flows[kc.ORIGINS] == od[0]]
             subset = subset[subset[kc.DESTINATIONS] == od[1]]
-            for _, row in subset.iterrows():
-                ax.bar(f"{row[kc.PATH_INDEX]}", row[kc.FREE_FLOW_TIME], label = f"Route: {int(row[kc.PATH_INDEX])}")
+            for idx2, (_, row) in enumerate(subset.iterrows()):
+                ax.bar(f"{row[kc.PATH_INDEX]}", row[kc.FREE_FLOW_TIME], color = self.colors[idx2], label = f"Route: {int(row[kc.PATH_INDEX])}")
 
             ax.set_title(f"Free flow travel times in {od[0]}-{od[1]}")
             ax.set_xlabel('Route Index')
@@ -112,13 +113,14 @@ class Plotter:
 
         plt.figure(figsize=(self.default_width, self.default_height))
 
-        for kind, ep_reward_dict in all_mean_rewards.items():
+        for idx, (kind, ep_reward_dict )in enumerate(all_mean_rewards.items()):
             episodes = list(ep_reward_dict.keys())
             rewards = list(ep_reward_dict.values())
             smoothed_rewards = running_average(rewards, last_n=3)
-            plt.plot(episodes, smoothed_rewards, label=kind)
+            plt.plot(episodes, smoothed_rewards, color=self.colors[idx], label=kind)
 
         for phase_idx, phase in enumerate(self.phases):
+            if phase_idx == 0:  continue
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
             plt.axvline(x=phase, label=f'Phase {phase_idx}', linestyle='--', color=color)
 
@@ -143,13 +145,14 @@ class Plotter:
 
         plt.figure(figsize=(self.default_width, self.default_height))
 
-        for kind, ep_tt_dict in all_mean_tt.items():
+        for idx, (kind, ep_tt_dict) in enumerate(all_mean_tt.items()):
             episodes = list(ep_tt_dict.keys())
             tts = list(ep_tt_dict.values())
             smoothed_tts = running_average(tts, last_n=3)
-            plt.plot(episodes, smoothed_tts, label=kind)
+            plt.plot(episodes, smoothed_tts, color=self.colors[idx], label=kind)
 
         for phase_idx, phase in enumerate(self.phases):
+            if phase_idx == 0:  continue
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
             plt.axvline(x=phase, label=f'Phase {phase_idx}', linestyle='--', color=color)
 
@@ -180,12 +183,13 @@ class Plotter:
         # Plot mean travel times for each OD
         mean_tt_od = self.retrieve_data_per_od(kc.TRAVEL_TIME, transform='mean')
         sorted_keys = sorted(mean_tt_od.keys())
-        for od in sorted_keys:
+        for idx, od in enumerate(sorted_keys):
             episodes = list(mean_tt_od[od].keys())
             mean_tt = list(mean_tt_od[od].values())
             smoothed_tt = running_average(mean_tt, last_n=5)
-            axes[0].plot(episodes, smoothed_tt, label=od)
+            axes[0].plot(episodes, smoothed_tt, color=self.colors[idx], label=od)
         for phase_idx, phase in enumerate(self.phases):
+            if phase_idx == 0:  continue
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
             axes[0].axvline(x=phase, label=f'Phase {phase_idx}', linestyle='--', color=color)
         axes[0].set_xlabel('Episode')
@@ -196,13 +200,14 @@ class Plotter:
 
         # Plot variance travel times for all, humans and machines
         variance_travel_times = self.retrieve_data_per_kind(kc.TRAVEL_TIME, transform='variance')
-        for kind, ep_tt_dict in variance_travel_times.items():
+        for idx, (kind, ep_tt_dict) in enumerate(variance_travel_times.items()):
             episodes = list(ep_tt_dict.keys())
             var_tts = list(ep_tt_dict.values())
             smoothed_var_tts = running_average(var_tts, last_n=5)
-            axes[1].plot(episodes, smoothed_var_tts, label=kind)
+            axes[1].plot(episodes, smoothed_var_tts, color=self.colors[idx], label=kind)
 
         for phase_idx, phase in enumerate(self.phases):
+            if phase_idx == 0:  continue
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
             axes[1].axvline(x=phase, label=f'Phase {phase_idx}', linestyle='--', color=color)
         axes[1].set_xlabel('Episode')
@@ -213,19 +218,19 @@ class Plotter:
 
         # Plot boxplot and violinplot for rewards
         all_travel_times = self.retrieve_data_per_kind(kc.TRAVEL_TIME)
-        eps_to_plot = [ep if ep==1 else ep-1 for ep in self.phases] + [self.saved_episodes[-1]]
+        eps_to_plot = [ep-1 for ep in self.phases[1:]] + [self.saved_episodes[-1]]
         data_to_plot = [all_travel_times[kc.TYPE_HUMAN][ep] for ep in eps_to_plot]
-        labels = [f'H #{ep}' for ep in eps_to_plot]
+        labels = [f'Humans at ep#{ep}' for ep in eps_to_plot]
 
         axes[2].boxplot(data_to_plot, labels=labels, patch_artist=True)
         axes[2].set_ylabel('Travel Times')
-        axes[2].set_title('Travel Time Distribution (Boxplot)')
+        axes[2].set_title('Travel Time Distributions (End of Each Phase)')
 
-        for label, data in zip(labels, data_to_plot):
-            sns.kdeplot(data, ax=axes[3], label=label, alpha=0.3, fill=True, linewidth=0)
+        for idx, (label, data) in enumerate(zip(labels, data_to_plot)):
+            sns.kdeplot(data, ax=axes[3], label=label, alpha=0.3, fill=True, linewidth=0, color=self.colors[idx])
         axes[3].set_xlabel('Travel Times')
         axes[3].set_ylabel('Density (Probability)')
-        axes[3].set_title('Travel Time Distribution (KDE)')
+        axes[3].set_title('Travel Time Distribution (End of Each Phase)')
         axes[3].legend()
 
         #plt.show()
@@ -258,12 +263,13 @@ class Plotter:
 
         for idx, (od, actions) in enumerate(all_actions.items()):
             ax = axes[idx]
-            for unique_action in unique_actions[od]:
+            for idx2, unique_action in enumerate(unique_actions[od]):
                 action_data = [ep_actions.get(unique_action, 0) for ep_actions in actions]
                 action_data = running_average(action_data, last_n=5)
-                ax.plot(self.saved_episodes, action_data, label=f"{unique_action}")
+                ax.plot(self.saved_episodes, action_data, color=self.colors[idx2], label=f"{unique_action}")
 
             for phase_idx, phase in enumerate(self.phases):
+                if phase_idx == 0:  continue
                 color = self.phase_colors[phase_idx % len(self.phase_colors)]
                 ax.axvline(x=phase, label=f'Phase {phase_idx}', linestyle='--', color=color)
 
@@ -311,16 +317,18 @@ class Plotter:
 
             all_actions, unique_actions = self.retrieve_selected_actions(origin, destination)
 
-            for kind, ep_to_actions in all_actions.items():
+            for idx2, (kind, ep_to_actions) in enumerate(all_actions.items()):
 
                 episodes = list(ep_to_actions.keys())
 
-                for action in unique_actions:
+                for idx3, action in enumerate(unique_actions):
                     action_data = [ep_counter[action] / sum(ep_counter.values()) for ep_counter in all_actions[kind].values()]
                     action_data = running_average(action_data, last_n=5)
-                    ax.plot(episodes, action_data, label=f"{kind}-{action}")
+                    color = self.colors[(idx2 + (idx3*3))]
+                    ax.plot(episodes, action_data, color=color, label=f"{kind}-{action}")
 
             for phase_idx, phase in enumerate(self.phases):
+                if phase_idx == 0:  continue
                 color = self.phase_colors[phase_idx % len(self.phase_colors)]
                 ax.axvline(x=phase, label=f'Phase {phase_idx}', linestyle='--', color=color)
 
@@ -353,8 +361,9 @@ class Plotter:
         sim_lengths = running_average(sim_lengths, last_n = 10)
 
         plt.figure(figsize=(self.default_width, self.default_height))
-        plt.plot(self.saved_episodes, sim_lengths, label="Simulation timesteps")
+        plt.plot(self.saved_episodes, sim_lengths, color=self.colors[0], label="Simulation timesteps")
         for phase_idx, phase in enumerate(self.phases):
+            if phase_idx == 0:  continue
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
             plt.axvline(x=phase, label=f'Phase {phase_idx}', linestyle='--', color=color)
         plt.xlabel('Episode')
@@ -391,11 +400,11 @@ class Plotter:
         losses = running_average(losses, last_n = 10)
 
         plt.figure(figsize=(self.default_width, self.default_height))
-        plt.plot(losses)
+        plt.plot(losses, color=self.colors[0])
         plt.xlabel('Training Progress')
-        plt.ylabel('MSE Loss')
-        plt.ylim(0.0, 1.0)
+        plt.ylabel('MSE Loss (Log Scale)')
         plt.title('MSE Loss Over Training Progress (n = 10)')
+        plt.yscale('log')
 
         #plt.show()
         plt.savefig(save_to)

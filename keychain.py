@@ -57,6 +57,7 @@ class Keychain:
     APPEARANCE_PHASE = "appearance_phase"
     LEARNING_PHASES = "learning_phases"
     BEHAVIOR = "behavior"
+    OBSERVED_SPAN = "observed_span"
     ALPHA = "alpha"
     BETA = "beta"
     BETA_RANDOMNESS = "beta_randomness"
@@ -147,7 +148,7 @@ class Keychain:
 
     # Behavior encodings
     SELFISH = "selfish"
-    DISRUPTIVE = "disruptive"
+    COMPETITIVE = "competitive"
     SOCIAL = "social"
     ALTURISTIC = "alturistic"
 
