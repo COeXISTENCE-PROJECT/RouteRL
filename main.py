@@ -1,19 +1,23 @@
-from environment import TrafficEnvironment
+from components import TrafficEnvironment
+from components import SumoSimulator
 from keychain import Keychain as kc
-from services import Trainer
+from services import Plotter
+from services import Runner
 
+from create_agents import create_agent_objects
 from utilities import get_params
 from utilities import set_seeds
 from utilities import check_device
-from utilities import create_agent_objects
 
 
 def main(params):
-    env = TrafficEnvironment(params[kc.ENVIRONMENT_PARAMETERS], params[kc.SIMULATION_PARAMETERS])
-    agents = create_agent_objects(params[kc.AGENT_PARAMETERS], env.calculate_free_flow_times())
-    trainer = Trainer(params[kc.TRAINING_PARAMETERS])
-    trainer.train(env, agents)
-    trainer.show_training_results()
+    simulator = SumoSimulator(params[kc.SIMULATOR])
+    env = TrafficEnvironment(params[kc.ENVIRONMENT], simulator)
+    agents = create_agent_objects(params[kc.AGENTS], env.get_free_flow_times())
+    
+    runner = Runner(params[kc.RUNNER])
+    runner.run(env, agents)
+    Plotter(params[kc.PLOTTER])
 
 
 if __name__ == "__main__":

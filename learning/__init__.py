@@ -1,3 +1,3 @@
-from .learning_models import Gawron
-from .learning_models import QLearning
-from .learning_models import DQN
+from .learning_model import DQN
+from .learning_model import Gawron
+from .learning_model import QLearning

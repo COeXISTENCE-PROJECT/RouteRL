@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
 
 from keychain import Keychain as kc
-from learning import Gawron, QLearning, DQN
+from learning import DQN
+from learning import Gawron
 
 
 
 class BaseAgent(ABC):
     """
     This is an abstract class for agents, to be inherited by specific type of agent classes
-    It is not to be instantiated, but to provide a blueprint for all types of agents
     """
     def __init__(self, id, kind, start_time, origin, destination, behavior, learning_phases):
         self.id = id

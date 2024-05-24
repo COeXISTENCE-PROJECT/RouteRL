@@ -4,35 +4,33 @@ import time
 
 from collections import Counter
 
+from .recorder import Recorder
+from components import BaseAgent
+from components import TrafficEnvironment
 from keychain import Keychain as kc
-from services import Plotter
-from services import Recorder
 from utilities import show_progress_bar
 
-import matplotlib.pyplot as plt
-class Trainer:
+class Runner:
 
     """
-    Class to train agents
+    Run episodes, train agents, save data
     """
 
     def __init__(self, params):
         self.num_episodes = params[kc.NUM_EPISODES]
         self.phases = params[kc.PHASES]
         self.phase_names = params[kc.PHASE_NAMES]
-
         self.frequent_progressbar = params[kc.FREQUENT_PROGRESSBAR_UPDATE]
         self.remember_every = params[kc.REMEMBER_EVERY]
+        
         self.remember_episodes = [ep for ep in range(self.remember_every, self.num_episodes+1, self.remember_every)]
         self.remember_episodes += [1, self.num_episodes] + [ep-1 for ep in self.phases] + [ep for ep in self.phases]
         self.remember_episodes = set(self.remember_episodes)
 
         self.recorder = Recorder()
-        self.plotter = Plotter(self.phases, self.phase_names)
 
 
-    # Training loop
-    def train(self, env, agents):
+    def run(self, env: TrafficEnvironment, agents: list[BaseAgent]):
         env.start()
         agents = sorted(agents, key=lambda x: x.start_time)
 
@@ -44,42 +42,40 @@ class Trainer:
 
             if episode in self.phases:
                 curr_phase += 1
-                print(f"\n[INFO] Phase {curr_phase+1} ({self.phase_names[curr_phase]}) has started at episode {episode}!")
-                agents = self.realize_phase(curr_phase, agents)
+                agents = self._realize_phase(curr_phase, episode, agents)
                 phase_start_time = time.time()
 
             env.reset()
-            self.submit_actions(env, agents)
+            self._submit_actions(env, agents)
             observation_df, info = env.step()
-            self.teach_agents(agents, env.joint_action, observation_df)
+            self._teach_agents(agents, env.joint_action, observation_df)
 
-            self.record(episode, phase_start_time, curr_phase, env.joint_action, observation_df, self.get_rewards(agents), agents, info[kc.LAST_SIM_DURATION])
+            self._record(episode, phase_start_time, curr_phase, env.joint_action, observation_df, self._get_rewards(agents), agents, info[kc.LAST_SIM_DURATION])
 
-        self.show_training_time(training_start_time)
+        self._show_training_time(training_start_time)
         env.stop()
-        self.save_losses(agents)
+        self._save_losses(agents)
 
 
-
-    def submit_actions(self, env, agents):
+    def _submit_actions(self, env, agents):
         for agent in agents:
             observation = env.get_observation()
             action = agent.act(observation)
             env.register_action(agent, action)
 
 
-    def teach_agents(self, agents, joint_action_df, observation_df):
+    def _teach_agents(self, agents, joint_action_df, observation_df):
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            teach_tasks = [executor.submit(self.learn_agent, agent, joint_action_df, observation_df) for agent in agents]
+            teach_tasks = [executor.submit(self._learn_agent, agent, joint_action_df, observation_df) for agent in agents]
             concurrent.futures.wait(teach_tasks)
         
 
-    def learn_agent(self, agent, joint_action_df, observation_df):
+    def _learn_agent(self, agent, joint_action_df, observation_df):
         action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION].item()
         agent.learn(action, observation_df)
 
 
-    def get_rewards(self, agents):
+    def _get_rewards(self, agents):
         rewards_df = pd.DataFrame(columns=[kc.AGENT_ID, kc.REWARD])
         for agent in agents:
             reward = agent.last_reward
@@ -87,35 +83,39 @@ class Trainer:
         return rewards_df
     
 
-    def record(self, episode, start_time, curr_phase, joint_action_df, joint_observation_df, rewards_df, agents, last_sim_duration):
+    def _record(self, episode, start_time, curr_phase, joint_action_df, joint_observation_df, rewards_df, agents, last_sim_duration):
         if (episode in self.remember_episodes):
             self.recorder.remember_all(episode, joint_action_df, joint_observation_df, rewards_df, agents, last_sim_duration)
         elif not self.frequent_progressbar:
             return
         msg = f"{self.phase_names[curr_phase]} {curr_phase+1}/{len(self.phases)}"
-        curr_progress = episode-self.phases[curr_phase]
-        target = (self.phases[curr_phase+1]) if ((curr_phase+1) < len(self.phases)) else self.num_episodes
-        target -= self.phases[curr_phase]+1
+        curr_progress = episode-self.phases[curr_phase]+1
+        target = (self.phases[curr_phase+1]) if ((curr_phase+1) < len(self.phases)) else self.num_episodes+1
+        target -= self.phases[curr_phase]
         show_progress_bar(msg, start_time, curr_progress, target)
 
 
-    def realize_phase(self, curr_phase, agents):
+    def _realize_phase(self, curr_phase, episode, agents):
         for idx, agent in enumerate(agents):
             if getattr(agent, 'mutate_phase', None) == curr_phase:
                 agents[idx] = agent.mutate()
+
         for agent in agents:
             agent.is_learning = curr_phase
+
         counts = Counter([agent.kind for agent in agents])
         info_text = "[INFO]"
-        info_text +=f" Humans: {counts[kc.TYPE_HUMAN]} " if counts[kc.TYPE_HUMAN] else ""
-        info_text +=f" Machines: {counts[kc.TYPE_MACHINE]} " if counts[kc.TYPE_MACHINE] else ""
-        print(info_text)
+        info_text +=f" {kc.TYPE_HUMAN}: {counts[kc.TYPE_HUMAN]} " if counts[kc.TYPE_HUMAN] else ""
+        info_text +=f" {kc.TYPE_MACHINE}: {counts[kc.TYPE_MACHINE]} " if counts[kc.TYPE_MACHINE] else ""
         learning_situation = [agent.is_learning for agent in agents]
+        
+        print(f"\n[INFO] Phase {curr_phase+1} ({self.phase_names[curr_phase]}) has started at episode {episode}!")
+        print(info_text)
         print(f"[INFO] Number of learning agents: {sum(learning_situation)}")
         return agents
 
 
-    def show_training_time(self, start_time):
+    def _show_training_time(self, start_time):
         now = time.time()
         elapsed = now - start_time
         training_time = time.strftime("%H hours, %M minutes, %S seconds", time.gmtime(elapsed))
@@ -123,9 +123,5 @@ class Trainer:
         print(f"\n[COMPLETE] Training completed in: {training_time} ({sec_ep} s/e)")
 
 
-    def show_training_results(self):
-        self.plotter.visualize_all()
-
-
-    def save_losses(self, agents):
+    def _save_losses(self, agents):
         self.recorder.save_losses(agents)

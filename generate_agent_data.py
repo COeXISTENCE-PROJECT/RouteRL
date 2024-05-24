@@ -48,16 +48,16 @@ def save_agents(agents_df, save_to):
 
 if __name__ == "__main__":
     params = get_params(kc.PARAMS_PATH)
-    params = params[kc.AGENTS_GENERATION_PARAMETERS]
+    params = params[kc.AGENT_GEN]
 
-    agents_data_path = params[kc.AGENTS_DATA_PATH]
     num_agents = params[kc.NUM_AGENTS]
     ratio_mutating = params[kc.RATIO_MUTATING]
     agent_attributes = params[kc.AGENT_ATTRIBUTES]
     simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]
     num_origins = len(params[kc.ORIGINS])
     num_destinations = len(params[kc.DESTINATIONS])
-    action_space_size = params[kc.ACTION_SPACE_SIZE]
+
+    agents_data_path = kc.AGENTS_DATA_PATH
 
     agents_df = generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulation_timesteps, num_origins, num_destinations)
     save_agents(agents_df, agents_data_path)

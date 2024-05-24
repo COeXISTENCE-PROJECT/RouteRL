@@ -1,12 +1,20 @@
 {
+    "ATTENTION":
+    {
+        "COMMENT1" : "Pretty much everything can be controlled here",
+        "COMMENT2" : "The parameters are self-explanatory, but if you need help, please contact me",
+        "COMMENT3" : "Put all you variables into categories.",
+        "COMMENT4" : "You can use dependent variables (examples below), but not below level 2"
+    },
     
-    "training_parameters":
+    
+    "runner_parameters":
     {
         "num_episodes" : 6000,
-        "remember_every" : 2,
-        "phases" : [1, 1000, 4000, 5500],
+        "phases" : [1, 1000, 4000, 5750],
         "phase_names" : ["Settle", "Shock", "Adapt", "Exhibit"],
-        "frequent_progressbar_update" : true
+        "remember_every" : 25,
+        "frequent_progressbar_update" : false
     },
 
 
@@ -15,43 +23,33 @@
         "agents_data_path" : "${agent_generation_parameters.agents_data_path}",
         "action_space_size" : "${path_generation_parameters.number_of_paths}",
 
-        "human_parameters" :
-        {
-            "learning_phases" : [0, 2],
-            "model" : "gawron",
-            "alpha" : 0.2,
-            "beta" : -0.5,
-            "beta_randomness" : 0.3
-        },
-
         "machine_parameters" :
         {
+            "batch_size" : 32,
+
             "appearance_phase" : 1,
             "learning_phases" : [1, 2],
             "behavior" : "selfish",
             "model" : "DQN",
             "observed_span" : 300,
-            "batch_size" : 32,
             "epsilon" : 0.99,
             "epsilon_decay_rate" : 0.998,
             "buffer_size" : 256,
             "learning_rate" : 0.003,
             "num_hidden" : 2,
             "widths" : [32, 64, 32]
-        } 
-    },
+        },
 
-
-    "agent_generation_parameters" :
-    {
-        "agents_data_path" : "network_and_config/agents_data.csv",
-        "num_agents" : 1200,
-        "ratio_mutating" : 0.33,
-        "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
-        "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",
-        "origins" : "${path_generation_parameters.origins}",
-        "destinations" : "${path_generation_parameters.destinations}",
-        "action_space_size" : "${path_generation_parameters.number_of_paths}"
+        "human_parameters" :
+        {
+            "learning_phases" : [0, 2],
+            "model" : "gawron",
+            "alpha" : 0.2,
+            "beta" : -0.5,
+            "beta_randomness" : 0.3,
+            "appearance_phase" : "No need for this, by default appears in 0",
+            "behavior" : "No need for this, by default selfish"
+        }
     },
 
 
@@ -61,17 +59,38 @@
     },
 
 
-    "simulation_parameters":
+    "simulator_parameters":
     {
-        "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "simulation_timesteps" : 3600,
-
         "sumo_type" : "sumo",
-        "sumo_config_path" : "network_and_config/csomor1.sumocfg",
-        "paths_csv_save_path" : "${path_generation_parameters.paths_csv_save_path}",
-        "routes_xml_save_path" : "${path_generation_parameters.routes_xml_save_path}"
+        "number_of_paths" : "${path_generation_parameters.number_of_paths}",
+        "env_var" : "SUMO_HOME"
     },
 
+
+    "plotter_parameters":
+    {
+        "phases" : "${runner_parameters.phases}",
+        "phase_names" : "${runner_parameters.phase_names}",
+        "colors" : ["firebrick", "teal", "peru", "navy", "salmon", "slategray", "darkviolet", "goldenrod", "darkolivegreen", "dodgerblue"],
+        "default_width" : 12,
+        "default_height" : 6,
+        "multimode_width" : 8,
+        "multimode_height" : 5,
+        "default_num_columns" : 2
+    },
+
+
+    "agent_generation_parameters" :
+    {
+        "num_agents" : 1200,
+        "ratio_mutating" : 0.33,
+        "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
+        "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",
+        "origins" : "${path_generation_parameters.origins}",
+        "destinations" : "${path_generation_parameters.destinations}"
+    },
+        
 
     "path_generation_parameters":
     {
@@ -80,13 +99,6 @@
         "weight" : "time",
 
         "origins" : ["279952229#0", "115604053"],
-        "destinations" : ["-115602933#2", "-441496282#1"],
-
-        "connection_file_path" : "network_and_config/csomor1.con.xml",
-        "edge_file_path" : "network_and_config/csomor1.edg.xml",
-        "route_file_path" : "network_and_config/csomor1.rou.xml",
-        "routes_xml_save_path" : "network_and_config/route.rou.xml",
-        "paths_csv_save_path" : "network_and_config/paths.csv"
-    }
-    
+        "destinations" : ["-115602933#2", "-441496282#1"]
+    } 
 }

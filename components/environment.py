@@ -1,23 +1,51 @@
 import pandas as pd
 
+from abc import ABC, abstractmethod
 from prettytable import PrettyTable
 
+from .simulator import SumoSimulator
 from keychain import Keychain as kc
-from services import Simulator
 from utilities import make_dir
 
 
-class TrafficEnvironment:
 
-    def __init__(self, environment_params, simulation_params):
-        self.simulator = Simulator(simulation_params)
-        self.action_space_size = environment_params[kc.ACTION_SPACE_SIZE]
+class BaseEnvironment(ABC):
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def start(self):
+        pass
+
+    @abstractmethod
+    def stop(self):
+        pass
+
+    @abstractmethod
+    def reset(self):
+        pass
+
+    @abstractmethod
+    def step(self):
+        pass
+
+
+
+class TrafficEnvironment(BaseEnvironment):
+    def __init__(self, params, simulator: SumoSimulator):
+        super().__init__()
+
+        self.action_space_size = params[kc.ACTION_SPACE_SIZE]
+        self.simulator = simulator
 
         self.joint_action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
         self.joint_action = pd.DataFrame(columns = self.joint_action_cols)
 
         print("[SUCCESS] Environment initiated!")
 
+    #####################
+
+    ##### CONTROL #####
 
     def start(self):
         self.simulator.start()
@@ -29,21 +57,17 @@ class TrafficEnvironment:
         self.joint_action = pd.DataFrame(columns = self.joint_action_cols)
         self.simulator.reset()
 
+    #####################
 
-    def calculate_free_flow_times(self):
-        free_flow_times = self.simulator.calculate_free_flow_times()
-        self._print_free_flow_times(free_flow_times)
-        self._save_free_flow_times_csv(free_flow_times)
-        return free_flow_times
-    
-
-    def get_observation(self):
-        return self.joint_action
-
+    ##### EPISODE OPS #####
 
     def register_action(self, agent, action):
         action_data = [agent.id, agent.kind, action, agent.origin, agent.destination, agent.start_time]
         self.joint_action.loc[len(self.joint_action.index)] = {key : value for key, value in zip(self.joint_action_cols, action_data)}
+    
+
+    def get_observation(self):
+        return self.joint_action
 
 
     def step(self):
@@ -52,10 +76,20 @@ class TrafficEnvironment:
         joint_observation = sumo_df.merge(self.joint_action, on=kc.AGENT_ID)
         info = {kc.LAST_SIM_DURATION: self.get_last_sim_duration()}
         return joint_observation, info
+    
+    #####################
 
+    ##### DATA #####
 
     def get_last_sim_duration(self):
         return self.simulator.last_simulation_duration
+
+
+    def get_free_flow_times(self):
+        free_flow_times = self.simulator.get_free_flow_times()
+        self._print_free_flow_times(free_flow_times)
+        self._save_free_flow_times_csv(free_flow_times)
+        return free_flow_times
 
 
     def _print_free_flow_times(self, free_flow_times):
@@ -81,3 +115,5 @@ class TrafficEnvironment:
         save_to = make_dir(kc.RECORDS_FOLDER, kc.FREE_FLOW_TIMES_CSV_FILE_NAME)
         free_flow_pd.to_csv(save_to, index = False)
         print(f"[SUCCESS] Free-flow travel times saved to: {save_to}")
+
+    #####################

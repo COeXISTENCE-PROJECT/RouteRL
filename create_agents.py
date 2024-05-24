@@ -1,7 +1,8 @@
 import os
 import pandas as pd
 
-from agent import MachineAgent, HumanAgent
+from components import HumanAgent
+from components import MachineAgent
 from keychain import Keychain as kc
 
 
@@ -13,12 +14,15 @@ def create_agent_objects(params, free_flow_times):
 
     # Getting parameters
     action_space_size = params[kc.ACTION_SPACE_SIZE]
-    agents_data_path = params[kc.AGENTS_DATA_PATH]
-    check_agent_data_ready(agents_data_path)
+
+    agents_data_path = kc.AGENTS_DATA_PATH
+    if os.path.isfile(agents_data_path):
+        print("[CONFIRMED] Agents data file is ready.")
+    else:
+        raise FileNotFoundError("Agents data file is not ready. Please generate agents data first.")
     
-    # Generating agent data
     agents_data_df = pd.read_csv(agents_data_path)
-    agents = list() # Where we will store & return agents
+    agents = list()     # Where we will store & return agents
     
     # Generating agent objects from generated agent data
     for _, row in agents_data_df.iterrows():
@@ -38,14 +42,7 @@ def create_agent_objects(params, free_flow_times):
             initial_knowledge = free_flow_times[(origin, destination)]
             agents.append(HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge))
         else:
-            print('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_KIND])
+            raise ValueError('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_KIND])
 
     print(f'[SUCCESS] Created agent objects (%d)' % (len(agents)))
     return agents
-
-
-def check_agent_data_ready(agents_data_path):
-    if os.path.isfile(agents_data_path):
-        print("[CONFIRMED] Agents data file is ready.")
-    else:
-        raise FileNotFoundError("Agents data file is not ready. Please generate agents data first.")

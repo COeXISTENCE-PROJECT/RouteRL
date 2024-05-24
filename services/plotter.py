@@ -17,34 +17,36 @@ class Plotter:
 
 
     """
-    This class is to plot the results of the training
+    Plot the results of the training
     """
 
 
-    def __init__(self, phases, phase_names):
+    def __init__(self, params, plot=True):
+        self.phases = params[kc.PHASES]
+        self.phase_names = params[kc.PHASE_NAMES]
+        self.colors = params[kc.COLORS]
+        self.phase_colors = list(reversed(self.colors))
 
+        self.default_width, self.default_height = params[kc.DEFAULT_WIDTH], params[kc.DEFAULT_HEIGHT]
+        self.multimode_width, self.multimode_height = params[kc.MULTIMODE_WIDTH], params[kc.MULTIMODE_HEIGHT]
+        self.default_num_columns = params[kc.DEFAULT_NUM_COLUMNS]
+
+        make_dir(kc.RECORDS_FOLDER)
         self.episodes_folder = make_dir([kc.RECORDS_FOLDER, kc.EPISODES_LOGS_FOLDER])
         self.sim_length_file_path = make_dir(kc.RECORDS_FOLDER, kc.SIMULATION_LENGTH_LOG_FILE_NAME)
         self.loss_file_path = make_dir(kc.RECORDS_FOLDER, kc.LOSSES_LOG_FILE_NAME)
         self.free_flow_times_file_path = os.path.join(kc.RECORDS_FOLDER, kc.FREE_FLOW_TIMES_CSV_FILE_NAME)
 
         self.saved_episodes = list()
-        self.phases = phases
-        self.phase_names = phase_names
 
-        self.default_width, self.default_height = 12, 6
-        self.multimode_width, self.multimode_height = 8, 5
-        self.default_num_columns = 2
-        self.colors = ['firebrick', 'teal', 'peru', 'navy', 'salmon', 'slategray', 'darkviolet', 'goldenrod', 'darkolivegreen', 'dodgerblue']
-        self.phase_colors = list(reversed(self.colors))
-
-        print(f"[SUCCESS] Plotter is now here to plot!")
+        if plot:
+            self.visualize_all()
 
 
 #################### VISUALIZE ALL
 
     def visualize_all(self):
-        self.saved_episodes = self.get_episodes()
+        self.saved_episodes = self._get_episodes()
 
         self.visualize_free_flows()
         self.visualize_mean_rewards()
@@ -56,7 +58,7 @@ class Plotter:
         self.visualize_losses()
 
 
-    def get_episodes(self):
+    def _get_episodes(self):
         eps = list()
         if os.path.exists(self.episodes_folder):
             for file in os.listdir(self.episodes_folder):
@@ -120,7 +122,7 @@ class Plotter:
     
     def visualize_mean_rewards(self):
         save_to = make_dir(kc.PLOTS_FOLDER, kc.REWARDS_PLOT_FILE_NAME)
-        all_mean_rewards = self.retrieve_data_per_kind(kc.REWARD, transform='mean')
+        all_mean_rewards = self._retrieve_data_per_kind(kc.REWARD, transform='mean')
 
         plt.figure(figsize=(self.default_width, self.default_height))
 
@@ -151,7 +153,7 @@ class Plotter:
     
     def visualize_mean_travel_times(self):
         save_to = make_dir(kc.PLOTS_FOLDER, kc.TRAVEL_TIMES_PLOT_FILE_NAME)
-        all_mean_tt = self.retrieve_data_per_kind(kc.TRAVEL_TIME, transform='mean')
+        all_mean_tt = self._retrieve_data_per_kind(kc.TRAVEL_TIME, transform='mean')
 
         plt.figure(figsize=(self.default_width, self.default_height))
 
@@ -190,7 +192,7 @@ class Plotter:
         if num_rows > 1:   axes = axes.flatten()   # Flatten axes
 
         # Plot mean travel times for each OD
-        mean_tt_od = self.retrieve_data_per_od(kc.TRAVEL_TIME, transform='mean')
+        mean_tt_od = self._retrieve_data_per_od(kc.TRAVEL_TIME, transform='mean')
         sorted_keys = sorted(mean_tt_od.keys())
         for idx, od in enumerate(sorted_keys):
             episodes = list(mean_tt_od[od].keys())
@@ -207,7 +209,7 @@ class Plotter:
         axes[0].legend()
 
         # Plot variance travel times for all, humans and machines
-        variance_travel_times = self.retrieve_data_per_kind(kc.TRAVEL_TIME, transform='variance')
+        variance_travel_times = self._retrieve_data_per_kind(kc.TRAVEL_TIME, transform='variance')
         for idx, (kind, ep_tt_dict) in enumerate(variance_travel_times.items()):
             episodes = list(ep_tt_dict.keys())
             var_tts = list(ep_tt_dict.values())
@@ -224,7 +226,7 @@ class Plotter:
         axes[1].legend()
 
         # Plot boxplot and violinplot for rewards
-        all_travel_times = self.retrieve_data_per_kind(kc.TRAVEL_TIME)
+        all_travel_times = self._retrieve_data_per_kind(kc.TRAVEL_TIME)
         eps_to_plot = [ep-1 for ep in self.phases[1:]]
         data_to_plot = [all_travel_times[kc.TYPE_HUMAN][ep] for ep in eps_to_plot]
         labels = [f'Humans ({ph})' for ph in self.phase_names[:-1]]
@@ -253,7 +255,7 @@ class Plotter:
     def visualize_actions(self):
         save_to = make_dir(kc.PLOTS_FOLDER, kc.ACTIONS_PLOT_FILE_NAME)
 
-        all_actions = self.retrieve_data_per_od(kc.ACTION)
+        all_actions = self._retrieve_data_per_od(kc.ACTION)
         unique_actions = {od: set([item for sublist in val.values() for item in sublist]) for od, val in all_actions.items()}
         all_actions = {od : [Counter(a) for a in val.values()] for od, val in all_actions.items()}
         num_od_pairs = len(all_actions)
@@ -305,7 +307,7 @@ class Plotter:
     def visualize_action_shifts(self):
         save_to = make_dir(kc.PLOTS_FOLDER, kc.ACTIONS_SHIFTS_PLOT_FILE_NAME)
 
-        all_od_pairs = self.retrieve_all_od_pairs()
+        all_od_pairs = self._retrieve_all_od_pairs()
         
         # Determine the layout of the subplots (rows x columns)
         num_columns = self.default_num_columns
@@ -321,7 +323,7 @@ class Plotter:
             ax = axes[idx]
             origin, destination = od
 
-            all_actions, unique_actions = self.retrieve_selected_actions(origin, destination)
+            all_actions, unique_actions = self._retrieve_selected_actions(origin, destination)
 
             for idx2, (kind, ep_to_actions) in enumerate(all_actions.items()):
 
@@ -362,7 +364,7 @@ class Plotter:
     def visualize_sim_length(self):
         save_to = make_dir(kc.PLOTS_FOLDER, kc.SIMULATION_LENGTH_PLOT_FILE_NAME)
 
-        sim_lengths = self.retrieve_sim_length()
+        sim_lengths = self._retrieve_sim_length()
         sim_lengths = running_average(sim_lengths, last_n = 10)
 
         plt.figure(figsize=(self.default_width, self.default_height))
@@ -383,7 +385,7 @@ class Plotter:
 
 
 
-    def retrieve_sim_length(self):
+    def _retrieve_sim_length(self):
         sim_lengths = list()
         with open(self.sim_length_file_path, "r") as file:
             lines = file.readlines()
@@ -399,7 +401,7 @@ class Plotter:
     def visualize_losses(self):
         save_to = make_dir(kc.PLOTS_FOLDER, kc.LOSSES_PLOT_FILE_NAME)
 
-        losses = self.retrieve_losses()
+        losses = self._retrieve_losses()
         if not losses: return
         losses = running_average(losses, last_n = 10)
 
@@ -417,7 +419,7 @@ class Plotter:
 
 
 
-    def retrieve_losses(self):
+    def _retrieve_losses(self):
         losses = list()
         if not os.path.isfile(self.loss_file_path): return None
         with open(self.loss_file_path, "r") as file:
@@ -431,7 +433,7 @@ class Plotter:
 
 #################### HELPERS
 
-    def retrieve_data_per_kind(self, data_key, transform=None):
+    def _retrieve_data_per_kind(self, data_key, transform=None):
         all_values_dict = {kc.ALL : dict()}
         for episode in self.saved_episodes:
             data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
@@ -453,8 +455,8 @@ class Plotter:
         return all_values_dict
     
 
-    def retrieve_data_per_od(self, data_key, transform=None):
-        all_od_pairs = self.retrieve_all_od_pairs()
+    def _retrieve_data_per_od(self, data_key, transform=None):
+        all_od_pairs = self._retrieve_all_od_pairs()
         od_to_key = lambda o, d: f"{o} - {d}"
         all_values_dict = {od_to_key(od[0], od[1]) : dict() for od in all_od_pairs}
         for episode in self.saved_episodes:
@@ -474,7 +476,7 @@ class Plotter:
         return all_values_dict
         
     
-    def retrieve_selected_actions(self, origin, destination):
+    def _retrieve_selected_actions(self, origin, destination):
         all_actions = dict()
         unique_actions = set()
         for episode in self.saved_episodes:
@@ -493,7 +495,7 @@ class Plotter:
         return all_actions, unique_actions
 
 
-    def retrieve_all_od_pairs(self):
+    def _retrieve_all_od_pairs(self):
         all_od_pairs = list()
         data_path = os.path.join(self.episodes_folder, f"ep{self.saved_episodes[0]}.csv")
         episode_data = pd.read_csv(data_path)

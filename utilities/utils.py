@@ -2,6 +2,7 @@ import json
 import numpy as np
 import os
 import random
+import sys
 import time
 import torch
 
@@ -19,6 +20,18 @@ def get_params(file_path):      # Read params.json, resolve dependencies
     params = read_json(file_path)
     params = resolve_param_dependencies(params)
     return params
+
+
+
+def confirm_env_variable(env_var, append=None):
+    if env_var in os.environ:
+        print("[CONFIRMED] Environment variable exists: %s" % env_var)
+        if append:
+            path = os.path.join(os.environ[env_var], append)
+            sys.path.append(path)
+            print("[SUCCESS] Added module directory: %s" % path)
+    else:
+        raise ImportError("Please declare the environment variable '%s'" % env_var)
 
 
 

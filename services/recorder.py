@@ -2,22 +2,21 @@ import os
 import pandas as pd
 
 from keychain import Keychain as kc
-from utilities import list_to_string
 from utilities import make_dir
 
 
 class Recorder:
 
     """
-    Class to record the training process.
+    Record the training process.
     """
 
     def __init__(self):
 
         self.episodes_folder = make_dir([kc.RECORDS_FOLDER, kc.EPISODES_LOGS_FOLDER])
-        self.clear_records(self.episodes_folder)
-        self.sim_length_file_path = self.get_txt_file_path(kc.SIMULATION_LENGTH_LOG_FILE_NAME)
-        self.loss_file_path = self.get_txt_file_path(kc.LOSSES_LOG_FILE_NAME)
+        self._clear_records(self.episodes_folder)
+        self.sim_length_file_path = self._get_txt_file_path(kc.SIMULATION_LENGTH_LOG_FILE_NAME)
+        self.loss_file_path = self._get_txt_file_path(kc.LOSSES_LOG_FILE_NAME)
 
         self.saved_episodes = list()
 
@@ -26,13 +25,13 @@ class Recorder:
 
 #################### INIT HELPERS
 
-    def clear_records(self, folder):
+    def _clear_records(self, folder):
         if os.path.exists(folder):
             for file in os.listdir(folder):
                 os.remove(os.path.join(folder, file))
     
 
-    def get_txt_file_path(self, filename):
+    def _get_txt_file_path(self, filename):
         log_file_path = make_dir(kc.RECORDS_FOLDER, filename)
         if os.path.exists(log_file_path):
             os.remove(log_file_path)

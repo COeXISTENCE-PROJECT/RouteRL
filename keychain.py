@@ -4,64 +4,32 @@ class Keychain:
     This is where we store our file paths, parameter access keys and other constants reliably
     When change needed, just fix it here! Avoid hardcoding...
     """
-
-    ################## RELATIVE FILE PATHS ####################
-
-    PARAMS_PATH = "params.json"
-
-    RECORDS_FOLDER = "training_records"
-    EPISODES_LOGS_FOLDER = "episodes"
-    AGENTS_LOGS_FOLDER = "agents"
-
-    AGENTS_DATA_FILE_NAME = "agents_data.csv"
-    SIMULATION_LENGTH_LOG_FILE_NAME = "simulation_length.txt"
-    LOSSES_LOG_FILE_NAME = "losses.txt"
-    PATHS_CSV_FILE_NAME = "paths.csv"
-    FREE_FLOW_TIMES_CSV_FILE_NAME = "free_flow_times.csv"
-
-    PLOTS_FOLDER = "plots"
-    REWARDS_PLOT_FILE_NAME = "rewards.png"
-    TRAVEL_TIMES_PLOT_FILE_NAME = "travel_times.png"
-    TT_DIST_PLOT_FILE_NAME = "tt_dist.png"
-    FF_TRAVEL_TIME_PLOT_FILE_NAME = "ff_travel_time.png"
-    FLOWS_PLOT_FILE_NAME = "flows.png"
-    SIMULATION_LENGTH_PLOT_FILE_NAME = "simulation_length.png"
-    LOSSES_PLOT_FILE_NAME = "losses.png"
-    ACTIONS_PLOT_FILE_NAME = "actions.png"
-    ACTIONS_SHIFTS_PLOT_FILE_NAME = "actions_shifts.png"
-    MACHINE_AGENTS_EPSILONS_PLOT_FILE_NAME = "epsilons.png"
-    
-    ###########################################################
-    
-    
-
     
     ################ PARAMETER ACCESS KEYS ####################
 
-    AGENT_PARAMETERS = "agent_parameters"
-    TRAINING_PARAMETERS = "training_parameters"
-    ENVIRONMENT_PARAMETERS = "environment_parameters"
-    SIMULATION_PARAMETERS = "simulation_parameters"
-    AGENTS_GENERATION_PARAMETERS = "agent_generation_parameters"
-    PATH_GENERATION_PARAMETERS = "path_generation_parameters"
+    AGENTS = "agent_parameters"
+    RUNNER = "runner_parameters"
+    ENVIRONMENT = "environment_parameters"
+    SIMULATOR = "simulator_parameters"
+    PLOTTER = "plotter_parameters"
+    AGENT_GEN = "agent_generation_parameters"
+    PATH_GEN = "path_generation_parameters"
 
-    # Agent generation
-    AGENTS_DATA_PATH = "agents_data_path"
-    NUM_AGENTS = "num_agents"
-    RATIO_MUTATING = "ratio_mutating"
-
-    ACTION_SPACE_SIZE = "action_space_size"
+    ### Agent parameters
     HUMAN_PARAMETERS = "human_parameters"
     MACHINE_PARAMETERS = "machine_parameters"
-
+    # Common
+    ACTION_SPACE_SIZE = "action_space_size"
     MODEL = "model"
     APPEARANCE_PHASE = "appearance_phase"
     LEARNING_PHASES = "learning_phases"
     BEHAVIOR = "behavior"
-    OBSERVED_SPAN = "observed_span"
     ALPHA = "alpha"
+    # Human
     BETA = "beta"
     BETA_RANDOMNESS = "beta_randomness"
+    # Machine
+    OBSERVED_SPAN = "observed_span"
     EPSILON = "epsilon"
     EPSILON_DECAY_RATE = "epsilon_decay_rate"
     BUFFER_SIZE = "buffer_size"
@@ -70,29 +38,34 @@ class Keychain:
     NUM_HIDDEN = "num_hidden"
     WIDTHS = "widths"
 
-    # Training
+    ### Runner
     NUM_EPISODES = "num_episodes"
     REMEMBER_EVERY = "remember_every"
     PHASES = "phases"
     PHASE_NAMES = "phase_names"
-    MUTATION_TIME = "mutation_time"
-    SECOND_MUTATION_TIME = "second_mutation_time"
     FREQUENT_PROGRESSBAR_UPDATE = "frequent_progressbar_update"
 
-    # Environment
+    ### Environment
 
-    # Simulation
+    ### Simulator
     SUMO_TYPE = "sumo_type"
-    SUMO_CONFIG_PATH = "sumo_config_path"
+    ENV_VAR = "env_var"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
 
-    # Path generation
-    CONNECTION_FILE_PATH = "connection_file_path"
-    EDGE_FILE_PATH = "edge_file_path" 
-    ROUTE_FILE_PATH = "route_file_path"
-    ROUTES_XML_SAVE_PATH = "routes_xml_save_path"
-    PATHS_CSV_SAVE_PATH = "paths_csv_save_path"
-    PATHS_SAVE_PATH = "paths_save_path"
+    ### Plotter
+    COLORS = "colors"
+    DEFAULT_WIDTH = "default_width"
+    DEFAULT_HEIGHT = "default_height"
+    MULTIMODE_WIDTH = "multimode_width"
+    MULTIMODE_HEIGHT = "multimode_height"
+    DEFAULT_NUM_COLUMNS = "default_num_columns"
+
+    ### Agent generation
+    NUM_AGENTS = "num_agents"
+    RATIO_MUTATING = "ratio_mutating"
+    AGENT_ATTRIBUTES = "agent_attributes"
+
+    ### Path generation
     NUMBER_OF_PATHS = "number_of_paths"
     ORIGINS = "origins"
     DESTINATIONS = "destinations"
@@ -100,19 +73,13 @@ class Keychain:
 
     ###########################################################
     
-    
 
-    
-    ####################### ELSE ##############################
+    #################### CONSTANTS ############################
 
     SMALL_BUT_NOT_ZERO = 1e-14
     NOT_AVAILABLE = "N/A"
-
-    SUMO_HOME = "SUMO_HOME"
-
-    AGENT_ATTRIBUTES = "agent_attributes"
     
-    # Common dataframe column headers
+    # Common dataframe headers
     AGENT_ID = "id"
     AGENT_KIND = "kind"
     AGENT_ORIGIN = "origin"
@@ -139,8 +106,8 @@ class Keychain:
     PATH = "path"
 
     # Agent type encodings
-    TYPE_HUMAN = "human"
-    TYPE_MACHINE = "machine"
+    TYPE_HUMAN = "Human"
+    TYPE_MACHINE = "Machine"
 
     # Behavior encodings
     SELFISH = "selfish"
@@ -153,5 +120,40 @@ class Keychain:
     GAWRON = "gawron"
     DQN = "dqn"
     Q = "q"
+    
+    ###########################################################
+
+
+    ####################### FILE PATHS ########################
+
+    PARAMS_PATH = "params.json"
+
+    CONNECTION_FILE_PATH = "network_and_config/csomor1.con.xml"
+    EDGE_FILE_PATH = "network_and_config/csomor1.edg.xml"
+    ROUTE_FILE_PATH = "network_and_config/csomor1.rou.xml"
+    ROUTES_XML_SAVE_PATH = "network_and_config/route.rou.xml"
+    SUMO_CONFIG_PATH = "network_and_config/csomor1.sumocfg"
+    
+    PATHS_CSV_SAVE_PATH = "network_and_config/paths.csv"
+    AGENTS_DATA_PATH = "network_and_config/agents_data.csv"
+
+    RECORDS_FOLDER = "training_records"
+    EPISODES_LOGS_FOLDER = "episodes"
+    SIMULATION_LENGTH_LOG_FILE_NAME = "simulation_length.txt"
+    LOSSES_LOG_FILE_NAME = "losses.txt"
+    PATHS_CSV_FILE_NAME = "paths.csv"
+    FREE_FLOW_TIMES_CSV_FILE_NAME = "free_flow_times.csv"
+
+    PLOTS_FOLDER = "plots"
+    REWARDS_PLOT_FILE_NAME = "rewards.png"
+    TRAVEL_TIMES_PLOT_FILE_NAME = "travel_times.png"
+    TT_DIST_PLOT_FILE_NAME = "tt_dist.png"
+    FF_TRAVEL_TIME_PLOT_FILE_NAME = "ff_travel_time.png"
+    FLOWS_PLOT_FILE_NAME = "flows.png"
+    SIMULATION_LENGTH_PLOT_FILE_NAME = "simulation_length.png"
+    LOSSES_PLOT_FILE_NAME = "losses.png"
+    ACTIONS_PLOT_FILE_NAME = "actions.png"
+    ACTIONS_SHIFTS_PLOT_FILE_NAME = "actions_shifts.png"
+    MACHINE_AGENTS_EPSILONS_PLOT_FILE_NAME = "epsilons.png"
     
     ###########################################################

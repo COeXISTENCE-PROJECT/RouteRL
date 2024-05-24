@@ -191,18 +191,19 @@ def save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path):
 
 if __name__ == "__main__":
     params = get_params(kc.PARAMS_PATH)
-    params = params[kc.PATH_GENERATION_PARAMETERS]
+    params = params[kc.PATH_GEN]
 
-    connection_file_path = params[kc.CONNECTION_FILE_PATH]
-    edge_file_path = params[kc.EDGE_FILE_PATH]
-    route_file_path = params[kc.ROUTE_FILE_PATH]
-    paths_csv_save_path = params[kc.PATHS_CSV_SAVE_PATH]
-    routes_xml_save_path = params[kc.ROUTES_XML_SAVE_PATH]
     number_of_paths = params[kc.NUMBER_OF_PATHS]
     beta = params[kc.BETA]
     weight = params[kc.WEIGHT]
     origins = params[kc.ORIGINS]
     destinations = params[kc.DESTINATIONS]
+
+    connection_file_path = kc.CONNECTION_FILE_PATH
+    edge_file_path = kc.EDGE_FILE_PATH
+    route_file_path = kc.ROUTE_FILE_PATH
+    paths_csv_save_path = kc.PATHS_CSV_SAVE_PATH
+    routes_xml_save_path = kc.ROUTES_XML_SAVE_PATH
 
     origins = {i : origin for i, origin in enumerate(origins)}
     destinations = {i : dest for i, dest in enumerate(destinations)}
