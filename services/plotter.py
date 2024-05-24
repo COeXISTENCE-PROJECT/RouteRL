@@ -229,6 +229,7 @@ class Plotter:
         labels = [f'Humans ({ph})' for ph in self.phase_names[:-1]]
 
         axes[2].boxplot(data_to_plot, labels=labels, patch_artist=True)
+        axes[2].grid(axis = 'y')
         axes[2].set_ylabel('Travel Times')
         axes[2].set_title('Travel Time Distributions (End of Each Phase)')
 

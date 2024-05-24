@@ -5,6 +5,8 @@ class Keychain:
     When change needed, just fix it here! Avoid hardcoding...
     """
     
+    MODE = "" # empty string if not testing, test otherwise
+
     ################ PARAMETER ACCESS KEYS ####################
 
     AGENTS = "agent_parameters"
@@ -127,7 +129,7 @@ class Keychain:
 
     ####################### FILE PATHS ########################
 
-    PARAMS_PATH = "params.json"
+    PARAMS_PATH = MODE + "params.json"
 
     CONNECTION_FILE_PATH = "network_and_config/csomor1.con.xml"
     EDGE_FILE_PATH = "network_and_config/csomor1.edg.xml"
