@@ -21,21 +21,21 @@ class Plotter:
     """
 
 
-    def __init__(self, phases, from_recorder, params):
+    def __init__(self, phases, phase_names):
 
-        self.episodes_folder = from_recorder.episodes_folder
-        self.agents_folder = from_recorder.agents_folder
-        self.sim_length_file_path = from_recorder.sim_length_file_path
-        self.loss_file_path = from_recorder.loss_file_path
+        self.episodes_folder = make_dir([kc.RECORDS_FOLDER, kc.EPISODES_LOGS_FOLDER])
+        self.sim_length_file_path = make_dir(kc.RECORDS_FOLDER, kc.SIMULATION_LENGTH_LOG_FILE_NAME)
+        self.loss_file_path = make_dir(kc.RECORDS_FOLDER, kc.LOSSES_LOG_FILE_NAME)
         self.free_flow_times_file_path = os.path.join(kc.RECORDS_FOLDER, kc.FREE_FLOW_TIMES_CSV_FILE_NAME)
 
         self.saved_episodes = list()
         self.phases = phases
+        self.phase_names = phase_names
 
         self.default_width, self.default_height = 12, 6
         self.multimode_width, self.multimode_height = 8, 5
         self.default_num_columns = 2
-        self.colors = ['firebrick', 'teal', 'peru', 'navy', 'salmon', 'slategray', 'darkviolet', 'goldenrod', 'darkolivegreen', 'mediumturquoise']
+        self.colors = ['firebrick', 'teal', 'peru', 'navy', 'salmon', 'slategray', 'darkviolet', 'goldenrod', 'darkolivegreen', 'dodgerblue']
         self.phase_colors = list(reversed(self.colors))
 
         print(f"[SUCCESS] Plotter is now here to plot!")
@@ -43,8 +43,8 @@ class Plotter:
 
 #################### VISUALIZE ALL
 
-    def visualize_all(self, episodes):
-        self.saved_episodes = episodes
+    def visualize_all(self):
+        self.saved_episodes = self.get_episodes()
 
         self.visualize_free_flows()
         self.visualize_mean_rewards()
@@ -54,6 +54,17 @@ class Plotter:
         self.visualize_action_shifts()
         self.visualize_sim_length()
         self.visualize_losses()
+
+
+    def get_episodes(self):
+        eps = list()
+        if os.path.exists(self.episodes_folder):
+            for file in os.listdir(self.episodes_folder):
+                episode = int(file.split('ep')[1].split('.csv')[0])
+                eps.append(episode)
+        else:
+            raise FileNotFoundError(f"Episodes folder does not exist!")
+        return sorted(eps)
 
 ####################
 
@@ -120,9 +131,8 @@ class Plotter:
             plt.plot(episodes, smoothed_rewards, color=self.colors[idx], label=kind)
 
         for phase_idx, phase in enumerate(self.phases):
-            if phase_idx == 0:  continue
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
-            plt.axvline(x=phase, label=f'Phase {phase_idx}', linestyle='--', color=color)
+            plt.axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color)
 
         plt.xlabel('Episode')
         plt.xlim(0, None)
@@ -152,9 +162,8 @@ class Plotter:
             plt.plot(episodes, smoothed_tts, color=self.colors[idx], label=kind)
 
         for phase_idx, phase in enumerate(self.phases):
-            if phase_idx == 0:  continue
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
-            plt.axvline(x=phase, label=f'Phase {phase_idx}', linestyle='--', color=color)
+            plt.axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color)
 
         plt.xlabel('Episode')
         plt.xlim(0, None)
@@ -189,9 +198,8 @@ class Plotter:
             smoothed_tt = running_average(mean_tt, last_n=5)
             axes[0].plot(episodes, smoothed_tt, color=self.colors[idx], label=od)
         for phase_idx, phase in enumerate(self.phases):
-            if phase_idx == 0:  continue
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
-            axes[0].axvline(x=phase, label=f'Phase {phase_idx}', linestyle='--', color=color)
+            axes[0].axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color)
         axes[0].set_xlabel('Episode')
         axes[0].set_xlim(0, None)
         axes[0].set_ylabel('Mean Travel Time')
@@ -207,9 +215,8 @@ class Plotter:
             axes[1].plot(episodes, smoothed_var_tts, color=self.colors[idx], label=kind)
 
         for phase_idx, phase in enumerate(self.phases):
-            if phase_idx == 0:  continue
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
-            axes[1].axvline(x=phase, label=f'Phase {phase_idx}', linestyle='--', color=color)
+            axes[1].axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color)
         axes[1].set_xlabel('Episode')
         axes[1].set_xlim(0, None)
         axes[1].set_ylabel('Variance TT')
@@ -218,9 +225,9 @@ class Plotter:
 
         # Plot boxplot and violinplot for rewards
         all_travel_times = self.retrieve_data_per_kind(kc.TRAVEL_TIME)
-        eps_to_plot = [ep-1 for ep in self.phases[1:]] + [self.saved_episodes[-1]]
+        eps_to_plot = [ep-1 for ep in self.phases[1:]]
         data_to_plot = [all_travel_times[kc.TYPE_HUMAN][ep] for ep in eps_to_plot]
-        labels = [f'Humans at ep#{ep}' for ep in eps_to_plot]
+        labels = [f'Humans ({ph})' for ph in self.phase_names[:-1]]
 
         axes[2].boxplot(data_to_plot, labels=labels, patch_artist=True)
         axes[2].set_ylabel('Travel Times')
@@ -269,9 +276,8 @@ class Plotter:
                 ax.plot(self.saved_episodes, action_data, color=self.colors[idx2], label=f"{unique_action}")
 
             for phase_idx, phase in enumerate(self.phases):
-                if phase_idx == 0:  continue
                 color = self.phase_colors[phase_idx % len(self.phase_colors)]
-                ax.axvline(x=phase, label=f'Phase {phase_idx}', linestyle='--', color=color)
+                ax.axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color)
 
             ax.set_title(f"Actions for {od} (n = 5)")
             ax.set_xlabel('Episodes')
@@ -328,9 +334,8 @@ class Plotter:
                     ax.plot(episodes, action_data, color=color, label=f"{kind}-{action}")
 
             for phase_idx, phase in enumerate(self.phases):
-                if phase_idx == 0:  continue
                 color = self.phase_colors[phase_idx % len(self.phase_colors)]
-                ax.axvline(x=phase, label=f'Phase {phase_idx}', linestyle='--', color=color)
+                ax.axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color)
 
             ax.set_xlabel('Episodes')
             ax.set_xlim(0, None)
@@ -363,9 +368,8 @@ class Plotter:
         plt.figure(figsize=(self.default_width, self.default_height))
         plt.plot(self.saved_episodes, sim_lengths, color=self.colors[0], label="Simulation timesteps")
         for phase_idx, phase in enumerate(self.phases):
-            if phase_idx == 0:  continue
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
-            plt.axvline(x=phase, label=f'Phase {phase_idx}', linestyle='--', color=color)
+            plt.axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color)
         plt.xlabel('Episode')
         plt.xlim(0, None)
         plt.ylabel('Simulation Length')

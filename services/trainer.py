@@ -18,7 +18,8 @@ class Trainer:
 
     def __init__(self, params):
         self.num_episodes = params[kc.NUM_EPISODES]
-        self.phases = [1] + params[kc.PHASES]
+        self.phases = params[kc.PHASES]
+        self.phase_names = params[kc.PHASE_NAMES]
 
         self.frequent_progressbar = params[kc.FREQUENT_PROGRESSBAR_UPDATE]
         self.remember_every = params[kc.REMEMBER_EVERY]
@@ -26,8 +27,8 @@ class Trainer:
         self.remember_episodes += [1, self.num_episodes] + [ep-1 for ep in self.phases] + [ep for ep in self.phases]
         self.remember_episodes = set(self.remember_episodes)
 
-        self.recorder = Recorder(params[kc.RECORDER_PARAMETERS])
-        self.plotter = Plotter(self.phases, self.recorder, params[kc.PLOTTER_PARAMETERS])
+        self.recorder = Recorder()
+        self.plotter = Plotter(self.phases, self.phase_names)
 
 
     # Training loop
@@ -43,7 +44,7 @@ class Trainer:
 
             if episode in self.phases:
                 curr_phase += 1
-                print(f"\n[INFO] Phase {curr_phase+1} started at episode {episode}!")
+                print(f"\n[INFO] Phase {curr_phase+1} ({self.phase_names[curr_phase]}) has started at episode {episode}!")
                 agents = self.realize_phase(curr_phase, agents)
                 phase_start_time = time.time()
 
@@ -91,10 +92,10 @@ class Trainer:
             self.recorder.remember_all(episode, joint_action_df, joint_observation_df, rewards_df, agents, last_sim_duration)
         elif not self.frequent_progressbar:
             return
-        msg = f"PHASE {curr_phase+1}/{len(self.phases)}"
+        msg = f"{self.phase_names[curr_phase]} {curr_phase+1}/{len(self.phases)}"
         curr_progress = episode-self.phases[curr_phase]
-        target = (self.phases[curr_phase+1]-1) if (curr_phase+1 < len(self.phases)) else self.num_episodes
-        target -= self.phases[curr_phase]
+        target = (self.phases[curr_phase+1]) if ((curr_phase+1) < len(self.phases)) else self.num_episodes
+        target -= self.phases[curr_phase]+1
         show_progress_bar(msg, start_time, curr_progress, target)
 
 
@@ -123,7 +124,7 @@ class Trainer:
 
 
     def show_training_results(self):
-        self.plotter.visualize_all(self.recorder.saved_episodes)
+        self.plotter.visualize_all()
 
 
     def save_losses(self, agents):

@@ -2,34 +2,18 @@
     
     "training_parameters":
     {
-        "num_episodes" : 5000,
-        "remember_every" : 25,
-        "phases" : [1000, 3000],
-        "frequent_progressbar_update" : false,
-
-        "recorder_parameters":
-        {
-            "ONUR_COMMENT3" : "nothing for now"
-        },
-
-        "plotter_parameters":
-        {
-            "ONUR_COMMENT4" : "nothing for now"
-        }
+        "num_episodes" : 6000,
+        "remember_every" : 2,
+        "phases" : [1, 1000, 4000, 5500],
+        "phase_names" : ["Settle", "Shock", "Adapt", "Exhibit"],
+        "frequent_progressbar_update" : true
     },
 
 
-    "agent_generation_parameters" :
+    "agent_parameters" :
     {
-        "num_agents" : 1200,
-        "ratio_mutating" : 0.33,
-        "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
-        "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",
-        "origins" : "${path_generation_parameters.origins}",
-        "destinations" : "${path_generation_parameters.destinations}",
-
+        "agents_data_path" : "${agent_generation_parameters.agents_data_path}",
         "action_space_size" : "${path_generation_parameters.number_of_paths}",
-        "ONUR_COMMENT1" : "DO NOT PUT DEPENDENT VARS BELOW THIS LEVEL",
 
         "human_parameters" :
         {
@@ -47,14 +31,27 @@
             "behavior" : "selfish",
             "model" : "DQN",
             "observed_span" : 300,
+            "batch_size" : 32,
             "epsilon" : 0.99,
             "epsilon_decay_rate" : 0.998,
             "buffer_size" : 256,
-            "batch_size" : 32,
             "learning_rate" : 0.003,
             "num_hidden" : 2,
             "widths" : [32, 64, 32]
         } 
+    },
+
+
+    "agent_generation_parameters" :
+    {
+        "agents_data_path" : "network_and_config/agents_data.csv",
+        "num_agents" : 1200,
+        "ratio_mutating" : 0.33,
+        "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
+        "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",
+        "origins" : "${path_generation_parameters.origins}",
+        "destinations" : "${path_generation_parameters.destinations}",
+        "action_space_size" : "${path_generation_parameters.number_of_paths}"
     },
 
 

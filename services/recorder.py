@@ -12,10 +12,10 @@ class Recorder:
     Class to record the training process.
     """
 
-    def __init__(self, params):
+    def __init__(self):
 
         self.episodes_folder = make_dir([kc.RECORDS_FOLDER, kc.EPISODES_LOGS_FOLDER])
-        self.agents_folder = make_dir([kc.RECORDS_FOLDER, kc.AGENTS_LOGS_FOLDER])
+        self.clear_records(self.episodes_folder)
         self.sim_length_file_path = self.get_txt_file_path(kc.SIMULATION_LENGTH_LOG_FILE_NAME)
         self.loss_file_path = self.get_txt_file_path(kc.LOSSES_LOG_FILE_NAME)
 
@@ -25,7 +25,13 @@ class Recorder:
 
 
 #################### INIT HELPERS
+
+    def clear_records(self, folder):
+        if os.path.exists(folder):
+            for file in os.listdir(folder):
+                os.remove(os.path.join(folder, file))
     
+
     def get_txt_file_path(self, filename):
         log_file_path = make_dir(kc.RECORDS_FOLDER, filename)
         if os.path.exists(log_file_path):
@@ -40,7 +46,6 @@ class Recorder:
     def remember_all(self, episode, joint_action, joint_observation, rewards_df, agents, last_sim_duration):
         self.saved_episodes.append(episode)
         self.remember_episode(episode, joint_action, joint_observation, rewards_df)
-        #self.remember_agents_status(episode, agents)
         self.remember_last_sim_duration(last_sim_duration)
 
 
@@ -51,24 +56,10 @@ class Recorder:
         merged_df.to_csv(make_dir(self.episodes_folder, f"ep{episode}.csv"), index = False)
 
 
-    def remember_agents_status(self, episode, agents):
-        agents_df_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.COST_TABLE, kc.TO_MUTATE, kc.ALPHA, kc.BETA, kc.EPSILON, kc.EPSILON_DECAY_RATE, kc.GAMMA, kc.Q_TABLE]
-        agents_df = pd.DataFrame(columns = agents_df_cols)
-        for agent in agents:
-            id, kind = agent.id, agent.kind
-            beta, alpha, cost, q_table, epsilon, epsilon_decay_rate, gamma, to_mutate = [kc.NOT_AVAILABLE] * 8
-            if kind == kc.TYPE_HUMAN:
-                beta, alpha, cost, to_mutate = agent.beta, agent.alpha, list_to_string(agent.cost, ' , '), (agent.mutate_to != None)
-            elif (kind == kc.TYPE_MACHINE) or (kind == kc.TYPE_MACHINE_2):
-                alpha, epsilon, epsilon_decay_rate, gamma, q_table = agent.alpha, agent.epsilon, agent.epsilon_decay_rate, agent.gamma, list_to_string(agent.q_table, ' , ')
-            row_data = [id, kind, cost, to_mutate, alpha, beta, epsilon, epsilon_decay_rate, gamma, q_table]
-            agents_df.loc[len(agents_df.index)] = {key : value for key, value in zip(agents_df_cols, row_data)}
-        agents_df.to_csv(make_dir(self.agents_folder, f"ep{episode}.csv"), index = False)
-
-
     def remember_last_sim_duration(self, last_sim_duration):
         with open(self.sim_length_file_path, "a") as file:
             file.write(f"{last_sim_duration}\n")
+
 
     def save_losses(self, agents):
         losses = list()

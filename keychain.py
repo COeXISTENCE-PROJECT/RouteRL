@@ -38,10 +38,11 @@ class Keychain:
     
     ################ PARAMETER ACCESS KEYS ####################
 
-    AGENTS_GENERATION_PARAMETERS = "agent_generation_parameters"
+    AGENT_PARAMETERS = "agent_parameters"
     TRAINING_PARAMETERS = "training_parameters"
     ENVIRONMENT_PARAMETERS = "environment_parameters"
     SIMULATION_PARAMETERS = "simulation_parameters"
+    AGENTS_GENERATION_PARAMETERS = "agent_generation_parameters"
     PATH_GENERATION_PARAMETERS = "path_generation_parameters"
 
     # Agent generation
@@ -73,6 +74,7 @@ class Keychain:
     NUM_EPISODES = "num_episodes"
     REMEMBER_EVERY = "remember_every"
     PHASES = "phases"
+    PHASE_NAMES = "phase_names"
     MUTATION_TIME = "mutation_time"
     SECOND_MUTATION_TIME = "second_mutation_time"
     FREQUENT_PROGRESSBAR_UPDATE = "frequent_progressbar_update"
@@ -95,12 +97,6 @@ class Keychain:
     ORIGINS = "origins"
     DESTINATIONS = "destinations"
     WEIGHT = "weight"
-
-    # Recorder
-    RECORDER_PARAMETERS = "recorder_parameters"
-
-    # Plotter
-    PLOTTER_PARAMETERS = "plotter_parameters"
 
     ###########################################################
     
