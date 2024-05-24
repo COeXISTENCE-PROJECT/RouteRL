@@ -54,6 +54,7 @@ class Keychain:
 
     ### Plotter
     COLORS = "colors"
+    SMOOTH_BY = "smooth_by"
     DEFAULT_WIDTH = "default_width"
     DEFAULT_HEIGHT = "default_height"
     MULTIMODE_WIDTH = "multimode_width"

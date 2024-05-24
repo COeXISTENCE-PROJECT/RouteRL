@@ -73,6 +73,7 @@
         "phases" : "${runner_parameters.phases}",
         "phase_names" : "${runner_parameters.phase_names}",
         "colors" : ["firebrick", "teal", "peru", "navy", "salmon", "slategray", "darkviolet", "goldenrod", "darkolivegreen", "dodgerblue"],
+        "smooth_by" : 50,
         "default_width" : 12,
         "default_height" : 6,
         "multimode_width" : 8,
