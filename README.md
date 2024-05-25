@@ -12,6 +12,7 @@ See [here](server_scripts/how_to.md).
 ## Number of agents
 - 1200 agents
 - Humans: 823 | Machines: 377 
+- Humans: Gawron | Machines: DQN (Single)
 ## Machines' objective
 - **COMPETITIVE**: Minimize own TT, maximize humans'
 - Also conducted alturistic, social, selfish and collaborative.

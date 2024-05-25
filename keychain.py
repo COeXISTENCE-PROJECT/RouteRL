@@ -118,6 +118,7 @@ class Keychain:
     COLLABORATIVE = "collaborative"
     SOCIAL = "social"
     ALTURISTIC = "alturistic"
+    MALICIOUS = "malicious"
 
     # Model encodings
     GAWRON = "gawron"
