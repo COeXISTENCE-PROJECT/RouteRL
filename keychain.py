@@ -109,8 +109,8 @@ class Keychain:
     PATH = "path"
 
     # Agent type encodings
-    TYPE_HUMAN = "Human"
-    TYPE_MACHINE = "Machine"
+    TYPE_HUMAN = "human"
+    TYPE_MACHINE = "machine"
 
     # Behavior encodings
     SELFISH = "selfish"
