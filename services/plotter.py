@@ -127,7 +127,7 @@ class Plotter:
 
         plt.figure(figsize=(self.default_width, self.default_height))
 
-        for idx, (kind, ep_reward_dict )in enumerate(all_mean_rewards.items()):
+        for idx, (kind, ep_reward_dict) in enumerate(all_mean_rewards.items()):
             episodes = list(ep_reward_dict.keys())
             rewards = list(ep_reward_dict.values())
             smoothed_rewards = running_average(rewards, last_n=self.smooth_by)

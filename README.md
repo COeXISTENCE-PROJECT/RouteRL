@@ -1,6 +1,6 @@
 # Overview
 
-This project involves the development of a reinforcement learning environment where machine and human agents learn the optimal path to get from an origin to a destination.
+This project involves the development of a reinforcement learning environment where AV and human agents learn the optimal path to get from an origin to a destination.
 The implementation includes several components, as depicted in the UML Class and Sequence Diagrams [HERE](https://miro.com/app/board/uXjVN4vGqSI=/?share_link_id=316593087566).
 
 # How to run on servers?
@@ -11,11 +11,10 @@ See [here](server_scripts/how_to.md).
 
 ## Number of agents
 - 1200 agents
-- Humans: 823 | Machines: 377 
-- Humans: Gawron | Machines: DQN (Single)
-## Machines' objective
-- **COMPETITIVE**: Minimize own TT, maximize humans'
-- Also conducted altruistic, social, selfish and collaborative.
+- Humans: 823 | AVs: 377 
+- Humans: Gawron | AVs: DQN (Single)
+## AVs' objective
+- Conducted competitive, altruistic, social, selfish and collaborative.
 - See [results](results).
 ## Training episodes
 - 6000 episodes, 4 phases
@@ -23,13 +22,13 @@ See [here](server_scripts/how_to.md).
     - Humans: 1200
     - Only humans learn.
 - Phase 2 (**Shock**) : Starts in episode 1000
-    - Humans: 823  Machines: 377 
+    - Humans: 823  AVs: 377 
     - Only machines learn.
 - Phase 3 (**Adapt**) : Starts in episode 4000
-    - Humans: 823  Machines: 377
+    - Humans: 823  AVs: 377
     - Both machines and humans learn.
 - Phase 4 (**Exhibit**) : Starts in episode 5500
-    - Humans: 823  Machines: 377
+    - Humans: 823  AVs: 377
     - Noone learns.
 ## Training duration
 - 16 hours, 18 minutes, 18 seconds 
@@ -40,8 +39,13 @@ See [here](server_scripts/how_to.md).
  - cpus-per-task=4
  - partition=dgx
 
-# Results
 #### *All plots smoothed by n=50*
+# Results (All)
+Human Travel Times            |  AV Travel Times
+:-------------------------:|:-------------------------:
+![](readme_plots/HUMANS.png)  |  ![](readme_plots/AVs.png)
+
+# Results (For Competitive AVs)
 
 ## Travel times (in minutes)
 ![](readme_plots/travel_times.png)
@@ -55,7 +59,7 @@ See [here](server_scripts/how_to.md).
 ![](readme_plots/rewards.png)
 
 
-## Mean Losses of DNNs of Machines 
+## Mean Losses of DNNs of AVs 
 #### (Throughout their learning)
 ![](readme_plots/losses.png)
 
