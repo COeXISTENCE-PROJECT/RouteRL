@@ -56,7 +56,7 @@ See [here](server_scripts/how_to.md).
 
 
 ## Mean Losses of DNNs of Machines 
-#### (Throughout Their learning)
+#### (Throughout their learning)
 ![](readme_plots/losses.png)
 
 
