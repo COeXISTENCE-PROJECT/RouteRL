@@ -208,7 +208,7 @@ class MachineAgent(BaseAgent):
             a, b, c, d = 0.5, 0.5, 0, 0
         elif self.behavior == kc.SOCIAL:
             a, b, c, d = 0.5, 0, 0, 0.5
-        elif self.behavior == kc.ALTURISTIC:
+        elif self.behavior == kc.ALTRUISTIC:
             a, b, c, d = 0, 0, 0, 1
         elif self.behavior == kc.MALICIOUS:
             a, b, c, d = 0, 0, -1, 0

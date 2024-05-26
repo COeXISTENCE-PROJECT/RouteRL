@@ -224,9 +224,9 @@ class Plotter:
 
         # Plot boxplot and violinplot for rewards
         all_travel_times = self._retrieve_data_per_kind(kc.TRAVEL_TIME)
-        eps_to_plot = [ep-1 for ep in self.phases[1:]]
+        eps_to_plot = [ep-1 for ep in self.phases[1:]] + [self.saved_episodes[-1]]
         data_to_plot = [all_travel_times[kc.TYPE_HUMAN][ep] for ep in eps_to_plot]
-        labels = [f'Humans ({ph})' for ph in self.phase_names[:-1]]
+        labels = [f'Humans ({ph})' for ph in self.phase_names]
 
         axes[2].boxplot(data_to_plot, labels=labels, patch_artist=True)
         axes[2].grid(axis = 'y')

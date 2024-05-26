@@ -15,7 +15,7 @@ See [here](server_scripts/how_to.md).
 - Humans: Gawron | Machines: DQN (Single)
 ## Machines' objective
 - **COMPETITIVE**: Minimize own TT, maximize humans'
-- Also conducted alturistic, social, selfish and collaborative.
+- Also conducted altruistic, social, selfish and collaborative.
 - See [results](results).
 ## Training episodes
 - 6000 episodes, 4 phases

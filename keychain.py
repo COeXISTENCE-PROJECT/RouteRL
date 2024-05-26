@@ -98,9 +98,6 @@ class Keychain:
     ARRIVAL_TIME = "arrival_time"
     COST_TABLE = "cost_table"
     TRAVEL_TIME = "travel_time"
-    HUMANS = "humans"
-    MACHINES = "machines"
-    ALL = "all"
     PATH_INDEX = "path_index"
     FREE_FLOW_TIME = "free_flow_time"
     LAST_SIM_DURATION = "last_sim_duration"
@@ -109,15 +106,16 @@ class Keychain:
     PATH = "path"
 
     # Agent type encodings
-    TYPE_HUMAN = "human"
-    TYPE_MACHINE = "machine"
+    ALL = "All"
+    TYPE_HUMAN = "Human"
+    TYPE_MACHINE = "AV"
 
     # Behavior encodings
     SELFISH = "selfish"
     COMPETITIVE = "competitive"
     COLLABORATIVE = "collaborative"
     SOCIAL = "social"
-    ALTURISTIC = "alturistic"
+    ALTRUISTIC = "altruistic"
     MALICIOUS = "malicious"
 
     # Model encodings
