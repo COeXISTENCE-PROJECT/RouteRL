@@ -166,7 +166,7 @@ class TrafficEnvironment(ParallelEnv):
 
 
     def reset(self, seed=None, options=None):
-        logging.info("RESET")
+        #logging.info("RESET")
         self.remake_sumo_controller()
         self.simulator.start_sumo()
         self.agents = copy(self.possible_agents)
@@ -182,7 +182,7 @@ class TrafficEnvironment(ParallelEnv):
 
 
     def step(self, machine_joint_action):
-        logging.info("STEP")
+        #logging.info("STEP")
         self.remake_sumo_controller()
         self.simulator.start_sumo()
 
@@ -270,7 +270,7 @@ class TrafficEnvironment(ParallelEnv):
             agents: agent_counts/num_agents_same_od for agents in self.possible_agents
         }
 
-        print("Observations are:", observations, '\n')
+        #print("Observations are:", observations, '\n')
 
         return observations
         
@@ -307,7 +307,7 @@ class TrafficEnvironment(ParallelEnv):
     
     
     def machine_learning(self, sumo_df, machine_joint_action, state_table):
-        logging.info("Machines are about to learn!")
+        #logging.info("Machines are about to learn!")
 
         sumo_df['id'] = sumo_df['id'].astype(str)
         sumo_df_machines = sumo_df.head(self.agent_params[kc.NUM_MACHINE_AGENTS])
@@ -449,8 +449,7 @@ class TrafficEnvironment(ParallelEnv):
 
         for index, row in self.human_joint_action.iterrows():
 
-            if(row['origin'] == self.origin[0] and row['destination'] == self.destination[0] and row['start_time'] < self.start_times[0]):
-
+            if(row['origin'] == self.origin[0] and row['destination'] == self.destination[0]):
                 human_avg = sum(self.reward_table_humans[index]) / len(self.reward_table_humans[index])
                 listofhumans.append(human_avg)
 
@@ -467,6 +466,18 @@ class TrafficEnvironment(ParallelEnv):
         percentage_lower = (count_lower / len(listofhumans)) * 100
 
         print("Percentage of rewards lower than the reference value: ", percentage_lower, "%")
+
+        # Format the percentage as a string
+        percentage_str = f"\n{percentage_lower}%"
+
+        # Specify the filename
+        filename = "percentage.txt"
+
+        # Open the file in write mode and save the percentage
+        with open(filename, "a") as file:
+            file.write(percentage_str)
+
+        print(f"The percentage {percentage_str} has been saved to {filename}")
         
 
 
@@ -491,7 +502,7 @@ class TrafficEnvironment(ParallelEnv):
             human_agents = random.sample(self.human_agents, 2)
 
 
-        plt.figure(figsize=(70, 40), dpi=200) 
+        plt.figure(figsize=(100, 40), dpi=200) 
 
 
         ### Plot an agent that has the same origin-destination pair with the one learning
@@ -535,6 +546,50 @@ class TrafficEnvironment(ParallelEnv):
         plt.tight_layout()
         plt.show()
 
+        sns.set_style("whitegrid")
+
+        mutation_episode = self.training_params[kc.HUMAN_LEARNING_LENGTH]
+        print("mutation episode is: ", mutation_episode, "\n\n\n")
+        print("self.human_reward_table is: ", self.reward_table_humans, len(self.reward_table_humans[0]), "\n\n\n")
+
+        if self.possible_agents:
+            random_agents = random.sample(self.possible_agents, 1)
+            human_agents = [agent for agent in self.human_agents if agent.origin == self.origin[0] and agent.destination == self.destination[0]]
+            human_agents = random.sample(human_agents, 2)
+        else:
+            human_agents = random.sample(self.human_agents, 2)
+
+        plt.figure(figsize=(20, 12), dpi=200) 
+
+        colors = ['tab:red', 'tab:blue', 'tab:green', 'tab:orange']
+        for idx, human in enumerate(human_agents):
+            color = colors[idx]
+            plt.plot(self.reward_table_humans[human.id], linestyle='-', color=color, linewidth=3, label=f'Human Agent {human.id} with o-d pair: {human.origin} - {human.destination}')
+
+        if self.possible_agents:
+            for agent_index in random_agents:
+                if self.possible_agents:
+                    for idx, human in enumerate(human_agents):
+                        color = colors[idx]
+                        x_values = [mutation_episode, mutation_episode + 1]
+                        y_values = [self.reward_table_humans[human.id][-1], self.reward_table_humans[human.id][0]]
+                        plt.plot(x_values, y_values, linestyle='-', color=color, linewidth=3)
+                        plt.plot(self.reward_table_humans[human.id], linestyle='-', color=color, linewidth=3)
+                    plt.plot(np.arange(mutation_episode, mutation_episode + len(self.reward_table[agent_index])), self.reward_table[agent_index], linestyle='-', linewidth=3, color='tab:green', label=f'Machine Agent with origin-destination pair: {self.origin[0]} - {self.destination[0]}')
+                else:
+                    plt.plot(self.reward_table_humans[int(agent_index)], linestyle='-', linewidth=3)
+
+            plt.axvline(x=mutation_episode, color='k', linestyle='--', label='Mutation Time', linewidth=3)
+
+        plt.tick_params(axis='both', which='major', labelsize=30)
+        plt.xlabel('Episode', fontsize=40)
+        plt.ylabel('Reward', fontsize=40)
+        plt.title(f'Rewards Over Episodes', fontsize=40)
+        plt.grid(True, linestyle='--', alpha=0.5)
+        plt.legend(loc='lower left', fontsize=30)
+        plt.tight_layout()
+        plt.show()
+
         
     def plot_actions(self):
         sns.set_style("whitegrid")
@@ -554,7 +609,7 @@ class TrafficEnvironment(ParallelEnv):
         else:
             human_agents = random.sample(self.human_agents, 2)
 
-        plt.figure(figsize=(70, 40), dpi=200) 
+        plt.figure(figsize=(100, 40), dpi=200) 
 
         colors = ['red', 'blue', 'green']
         for idx, human in enumerate(human_agents):
@@ -582,12 +637,12 @@ class TrafficEnvironment(ParallelEnv):
             # Draw the mutation vertical line
             plt.axvline(x=mutation_episode, color='k', linestyle='--', label='Mutation Time', linewidth=8)
 
-        plt.tick_params(axis='both', which='major', labelsize=100)
-        plt.xlabel('Episode', fontsize=100) 
-        plt.ylabel('Action', fontsize=100) 
-        plt.title(f'Actions Over Episodes', fontsize=100) 
+        plt.tick_params(axis='both', which='major', labelsize=30)
+        plt.xlabel('Episode', fontsize=40) 
+        plt.ylabel('Action', fontsize=40) 
+        plt.title(f'Actions Over Episodes', fontsize=40) 
         plt.grid(True, linestyle='--', alpha=0.5) 
-        plt.legend(loc='lower left', fontsize=80) 
+        plt.legend(loc='lower left', fontsize=45) 
         #plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=30) 
         plt.tight_layout() 
         plt.show()
@@ -603,12 +658,12 @@ class TrafficEnvironment(ParallelEnv):
         else:
             human_agents = random.sample(self.human_agents, 2)
 
-        plt.figure(figsize=(14, 8))
+        plt.figure(figsize=(20, 12))
 
         colors = ['tab:red', 'tab:blue', 'tab:green']
         for idx, human in enumerate(human_agents):
             color = colors[idx]
-            plt.plot(self.action_table_humans[human.id], linestyle='-', color=color, linewidth=2, label=f'Human Agent {human.id} with o-d pair: {human.origin} - {human.destination}')
+            plt.plot(self.action_table_humans[human.id], linestyle='-', color=color, linewidth=3, label=f'Human Agent {human.id} with o-d pair: {human.origin} - {human.destination}')
 
         if self.possible_agents:
             for agent_index in random_agents:
@@ -617,19 +672,20 @@ class TrafficEnvironment(ParallelEnv):
                         color = colors[idx]
                         x_values = [mutation_episode, mutation_episode + 1]
                         y_values = [self.action_table_humans[human.id][-1], self.action_table_humans[human.id][0]]
-                        plt.plot(x_values, y_values, linestyle='-', color=color, linewidth=2)
-                        plt.plot(self.action_table_humans[human.id], linestyle='-', color=color, linewidth=2)
-                    plt.plot(np.arange(mutation_episode + 1, mutation_episode + len(self.action_table[agent_index]) + 1), self.action_table[agent_index], linestyle='-', linewidth=2, color='tab:orange', label=f'Machine Agent with origin-destination pair: {self.origin[0]} - {self.destination[0]}')
+                        plt.plot(x_values, y_values, linestyle='-', color=color, linewidth=3)
+                        plt.plot(self.action_table_humans[human.id], linestyle='-', color=color, linewidth=3)
+                    plt.plot(np.arange(mutation_episode + 1, mutation_episode + len(self.action_table[agent_index]) + 1), self.action_table[agent_index], linestyle='-', linewidth=3, color='tab:green', label=f'Machine Agent with origin-destination pair: {self.origin[0]} - {self.destination[0]}')
                 else:
-                    plt.plot(self.action_table_humans[int(agent_index)], linestyle='-', linewidth=2)
+                    plt.plot(self.action_table_humans[int(agent_index)], linestyle='-', linewidth=3)
 
-            plt.axvline(x=mutation_episode, color='k', linestyle='--', label='Mutation Time', linewidth=2)
+            plt.axvline(x=mutation_episode, color='k', linestyle='--', label='Mutation Time', linewidth=3)
 
-        plt.xlabel('Episode', fontsize=14)
-        plt.ylabel('Action', fontsize=14)
-        plt.title('Actions Over Episodes', fontsize=16)
+        plt.tick_params(axis='both', which='major', labelsize=30)
+        plt.xlabel('Episode', fontsize=40)
+        plt.ylabel('Action', fontsize=40)
+        plt.title('Actions Over Episodes', fontsize=40)
         plt.grid(True, linestyle='--', alpha=0.5)
-        plt.legend(loc='lower left', fontsize=12)
+        plt.legend(loc='lower left', fontsize=30)
         plt.tight_layout()
         plt.show()
 
