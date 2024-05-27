@@ -450,7 +450,9 @@ class TrafficEnvironment(ParallelEnv):
         for index, row in self.human_joint_action.iterrows():
 
             if(row['origin'] == self.origin[0] and row['destination'] == self.destination[0]):
-                human_avg = sum(self.reward_table_humans[index]) / len(self.reward_table_humans[index])
+                
+                ## We want to calculate the average reward after the mutation episode
+                human_avg = sum(self.reward_table_humans[index][self.training_params[kc.HUMAN_LEARNING_LENGTH]:]) / (len(self.reward_table_humans[index]) - self.training_params[kc.HUMAN_LEARNING_LENGTH])
                 listofhumans.append(human_avg)
 
         print("list of humans is: ", listofhumans, "\n\n\n")
