@@ -133,7 +133,7 @@ class MachineAgent(BaseAgent):
         self.appearance_phase = params[kc.APPEARANCE_PHASE]
         self.observed_span = params[kc.OBSERVED_SPAN]
         self.action_space_size = action_space_size
-        self.state_size = action_space_size
+        self.state_size = action_space_size * 2
         self.model = DQN(params, self.state_size, self.action_space_size)
         self.is_learning = -1
         self.last_reward = None
@@ -169,16 +169,31 @@ class MachineAgent(BaseAgent):
             self.model.learn(self.last_state, action, reward)
 
     def get_state(self, observation):
-        state = [0] * self.state_size
+        warmth_human = [0] * (self.state_size // 2)
+        warmth_machine = [0] * (self.state_size // 2)
+
         min_start_time = self.start_time - self.observed_span
         observation = observation.loc[(observation[kc.AGENT_ORIGIN] == self.origin) & (observation[kc.AGENT_DESTINATION] == self.destination)]
         prior_agents = observation.loc[observation[kc.AGENT_START_TIME] > min_start_time]
-        if not prior_agents.empty:
-            for _, row in prior_agents.iterrows():
+
+        human_prior = prior_agents.loc[prior_agents[kc.AGENT_KIND] == kc.TYPE_HUMAN]
+        machine_prior = prior_agents.loc[prior_agents[kc.AGENT_KIND] == kc.TYPE_MACHINE]
+
+        if not human_prior.empty:
+            for _, row in human_prior.iterrows():
                 action = row[kc.ACTION]
                 start_time = row[kc.AGENT_START_TIME]
                 warmth = start_time - min_start_time
-                state[action] += warmth
+                warmth_human[action] += warmth
+
+        if not machine_prior.empty:
+            for _, row in machine_prior.iterrows():
+                action = row[kc.ACTION]
+                start_time = row[kc.AGENT_START_TIME]
+                warmth = start_time - min_start_time
+                warmth_machine[action] += warmth
+
+        state = warmth_human + warmth_machine
         return state
     
     def get_reward(self, observation):
