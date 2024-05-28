@@ -1,0 +1,60 @@
+
+#### SELFISH ####
+Compared to the traffic efficiencies in the end of settle and adapt phases:
+AVs achieved 10.910% travel time improvement,
+(Before: 7.078 vs After: 6.306)
+At the cost of 2.984% human travel time change.
+(Before: 7.078 vs After: 6.867)
+Overall traffic efficiency changed by 5.474%.
+(Before: 7.078 vs After: 6.690)
+
+
+#### ALTRUISTIC ####
+Compared to the traffic efficiencies in the end of settle and adapt phases:
+AVs achieved -31.291% travel time improvement,
+(Before: 7.078 vs After: 9.292)
+At the cost of 8.148% human travel time change.
+(Before: 7.078 vs After: 6.501)
+Overall traffic efficiency changed by -4.243%.
+(Before: 7.078 vs After: 7.378)
+
+
+#### COMPETITIVE ####
+Compared to the traffic efficiencies in the end of settle and adapt phases:
+AVs achieved 8.779% travel time improvement,
+(Before: 7.078 vs After: 6.456)
+At the cost of 0.072% human travel time change.
+(Before: 7.078 vs After: 7.073)
+Overall traffic efficiency changed by 2.807%.
+(Before: 7.078 vs After: 6.879)
+
+
+#### COLLABORATIVE ####
+Compared to the traffic efficiencies in the end of settle and adapt phases:
+AVs achieved 4.857% travel time improvement,
+(Before: 7.078 vs After: 6.734)
+At the cost of -0.329% human travel time change.
+(Before: 7.078 vs After: 7.101)
+Overall traffic efficiency changed by 1.300%.
+(Before: 7.078 vs After: 6.986)
+
+
+#### SOCIAL ####
+Compared to the traffic efficiencies in the end of settle and adapt phases:
+AVs achieved 7.828% travel time improvement,
+(Before: 7.078 vs After: 6.524)
+At the cost of 2.949% human travel time change.
+(Before: 7.078 vs After: 6.869)
+Overall traffic efficiency changed by 4.482%.
+(Before: 7.078 vs After: 6.761)
+
+
+#### MALICIOUS ####
+Compared to the traffic efficiencies in the end of settle and adapt phases:
+AVs achieved -36.090% travel time improvement,
+(Before: 7.078 vs After: 9.632)
+At the cost of 4.946% human travel time change.
+(Before: 7.078 vs After: 6.728)
+Overall traffic efficiency changed by -7.946%.
+(Before: 7.078 vs After: 7.640)
+

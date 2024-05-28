@@ -7,6 +7,8 @@ The implementation includes several components, as depicted in the UML Class and
 
 See [here](server_scripts/how_to.md).
 
+<br><br><br>
+
 # Training setting
 
 ## Number of agents
@@ -14,10 +16,16 @@ See [here](server_scripts/how_to.md).
 - Humans: 823 | AVs: 377 
 - Humans: Gawron | AVs: DQN (Single)
 ## AVs' objective
-- Conducted competitive, altruistic, social, selfish and collaborative.
+- Conducted:
+    - **Selfish**: Minimize own travel time.
+    - **Altruistic**: Minimize everyone's travel times.
+    - **Competitive**: Minimize own travel time, maximize other group's travel times.
+    - **Collaborative**: Minimize own and own group's travel times. 
+    - **Social**: Minimize own and everyone's travel times.
+    - **Malicious**: Maximize other group's travel times.
 - See [results](results).
 ## Training episodes
-- 6000 episodes, 4 phases
+- 6000 episodes, 3 phases
 - Phase 1 (**Settle**) : Starts in episode 1
     - Humans: 1200
     - Only humans learn.
@@ -27,25 +35,36 @@ See [here](server_scripts/how_to.md).
 - Phase 3 (**Adapt**) : Starts in episode 4000
     - Humans: 823  AVs: 377
     - Both machines and humans learn.
-- Phase 4 (**Exhibit**) : Starts in episode 5500
-    - Humans: 823  AVs: 377
-    - Noone learns.
 ## Training duration
-- 16 hours, 18 minutes, 18 seconds 
-- 9.78 seconds per episode in average
+- 18 hours, 20 minutes, 16 seconds
+- 11 seconds per episode in average
 ## Hardware
  - gpu=gpu:1
  - mem=64G
  - cpus-per-task=4
  - partition=dgx
 
-#### *All plots smoothed by n=50*
+<br><br><br>
+
 # Results (All)
+#### *Smoothed by n=200*
 Human Travel Times            |  AV Travel Times
 :-------------------------:|:-------------------------:
 ![](readme_plots/HUMANS.png)  |  ![](readme_plots/AVs.png)
 
-# Results (For Competitive AVs)
+<br><br><br>
+
+# Results (for Competitive AVs)
+
+Compared to the traffic efficiencies in the end of settle and adapt phases:
+- AVs achieved 8.779% travel time improvement,
+    - (Before: 7.078 vs After: 6.456)
+- At the cost of 0.072% human travel time change.
+    - (Before: 7.078 vs After: 7.073)
+- Overall traffic efficiency changed by 2.807%.
+    - (Before: 7.078 vs After: 6.879)
+
+#### *All plots smoothed by n=50*
 
 ## Travel times (in minutes)
 ![](readme_plots/travel_times.png)
