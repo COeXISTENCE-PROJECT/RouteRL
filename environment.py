@@ -485,70 +485,6 @@ class TrafficEnvironment(ParallelEnv):
 
     def plot_rewards(self):
         sns.set_style("whitegrid")
-        mutation_episode = self.training_params[kc.HUMAN_LEARNING_LENGTH]
-        print("mutation episode is: ", mutation_episode, "\n\n\n")
-        print("self.human_reward_table is: ", self.reward_table_humans, len(self.reward_table_humans[0]), "\n\n\n")
-
-        #with plt.style.context(['science']):
-
-
-        ## If there are machine agents in the environment
-        if self.possible_agents:
-            random_agents = random.sample(self.possible_agents, 1)
-
-            ## Plot humans that have the same origin destination pair with the machine agent
-            human_agents = [agent for agent in self.human_agents if agent.origin == self.origin[0] and agent.destination == self.destination[0]]
-            human_agents = random.sample(human_agents, 2)
-
-        else:
-            human_agents = random.sample(self.human_agents, 2)
-
-
-        plt.figure(figsize=(100, 40), dpi=200) 
-
-
-        ### Plot an agent that has the same origin-destination pair with the one learning
-        # Iterate over the selected agents and plot their rewards
-        #colors = plt.cm.Dark2(np.linspace(0, 1, len(human_agents))) 
-        colors = ['red', 'blue', 'green', 'black']
-        for idx, human in enumerate(human_agents):
-            color = colors[idx] 
-            plt.plot(self.reward_table_humans[human.id], linestyle='-', color=color, linewidth=5, label=f'Human agent {human.id} with o-d pair: {human.origin} - {human.destination}')
-
-
-        if self.possible_agents:
-
-            # Plot the rest of the values
-            for agent_index in random_agents:
-                if self.possible_agents:
-                    for idx, human in enumerate(human_agents):
-                        color = colors[idx]  # Get the same color for the current human agent
-                        # Plot a line segment connecting the last point of self.table_before_mutation and the first point of self.reward_table_humans
-                        x_values = [mutation_episode, mutation_episode + 1]
-                        y_values = [self.reward_table_humans[human.id][-1], self.reward_table_humans[human.id][0]]
-                        #plt.plot(x_values, y_values, linestyle='-', color=color, linewidth=1.5)
-                        # Plot the rest of the rewards
-                        plt.plot(self.reward_table_humans[human.id], linestyle='-', color=color, linewidth=5)
-                    # Plot machine agent's rewards
-                    plt.plot(np.arange(mutation_episode, mutation_episode + len(self.reward_table[agent_index])), self.reward_table[agent_index], linestyle='-', linewidth=5, color='green', label=f'Machine Agent with origin-destination pair: {self.origin[0]} - {self.destination[0]}')
-                else:
-                    plt.plot(self.reward_table_humans[int(agent_index)], linestyle='-', linewidth=5)
-
-            # Draw the mutation vertical line
-            plt.axvline(x=mutation_episode, color='k', linestyle='--', label='Mutation Time', linewidth=8)
-
-
-        plt.tick_params(axis='both', which='major', labelsize=100)
-        plt.xlabel('Episode', fontsize=100)
-        plt.ylabel('Reward', fontsize=100)  
-        plt.title(f'Rewards Over Episodes', fontsize=100) 
-        plt.grid(True, linestyle='--', alpha=1)  
-        plt.legend(loc='lower left', fontsize=80) 
-        #plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=30) 
-        plt.tight_layout()
-        plt.show()
-
-        sns.set_style("whitegrid")
 
         mutation_episode = self.training_params[kc.HUMAN_LEARNING_LENGTH]
         print("mutation episode is: ", mutation_episode, "\n\n\n")
@@ -583,12 +519,12 @@ class TrafficEnvironment(ParallelEnv):
 
             plt.axvline(x=mutation_episode, color='k', linestyle='--', label='Mutation Time', linewidth=3)
 
-        plt.tick_params(axis='both', which='major', labelsize=30)
-        plt.xlabel('Episode', fontsize=40)
-        plt.ylabel('Reward', fontsize=40)
-        plt.title(f'Rewards Over Episodes', fontsize=40)
+        plt.tick_params(axis='both', which='major', labelsize=25)
+        plt.xlabel('Episode', fontsize=25)
+        plt.ylabel('Reward', fontsize=25)
+        #plt.title(f'Rewards Over Episodes', fontsize=40)
         plt.grid(True, linestyle='--', alpha=0.5)
-        plt.legend(loc='lower left', fontsize=30)
+        plt.legend(loc='lower left', fontsize=25)
         plt.tight_layout()
         plt.show()
 
@@ -596,61 +532,6 @@ class TrafficEnvironment(ParallelEnv):
     def plot_actions(self):
         sns.set_style("whitegrid")
 
-        #with plt.style.context(['science']):
-
-        mutation_episode = self.training_params[kc.HUMAN_LEARNING_LENGTH]
-
-        ## If there are machine agents in the environment
-        if self.possible_agents:
-            random_agents = random.sample(self.possible_agents, 1)
-
-            ## Plot humans that have the same origin destination pair with the machine agent
-            human_agents = [agent for agent in self.human_agents if agent.origin == self.origin[0] and agent.destination == self.destination[0]]
-            human_agents = random.sample(human_agents, 2)
-            
-        else:
-            human_agents = random.sample(self.human_agents, 2)
-
-        plt.figure(figsize=(100, 40), dpi=200) 
-
-        colors = ['red', 'blue', 'green']
-        for idx, human in enumerate(human_agents):
-            color = colors[idx]  # Get a color for the current human agent
-            plt.plot(self.action_table_humans[human.id], linestyle='-', color=color, linewidth=5, label=f'Human Agent {human.id} with o-d pair: {human.origin} - {human.destination}')
-
-        if self.possible_agents:
-
-            # Plot the rest of the values
-            for agent_index in random_agents:
-                if self.possible_agents:
-                    for idx, human in enumerate(human_agents):
-                        color = colors[idx]  # Get the same color for the current human agent
-                        # Plot a line segment connecting the last point of self.table_before_mutation and the first point of self.reward_table_humans
-                        x_values = [mutation_episode, mutation_episode + 1]
-                        y_values = [self.action_table_humans[human.id][-1], self.action_table_humans[human.id][0]]
-                        plt.plot(x_values, y_values, linestyle='-', color=color, linewidth=5)
-                        # Plot the rest of the rewards
-                        plt.plot(self.action_table_humans[human.id], linestyle='-', color=color, linewidth=5)
-                    # Plot machine agent's rewards
-                    plt.plot(np.arange(mutation_episode + 1, mutation_episode + len(self.action_table[agent_index]) + 1), self.action_table[agent_index], linestyle='-', linewidth=5, color='green', label=f'Machine Agent with origin-destination pair: {self.origin[0]} - {self.destination[0]}')
-                else:
-                    plt.plot(self.action_table_humans[int(agent_index)], linestyle='-', linewidth=5)
-
-            # Draw the mutation vertical line
-            plt.axvline(x=mutation_episode, color='k', linestyle='--', label='Mutation Time', linewidth=8)
-
-        plt.tick_params(axis='both', which='major', labelsize=30)
-        plt.xlabel('Episode', fontsize=40) 
-        plt.ylabel('Action', fontsize=40) 
-        plt.title(f'Actions Over Episodes', fontsize=40) 
-        plt.grid(True, linestyle='--', alpha=0.5) 
-        plt.legend(loc='lower left', fontsize=45) 
-        #plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=30) 
-        plt.tight_layout() 
-        plt.show()
-
-        sns.set_style("whitegrid")
-
         mutation_episode = self.training_params[kc.HUMAN_LEARNING_LENGTH]
 
         if self.possible_agents:
@@ -660,12 +541,16 @@ class TrafficEnvironment(ParallelEnv):
         else:
             human_agents = random.sample(self.human_agents, 2)
 
-        plt.figure(figsize=(20, 12))
+        plt.figure(figsize=(20, 12), dpi=200)
 
         colors = ['tab:red', 'tab:blue', 'tab:green']
         for idx, human in enumerate(human_agents):
             color = colors[idx]
-            plt.plot(self.action_table_humans[human.id], linestyle='-', color=color, linewidth=3, label=f'Human Agent {human.id} with o-d pair: {human.origin} - {human.destination}')
+            y_values = self.action_table_humans[human.id]
+            x_values = np.arange(len(y_values))
+            # Add jitter to the x-axis values
+            jittered_x = x_values + np.random.uniform(-0.1, 0.1, size=len(x_values))
+            plt.scatter(jittered_x, y_values, color=color, s=50, label=f'Human Agent {human.id} with o-d pair: {human.origin} - {human.destination}')
 
         if self.possible_agents:
             for agent_index in random_agents:
@@ -675,21 +560,32 @@ class TrafficEnvironment(ParallelEnv):
                         x_values = [mutation_episode, mutation_episode + 1]
                         y_values = [self.action_table_humans[human.id][-1], self.action_table_humans[human.id][0]]
                         plt.plot(x_values, y_values, linestyle='-', color=color, linewidth=3)
-                        plt.plot(self.action_table_humans[human.id], linestyle='-', color=color, linewidth=3)
-                    plt.plot(np.arange(mutation_episode + 1, mutation_episode + len(self.action_table[agent_index]) + 1), self.action_table[agent_index], linestyle='-', linewidth=3, color='tab:green', label=f'Machine Agent with origin-destination pair: {self.origin[0]} - {self.destination[0]}')
+                        y_values = self.action_table_humans[human.id]
+                        x_values = np.arange(len(y_values))
+                        jittered_x = x_values + np.random.uniform(-0.1, 0.1, size=len(x_values))
+                        plt.scatter(jittered_x, y_values, color=color, s=50)
+                    y_values = self.action_table[agent_index]
+                    x_values = np.arange(mutation_episode + 1, mutation_episode + len(y_values) + 1)
+                    jittered_x = x_values + np.random.uniform(-0.1, 0.1, size=len(x_values))
+                    plt.scatter(jittered_x, y_values, color='tab:green', s=50, label=f'Machine Agent with o-d pair: {self.origin[0]} - {self.destination[0]}')
                 else:
-                    plt.plot(self.action_table_humans[int(agent_index)], linestyle='-', linewidth=3)
+                    y_values = self.action_table_humans[int(agent_index)]
+                    x_values = np.arange(len(y_values))
+                    jittered_x = x_values + np.random.uniform(-0.1, 0.1, size=len(x_values))
+                    plt.scatter(jittered_x, y_values, color='tab:green', s=50)
 
             plt.axvline(x=mutation_episode, color='k', linestyle='--', label='Mutation Time', linewidth=3)
 
         plt.tick_params(axis='both', which='major', labelsize=30)
         plt.xlabel('Episode', fontsize=40)
         plt.ylabel('Action', fontsize=40)
-        plt.title('Actions Over Episodes', fontsize=40)
+        #plt.title('Actions Over Episodes', fontsize=40)
         plt.grid(True, linestyle='--', alpha=0.5)
         plt.legend(loc='lower left', fontsize=30)
         plt.tight_layout()
+        plt.yticks([0, 1, 2])  # Set y-axis ticks to only 0, 1, and 2
         plt.show()
+
 
     def empty_reward_action_tables(self):
 
