@@ -41,7 +41,7 @@ class HumanAgent(Agent):
         self.kind = kc.TYPE_HUMAN
         self.mutate_to = mutate_to
         self.utility = None
-        self.rand = params[kc.RANDOM_TYPE]
+        self.act_type = params[kc.ACT_TYPE]
         self.type = params[kc.LEARNING_TYPE]
         self.alpha_nulla = params[kc.ALPHA_NULLA]
         self.alpha_sigma = params[kc.ALPHA_SIGMA]
@@ -50,6 +50,12 @@ class HumanAgent(Agent):
         beta_randomness = params[kc.BETA_RANDOMNESS]
         self.beta = random.uniform(params[kc.BETA] - beta_randomness, params[kc.BETA] + beta_randomness)
         self.alpha = params[kc.ALPHA]
+        self.mu = params[kc.MU]
+        self.noise_alpha = params[kc.NOISE_ALPHA]
+        self.noise = None
+        self.randomness = params[kc.RANDOMNES]
+
+        self.noise_systematic = np.random.gumbel()
 
         self.cost = np.array(initial_knowledge, dtype=float)
         self.days = []
@@ -61,23 +67,32 @@ class HumanAgent(Agent):
                 for r in range(self.remember):
                     self.days[i].append(self.cost[i])
         dayer()
+        
+    
+    def make_noise(self):
 
-
+        self.noise = self.noise_alpha * self.noise_systematic + (1-self.noise_alpha) * np.random.gumbel()
+    
     def act(self, state):  
         """ 
         the implemented dummy logit model for route choice, make it more generate, calculate in graph levelbookd
         """
-        if self.rand == 'gumbel':
-            utilities = list(map(lambda x: x + np.random.gumbel(), self.cost))#plus random value and based on the noise we use argmax no exp
-        elif self.rand == 'normal':
-            utilities = list(map(lambda x: x + np.random.normal(), self.cost))
+        if self.act_type == 'test':
+            utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
+            prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
+        elif self.act_type == 'no_test':
+                self.make_noise()
+                utilities = list(map(lambda x: x + self.noise, self.cost))
         else:
-            print('default: Gumbel distribution')
-            utilities = list(map(lambda x: x + np.random.gumbel(), self.cost))
+            raise ValueError("Define Act type")
+
         self.utility = utilities
         #prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
         #action = np.random.choice(list(range(len(self.cost))), p=prob_dist)
-        action =  utilities.index(min(utilities))
+        if self.act_type == 'test':
+            action = np.random.choice(list(range(len(self.cost))), p=prob_dist) 
+        else:
+            action =  utilities.index(min(utilities))
         return action       
 
 
@@ -103,6 +118,7 @@ class HumanAgent(Agent):
             alpha_nulla = self.alpha_nulla
             alpha_sigma = 1 - alpha_nulla
         self.cost[action] = alpha_nulla * self.cost[action] + alpha_sigma * reward
+
         #self.cost[action]=(1-self.alpha) * self.cost[action] + self.alpha * reward
 
 

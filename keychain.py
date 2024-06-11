@@ -66,7 +66,11 @@ class Keychain:
     ALPHA_NULLA = 'alpha_nulla'
     ALPHA_SIGMA = 'alpha_sigma'
     LEARNING_TYPE = 'learning_type'
-    RANDOM_TYPE = 'random_type'
+    ACT_TYPE = 'act_type'
+    MU = 'mu'
+    NOISE_ALPHA = 'noise_alpha'
+    RANDOMNES = 'randomness'
+
 
     # Training
     NUM_EPISODES = "num_episodes"
@@ -117,6 +121,7 @@ class Keychain:
     TO_MUTATE = "to_mutate"
     ACTION = "action"
     Utility = 'utility'
+    Noise = 'noise'
     SUMO_ACTION = "sumo_action"
     REWARD = "reward"
     COST = "cost"

@@ -49,26 +49,26 @@ class Recorder:
         merged_df = pd.merge(joint_action, joint_reward, on=kc.AGENT_ID)
         joint_df = pd.DataFrame(joint_action)
         joint_df = joint_df.drop(columns=['kind'])
-        merged_df.to_csv(make_dir(self.episodes_folder, f"ep{episode}.csv"), index = False)
-        joint_df.to_csv(make_dir(self.episodes_folder, f"ep_ep{episode}.csv"), index = False)
+        merged_df.to_csv(make_dir(self.episodes_folder, f"ep_ep{episode}.csv"), index = False)
+        #joint_df.to_csv(make_dir(self.episodes_folder, f"ep_ep{episode}.csv"), index = False)
 
 
 
 
     def remember_agents_status(self, episode, agents):
         #agents_df_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.COST_TABLE, kc.TO_MUTATE, kc.Utility, kc.ALPHA, kc.BETA, kc.EPSILON, kc.EPSILON_DECAY_RATE, kc.GAMMA, kc.Q_TABLE]
-        agents_df_cols = [kc.AGENT_ID, kc.COST_TABLE, kc.Utility]
+        agents_df_cols = [kc.AGENT_ID, kc.COST_TABLE, kc.Utility, kc.Noise]
         agents_df = pd.DataFrame(columns = agents_df_cols)
         for agent in agents:
             id, kind = agent.id, agent.kind
-            beta, alpha, cost, q_table, epsilon, epsilon_decay_rate, gamma, to_mutate, utility = [kc.NOT_AVAILABLE] * 9
-            cost, utility = [kc.NOT_AVAILABLE] * 2
+            beta, alpha, cost, q_table, epsilon, epsilon_decay_rate, gamma, to_mutate, utility, noise = [kc.NOT_AVAILABLE] * 10
+            cost, utility, noise = [kc.NOT_AVAILABLE] * 3
             if kind == kc.TYPE_HUMAN:
-                beta, alpha, cost, to_mutate, utility = agent.beta, agent.alpha, list_to_string(agent.cost, ' , '), (agent.mutate_to != None), list_to_string(agent.utility)
+                beta, alpha, cost, to_mutate, utility, noise = agent.beta, agent.alpha, list_to_string(agent.cost, ' , '), (agent.mutate_to != None), list_to_string(agent.utility), agent.noise
             elif kind == kc.TYPE_MACHINE:
                 alpha, epsilon, epsilon_decay_rate, gamma, q_table = agent.alpha, agent.epsilon, agent.epsilon_decay_rate, agent.gamma, list_to_string(agent.q_table, ' , ')
             #row_data = [id, kind, cost, to_mutate, utility, alpha, beta, epsilon, epsilon_decay_rate, gamma, q_table]
-            row_data = [id, cost, utility]
+            row_data = [id, cost, utility, noise]
             agents_df.loc[len(agents_df.index)] = {key : value for key, value in zip(agents_df_cols, row_data)}
         agents_df.to_csv(make_dir(self.agents_folder, f"ep{episode}.csv"), index = False)
 
