@@ -12,7 +12,7 @@ from utilities import remove_double_quotes
 from utilities import df_to_prettytable
 
 
-#######
+####### Network Generation
 
 
 def generate_network(connection_file, edge_file, route_file):
@@ -76,72 +76,59 @@ def _read_xml_file(file_path, element_name, attribute_name, attribute_name_2):
     return from_db, to_db
 
 
-#######
- 
+####### Route Generation
 
-def create_routes(number_of_paths, origins, destinations, beta, weight):
+def create_routes(number_of_paths, origins, destinations, beta, weight, num_samples=50, max_path_length=100):
     routes = dict()
-    for origin_id, origin_sim_code in origins.items():
-        for dest_id, dest_sim_code in destinations.items():
-            paths, picked_nodes = list(), set()
-            for _ in range(number_of_paths):
-                while True:
-                    path = _path_generator(traffic_graph, origin_sim_code, dest_sim_code, weight, picked_nodes, beta)
-                    if path not in paths: break     # if path is not already generated, then break
-                paths.append(path)
-                picked_nodes.update(path)
-            routes[(origin_id, dest_id)] = paths
+    for dest_id, dest_sim_code in destinations.items():
+        distances_to_destination = nx.single_source_dijkstra_path_length(traffic_graph, dest_sim_code, weight = weight)
+        proximity = lambda x: distances_to_destination[x]
+        for origin_id, origin_sim_code in origins.items():
+            sampled_paths = set()
+            while len(sampled_paths) < num_samples:
+                path = _path_generator(traffic_graph, origin_sim_code, dest_sim_code, proximity, beta, max_path_length)
+                sampled_paths.add(tuple(path))
+            sampled_paths = list(sampled_paths)
+            paths_idcs = np.random.choice(len(sampled_paths), number_of_paths, replace=False, p=_create_route_probabilities(sampled_paths)).tolist()
+            routes[(origin_id, dest_id)] = [sampled_paths[idx] for idx in paths_idcs]
+            print(f"[INFO] Generated {len(routes[(origin_id, dest_id)])} paths for {origin_id} -> {dest_id}")
     print(f"[SUCCESS] Generated {len(routes) * number_of_paths} routes")
     return routes
 
 
-def _path_generator(network, origin, destination, weight, avoid_nodes, beta):
-    path = list()   # our path
-    visited_nodes_abs_names = set()     # visited node memory
-    distance_to_destination = nx.single_source_dijkstra_path_length(network, destination, weight = weight)    # heuristic
-    reached_to_destination = False
-    current_node = origin   # we start from the origin
+def _create_route_probabilities(sampled_paths):
+    free_flows = [_get_ff(route) ** 2 for route in sampled_paths]
+    prob1 = max(free_flows) - np.array(free_flows)
+    prob1 = prob1 / np.sum(prob1)
+
+    route_lengths = [len(route) ** 2 for route in sampled_paths]
+    prob2 = max(route_lengths) - np.array(route_lengths)
+    prob2 = prob2 / np.sum(prob2)
+
+    prob = 0.5 * prob1 + 0.5 * prob2
+    return prob
+
+
+
+def _path_generator(network, origin, destination, proximity_func, beta, maxlen):
+    path, current_node = list(), origin
+    should_add_node = lambda node, path: (not ((node in path) or (node.removeprefix("-") in path) or (f"-{node}" in path))) or (node == destination)
     while True:
-        # Add current node to path and visited log
         path.append(current_node)
-        visited_nodes_abs_names.add(current_node.removeprefix("-"))
-        # Find reachable nodes
-        all_neighbors = list(network.neighbors(current_node))
-        # Find reacheble AND feasible nodes
-        options = list()
-        for node in all_neighbors:
-            if (node == destination) or (list(network.neighbors(node)) and (not node.removeprefix("-") in visited_nodes_abs_names)):     
-                # if node is (destination) or (non-visited, non-deadend)
-                options.append(node)
-        # if we see no feasible node
-        if not options: return _path_generator(network, origin, destination, weight, avoid_nodes, beta)   # Restart
-        # For each node, find how likely it should be to pick it
-        costs = list()
-        for node in options:
-            if node == destination:     # But if we see we found the destination
-                path.append(node)
-                reached_to_destination = True
-                break
-            elif node in avoid_nodes:   # Please think about this!
-                costs.append(distance_to_destination[node] * 5)  # if we saw this node in any previous path, discourage
-            else:
-                costs.append(distance_to_destination[node])
-        if reached_to_destination:
-            break   # Path is ready, connects origin to dest
-        else:
-            chosen_index = logit(beta, costs)    # Pick the next node
-            current_node = options[chosen_index]
-    return path
+        options = [node for node in network.neighbors(current_node) if should_add_node(node, path)]
+        if    destination in options:                return path + [destination]
+        elif  (not options) or (len(path) > maxlen): return _path_generator(network, origin, destination, proximity_func, beta, maxlen)
+        else:                                        current_node = _logit(options, proximity_func, beta)
 
 
-def logit(beta, time):
-    utility=list(map(lambda x: np.exp(x*beta) ,time))
-    summa = [utility[j]/sum(utility) for j in range(len(time))]
-    i=np.random.choice(list(range(len(time))),p=summa)    
-    return i
+
+def _logit(options, cost_function, beta):
+    numerators = [np.exp(beta * cost_function(option)) for option in options]
+    utilities = [numerator/sum(numerators) for numerator in numerators]
+    return np.random.choice(options, p = utilities)
 
 
-#######
+####### FF Times
     
 
 def calculate_free_flow_times(od_paths_dict, show=False):
@@ -162,6 +149,19 @@ def calculate_free_flow_times(od_paths_dict, show=False):
         free_flows_dict[od] = free_flows
     if show: df_to_prettytable(pd.DataFrame(free_flows_dict), "FF Times")
     return free_flows_dict
+
+
+def _get_ff(path):
+    length = pd.DataFrame(traffic_graph.edges(data = True))
+    time = length[2].astype('str').str.split(':',expand=True)[1]
+    length[2] = time.str.replace('}','',regex=True).astype('float')
+    rou=[]
+    for i in range(len(path)):
+        if i < len(path) - 1:
+            for k in range(len(length[0])):
+                if (path[i] == length[0][k]) and (path[i + 1] == length[1][k]):
+                    rou.append(length[2][k])
+    return sum(rou)
 
 
 #######
@@ -196,6 +196,8 @@ if __name__ == "__main__":
     number_of_paths = params[kc.NUMBER_OF_PATHS]
     beta = params[kc.BETA]
     weight = params[kc.WEIGHT]
+    num_samples = params[kc.NUM_SAMPLES]
+    max_path_length = params[kc.MAX_PATH_LENGTH]
     origins = params[kc.ORIGINS]
     destinations = params[kc.DESTINATIONS]
 
@@ -209,6 +211,6 @@ if __name__ == "__main__":
     destinations = {i : dest for i, dest in enumerate(destinations)}
 
     traffic_graph = generate_network(connection_file_path, edge_file_path, route_file_path)
-    routes = create_routes(number_of_paths, origins, destinations, beta, weight)
+    routes = create_routes(number_of_paths, origins, destinations, beta, weight, num_samples, max_path_length)
     ff_times = calculate_free_flow_times(routes, show=True)
     save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path)

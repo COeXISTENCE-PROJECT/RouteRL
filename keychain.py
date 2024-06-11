@@ -73,6 +73,8 @@ class Keychain:
     ORIGINS = "origins"
     DESTINATIONS = "destinations"
     WEIGHT = "weight"
+    NUM_SAMPLES = "num_samples"
+    MAX_PATH_LENGTH = "max_path_length"
 
     ###########################################################
     
