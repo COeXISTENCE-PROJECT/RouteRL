@@ -23,8 +23,6 @@ import scienceplots
 
 # Configure logging to show messages of all levels
 logging.basicConfig(level=logging.DEBUG)
-#plt.style.use('science')
-
 
 
 ## link https://pettingzoo.farama.org/tutorials/custom_environment/1-project-structure/
@@ -41,7 +39,7 @@ class TrafficEnvironment(ParallelEnv):
         self.simulator = Simulator(simulation_params)
         logging.info("Environment initiated!")
 
-        self.free_flows_dict = self.calculate_free_flow_times()
+        self.free_flows_dict = self._calculate_free_flow_times()
         logging.info("Free flow times calculated!")
 
         self.agent_params = agent_params
@@ -51,14 +49,14 @@ class TrafficEnvironment(ParallelEnv):
         self.render_mode = render_mode
         self.humans_learning = True
         self.human_joint_action = pd.DataFrame()
+        self.percentage_filename = "percentage.txt"
 
         if nomachines == False:
 
-            ## Create the agents
-            ## Machine agents
+            ## Create the machine agents
             self.possible_agents = [str(i) for i in range(1, 2)]
             self.n_agents = len(self.possible_agents)
-            #self.possible_agents = [str(i) for i in range(0, agent_params[kc.NUM_AGENTS])]
+
         else:
             self.possible_agents = []
             self.n_agents = 0
@@ -67,7 +65,7 @@ class TrafficEnvironment(ParallelEnv):
         self.agents = self.possible_agents
 
         ## Human agents
-        self.human_agents = create_agent_objects(agent_params, self.calculate_free_flow_times())
+        self.human_agents = create_agent_objects(agent_params, self.free_flows_dict)
 
         self.action_table_humans = {
             agent.id:[] for agent in self.human_agents
@@ -77,29 +75,11 @@ class TrafficEnvironment(ParallelEnv):
             agent.id:[] for agent in self.human_agents
         }
 
-        self.initializeTheAgents(None)
+        self._initializeTheAgents(None)
 
 
-    def say_hi(self):
-        logging.info("Hi from TrafficEnvironment!")
 
-    def start(self):
-        self.simulator.start_sumo()
-
-    def stop(self):
-        self.simulator.stop_sumo()
-
-    
-    def remake_sumo_controller(self):
-        try:
-            self.simulator.stop_sumo()
-        except:
-            logging.error("Sumo was not running!")
-        self.simulator.sumo_controller = SumoController(self.simulation_params)
-        #logging.info(f"New sumo label: {self.simulator.sumo_controller.label}")
-
-
-    def initializeTheAgents(self, random_human):
+    def _initializeTheAgents(self, random_human):
         # Note: observations must be the same type as the weights of the NN, float32
         # The observation space represents the count of agents choosing each path with the same origin/destination pair as the current agent.
         self.observation_spaces = {
@@ -119,7 +99,6 @@ class TrafficEnvironment(ParallelEnv):
         logging.info("Machine's action space is: %s", self.action_spaces)
 
         ## Save rewards and actions of each agent for the plots
-        
         self.reward_table = {
             agent:[] for agent in self.possible_agents
         }
@@ -132,37 +111,27 @@ class TrafficEnvironment(ParallelEnv):
         self.start_times = [random_human.start_time for i in range(len(self.possible_agents))]
         self.origin = [random_human.origin for i in range(len(self.possible_agents))]
         self.destination = [random_human.destination for i in range(len(self.possible_agents))]
-        """self.origin = [random.randrange(self.num_origins) for i in range(len(self.possible_agents))]
-        self.destination = [random.randrange(self.num_destinations) for i in range(len(self.possible_agents))]"""
 
         for agent in self.possible_agents:
             logging.info("Agent with id %s has origin %s and destination %s and start time %s",
              agent, self.origin[int(agent) - 1], self.destination[int(agent) - 1],
              self.start_times[int(agent) - 1])
 
-
-
         self.min_reward = - math.inf
 
         ## Divide all travel times with this value -> Normalization
-        self.overall_min_travel_time = self.min_travel_time()
+        self.overall_min_travel_time = self._min_travel_time()
 
         logging.info("Minimum travel time is: %s", self.overall_min_travel_time)
 
 
-    def state(self):
-        matrix_shape = (self.num_origins, self.num_destinations, self.num_paths)
-        agent_counts = np.zeros(matrix_shape, dtype=int)
 
-        # Iterate over agents and observations
-        for agent in self.human_agents:
-            # Determine the action chosen by the agent (assuming it's a number between 0 and num_paths-1)
-            action = agent.act(0)
-            
-            # Increment the count for the corresponding path in the matrix
-            agent_counts[agent.origin][agent.destination][action] += 1
 
-        return agent_counts
+
+
+    ############################################################################################################
+    ############################################ PettingZoo methods ############################################
+
 
 
     def reset(self, seed=None, options=None):
@@ -180,6 +149,21 @@ class TrafficEnvironment(ParallelEnv):
         return observations, infos
 
 
+    def state(self):
+        matrix_shape = (self.num_origins, self.num_destinations, self.num_paths)
+        agent_counts = np.zeros(matrix_shape, dtype=int)
+
+        # Iterate over agents and observations
+        for agent in self.human_agents:
+            # Determine the action chosen by the agent (assuming it's a number between 0 and num_paths-1)
+            action = agent.act(0)
+            
+            # Increment the count for the corresponding path in the matrix
+            agent_counts[agent.origin][agent.destination][action] += 1
+
+        return agent_counts
+
+
 
     def step(self, machine_joint_action):
         #logging.info("STEP")
@@ -192,34 +176,128 @@ class TrafficEnvironment(ParallelEnv):
             return {}, {}, {}, {}, {}
         
         ## Preprocess the human and machine joint actions
-        joint_action_df, human_joint_action, state_table = self.prepare_joint_action(machine_joint_action)
+        joint_action_df, human_joint_action, state_table = self._prepare_joint_action(machine_joint_action)
 
         ## Interact with SUMO to get travel times
         sumo_df = self.simulator.run_simulation_iteration(joint_action_df)
 
         ## Human learning
-        self.human_learning(sumo_df, human_joint_action)
+        self._human_learning(sumo_df, human_joint_action)
 
         ## Prepare the next action that will be taken by the human agents -> so it can be passed as observation  machine's learning
-        self.human_joint_action = self.human_actions()
+        self.human_joint_action = self._human_actions()
 
         ## Return observations
         if self.nomachines == False:
             
             ## Return observations
-            observations = self.return_observation()
+            observations = self._return_observation()
 
             ## Machine learning
-            rewards, terminated, truncated, info = self.machine_learning(sumo_df, machine_joint_action, state_table)
+            rewards, terminated, truncated, info = self._machine_learning(sumo_df, machine_joint_action, state_table)
 
 
             return observations, rewards, terminated, truncated, info
 
         else:
-            observations = {}        
+            observations = {}  
+
+    ## Help function that resets sumo and plots the rewards and actions
+    def close(self):
+        logging.info("CLOSE")
+        self.simulator.reset_sumo()
+
+        self._plot_rewards()
+        #self._plot_actions()
+
+        if self.humans_learning == False:
+            
+            ## We want to plot the distributions for the first 5 episodes for the machine learning and the first 350 for the human learning
+            self._plot_action_distributions(50, 350)
+            self._plot_action_distributions(len(self.action_table['1']), len(self.action_table_humans[0]))
+            self._plot_percentage_boxes()
+
+        else:
+            self._plot_action_distributions(len(self.reward_table), len(self.action_table_humans[0]))
+        
+
+        ## Save the minimum rewards observed in every environment
+        file_path = "min_reward.txt"
+
+        """with open(file_path, 'a') as file:
+            file.write(str(self.min_reward) + '\n')"""
+        
 
 
-    def min_travel_time(self):
+
+    ############################################################################################################
+    ############################################# SUMO functions ###############################################
+
+
+
+
+    def _say_hi(self):
+        logging.info("Hi from TrafficEnvironment!")
+
+    def start(self):
+        self.simulator.start_sumo()
+
+    def stop(self):
+        self.simulator.stop_sumo()
+
+    
+    def remake_sumo_controller(self):
+        try:
+            self.simulator.stop_sumo()
+        except:
+            logging.error("Sumo was not running!")
+        self.simulator.sumo_controller = SumoController(self.simulation_params)
+        #logging.info(f"New sumo label: {self.simulator.sumo_controller.label}")
+
+
+
+
+    ############################################################################################################
+    ############################################ Mutation function #############################################
+
+
+
+
+    def mutation(self):
+
+        logging.info("Mutation is about to happen!\n")
+        logging.info("There were %s human agents.\n", len(self.human_agents))
+
+        ### Mutate to a human that starts after the 25% of the rest of the vehicles
+
+        # Calculate the 25th percentile of the start_time values
+        start_times = [human.start_time for human in self.human_agents]
+        percentile_25 = np.percentile(start_times, 25)
+
+        # Filter the human agents whose start_time is higher than the 25th percentile
+        filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile_25]
+
+        # Randomly select one of the filtered human agents
+        random_human = random.choice(filtered_human_agents)
+        print(f"Selected human agent with start time: {random_human.start_time}")
+
+
+        self.human_agents.remove(random_human)
+        logging.info("Now there are %s human agents.\n", len(self.human_agents))
+
+        self.table_before_mutation = self.reward_table_humans
+        #self.empty_reward_action_tables()
+        print("self.table_before_mutation is: ", self.table_before_mutation, "\n\n\n")
+
+        self.possible_agents = [str(i) for i in range(1, 2)]
+        self.n_agents = len(self.possible_agents)
+        self.nomachines = False
+        self.humans_learning = False
+
+        self._initializeTheAgents(random_human)      
+
+
+    def _min_travel_time(self):
 
         ## Find the minimum free flow travel time from all the possible agents
         overall_min_travel_time = math.inf
@@ -232,30 +310,26 @@ class TrafficEnvironment(ParallelEnv):
                 overall_min_travel_time = current_min_travel_time
 
         return overall_min_travel_time
+    
+
+
+
+    ############################################################################################################
+    ####################################### Observation and action functions ###################################
+
+
         
 
     def observe(self, agent):
         return Box(low=0, high=self.agent_params[kc.NUM_AGENTS], shape=(3,), dtype=int)
     
 
-    def close(self):
-        logging.info("CLOSE")
-        self.simulator.reset_sumo()
-        self.plot_rewards()
-        self.plot_actions()
-
-        ## Save the minimum rewards observed in every environment
-        file_path = "min_reward.txt"
-
-        """with open(file_path, 'a') as file:
-            file.write(str(self.min_reward) + '\n')"""
-        
-
-    def return_observation(self):
+    def _return_observation(self):
         matrix_shape = (self.num_paths,)
         agent_counts = np.zeros(matrix_shape, dtype=int)
         num_agents_same_od = 0
 
+        ## Find the human agents that have the same od pair and depart before the machine agent
         for index, row in self.human_joint_action.iterrows():
             if (row['origin'] == self.origin[0] and 
                 row['destination'] == self.destination[0] and 
@@ -266,23 +340,21 @@ class TrafficEnvironment(ParallelEnv):
                 agent_counts[action] += 1
 
         observations = {
-            ## normalize the observatio table
+            ## normalize the observation table
             agents: agent_counts/num_agents_same_od for agents in self.possible_agents
         }
-
-        #print("Observations are:", observations, '\n')
 
         return observations
         
 
-    def calculate_free_flow_times(self):
+    def _calculate_free_flow_times(self):
         free_flow_cost = self.simulator.calculate_free_flow_times()
         logging.info('Free-flow times: %s', free_flow_cost)
 
         return free_flow_cost
     
     
-    def human_actions(self):
+    def _human_actions(self):
         ## Human agent's action
         observations = {
             a: Box(low=0, high=self.agent_params[kc.NUM_HUMAN_AGENTS], shape=(3,), dtype=np.float32).sample() for a in self.human_agents
@@ -306,7 +378,54 @@ class TrafficEnvironment(ParallelEnv):
         return human_joint_action
     
     
-    def machine_learning(self, sumo_df, machine_joint_action, state_table):
+    def _prepare_joint_action(self, machine_joint_action):
+        data = {
+            'id': self.possible_agents,
+            'action': [machine_joint_action[agent] for agent in self.possible_agents],
+            'origin': self.origin,
+            'destination': self.destination,
+            'start_time': self.start_times
+        }
+
+        ## Human agent's action
+        ## If we are in the first iteration and human_joint_action is empty
+        if(self.human_joint_action.empty == True):
+            self.human_joint_action = self._human_actions()
+
+        # Create the DataFrame
+        joint_action_df = pd.DataFrame(data)
+        joint_action_df = joint_action_df.astype(int)
+
+
+        ## Combine human agents with machine agents
+        joint_action_df = pd.concat([joint_action_df, self.human_joint_action], ignore_index=True)  
+
+        ## Create a dataframe that will contain the state table
+        # Group by 'origin', 'destination', and 'action', and count the occurrences
+        action_counts = joint_action_df.groupby(['origin', 'destination', 'action']).size().reset_index(name='count')
+
+        # Filter action_counts based on the maximum action value
+        action_counts = action_counts[action_counts['action'] < self.simulation_params[kc.NUMBER_OF_PATHS] + 1]
+
+        # Pivot the table to have 'origin' and 'destination' as rows, 'action' as columns, and 'count' as values
+        state_table = action_counts.pivot_table(index=['origin', 'destination'], columns='action', values='count', fill_value=0)
+
+        state_table.reset_index(inplace=True)
+        state_table = state_table.astype(int)
+        state_table = pd.merge(joint_action_df, state_table, on=['origin', 'destination'], how='inner')
+
+
+        return joint_action_df, self.human_joint_action, state_table
+    
+
+
+
+    ############################################################################################################
+    ######################################## Learning functions ################################################
+
+    
+    
+    def _machine_learning(self, sumo_df, machine_joint_action, state_table):
         #logging.info("Machines are about to learn!")
 
         sumo_df['id'] = sumo_df['id'].astype(str)
@@ -343,81 +462,8 @@ class TrafficEnvironment(ParallelEnv):
         return rewards, terminated, truncated, info
     
     
-    
-    def prepare_joint_action(self, machine_joint_action):
-        data = {
-            'id': self.possible_agents,
-            'action': [machine_joint_action[agent] for agent in self.possible_agents],
-            'origin': self.origin,
-            'destination': self.destination,
-            'start_time': self.start_times
-        }
-
-        ## Human agent's action
-        ## If we are in the first iteration and human_joint_action is empty
-        if(self.human_joint_action.empty == True):
-            self.human_joint_action = self.human_actions()
-
-        # Create the DataFrame
-        joint_action_df = pd.DataFrame(data)
-        joint_action_df = joint_action_df.astype(int)
-
-
-        ## Combine human agents with machine agents
-        joint_action_df = pd.concat([joint_action_df, self.human_joint_action], ignore_index=True)  
-
-        ## Create a dataframe that will contain the state table
-        # Group by 'origin', 'destination', and 'action', and count the occurrences
-        action_counts = joint_action_df.groupby(['origin', 'destination', 'action']).size().reset_index(name='count')
-
-        # Filter action_counts based on the maximum action value
-        action_counts = action_counts[action_counts['action'] < self.simulation_params[kc.NUMBER_OF_PATHS] + 1]
-
-        # Pivot the table to have 'origin' and 'destination' as rows, 'action' as columns, and 'count' as values
-        state_table = action_counts.pivot_table(index=['origin', 'destination'], columns='action', values='count', fill_value=0)
-
-        state_table.reset_index(inplace=True)
-        state_table = state_table.astype(int)
-        state_table = pd.merge(joint_action_df, state_table, on=['origin', 'destination'], how='inner')
-
-
-        return joint_action_df, self.human_joint_action, state_table
-    
-    def mutation(self):
-
-        logging.info("Mutation is about to happen!\n")
-        logging.info("There were %s human agents.\n", len(self.human_agents))
-
-        ### Mutate to a human that starts after the 25% of the rest of the vehicles
-
-        # Calculate the 25th percentile of the start_time values
-        start_times = [human.start_time for human in self.human_agents]
-        percentile_25 = np.percentile(start_times, 25)
-
-        # Filter the human agents whose start_time is higher than the 25th percentile
-        filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile_25]
-
-        # Randomly select one of the filtered human agents
-        random_human = random.choice(filtered_human_agents)
-        print(f"Selected human agent with start time: {random_human.start_time}")
-
-
-        self.human_agents.remove(random_human)
-        logging.info("Now there are %s human agents.\n", len(self.human_agents))
-
-        self.table_before_mutation = self.reward_table_humans
-        #self.empty_reward_action_tables()
-        print("self.table_before_mutation is: ", self.table_before_mutation, "\n\n\n")
-
-        self.possible_agents = [str(i) for i in range(1, 2)]
-        self.n_agents = len(self.possible_agents)
-        self.nomachines = False
-        self.humans_learning = False
-
-        self.initializeTheAgents(random_human)
-    
  
-    def human_learning(self, sumo_df, human_joint_action):
+    def _human_learning(self, sumo_df, human_joint_action):
 
         ## Separate the human agents from the machine agents
         split_value = self.agent_params[kc.NUM_HUMAN_AGENTS]
@@ -438,10 +484,19 @@ class TrafficEnvironment(ParallelEnv):
             self.action_table_humans[agent.id].append(action)
             self.reward_table_humans[agent.id].append(reward)
 
-            if self.human_learning == True:
-                logging.info("Humans are about to learn!")
+            if self.humans_learning == True:
+                #logging.info("Humans are about to learn!")
                 observation = 0
                 agent.learn(action, reward, observation)  
+
+
+
+
+    ############################################################################################################
+    ############################################ Plotting functions ############################################
+
+
+
 
     def compare_machine_human(self):
         ## Compare rewards of different vehicles
@@ -455,40 +510,66 @@ class TrafficEnvironment(ParallelEnv):
                 human_avg = sum(self.reward_table_humans[index][self.training_params[kc.HUMAN_LEARNING_LENGTH]:]) / (len(self.reward_table_humans[index]) - self.training_params[kc.HUMAN_LEARNING_LENGTH])
                 listofhumans.append(human_avg)
 
-        print("list of humans is: ", listofhumans, "\n\n\n")
-
-        # Reference reward from self.reward_table
+        ## Reward of the machine agent
         reference_reward = sum(self.reward_table['1']) / len(self.reward_table['1'])
-        print("reference reward is: ", reference_reward, "\n\n\n")
 
-        # Count the number of rewards in listofhumans that are less than the reference_reward
+        ## Find the number of humans with travel time less than that of machines
         count_lower = sum(1 for reward in listofhumans if reward < reference_reward)
-
-        # Calculate the percentage of rewards lower than the reference_reward
         percentage_lower = (count_lower / len(listofhumans)) * 100
 
-        print("Percentage of rewards lower than the reference value: ", percentage_lower, "%")
-
-        # Format the percentage as a string
+        ## Save the percentages to a file
         percentage_str = f"\n{percentage_lower}%"
 
-        # Specify the filename
-        filename = "percentage.txt"
-
-        # Open the file in write mode and save the percentage
-        with open(filename, "a") as file:
+        with open(self.percentage_filename, "a") as file:
             file.write(percentage_str)
 
-        print(f"The percentage {percentage_str} has been saved to {filename}")
+        print(f"The percentage {percentage_str} has been saved to {self.percentage_filename}")
+    
+
+    def _plot_percentage_boxes(self):
+
+        with open(self.percentage_filename, 'r') as file:
+            percentages = [float(line.strip('%\n')) for line in file]
+
+        # Round up the percentages to the nearest integer
+        rounded_percentages = [round(percentage) for percentage in percentages]
+
+
+        fig, ax = plt.subplots(figsize=(10, 5))
+        
+        # Create horizontal bars for each percentage
+        for i, percentage in enumerate(rounded_percentages):
+            ax.barh(i, percentage, color='cornflowerblue', edgecolor='black', height=0.6, label=f'{percentage}%', zorder=3)
+            ax.barh(i, 100 - percentage, left=percentage, color='lightgrey', edgecolor='black', height=0.6, zorder=2)
+            
+            # Add text annotation for the percentage value
+            ax.text(percentage / 2, i, f'{percentage}%', va='center', ha='center', color='black', fontsize=12, zorder=4)
+            ax.text(percentage + (100 - percentage) / 2, i, f'{100 - percentage}%', va='center', ha='center', color='black', fontsize=12, zorder=4)
+        
+        # Set the limits and labels
+        ax.set_xlim(0, 100)
+        ax.set_ylim(-0.5, len(percentages) - 0.5)
+        ax.set_yticks(range(len(percentages)))
+        ax.set_yticklabels([f'Experiment {i+1}' for i in range(len(percentages))], fontsize=12)
+        ax.set_xlabel('Percentage', fontsize=12)
+        #ax.set_title('Distribution of machine-agent performance exceeding human agents', fontsize=14)
+        
+        # Remove spines
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        
+        # Customize grid lines
+        ax.grid(axis='x', linestyle='-', linewidth=0.5, color='lightgrey', zorder=1)
+        
+        plt.tight_layout()
+        plt.show()
         
 
 
-    def plot_rewards(self):
+    def _plot_rewards(self):
         sns.set_style("whitegrid")
 
         mutation_episode = self.training_params[kc.HUMAN_LEARNING_LENGTH]
-        print("mutation episode is: ", mutation_episode, "\n\n\n")
-        print("self.human_reward_table is: ", self.reward_table_humans, len(self.reward_table_humans[0]), "\n\n\n")
 
         if self.possible_agents:
             random_agents = random.sample(self.possible_agents, 1)
@@ -529,7 +610,7 @@ class TrafficEnvironment(ParallelEnv):
         plt.show()
 
         
-    def plot_actions(self):
+    def _plot_actions(self):
         sns.set_style("whitegrid")
 
         mutation_episode = self.training_params[kc.HUMAN_LEARNING_LENGTH]
@@ -584,6 +665,76 @@ class TrafficEnvironment(ParallelEnv):
         plt.legend(loc='lower left', fontsize=30)
         plt.tight_layout()
         plt.yticks([0, 1, 2])  # Set y-axis ticks to only 0, 1, and 2
+        plt.show()
+
+    def _plot_action_distributions(self, machine_episode, human_episode):
+        ## Actions dictionary
+        action_probabilities = {i: [] for i in range(self.simulation_params[kc.NUMBER_OF_PATHS])}
+
+        colors = ['tab:red', 'tab:blue', 'tab:green', 'tab:orange', 'tab:purple']  # Define colors for each agent
+
+        plt.figure(figsize=(3, 4))
+        
+        ## Sample of human plotted
+        SAMPLE_SIZE_HUMAN_LEARNING = 3
+        SAMPLE_SIZE_HUMAN_NOT_LEARNING = 5
+        BAR_WIDTH = 0.1
+
+        # Determine the sample size based on the learning state
+        sample_size = SAMPLE_SIZE_HUMAN_NOT_LEARNING if self.humans_learning else SAMPLE_SIZE_HUMAN_LEARNING
+
+        # Sample the human agents
+        human_agents = random.sample(self.human_agents, sample_size)
+
+
+        for idx, human in enumerate(human_agents):
+            action_counts = {}
+            total_actions = len(self.action_table_humans[human.id])
+
+            for action in self.action_table_humans[human.id][:human_episode]:
+                action_counts[action] = action_counts.get(action, 0) + 1
+
+            for action in action_probabilities.keys():
+                if action in action_counts:
+                    action_probabilities[action].append(action_counts[action] / total_actions)
+                else:
+                    action_probabilities[action].append(0)
+
+            total_probability = sum(action_probabilities[action][-1] for action in action_probabilities.keys())
+            for action in action_probabilities.keys():
+                action_probabilities[action][-1] /= total_probability
+
+            plt.bar(np.array(list(action_probabilities.keys())) + 0.1 * idx, 
+                    [np.mean(action_probabilities[action]) for action in action_probabilities.keys()], 
+                    color=colors[idx], width=BAR_WIDTH, label=f'Human Agent {human.id} with o-d pair: {human.origin} - {human.destination}')
+
+        if not self.humans_learning:
+            machine_action_counts = {}
+            machine_total_actions = len(self.action_table['1'])
+
+            for action in self.action_table['1'][:machine_episode]:
+                if action in machine_action_counts:
+                    machine_action_counts[action] += 1
+                else:
+                    machine_action_counts[action] = 1
+
+            machine_action_probabilities = {action: machine_action_counts.get(action, 0) / machine_total_actions for action in action_probabilities.keys()}
+
+            total_machine_probability = sum(machine_action_probabilities[action] for action in machine_action_probabilities.keys())
+            for action in machine_action_probabilities.keys():
+                machine_action_probabilities[action] /= total_machine_probability
+
+            plt.bar(np.array(list(machine_action_probabilities.keys())) + 0.1 * len(human_agents), 
+                    [machine_action_probabilities[action] for action in machine_action_probabilities.keys()], 
+                    color=colors[len(human_agents)], width=BAR_WIDTH, label=f'Machine Agent with o-d pair: {self.origin[0]} - {self.destination[0]}')
+
+        # Plot settings
+        plt.xlabel('Actions', fontsize=12)
+        plt.ylabel('Probability', fontsize=12)
+        plt.xticks(list(action_probabilities.keys()))
+        plt.ylim(0, 1)
+        plt.grid(axis='y', linestyle='--', alpha=0.5)
+        plt.legend(fontsize=8)
         plt.show()
 
 
