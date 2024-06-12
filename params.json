@@ -97,9 +97,9 @@
     "path_generation_parameters":
     {
         "number_of_paths" : 3,
-        "beta" : -2.0,
+        "beta" : -5.0,
         "weight" : "time",
-        "num_samples" : 10,
+        "num_samples" : 9,
         "max_path_length" : 100,
 
         "origins" : ["279952229#0", "115604053"],

@@ -12,8 +12,7 @@ from utilities import remove_double_quotes
 from utilities import df_to_prettytable
 
 
-####### Network Generation
-
+############# Network Generation ################
 
 def generate_network(connection_file, edge_file, route_file):
     # Connection file
@@ -56,27 +55,10 @@ def generate_network(connection_file, edge_file, route_file):
     traffic_graph = nx.from_pandas_edgelist(final, 'From', 'To', ['time'], create_using=nx.DiGraph())
     return traffic_graph
 
-
-def _read_xml_file(file_path, element_name, attribute_name, attribute_name_2):
-    with open(file_path, 'r') as f:
-        data = f.read()
-    Bs_data_con = BeautifulSoup(data, "xml")
-    connections = Bs_data_con.find_all(element_name)
-    empty=[]
-    for x in range(len(connections)):
-        empty.append(str(connections[x]))
-    from_=[]
-    to_=[]
-    for x in range(len(empty)):
-        root = ET.fromstring(empty[x])
-        from_.append(root.attrib.get(attribute_name))
-        to_.append(root.attrib.get(attribute_name_2))
-    from_db=pd.DataFrame(from_)
-    to_db=pd.DataFrame(to_)
-    return from_db, to_db
+#################################################
 
 
-####### Route Generation
+############## Route Generation #################
 
 def create_routes(number_of_paths, origins, destinations, beta, weight, num_samples=50, max_path_length=100):
     routes = dict()
@@ -89,24 +71,12 @@ def create_routes(number_of_paths, origins, destinations, beta, weight, num_samp
                 path = _path_generator(traffic_graph, origin_sim_code, dest_sim_code, proximity, beta, max_path_length)
                 sampled_paths.add(tuple(path))
             sampled_paths = list(sampled_paths)
-            paths_idcs = np.random.choice(len(sampled_paths), number_of_paths, replace=False, p=_create_route_probabilities(sampled_paths)).tolist()
+            prob_dist = _create_route_probabilities(sampled_paths, proximity)
+            paths_idcs = np.random.choice(len(sampled_paths), number_of_paths, replace=False, p=prob_dist).tolist()
             routes[(origin_id, dest_id)] = [sampled_paths[idx] for idx in paths_idcs]
             print(f"[INFO] Generated {len(routes[(origin_id, dest_id)])} paths for {origin_id} -> {dest_id}")
     print(f"[SUCCESS] Generated {len(routes) * number_of_paths} routes")
     return routes
-
-
-def _create_route_probabilities(sampled_paths):
-    free_flows = [_get_ff(route) ** 2 for route in sampled_paths]
-    prob1 = max(free_flows) - np.array(free_flows)
-    prob1 = prob1 / np.sum(prob1)
-
-    route_lengths = [len(route) ** 2 for route in sampled_paths]
-    prob2 = max(route_lengths) - np.array(route_lengths)
-    prob2 = prob2 / np.sum(prob2)
-
-    prob = 0.5 * prob1 + 0.5 * prob2
-    return prob
 
 
 
@@ -122,14 +92,87 @@ def _path_generator(network, origin, destination, proximity_func, beta, maxlen):
 
 
 
+def _create_route_probabilities(sampled_paths, proximity_func, amplify=True):
+    # Based on FF times
+    free_flows = [_get_ff(route) for route in sampled_paths]
+    prob1 = 1 / np.array(free_flows)
+    prob1 = prob1 / np.sum(prob1)
+
+    # Based on number of edges
+    route_lengths = [len(route) for route in sampled_paths]
+    prob2 = 1 / np.array(route_lengths)
+    prob2 = prob2 / np.sum(prob2)
+
+    # Based on proximity increase in consecutive nodes (how well & steady)
+    prox_increase = [[proximity_func(route[idx-1]) - proximity_func(node) for idx, node in enumerate(route[1:])] for route in sampled_paths]
+    mean_prox_increase = [np.mean(prox) for prox in prox_increase]
+    std_prox_increase = [np.std(prox) for prox in prox_increase]
+    prob3 = [mean_prox_increase[i] / std_prox_increase[i] for i in range(len(sampled_paths))]
+    prob3 = np.array(prob3) / np.sum(prob3)
+    
+    # Based on uniqueness of the route (how different from other routes)
+    lcs_values = [[lcs_non_consecutive(route, route2) for route2 in sampled_paths if route2 != route] for route in sampled_paths]
+    lcs_values = [np.mean(lcs) for lcs in lcs_values]
+    prob4 = 1 / np.array(lcs_values)
+    prob4 = prob4 / np.sum(prob4)
+
+    prob = 0.3 * prob1 + 0.3 * prob2 + 0.3 * prob3 + 0.1 * prob4
+    
+    if amplify: # Amplify the differences
+        prob = prob ** 2
+        prob = prob / np.sum(prob)
+
+    return prob
+
+
+
 def _logit(options, cost_function, beta):
     numerators = [np.exp(beta * cost_function(option)) for option in options]
     utilities = [numerator/sum(numerators) for numerator in numerators]
     return np.random.choice(options, p = utilities)
 
 
-####### FF Times
-    
+
+def lcs_non_consecutive(X, Y):
+    """
+    The LCS of two sequences is the longest subsequence that is present in both sequences in the same order, but not necessarily consecutively.
+    """
+    m, n = len(X), len(Y)
+    L = [[None]*(n+1) for i in range(m+1)]
+    for i in range(m+1):
+        for j in range(n+1):
+            if i == 0 or j == 0 :
+                L[i][j] = 0
+            elif X[i-1] == Y[j-1]:
+                L[i][j] = L[i-1][j-1]+1
+            else:
+                L[i][j] = max(L[i-1][j], L[i][j-1])
+    return L[m][n]
+
+
+
+def lcs_consecutive(X, Y):
+    """
+    The LCS of two sequences is the longest subsequence that is present in both sequences in the same order, consecutively.
+    """
+    m, n = len(X), len(Y)
+    LCSuff = [[0 for k in range(n+1)] for l in range(m+1)]
+    result = 0
+    for i in range(m + 1):
+        for j in range(n + 1):
+            if i == 0 or j == 0:
+                LCSuff[i][j] = 0
+            elif X[i-1] == Y[j-1]:
+                LCSuff[i][j] = LCSuff[i-1][j-1] + 1
+                result = max(result, LCSuff[i][j])
+            else:
+                LCSuff[i][j] = 0
+    return result
+
+#################################################
+
+
+################## FF Times #####################
 
 def calculate_free_flow_times(od_paths_dict, show=False):
     length = pd.DataFrame(traffic_graph.edges(data = True))
@@ -163,9 +206,10 @@ def _get_ff(path):
                     rou.append(length[2][k])
     return sum(rou)
 
+#################################################
 
-#######
 
+################## Disk Ops #####################
 
 def save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path):
     # csv file, for us
@@ -186,8 +230,33 @@ def save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path):
     print(f"[SUCCESS] Saved {len(paths_df)} paths to: {paths_csv_save_path} and {routes_xml_save_path}")
 
 
-#######
 
+
+
+def _read_xml_file(file_path, element_name, attribute_name, attribute_name_2):
+    with open(file_path, 'r') as f:
+        data = f.read()
+    Bs_data_con = BeautifulSoup(data, "xml")
+    connections = Bs_data_con.find_all(element_name)
+    empty=[]
+    for x in range(len(connections)):
+        empty.append(str(connections[x]))
+    from_=[]
+    to_=[]
+    for x in range(len(empty)):
+        root = ET.fromstring(empty[x])
+        from_.append(root.attrib.get(attribute_name))
+        to_.append(root.attrib.get(attribute_name_2))
+    from_db=pd.DataFrame(from_)
+    to_db=pd.DataFrame(to_)
+    return from_db, to_db
+
+
+
+#################################################
+
+
+#################### Main #######################
 
 if __name__ == "__main__":
     params = get_params(kc.PARAMS_PATH)
@@ -214,3 +283,5 @@ if __name__ == "__main__":
     routes = create_routes(number_of_paths, origins, destinations, beta, weight, num_samples, max_path_length)
     ff_times = calculate_free_flow_times(routes, show=True)
     save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path)
+
+#################################################
