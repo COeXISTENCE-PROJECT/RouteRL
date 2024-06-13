@@ -66,22 +66,22 @@
     "simulation_parameters":
     {
         "sumo_type" : "sumo",
-        "sumo_config_path" : "Network_and_config/arterial4x4.sumocfg",
-        "connection_file_path" : "Network_and_config/arterial.con.xml",
-        "edge_file_path" : "Network_and_config/arterial.edg.xml",
-        "route_file_path" : "Network_and_config/arterial.rou.xml",
+        "sumo_config_path" : "Network_and_config/ingolstadt21.sumocfg",
+        "connection_file_path" : "Network_and_config/ingolstadt.con.xml",
+        "edge_file_path" : "Network_and_config/ingolstadt.edg.xml",
+        "route_file_path" : "Network_and_config/ingolstadt.rou.xml",
         "routes_xml_save_path" : "Network_and_config/rou.rou.xml",
         "path_csv_save_path" : "Network_and_config/paths.csv",
 
         "number_of_paths" : 3,
         "weight" : "time",
         "num_samples" : 50,
-        "max_path_length" : 30,
+        "max_path_length" : 500,
         "simulation_timesteps" : 3600,
         "beta" : -2.0,
 
-        "origins" : ["np13_nt13", "np8_nt16"],
-        "destinations" : ["nt1_np1", "nt4_np4"]
+        "origins" : ["315358244", "-306240162#1"],
+        "destinations" : ["32395352#0", "-25190140#1"]
     }
     
 }

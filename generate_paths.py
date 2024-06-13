@@ -55,6 +55,22 @@ def generate_network(connection_file, edge_file, route_file):
     traffic_graph = nx.from_pandas_edgelist(final, 'From', 'To', ['time'], create_using=nx.DiGraph())
     return traffic_graph
 
+
+def prune_dead_ends(graph, origins, destinations):
+    nodes_to_preserve = origins + destinations
+    flag = True
+    pruned_nodes = list()
+    while flag:
+        flag = False
+        dead_ends = [node for node in graph.nodes if graph.out_degree(node) == 0]
+        for node in dead_ends:
+            if not node in nodes_to_preserve:
+                graph.remove_node(node)
+                pruned_nodes.append(node)
+                flag = True
+    print(f"[SUCCESS] Pruned {len(pruned_nodes)} dead ends: {sorted(pruned_nodes)}")
+    return graph
+
 #################################################
 
 
@@ -63,8 +79,13 @@ def generate_network(connection_file, edge_file, route_file):
 def create_routes(number_of_paths, origins, destinations, beta, weight, num_samples=50, max_path_length=100):
     routes = dict()
     for dest_id, dest_sim_code in destinations.items():
-        distances_to_destination = nx.single_source_dijkstra_path_length(traffic_graph, dest_sim_code, weight=weight)
-        print(distances_to_destination)
+        #distances_to_destination = nx.single_source_dijkstra_path_length(traffic_graph, dest_sim_code, weight=weight)
+        distances_to_destination = dict(nx.shortest_path_length(traffic_graph, target=dest_sim_code, weight=weight))
+        """
+        keys = sorted(list(distances_to_destination.keys()))
+        for k in keys:
+            print(k, distances_to_destination[k])
+        """
         proximity = lambda x: distances_to_destination[x]
         for origin_id, origin_sim_code in origins.items():
             sampled_paths = set()
@@ -82,14 +103,23 @@ def create_routes(number_of_paths, origins, destinations, beta, weight, num_samp
     return routes
 
 
+def _does_lead_to_non_dead_end(network, node, destination, recursion_limit=3):
+    """Checks if a node leads to a non-dead end in recursion_limit steps"""
+    if node == destination: 
+        return True
+    recursion_limit -= 1
+    if recursion_limit == 0:
+        return (network.out_degree(node) > 0)
+    else:
+        results = [_does_lead_to_non_dead_end(network, neighbor, destination, recursion_limit) for neighbor in network.neighbors(node)]
+        return (results.count(True) > 0)
+
 
 def _path_generator(network, origin, destination, proximity_func, beta, maxlen):
     path, current_node = list(), origin
-    #should_add_node = lambda node, path: (not ((node in path) or (node.removeprefix("-") in path) or (f"-{node}" in path))) or (node == destination)
-    should_add_node = lambda node: (len(list(network.neighbors(node))) > 0)
     while True:
         path.append(current_node)
-        options = [node for node in network.neighbors(current_node) if should_add_node(node)]
+        options = [node for node in network.neighbors(current_node)]# if _does_lead_to_non_dead_end(network, node, destination)]
         #print("### New Iteration ###")
         #print("Path:", path)
         #print("Options: ", options)
@@ -287,6 +317,7 @@ if __name__ == "__main__":
     destinations = {i : dest for i, dest in enumerate(destinations)}
 
     traffic_graph = generate_network(connection_file_path, edge_file_path, route_file_path)
+    traffic_graph = prune_dead_ends(traffic_graph, list(origins.values()), list(destinations.values()))
     routes = create_routes(number_of_paths, origins, destinations, beta, weight, num_samples, max_path_length)
     ff_times = calculate_free_flow_times(routes, show=True)
     save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path)
