@@ -55,119 +55,89 @@ def generate_network(connection_file, edge_file, route_file):
     traffic_graph = nx.from_pandas_edgelist(final, 'From', 'To', ['time'], create_using=nx.DiGraph())
     return traffic_graph
 
-
-def prune_dead_ends(graph, origins, destinations):
-    nodes_to_preserve = origins + destinations
-    flag = True
-    pruned_nodes = list()
-    while flag:
-        flag = False
-        dead_ends = [node for node in graph.nodes if graph.out_degree(node) == 0]
-        for node in dead_ends:
-            if not node in nodes_to_preserve:
-                graph.remove_node(node)
-                pruned_nodes.append(node)
-                flag = True
-    print(f"[SUCCESS] Pruned {len(pruned_nodes)} dead ends: {sorted(pruned_nodes)}")
-    return graph
-
 #################################################
 
 
 ############## Route Generation #################
 
-def create_routes(number_of_paths, origins, destinations, beta, weight, num_samples=50, max_path_length=100):
-    routes = dict()
-    for dest_id, dest_sim_code in destinations.items():
-        #distances_to_destination = nx.single_source_dijkstra_path_length(traffic_graph, dest_sim_code, weight=weight)
-        distances_to_destination = dict(nx.shortest_path_length(traffic_graph, target=dest_sim_code, weight=weight))
-        """
-        keys = sorted(list(distances_to_destination.keys()))
-        for k in keys:
-            print(k, distances_to_destination[k])
-        """
-        proximity = lambda x: distances_to_destination[x]
-        for origin_id, origin_sim_code in origins.items():
-            sampled_paths = set()
-            while len(sampled_paths) < num_samples:
-                path = _path_generator(traffic_graph, origin_sim_code, dest_sim_code, proximity, beta, max_path_length)
-                if path:
-                    sampled_paths.add(tuple(path))
-            sampled_paths = list(sampled_paths)
-            prob_dist = _create_route_probabilities(sampled_paths, proximity)
-            sorted_indices = np.argsort(prob_dist)[::-1]
-            paths_idcs = sorted_indices[:number_of_paths]
-            routes[(origin_id, dest_id)] = [sampled_paths[idx] for idx in paths_idcs]
-            print(f"[INFO] Generated {len(routes[(origin_id, dest_id)])} paths for {origin_id} -> {dest_id}")
-    print(f"[SUCCESS] Generated {len(routes) * number_of_paths} routes")
+def create_routes(network, num_routes, origins, destinations, beta, weight, num_samples=50, max_path_length=100):
+    routes = dict()   # Tuple<od_id, dest_id> : List<routes>
+    for dest_idx, dest_code in destinations.items():
+        proximity_func = _get_proximity_function(network, dest_code, weight)   # Maps node -> proximity (cost)
+        for origin_idx, origin_code in origins.items():
+            sampled_routes = set()   # num_samples number of routes
+            while len(sampled_routes) < num_samples:
+                path = _path_generator(network, origin_code, dest_code, proximity_func, beta, max_path_length)
+                if not path is None:    sampled_routes.add(tuple(path))
+            routes[(origin_idx, dest_idx)] = _pick_routes_from_samples(sampled_routes, proximity_func, num_routes)
+            print(f"[INFO] Generated {len(routes[(origin_idx, dest_idx)])} paths for {origin_idx} -> {dest_idx}")
     return routes
 
 
-def _does_lead_to_non_dead_end(network, node, destination, recursion_limit=3):
-    """Checks if a node leads to a non-dead end in recursion_limit steps"""
-    if node == destination: 
-        return True
-    recursion_limit -= 1
-    if recursion_limit == 0:
-        return (network.out_degree(node) > 0)
-    else:
-        results = [_does_lead_to_non_dead_end(network, neighbor, destination, recursion_limit) for neighbor in network.neighbors(node)]
-        return (results.count(True) > 0)
+def _get_proximity_function(network, destination, weight):
+    # cost to reach to destination
+    distances_to_destination = dict(nx.shortest_path_length(network, target=destination, weight=weight))
+    # dead-end nodes have infinite cost
+    dead_nodes = [node for node in network.nodes if node not in distances_to_destination]
+    for node in dead_nodes:  distances_to_destination[node] = float("inf")
+    # return the lambda function
+    return lambda x: distances_to_destination[x]
+
+
+def _pick_routes_from_samples(sampled_routes, proximity, num_paths):
+    sampled_routes = list(sampled_routes)
+    # what we base our selection on
+    utility_dist = _get_route_utilities(sampled_routes, proximity)
+    # route indices that maximize defined utilities
+    sorted_indices = np.argsort(utility_dist)[::-1]
+    paths_idcs = sorted_indices[:num_paths]
+    return [sampled_routes[idx] for idx in paths_idcs]
+
+
+def _get_route_utilities(sampled_paths, proximity_func):
+    # Based on FF times
+    free_flows = [_get_ff(route) for route in sampled_paths]
+    utility1 = 1 / np.array(free_flows)
+    utility1 = utility1 / np.sum(utility1)
+
+    # Based on number of edges
+    route_lengths = [len(route) for route in sampled_paths]
+    utility2 = 1 / np.array(route_lengths)
+    utility2 = utility2 / np.sum(utility2)
+
+    # Based on proximity increase in consecutive nodes (how well & steady)
+    prox_increase = [[proximity_func(route[idx-1]) - proximity_func(node) for idx, node in enumerate(route[1:])] for route in sampled_paths]
+    mean_prox_increase = [np.mean(prox) for prox in prox_increase]
+    std_prox_increase = [np.std(prox) for prox in prox_increase]
+    utility3 = [mean_prox_increase[i] / std_prox_increase[i] for i in range(len(sampled_paths))]
+    utility3 = np.array(utility3) / np.sum(utility3)
+    
+    # Based on uniqueness of the route (how different from other routes)
+    lcs_values = [[lcs_consecutive(route, route2) for route2 in sampled_paths if route2 != route] for route in sampled_paths]
+    lcs_values = [np.mean(lcs) for lcs in lcs_values]
+    utility4 = 1 / np.array(lcs_values)
+    utility4 = utility4 / np.sum(utility4)
+
+    # Merge all with some coefficients
+    #utilities = 0.3 * utility1 + 0.3 * utility2 + 0.2 * utility3 + 0.2 * utility4
+    utilities = 0.1 * utility1 + 0.05 * utility2 + 0.05 * utility3 + 0.8 * utility4
+    return utilities
 
 
 def _path_generator(network, origin, destination, proximity_func, beta, maxlen):
     path, current_node = list(), origin
     while True:
         path.append(current_node)
-        options = [node for node in network.neighbors(current_node)]# if _does_lead_to_non_dead_end(network, node, destination)]
-        #print("### New Iteration ###")
-        #print("Path:", path)
-        #print("Options: ", options)
-        if    destination in options:                return path + [destination]
-        elif  (not options) or (len(path) > maxlen): return None
-        else:                                        current_node = _logit(options, proximity_func, beta)
-
-
-
-def _create_route_probabilities(sampled_paths, proximity_func, amplify=False):
-    # Based on FF times
-    free_flows = [_get_ff(route) for route in sampled_paths]
-    prob1 = 1 / np.array(free_flows)
-    prob1 = prob1 / np.sum(prob1)
-
-    # Based on number of edges
-    route_lengths = [len(route) for route in sampled_paths]
-    prob2 = 1 / np.array(route_lengths)
-    prob2 = prob2 / np.sum(prob2)
-
-    # Based on proximity increase in consecutive nodes (how well & steady)
-    prox_increase = [[proximity_func(route[idx-1]) - proximity_func(node) for idx, node in enumerate(route[1:])] for route in sampled_paths]
-    mean_prox_increase = [np.mean(prox) for prox in prox_increase]
-    std_prox_increase = [np.std(prox) for prox in prox_increase]
-    prob3 = [mean_prox_increase[i] / std_prox_increase[i] for i in range(len(sampled_paths))]
-    prob3 = np.array(prob3) / np.sum(prob3)
-    
-    # Based on uniqueness of the route (how different from other routes)
-    lcs_values = [[lcs_non_consecutive(route, route2) for route2 in sampled_paths if route2 != route] for route in sampled_paths]
-    lcs_values = [np.mean(lcs) for lcs in lcs_values]
-    prob4 = 1 / np.array(lcs_values)
-    prob4 = prob4 / np.sum(prob4)
-
-    prob = 0.3 * prob1 + 0.3 * prob2 + 0.3 * prob3 + 0.1 * prob4
-    
-    if amplify: # Amplify the differences
-        prob = prob ** 2
-        prob = prob / np.sum(prob)
-
-    return prob
-
+        options = [node for node in network.neighbors(current_node)]
+        if   (destination in options):   return path + [destination]
+        elif (len(path) > maxlen):       return None
+        else:                            current_node = _logit(options, proximity_func, beta)
 
 
 def _logit(options, cost_function, beta):
     numerators = [np.exp(beta * cost_function(option)) for option in options]
     utilities = [numerator/sum(numerators) for numerator in numerators]
-    return np.random.choice(options, p = utilities)
-
+    return np.random.choice(options, p=utilities)
 
 
 def lcs_non_consecutive(X, Y):
@@ -185,7 +155,6 @@ def lcs_non_consecutive(X, Y):
             else:
                 L[i][j] = max(L[i-1][j], L[i][j-1])
     return L[m][n]
-
 
 
 def lcs_consecutive(X, Y):
@@ -212,7 +181,7 @@ def lcs_consecutive(X, Y):
 ################## FF Times #####################
 
 def calculate_free_flow_times(od_paths_dict, show=False):
-    length = pd.DataFrame(traffic_graph.edges(data = True))
+    length = pd.DataFrame(network.edges(data = True))
     time = length[2].astype('str').str.split(':',expand=True)[1]
     length[2] = time.str.replace('}','',regex=True).astype('float')
     free_flows_dict = dict()
@@ -232,7 +201,7 @@ def calculate_free_flow_times(od_paths_dict, show=False):
 
 
 def _get_ff(path):
-    length = pd.DataFrame(traffic_graph.edges(data = True))
+    length = pd.DataFrame(network.edges(data = True))
     time = length[2].astype('str').str.split(':',expand=True)[1]
     length[2] = time.str.replace('}','',regex=True).astype('float')
     rou=[]
@@ -265,8 +234,6 @@ def save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path):
                     print('" />',file=rou)
         print("</routes>", file=rou)
     print(f"[SUCCESS] Saved {len(paths_df)} paths to: {paths_csv_save_path} and {routes_xml_save_path}")
-
-
 
 
 
@@ -316,9 +283,9 @@ if __name__ == "__main__":
     origins = {i : origin for i, origin in enumerate(origins)}
     destinations = {i : dest for i, dest in enumerate(destinations)}
 
-    traffic_graph = generate_network(connection_file_path, edge_file_path, route_file_path)
-    traffic_graph = prune_dead_ends(traffic_graph, list(origins.values()), list(destinations.values()))
-    routes = create_routes(number_of_paths, origins, destinations, beta, weight, num_samples, max_path_length)
+    network = generate_network(connection_file_path, edge_file_path, route_file_path)
+    #network = prune_dead_ends(network, list(origins.values()), list(destinations.values()))
+    routes = create_routes(network, number_of_paths, origins, destinations, beta, weight, num_samples, max_path_length)
     ff_times = calculate_free_flow_times(routes, show=True)
     save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path)
 

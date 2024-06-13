@@ -66,10 +66,10 @@
     "simulation_parameters":
     {
         "sumo_type" : "sumo",
-        "sumo_config_path" : "Network_and_config/ingolstadt21.sumocfg",
-        "connection_file_path" : "Network_and_config/ingolstadt.con.xml",
-        "edge_file_path" : "Network_and_config/ingolstadt.edg.xml",
-        "route_file_path" : "Network_and_config/ingolstadt.rou.xml",
+        "sumo_config_path" : "Network_and_config/arterial4x4.sumocfg",
+        "connection_file_path" : "Network_and_config/arterial.con.xml",
+        "edge_file_path" : "Network_and_config/arterial.edg.xml",
+        "route_file_path" : "Network_and_config/arterial.rou.xml",
         "routes_xml_save_path" : "Network_and_config/rou.rou.xml",
         "path_csv_save_path" : "Network_and_config/paths.csv",
 
@@ -80,8 +80,11 @@
         "simulation_timesteps" : 3600,
         "beta" : -2.0,
 
-        "origins" : ["315358244", "-306240162#1"],
-        "destinations" : ["32395352#0", "-25190140#1"]
+        "origins" : ["np13_nt13", "nt11_nt15"],
+        "destinations" : ["nt2_nt6", "nt8_np6"],
+
+        "ONUR_COMMENT3" : "Make sure origins are not dead-ends",
+        "ONUR_COMMENT4" : "Make sure destinations are reachable"
     }
     
 }
