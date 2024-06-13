@@ -63,17 +63,19 @@ def generate_network(connection_file, edge_file, route_file):
 def create_routes(number_of_paths, origins, destinations, beta, weight, num_samples=50, max_path_length=100):
     routes = dict()
     for dest_id, dest_sim_code in destinations.items():
-        distances_to_destination = nx.single_source_dijkstra_path_length(traffic_graph, dest_sim_code, weight = weight)
+        distances_to_destination = nx.single_source_dijkstra_path_length(traffic_graph, dest_sim_code, weight=weight)
         print(distances_to_destination)
         proximity = lambda x: distances_to_destination[x]
         for origin_id, origin_sim_code in origins.items():
             sampled_paths = set()
             while len(sampled_paths) < num_samples:
                 path = _path_generator(traffic_graph, origin_sim_code, dest_sim_code, proximity, beta, max_path_length)
-                sampled_paths.add(tuple(path))
+                if path:
+                    sampled_paths.add(tuple(path))
             sampled_paths = list(sampled_paths)
             prob_dist = _create_route_probabilities(sampled_paths, proximity)
-            paths_idcs = np.random.choice(len(sampled_paths), number_of_paths, replace=False, p=prob_dist).tolist()
+            sorted_indices = np.argsort(prob_dist)[::-1]
+            paths_idcs = sorted_indices[:number_of_paths]
             routes[(origin_id, dest_id)] = [sampled_paths[idx] for idx in paths_idcs]
             print(f"[INFO] Generated {len(routes[(origin_id, dest_id)])} paths for {origin_id} -> {dest_id}")
     print(f"[SUCCESS] Generated {len(routes) * number_of_paths} routes")
@@ -83,17 +85,21 @@ def create_routes(number_of_paths, origins, destinations, beta, weight, num_samp
 
 def _path_generator(network, origin, destination, proximity_func, beta, maxlen):
     path, current_node = list(), origin
-    should_add_node = lambda node, path: (not ((node in path) or (node.removeprefix("-") in path) or (f"-{node}" in path))) or (node == destination)
+    #should_add_node = lambda node, path: (not ((node in path) or (node.removeprefix("-") in path) or (f"-{node}" in path))) or (node == destination)
+    should_add_node = lambda node: (len(list(network.neighbors(node))) > 0)
     while True:
         path.append(current_node)
-        options = [node for node in network.neighbors(current_node) if should_add_node(node, path)]
+        options = [node for node in network.neighbors(current_node) if should_add_node(node)]
+        #print("### New Iteration ###")
+        #print("Path:", path)
+        #print("Options: ", options)
         if    destination in options:                return path + [destination]
-        elif  (not options) or (len(path) > maxlen): return _path_generator(network, origin, destination, proximity_func, beta, maxlen)
+        elif  (not options) or (len(path) > maxlen): return None
         else:                                        current_node = _logit(options, proximity_func, beta)
 
 
 
-def _create_route_probabilities(sampled_paths, proximity_func, amplify=True):
+def _create_route_probabilities(sampled_paths, proximity_func, amplify=False):
     # Based on FF times
     free_flows = [_get_ff(route) for route in sampled_paths]
     prob1 = 1 / np.array(free_flows)

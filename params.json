@@ -75,13 +75,13 @@
 
         "number_of_paths" : 3,
         "weight" : "time",
-        "num_samples" : 9,
-        "max_path_length" : 100,
+        "num_samples" : 50,
+        "max_path_length" : 30,
         "simulation_timesteps" : 3600,
-        "beta" : -0.9,
+        "beta" : -2.0,
 
-        "origins" : ["np12_nt13", "np7_nt12"],
-        "destinations" : ["nt2_nt1", "nt3_np3"]
+        "origins" : ["np13_nt13", "np8_nt16"],
+        "destinations" : ["nt1_np1", "nt4_np4"]
     }
     
 }
