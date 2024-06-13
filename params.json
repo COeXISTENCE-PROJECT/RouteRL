@@ -66,18 +66,22 @@
     "simulation_parameters":
     {
         "sumo_type" : "sumo",
-        "sumo_config_path" : "Network_and_config/csomor1.sumocfg",
-        "connection_file_path" : "Network_and_config/csomor1.con.xml",
-        "edge_file_path" : "Network_and_config/csomor1.edg.xml",
-        "route_file_path" : "Network_and_config/csomor1.rou.xml",
-        "routes_xml_save_path" : "Network_and_config/route.rou.xml",
+        "sumo_config_path" : "Network_and_config/arterial4x4.sumocfg",
+        "connection_file_path" : "Network_and_config/arterial.con.xml",
+        "edge_file_path" : "Network_and_config/arterial.edg.xml",
+        "route_file_path" : "Network_and_config/arterial.rou.xml",
+        "routes_xml_save_path" : "Network_and_config/rou.rou.xml",
+        "path_csv_save_path" : "Network_and_config/paths.csv",
 
         "number_of_paths" : 3,
+        "weight" : "time",
+        "num_samples" : 9,
+        "max_path_length" : 100,
         "simulation_timesteps" : 3600,
-        "beta" : 2,
+        "beta" : -0.9,
 
-        "origins" : ["279952229#0", "115604053"],
-        "destinations" : ["-115602933#2", "-441496282#1"]
+        "origins" : ["np12_nt13", "np7_nt12"],
+        "destinations" : ["nt2_nt1", "nt3_np3"]
     }
     
 }

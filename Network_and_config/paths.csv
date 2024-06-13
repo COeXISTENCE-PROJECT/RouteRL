@@ -1,0 +1,13 @@
+origin,destination,path,free_flow_time
+0,0,"np12_nt13,nt13_nt9,nt9_nt5,nt5_nt1,nt1_np1,np1_nt1,nt1_nt2,nt2_np2,np2_nt2,nt2_nt1",1.5153939393939395
+0,0,"np12_nt13,nt13_nt14,nt14_nt10,nt10_nt6,nt6_nt2,nt2_nt1",1.1238787878787877
+0,0,"np12_nt13,nt13_nt9,nt9_np14,np14_nt9,nt9_nt10,nt10_nt11,nt11_nt15,nt15_nt16,nt16_np8,np8_nt16,nt16_nt12,nt12_np7,np7_nt12,nt12_nt11,nt11_nt10,nt10_nt9,nt9_nt5,nt5_np15,np15_nt5,nt5_nt6,nt6_nt7,nt7_nt3,nt3_nt4,nt4_np4,np4_nt4,nt4_nt3,nt3_nt7,nt7_nt6,nt6_nt2,nt2_nt1",4.428363636363635
+1,0,"np7_nt12,nt12_nt8,nt8_np6,np6_nt8,nt8_nt7,nt7_nt6,nt6_nt5,nt5_nt1,nt1_np16,np16_nt1,nt1_np1,np1_nt1,nt1_nt2,nt2_nt6,nt6_nt7,nt7_nt3,nt3_nt4,nt4_np5,np5_nt4,nt4_np4,np4_nt4,nt4_nt8,nt8_nt12,nt12_nt11,nt11_nt10,nt10_nt6,nt6_nt2,nt2_nt1",4.3186363636363625
+1,0,"np7_nt12,nt12_nt16,nt16_nt15,nt15_np10,np10_nt15,nt15_nt11,nt11_nt12,nt12_nt8,nt8_nt7,nt7_nt11,nt11_nt15,nt15_nt14,nt14_nt10,nt10_nt11,nt11_nt7,nt7_nt8,nt8_nt4,nt4_np4,np4_nt4,nt4_nt8,nt8_nt12,nt12_nt11,nt11_nt10,nt10_nt9,nt9_np14,np14_nt9,nt9_nt13,nt13_np13,np13_nt13,nt13_np12,np12_nt13,nt13_nt9,nt9_nt5,nt5_nt1,nt1_np1,np1_nt1,nt1_nt5,nt5_nt6,nt6_nt2,nt2_nt1",7.117636363636359
+1,0,"np7_nt12,nt12_nt16,nt16_np8,np8_nt16,nt16_np9,np9_nt16,nt16_nt15,nt15_nt14,nt14_nt10,nt10_nt6,nt6_nt7,nt7_nt8,nt8_nt4,nt4_np5,np5_nt4,nt4_nt8,nt8_np6,np6_nt8,nt8_nt7,nt7_nt11,nt11_nt15,nt15_np10,np10_nt15,nt15_nt11,nt11_nt7,nt7_nt6,nt6_nt5,nt5_nt1,nt1_nt2,nt2_np2,np2_nt2,nt2_nt1",5.132454545454545
+0,1,"np12_nt13,nt13_nt9,nt9_nt5,nt5_nt6,nt6_nt2,nt2_np2,np2_nt2,nt2_nt1,nt1_np16,np16_nt1,nt1_nt5,nt5_nt9,nt9_nt10,nt10_nt11,nt11_nt12,nt12_np7,np7_nt12,nt12_nt16,nt16_np9,np9_nt16,nt16_nt12,nt12_nt8,nt8_nt7,nt7_nt3,nt3_np3",4.130545454545453
+0,1,"np12_nt13,nt13_nt9,nt9_nt10,nt10_nt6,nt6_nt2,nt2_np2,np2_nt2,nt2_nt6,nt6_nt7,nt7_nt3,nt3_np3",1.9605454545454544
+0,1,"np12_nt13,nt13_np13,np13_nt13,nt13_nt9,nt9_np14,np14_nt9,nt9_nt13,nt13_nt14,nt14_np11,np11_nt14,nt14_nt10,nt10_nt6,nt6_nt2,nt2_nt3,nt3_np3",2.2180606060606056
+1,1,"np7_nt12,nt12_nt8,nt8_np6,np6_nt8,nt8_nt7,nt7_nt6,nt6_nt2,nt2_nt3,nt3_np3",1.2299090909090908
+1,1,"np7_nt12,nt12_nt16,nt16_nt15,nt15_nt11,nt11_nt7,nt7_nt6,nt6_nt2,nt2_np2,np2_nt2,nt2_nt1,nt1_nt5,nt5_np15,np15_nt5,nt5_nt6,nt6_nt7,nt7_nt3,nt3_np3",2.809060606060605
+1,1,"np7_nt12,nt12_nt11,nt11_nt15,nt15_nt14,nt14_nt10,nt10_nt6,nt6_nt2,nt2_nt3,nt3_np3",1.6479393939393938

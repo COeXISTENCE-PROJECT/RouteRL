@@ -91,6 +91,10 @@ class Keychain:
     NUMBER_OF_PATHS = "number_of_paths"
     ORIGINS = "origins"
     DESTINATIONS = "destinations"
+    WEIGHT = "weight"
+    NUM_SAMPLES = "num_samples"
+    MAX_PATH_LENGTH = "max_path_length"
+    PATHS_CSV_SAVE_PATH = "path_csv_save_path"
 
     # Recorder
     RECORDER_PARAMETERS = "recorder_parameters"
@@ -136,6 +140,10 @@ class Keychain:
     ALL = "all"
     PATH_INDEX = "path_index"
     FREE_FLOW_TIME = "free_flow_time"
+    ORIGIN = "origin"
+    DESTINATION = "destination"
+    PATH = "path"
+    
 
     # Agent type encodings
     TYPE_HUMAN = "h"

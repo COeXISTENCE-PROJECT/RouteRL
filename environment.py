@@ -13,8 +13,10 @@ from utilities import make_dir
 class TrafficEnvironment:
 
     def __init__(self, environment_params, simulation_params, agent_params, render_mode=None):
+
+        self.paths_csv_path = simulation_params[kc.PATHS_CSV_SAVE_PATH]
         self.simulator = Simulator(simulation_params)
-        self.agents = create_agent_objects(agent_params, self.calculate_free_flow_times())
+        self.agents = create_agent_objects(agent_params, self.get_free_flow_times())
 
         self.possible_agents = [agent.id for agent in self.agents] 
 
@@ -46,13 +48,23 @@ class TrafficEnvironment:
         }
         infos = {a: {}  for a in self.possible_agents}
         return observations, infos
+    
+
+    def get_free_flow_times(self):
+        paths_df = pd.read_csv(self.paths_csv_path)
+        origins = paths_df[kc.ORIGIN].unique()
+        destinations = paths_df[kc.DESTINATION].unique()
+        ff_dict = {(o, d): list() for o in origins for d in destinations}
+        for _, row in paths_df.iterrows():
+            ff_dict[(row[kc.ORIGIN], row[kc.DESTINATION])].append(row[kc.FREE_FLOW_TIME])
+        return ff_dict
 
 
-    def calculate_free_flow_times(self):
-        free_flow_times = self.simulator.calculate_free_flow_times()
-        self.print_free_flow_times(free_flow_times)
-        self.save_free_flow_times_csv(free_flow_times)
-        return free_flow_times
+    #def calculate_free_flow_times(self):
+    #    free_flow_times = self.simulator.calculate_free_flow_times()
+    #    self.print_free_flow_times(free_flow_times)
+    #    self.save_free_flow_times_csv(free_flow_times)
+    #    return free_flow_times
 
 
     def step(self, joint_action):        
