@@ -75,6 +75,7 @@ class Keychain:
     WEIGHT = "weight"
     NUM_SAMPLES = "num_samples"
     MAX_PATH_LENGTH = "max_path_length"
+    ROUTE_UTILITY_COEFFS = "route_utility_coeffs"
 
     ###########################################################
     
