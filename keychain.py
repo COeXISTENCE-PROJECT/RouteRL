@@ -89,6 +89,7 @@ class Keychain:
     ROUTES_XML_SAVE_PATH = "routes_xml_save_path"
     PATHS_SAVE_PATH = "paths_save_path"
     NUMBER_OF_PATHS = "number_of_paths"
+    ROUTE_UTILITY_COEFFS = "route_utility_coeffs"
     ORIGINS = "origins"
     DESTINATIONS = "destinations"
     WEIGHT = "weight"

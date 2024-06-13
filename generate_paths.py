@@ -60,7 +60,7 @@ def generate_network(connection_file, edge_file, route_file):
 
 ############## Route Generation #################
 
-def create_routes(network, num_routes, origins, destinations, beta, weight, num_samples=50, max_path_length=100):
+def create_routes(network, num_routes, origins, destinations, beta, weight, coeffs, num_samples=50, max_path_length=100):
     routes = dict()   # Tuple<od_id, dest_id> : List<routes>
     for dest_idx, dest_code in destinations.items():
         proximity_func = _get_proximity_function(network, dest_code, weight)   # Maps node -> proximity (cost)
@@ -69,7 +69,7 @@ def create_routes(network, num_routes, origins, destinations, beta, weight, num_
             while len(sampled_routes) < num_samples:
                 path = _path_generator(network, origin_code, dest_code, proximity_func, beta, max_path_length)
                 if not path is None:    sampled_routes.add(tuple(path))
-            routes[(origin_idx, dest_idx)] = _pick_routes_from_samples(sampled_routes, proximity_func, num_routes)
+            routes[(origin_idx, dest_idx)] = _pick_routes_from_samples(sampled_routes, proximity_func, num_routes, coeffs)
             print(f"[INFO] Generated {len(routes[(origin_idx, dest_idx)])} paths for {origin_idx} -> {dest_idx}")
     return routes
 
@@ -84,17 +84,17 @@ def _get_proximity_function(network, destination, weight):
     return lambda x: distances_to_destination[x]
 
 
-def _pick_routes_from_samples(sampled_routes, proximity, num_paths):
+def _pick_routes_from_samples(sampled_routes, proximity, num_paths, coeffs):
     sampled_routes = list(sampled_routes)
     # what we base our selection on
-    utility_dist = _get_route_utilities(sampled_routes, proximity)
+    utility_dist = _get_route_utilities(sampled_routes, proximity, coeffs)
     # route indices that maximize defined utilities
     sorted_indices = np.argsort(utility_dist)[::-1]
     paths_idcs = sorted_indices[:num_paths]
     return [sampled_routes[idx] for idx in paths_idcs]
 
 
-def _get_route_utilities(sampled_paths, proximity_func):
+def _get_route_utilities(sampled_paths, proximity_func, coeffs):
     # Based on FF times
     free_flows = [_get_ff(route) for route in sampled_paths]
     utility1 = 1 / np.array(free_flows)
@@ -120,7 +120,8 @@ def _get_route_utilities(sampled_paths, proximity_func):
 
     # Merge all with some coefficients
     #utilities = 0.3 * utility1 + 0.3 * utility2 + 0.2 * utility3 + 0.2 * utility4
-    utilities = 0.1 * utility1 + 0.05 * utility2 + 0.05 * utility3 + 0.8 * utility4
+    #utilities = 0.1 * utility1 + 0.05 * utility2 + 0.05 * utility3 + 0.8 * utility4
+    utilities = (coeffs[0] * utility1) + (coeffs[1] * utility2) + (coeffs[2] * utility3) + (coeffs[3] * utility4)
     return utilities
 
 
@@ -269,6 +270,7 @@ if __name__ == "__main__":
     number_of_paths = params[kc.NUMBER_OF_PATHS]
     beta = params[kc.BETA]
     weight = params[kc.WEIGHT]
+    coeffs = params[kc.ROUTE_UTILITY_COEFFS]
     num_samples = params[kc.NUM_SAMPLES]
     max_path_length = params[kc.MAX_PATH_LENGTH]
     origins = params[kc.ORIGINS]
@@ -284,8 +286,7 @@ if __name__ == "__main__":
     destinations = {i : dest for i, dest in enumerate(destinations)}
 
     network = generate_network(connection_file_path, edge_file_path, route_file_path)
-    #network = prune_dead_ends(network, list(origins.values()), list(destinations.values()))
-    routes = create_routes(network, number_of_paths, origins, destinations, beta, weight, num_samples, max_path_length)
+    routes = create_routes(network, number_of_paths, origins, destinations, beta, weight, coeffs, num_samples, max_path_length)
     ff_times = calculate_free_flow_times(routes, show=True)
     save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path)
 
