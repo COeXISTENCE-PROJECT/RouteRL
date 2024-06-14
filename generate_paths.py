@@ -6,10 +6,10 @@ import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 
 from keychain import Keychain as kc
+from utilities import df_to_prettytable
 from utilities import get_params
 from utilities import list_to_string
 from utilities import remove_double_quotes
-from utilities import df_to_prettytable
 
 
 ############# Network Generation ################
@@ -55,6 +55,39 @@ def generate_network(connection_file, edge_file, route_file):
     traffic_graph = nx.from_pandas_edgelist(final, 'From', 'To', ['time'], create_using=nx.DiGraph())
     return traffic_graph
 
+
+def _read_xml_file(file_path, element_name, attribute_name, attribute_name_2):
+    with open(file_path, 'r') as f:
+        data = f.read()
+    Bs_data_con = BeautifulSoup(data, "xml")
+    connections = Bs_data_con.find_all(element_name)
+    empty=[]
+    for x in range(len(connections)):
+        empty.append(str(connections[x]))
+    from_=[]
+    to_=[]
+    for x in range(len(empty)):
+        root = ET.fromstring(empty[x])
+        from_.append(root.attrib.get(attribute_name))
+        to_.append(root.attrib.get(attribute_name_2))
+    from_db=pd.DataFrame(from_)
+    to_db=pd.DataFrame(to_)
+    return from_db, to_db
+
+#################################################
+
+
+############## OD Integrity #################
+
+def check_od_integrity(network, origins, destinations):
+    for dest_idx, destination in destinations.items():
+        if not destination in network.nodes:    raise ValueError(f"Destination {dest_idx} is not in the network")
+        distances_to_destination = dict(nx.shortest_path_length(network, target=destination))
+        for origin_idx, origin in origins.items():
+            if not origin in network.nodes:     raise ValueError(f"Origin {origin_idx} is not in the network")
+            elif not origin in distances_to_destination:
+                raise ValueError(f"Origin {origin_idx} cannot reach destination {dest_idx}")
+
 #################################################
 
 
@@ -69,13 +102,13 @@ def create_routes(network, num_routes, origins, destinations, beta, weight, coef
             while len(sampled_routes) < num_samples:
                 path = _path_generator(network, origin_code, dest_code, proximity_func, beta, max_path_length)
                 if not path is None:    sampled_routes.add(tuple(path))
-            routes[(origin_idx, dest_idx)] = _pick_routes_from_samples(sampled_routes, proximity_func, num_routes, coeffs)
+            routes[(origin_idx, dest_idx)] = _pick_routes_from_samples(sampled_routes, proximity_func, num_routes, coeffs, network)
             print(f"[INFO] Generated {len(routes[(origin_idx, dest_idx)])} paths for {origin_idx} -> {dest_idx}")
     return routes
 
 
 def _get_proximity_function(network, destination, weight):
-    # cost to reach to destination
+    # cost for all nodes that CAN access to destination
     distances_to_destination = dict(nx.shortest_path_length(network, target=destination, weight=weight))
     # dead-end nodes have infinite cost
     dead_nodes = [node for node in network.nodes if node not in distances_to_destination]
@@ -84,43 +117,41 @@ def _get_proximity_function(network, destination, weight):
     return lambda x: distances_to_destination[x]
 
 
-def _pick_routes_from_samples(sampled_routes, proximity, num_paths, coeffs):
+def _pick_routes_from_samples(sampled_routes, proximity, num_paths, coeffs, network):
     sampled_routes = list(sampled_routes)
     # what we base our selection on
-    utility_dist = _get_route_utilities(sampled_routes, proximity, coeffs)
+    utility_dist = _get_route_utilities(sampled_routes, proximity, coeffs, network)
     # route indices that maximize defined utilities
     sorted_indices = np.argsort(utility_dist)[::-1]
     paths_idcs = sorted_indices[:num_paths]
     return [sampled_routes[idx] for idx in paths_idcs]
 
 
-def _get_route_utilities(sampled_paths, proximity_func, coeffs):
+def _get_route_utilities(sampled_routes, proximity_func, coeffs, network):
     # Based on FF times
-    free_flows = [_get_ff(route) for route in sampled_paths]
+    free_flows = [_get_ff(route, network) for route in sampled_routes]
     utility1 = 1 / np.array(free_flows)
     utility1 = utility1 / np.sum(utility1)
 
     # Based on number of edges
-    route_lengths = [len(route) for route in sampled_paths]
+    route_lengths = [len(route) for route in sampled_routes]
     utility2 = 1 / np.array(route_lengths)
     utility2 = utility2 / np.sum(utility2)
 
     # Based on proximity increase in consecutive nodes (how well & steady)
-    prox_increase = [[proximity_func(route[idx-1]) - proximity_func(node) for idx, node in enumerate(route[1:])] for route in sampled_paths]
+    prox_increase = [[proximity_func(route[idx-1]) - proximity_func(node) for idx, node in enumerate(route[1:])] for route in sampled_routes]
     mean_prox_increase = [np.mean(prox) for prox in prox_increase]
     std_prox_increase = [np.std(prox) for prox in prox_increase]
-    utility3 = [mean_prox_increase[i] / std_prox_increase[i] for i in range(len(sampled_paths))]
+    utility3 = [mean_prox_increase[i] / std_prox_increase[i] for i in range(len(sampled_routes))]
     utility3 = np.array(utility3) / np.sum(utility3)
     
     # Based on uniqueness of the route (how different from other routes)
-    lcs_values = [[lcs_consecutive(route, route2) for route2 in sampled_paths if route2 != route] for route in sampled_paths]
+    lcs_values = [[lcs_consecutive(route, route2) for route2 in sampled_routes if route2 != route] for route in sampled_routes]
     lcs_values = [np.mean(lcs) for lcs in lcs_values]
     utility4 = 1 / np.array(lcs_values)
     utility4 = utility4 / np.sum(utility4)
 
     # Merge all with some coefficients
-    #utilities = 0.3 * utility1 + 0.3 * utility2 + 0.2 * utility3 + 0.2 * utility4
-    #utilities = 0.1 * utility1 + 0.05 * utility2 + 0.05 * utility3 + 0.8 * utility4
     utilities = (coeffs[0] * utility1) + (coeffs[1] * utility2) + (coeffs[2] * utility3) + (coeffs[3] * utility4)
     return utilities
 
@@ -143,7 +174,8 @@ def _logit(options, cost_function, beta):
 
 def lcs_non_consecutive(X, Y):
     """
-    The LCS of two sequences is the longest subsequence that is present in both sequences in the same order, but not necessarily consecutively.
+    The LCS of two sequences is the longest subsequence that is present in both sequences in the same order, 
+    but not necessarily consecutively.
     """
     m, n = len(X), len(Y)
     L = [[None]*(n+1) for i in range(m+1)]
@@ -160,7 +192,8 @@ def lcs_non_consecutive(X, Y):
 
 def lcs_consecutive(X, Y):
     """
-    The LCS of two sequences is the longest subsequence that is present in both sequences in the same order, consecutively.
+    The LCS of two sequences is the longest subsequence that is present in both sequences in the same order, 
+    consecutively.
     """
     m, n = len(X), len(Y)
     LCSuff = [[0 for k in range(n+1)] for l in range(m+1)]
@@ -181,7 +214,8 @@ def lcs_consecutive(X, Y):
 
 ################## FF Times #####################
 
-def calculate_free_flow_times(od_paths_dict, show=False):
+def calculate_free_flow_times(od_paths_dict, network, show=False):
+    """ Get ff time for all routes """
     length = pd.DataFrame(network.edges(data = True))
     time = length[2].astype('str').str.split(':',expand=True)[1]
     length[2] = time.str.replace('}','',regex=True).astype('float')
@@ -201,7 +235,8 @@ def calculate_free_flow_times(od_paths_dict, show=False):
     return free_flows_dict
 
 
-def _get_ff(path):
+def _get_ff(path, network):
+    """ Get ff time for a given route """
     length = pd.DataFrame(network.edges(data = True))
     time = length[2].astype('str').str.split(':',expand=True)[1]
     length[2] = time.str.replace('}','',regex=True).astype('float')
@@ -219,6 +254,7 @@ def _get_ff(path):
 ################## Disk Ops #####################
 
 def save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path):
+    """ Save paths and ff times to disk """
     # csv file, for us
     paths_df = pd.DataFrame(columns = [kc.ORIGIN, kc.DESTINATION, kc.PATH, kc.FREE_FLOW_TIME])
     for od, paths in routes.items():
@@ -235,28 +271,6 @@ def save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path):
                     print('" />',file=rou)
         print("</routes>", file=rou)
     print(f"[SUCCESS] Saved {len(paths_df)} paths to: {paths_csv_save_path} and {routes_xml_save_path}")
-
-
-
-
-
-def _read_xml_file(file_path, element_name, attribute_name, attribute_name_2):
-    with open(file_path, 'r') as f:
-        data = f.read()
-    Bs_data_con = BeautifulSoup(data, "xml")
-    connections = Bs_data_con.find_all(element_name)
-    empty=[]
-    for x in range(len(connections)):
-        empty.append(str(connections[x]))
-    from_=[]
-    to_=[]
-    for x in range(len(empty)):
-        root = ET.fromstring(empty[x])
-        from_.append(root.attrib.get(attribute_name))
-        to_.append(root.attrib.get(attribute_name_2))
-    from_db=pd.DataFrame(from_)
-    to_db=pd.DataFrame(to_)
-    return from_db, to_db
 
 
 
@@ -288,8 +302,9 @@ if __name__ == "__main__":
     destinations = {i : dest for i, dest in enumerate(destinations)}
 
     network = generate_network(connection_file_path, edge_file_path, route_file_path)
+    check_od_integrity(network, origins, destinations)
     routes = create_routes(network, number_of_paths, origins, destinations, beta, weight, coeffs, num_samples, max_path_length)
-    ff_times = calculate_free_flow_times(routes, show=True)
+    ff_times = calculate_free_flow_times(routes, network, show=True)
     save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path)
 
 #################################################
