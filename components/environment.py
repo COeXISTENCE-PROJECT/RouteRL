@@ -74,46 +74,14 @@ class TrafficEnvironment(BaseEnvironment):
         sumo_df = self.simulator.simulate_episode(self.joint_action)
         sumo_df = sumo_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
         joint_observation = sumo_df.merge(self.joint_action, on=kc.AGENT_ID)
-        info = {kc.LAST_SIM_DURATION: self.get_last_sim_duration()}
-        return joint_observation, info
+        return joint_observation
     
     #####################
 
     ##### DATA #####
 
-    def get_last_sim_duration(self):
-        return self.simulator.last_simulation_duration
-
-
     def get_free_flow_times(self):
         free_flow_times = self.simulator.get_free_flow_times()
-        self._print_free_flow_times(free_flow_times)
-        self._save_free_flow_times_csv(free_flow_times)
         return free_flow_times
-
-
-    def _print_free_flow_times(self, free_flow_times):
-        table = PrettyTable()
-        table.field_names = ["Origin", "Destination", "Index", "FF Time"]
-
-        for od, times in free_flow_times.items():
-            for idx, time in enumerate(times):
-                table.add_row([od[0], od[1], idx, "%.3f"%time])
-            table.add_row(["----", "----", "----", "----"])
-
-        print("------ Free flow travel times ------")
-        print(table)
-
-
-    def _save_free_flow_times_csv(self, free_flow_times):
-        cols = [kc.ORIGINS, kc.DESTINATIONS, kc.PATH_INDEX, kc.FREE_FLOW_TIME]
-        free_flow_pd = pd.DataFrame(columns=cols)
-
-        for od, times in free_flow_times.items():
-            for idx, time in enumerate(times):
-                free_flow_pd.loc[len(free_flow_pd.index)] = [od[0], od[1], idx, time]
-        save_to = make_dir(kc.RECORDS_FOLDER, kc.FREE_FLOW_TIMES_CSV_FILE_NAME)
-        free_flow_pd.to_csv(save_to, index = False)
-        print(f"[SUCCESS] Free-flow travel times saved to: {save_to}")
 
     #####################

@@ -17,11 +17,7 @@ class Recorder:
         self._clear_records(self.episodes_folder)
         self.sim_length_file_path = self._get_txt_file_path(kc.SIMULATION_LENGTH_LOG_FILE_NAME)
         self.loss_file_path = self._get_txt_file_path(kc.LOSSES_LOG_FILE_NAME)
-
-        self.saved_episodes = list()
-
         print(f"[SUCCESS] Recorder is now here to record!")
-
 
 #################### INIT HELPERS
 
@@ -42,22 +38,16 @@ class Recorder:
 
 #################### REMEMBER FUNCTIONS
     
-    def remember_all(self, episode, joint_action, joint_observation, rewards_df, agents, last_sim_duration):
-        self.saved_episodes.append(episode)
+    def record(self, episode, joint_action, joint_observation, rewards_df, agents):
         self.remember_episode(episode, joint_action, joint_observation, rewards_df)
-        self.remember_last_sim_duration(last_sim_duration)
 
 
     def remember_episode(self, episode, joint_action, joint_observation, rewards_df):
         joint_observation[kc.SUMO_ACTION] = joint_observation.apply(lambda row: f"{row[kc.AGENT_ORIGIN]}_{row[kc.AGENT_DESTINATION]}_{row[kc.ACTION]}", axis=1)
+        joint_observation[kc.ARRIVAL_TIME] = joint_observation.apply(lambda row: row[kc.AGENT_START_TIME] + row[kc.TRAVEL_TIME], axis=1)
         #merged_df = pd.merge(joint_action, joint_observation, on=kc.AGENT_ID)
         merged_df = pd.merge(joint_observation, rewards_df, on=kc.AGENT_ID)
         merged_df.to_csv(make_dir(self.episodes_folder, f"ep{episode}.csv"), index = False)
-
-
-    def remember_last_sim_duration(self, last_sim_duration):
-        with open(self.sim_length_file_path, "a") as file:
-            file.write(f"{last_sim_duration}\n")
 
 
     def save_losses(self, agents):

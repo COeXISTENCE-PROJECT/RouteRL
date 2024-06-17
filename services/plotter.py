@@ -49,7 +49,6 @@ class Plotter:
     def visualize_all(self):
         self.saved_episodes = self._get_episodes()
 
-        self.visualize_free_flows()
         self.visualize_mean_rewards()
         self.visualize_mean_travel_times()
         self.visualize_tt_distributions()
@@ -70,54 +69,6 @@ class Plotter:
         return sorted(eps)
 
 ####################
-
-
-#################### FREE FLOWS
-        
-    def visualize_free_flows(self):
-        save_to = make_dir(kc.PLOTS_FOLDER, kc.FF_TRAVEL_TIME_PLOT_FILE_NAME)
-
-        free_flows = pd.read_csv(self.free_flow_times_file_path)
-        free_flows = free_flows.astype({kc.ORIGINS: 'int', kc.DESTINATIONS: 'int', kc.PATH_INDEX: 'int', kc.FREE_FLOW_TIME: 'float'})
-        od_pairs = list(set(free_flows[['origins', 'destinations']].apply(lambda x: (x.iloc[0], x.iloc[1]), axis=1)))
-        num_od_pairs = len(od_pairs)
-        
-        num_columns = self.default_num_columns
-        num_rows = (num_od_pairs + num_columns - 1) // num_columns
-
-        figure_size = (self.multimode_width * num_columns, self.multimode_height * num_rows)
-        fig, axes = plt.subplots(num_rows, num_columns, figsize=figure_size)
-        fig.tight_layout(pad=5.0)
-
-        if num_rows > 1:   axes = axes.flatten()   # Flatten axes
-
-        od_pairs.sort()
-        for idx, od in enumerate(od_pairs):
-            ax = axes[idx]
-            subset = free_flows[free_flows[kc.ORIGINS] == od[0]]
-            subset = subset[subset[kc.DESTINATIONS] == od[1]]
-            for idx2, (_, row) in enumerate(subset.iterrows()):
-                ax.bar(f"{row[kc.PATH_INDEX]}", row[kc.FREE_FLOW_TIME], color = self.colors[idx2], label = f"Route: {int(row[kc.PATH_INDEX])}")
-
-            ax.set_title(f"Free flow travel times in {od[0]}-{od[1]}")
-            ax.set_xlabel('Route Index')
-            ax.set_ylabel('Minutes')
-            ax.legend()
-
-        for ax in axes[idx+1:]:   ax.axis('off')    # Hide unused subplots if any
-
-        for ax in axes.flat:    ax.legend().set_visible(False)
-        handles, labels = axes[0].get_legend_handles_labels()
-        fig.legend(handles, labels, loc='upper center', ncol=num_columns)
-        fig.subplots_adjust(top=0.90)
-
-        #plt.show()
-        plt.savefig(save_to)
-        plt.close()
-        print(f"[SUCCESS] Free-flow travel times are saved to {save_to}")
-        
-####################    
-
 
 #################### REWARDS
     
@@ -381,12 +332,14 @@ class Plotter:
 
 
     def _retrieve_sim_length(self):
-        sim_lengths = list()
-        with open(self.sim_length_file_path, "r") as file:
-            lines = file.readlines()
-            for line in lines:
-                sim_lengths.append(int(line.strip()))
-        return sim_lengths
+        latest_arrivals = list()
+        for episode in self.saved_episodes:
+            data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
+            data = pd.read_csv(data_path)
+            arrival_times = data[kc.ARRIVAL_TIME]
+            latest_arrival = max(arrival_times)
+            latest_arrivals.append(latest_arrival)
+        return latest_arrivals
     
 ####################
 

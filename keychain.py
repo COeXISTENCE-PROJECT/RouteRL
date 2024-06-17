@@ -5,7 +5,7 @@ class Keychain:
     When change needed, just fix it here! Avoid hardcoding...
     """
     
-    MODE = "" # empty string if not testing, test otherwise
+    MODE = "test" # empty string if not testing, test otherwise
 
     ################ PARAMETER ACCESS KEYS ####################
 

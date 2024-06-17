@@ -51,7 +51,7 @@ class SumoSimulator(BaseSimulator):
         self.simulation_length = params[kc.SIMULATION_TIMESTEPS]
 
         self.sumo_id = f"{random.randint(0, 1000)}"
-        self.last_simulation_duration = 0
+        self.sumo_connection = None
 
         self._check_paths_ready()
         confirm_env_variable(self.env_var, append="tools")
@@ -70,54 +70,40 @@ class SumoSimulator(BaseSimulator):
         
     #####################
 
-    ##### PROPERTIES #####
-
-    @property
-    def last_simulation_duration(self):
-        return self._last_simulation_duration
-    
-    @last_simulation_duration.setter
-    def last_simulation_duration(self, duration):
-        self._last_simulation_duration = duration
-
-    #####################
-
     ##### SUMO CONTROL #####
 
     def start(self):
         sumo_cmd = [self.sumo_type, "-c", self.sumo_config_path]
         traci.start(sumo_cmd, label=self.sumo_id)
+        self.sumo_connection = traci.getConnection(self.sumo_id)
 
     def stop(self):
-        traci.switch(self.sumo_id)
-        traci.close()
+        self.sumo_connection.close()
 
     def reset(self):
-        traci.switch(self.sumo_id)
-        traci.load(['-c', self.sumo_config_path])
+        self.sumo_connection.load(['-c', self.sumo_config_path])
 
     #####################
 
     ##### SIMULATION #####
 
+
     def simulate_episode(self, joint_action):
         arrivals = {kc.AGENT_ID : list(), kc.ARRIVAL_TIME: list()}  # Where we save arrivals
         agents_stack = self._joint_action_to_sorted_stack(joint_action)  # Where we keep agents and their actions
         should_continue = True
-        traci.switch(self.sumo_id)  # Attention: Ensure it remains the same in concurrent execution
 
         # Simulation loop
         while should_continue:
-            timestep = int(traci.simulation.getTime())
+            timestep = int(self.sumo_connection.simulation.getTime())
             
             # Add vehicles to the simulation
             while agents_stack[-1][kc.AGENT_START_TIME] == timestep:
                 row = agents_stack.pop()
-                traci.switch(self.sumo_id)
-                traci.vehicle.add(row[kc.AGENT_ID], row[kc.SUMO_ACTION])
+                self.sumo_connection.vehicle.add(row[kc.AGENT_ID], row[kc.SUMO_ACTION])
 
             # Collect vehicles that have reached their destination
-            arrived_now = traci.simulation.getArrivedIDList()   # returns a list of arrived vehicle ids
+            arrived_now = self.sumo_connection.simulation.getArrivedIDList()   # returns a list of arrived vehicle ids
             arrived_now = [int(value) for value in arrived_now]   # Convert values to int
 
             for id in arrived_now:
@@ -127,10 +113,8 @@ class SumoSimulator(BaseSimulator):
             # Did all vehicles arrive?
             should_continue = len(arrivals[kc.AGENT_ID]) < len(joint_action)
             # Advance the simulation
-            traci.simulationStep()
-        
-        # Needed for plots
-        self.last_simulation_duration = timestep
+            self.sumo_connection.simulationStep()
+            
         # Calculate travel times
         travel_times_df = self._prepare_travel_times_df(arrivals, joint_action)
         return travel_times_df

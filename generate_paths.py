@@ -101,9 +101,11 @@ def create_routes(network, num_routes, origins, destinations, beta, weight, coef
             sampled_routes = set()   # num_samples number of routes
             while len(sampled_routes) < num_samples:
                 path = _path_generator(network, origin_code, dest_code, proximity_func, beta, max_path_length)
-                if not path is None:    sampled_routes.add(tuple(path))
+                if not path is None:    
+                    sampled_routes.add(tuple(path))
+                    print(f"\r[INFO] Sampled {len(sampled_routes)} paths for {origin_idx} -> {dest_idx}", end="")
             routes[(origin_idx, dest_idx)] = _pick_routes_from_samples(sampled_routes, proximity_func, num_routes, coeffs, network)
-            print(f"[INFO] Generated {len(routes[(origin_idx, dest_idx)])} paths for {origin_idx} -> {dest_idx}")
+            print(f"\n[INFO] Selected {len(routes[(origin_idx, dest_idx)])} paths for {origin_idx} -> {dest_idx}")
     return routes
 
 
@@ -146,7 +148,7 @@ def _get_route_utilities(sampled_routes, proximity_func, coeffs, network):
     utility3 = np.array(utility3) / np.sum(utility3)
     
     # Based on uniqueness of the route (how different from other routes)
-    lcs_values = [[lcs_consecutive(route, route2) for route2 in sampled_routes if route2 != route] for route in sampled_routes]
+    lcs_values = [[lcs_non_consecutive(route, route2) for route2 in sampled_routes if route2 != route] for route in sampled_routes]
     lcs_values = [np.mean(lcs) for lcs in lcs_values]
     utility4 = 1 / np.array(lcs_values)
     utility4 = utility4 / np.sum(utility4)
@@ -160,10 +162,10 @@ def _path_generator(network, origin, destination, proximity_func, beta, maxlen):
     path, current_node = list(), origin
     while True:
         path.append(current_node)
-        options = [node for node in network.neighbors(current_node)]
-        if   (destination in options):   return path + [destination]
-        elif (len(path) > maxlen):       return None
-        else:                            current_node = _logit(options, proximity_func, beta)
+        options = [node for node in network.neighbors(current_node) if node not in path]
+        if   (destination in options):                  return path + [destination]
+        elif (not options) or (len(path) > maxlen):     return None
+        else:                                           current_node = _logit(options, proximity_func, beta)
 
 
 def _logit(options, cost_function, beta):

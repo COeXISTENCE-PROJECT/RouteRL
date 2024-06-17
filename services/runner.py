@@ -47,10 +47,10 @@ class Runner:
 
             env.reset()
             self._submit_actions(env, agents)
-            observation_df, info = env.step()
+            observation_df = env.step()
             self._teach_agents(agents, env.joint_action, observation_df)
 
-            self._record(episode, phase_start_time, curr_phase, env.joint_action, observation_df, self._get_rewards(agents), agents, info[kc.LAST_SIM_DURATION])
+            self._record(episode, phase_start_time, curr_phase, env.joint_action, observation_df, self._get_rewards(agents), agents)
 
         self._show_training_time(training_start_time)
         env.stop()
@@ -83,9 +83,9 @@ class Runner:
         return rewards_df
     
 
-    def _record(self, episode, start_time, curr_phase, joint_action_df, joint_observation_df, rewards_df, agents, last_sim_duration):
+    def _record(self, episode, start_time, curr_phase, joint_action_df, joint_observation_df, rewards_df, agents):
         if (episode in self.remember_episodes):
-            self.recorder.remember_all(episode, joint_action_df, joint_observation_df, rewards_df, agents, last_sim_duration)
+            self.recorder.record(episode, joint_action_df, joint_observation_df, rewards_df, agents)
         elif not self.frequent_progressbar:
             return
         msg = f"{self.phase_names[curr_phase]} {curr_phase+1}/{len(self.phases)}"
