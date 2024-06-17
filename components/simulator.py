@@ -8,7 +8,6 @@ from abc import ABC, abstractmethod
 from keychain import Keychain as kc
 from utilities import confirm_env_variable
 
-
 class BaseSimulator(ABC):
 
     """
@@ -52,6 +51,9 @@ class SumoSimulator(BaseSimulator):
 
         self.sumo_id = f"{random.randint(0, 1000)}"
         self.sumo_connection = None
+        
+        self.sumonize_action = lambda row: f'{row[kc.AGENT_ORIGIN]}_{row[kc.AGENT_DESTINATION]}_{row[kc.ACTION]}'
+        self.add_to_sim = lambda row: self.sumo_connection.vehicle.add(vehID=f"{row[kc.AGENT_ID]}", routeID=row[kc.SUMO_ACTION], depart=f"{row[kc.AGENT_START_TIME]}")
 
         self._check_paths_ready()
         confirm_env_variable(self.env_var, append="tools")
@@ -87,74 +89,37 @@ class SumoSimulator(BaseSimulator):
 
     ##### SIMULATION #####
 
-
     def simulate_episode(self, joint_action):
-        arrivals = {kc.AGENT_ID : list(), kc.ARRIVAL_TIME: list()}  # Where we save arrivals
-        agents_stack = self._joint_action_to_sorted_stack(joint_action)  # Where we keep agents and their actions
-        should_continue = True
-
-        # Simulation loop
-        while should_continue:
-            timestep = int(self.sumo_connection.simulation.getTime())
-            
-            # Add vehicles to the simulation
-            while agents_stack[-1][kc.AGENT_START_TIME] == timestep:
-                row = agents_stack.pop()
-                self.sumo_connection.vehicle.add(row[kc.AGENT_ID], row[kc.SUMO_ACTION])
-
-            # Collect vehicles that have reached their destination
-            arrived_now = self.sumo_connection.simulation.getArrivedIDList()   # returns a list of arrived vehicle ids
-            arrived_now = [int(value) for value in arrived_now]   # Convert values to int
-
-            for id in arrived_now:
-                arrivals[kc.AGENT_ID].append(id)
-                arrivals[kc.ARRIVAL_TIME].append(timestep)
-            
-            # Did all vehicles arrive?
-            should_continue = len(arrivals[kc.AGENT_ID]) < len(joint_action)
-            # Advance the simulation
+        num_vehicles = len(joint_action)
+        # Construct SUMO actions
+        joint_action[kc.SUMO_ACTION] = joint_action.apply(self.sumonize_action, axis=1)
+        # Add all vehicles to the simulation at once
+        joint_action.apply(self.add_to_sim, axis=1)
+        # Collect arrivals
+        arrivals = {kc.AGENT_ID : list(), kc.ARRIVAL_TIME : list()}
+        timestep = 0
+        while len(arrivals[kc.AGENT_ID]) < num_vehicles:
             self.sumo_connection.simulationStep()
-            
-        # Calculate travel times
-        travel_times_df = self._prepare_travel_times_df(arrivals, joint_action)
-        return travel_times_df
+            timestep += 1
+            for veh_id in self.sumo_connection.simulation.getArrivedIDList():
+                arrivals[kc.AGENT_ID].append(int(veh_id))
+                arrivals[kc.ARRIVAL_TIME].append(timestep)
+        # Calculate travel times df
+        return self._prepare_travel_times_df(arrivals, joint_action)
         
 
     def _prepare_travel_times_df(self, arrivals, joint_action):
         # Initiate the travel_time_df
         travel_times_df = pd.DataFrame(arrivals)
-
         # Retrieve the start times of the agents from the joint_action dataframe
         start_times_df = joint_action[[kc.AGENT_ID, kc.AGENT_START_TIME]]
-
         # Merge the travel_time_df with the start_times_df for travel time calculation
         travel_times_df = pd.merge(left=start_times_df, right=travel_times_df, on=kc.AGENT_ID, how='left')
-
         # Calculate travel time
         calculate_travel_duration = lambda row: ((row[kc.ARRIVAL_TIME] - row[kc.AGENT_START_TIME]) / 60.0)
         travel_times_df[kc.TRAVEL_TIME] = travel_times_df.apply(calculate_travel_duration, axis=1)
-
         # Retain only the necessary columns
-        travel_times_df = travel_times_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
-        return travel_times_df
-    
-
-    def _joint_action_to_sorted_stack(self, joint_action):
-        # Sort the joint_action dataframe by start times (descending order for stack)
-        sorted_joint_action = joint_action.sort_values(kc.AGENT_START_TIME, ascending=False)
-
-        # Make a sumo_action column in sorted_joint_action dataframe
-        sumonize_action = lambda row: f'{row[kc.AGENT_ORIGIN]}_{row[kc.AGENT_DESTINATION]}_{row[kc.ACTION]}'
-        sorted_joint_action[kc.SUMO_ACTION] = sorted_joint_action.apply(sumonize_action, axis=1)
-
-        # Create a stack of agents and their sumo actions
-        agents_stack = [{kc.AGENT_START_TIME : -1}]     # with bottom placeholder
-
-        for _, row in sorted_joint_action.iterrows():
-            stack_row = {kc.AGENT_ID : f"{row[kc.AGENT_ID]}", kc.AGENT_START_TIME : row[kc.AGENT_START_TIME], kc.SUMO_ACTION : row[kc.SUMO_ACTION]}
-            agents_stack.append(stack_row)
-
-        return agents_stack
+        return travel_times_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
     
     #####################
     
