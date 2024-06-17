@@ -75,11 +75,11 @@
 
         "number_of_paths" : 3,
         "weight" : "time",
-        "num_samples" : 50,
-        "max_path_length" : 500,
+        "num_samples" : 100,
+        "max_path_length" : 100,
         "simulation_timesteps" : 3600,
-        "beta" : -2.0,
-        "route_utility_coeffs" : [0.1, 0.05, 0.05, 0.8],
+        "beta" : -1.5,
+        "route_utility_coeffs" : [0.2, 0.2, 0.2, 0.4],
 
         "origins" : ["np13_nt13", "nt11_nt15"],
         "destinations" : ["nt2_nt6", "nt8_np6"],

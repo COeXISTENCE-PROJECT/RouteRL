@@ -1,38 +1,38 @@
 <routes>
 <route id="0_0_0" edges="
-np13_nt13 nt13_nt14 nt14_nt15 nt15_nt11 nt11_nt7 nt7_nt6 nt6_nt2 nt2_np2 np2_nt2 nt2_nt6
+np13_nt13 nt13_nt9 nt9_nt5 nt5_nt1 nt1_nt2 nt2_nt6
 " />
 <route id="0_0_1" edges="
-np13_nt13 nt13_nt14 nt14_nt10 nt10_nt6 nt6_nt2 nt2_np2 np2_nt2 nt2_nt6
+np13_nt13 nt13_nt9 nt9_np14 np14_nt9 nt9_nt5 nt5_nt1 nt1_nt2 nt2_nt6
 " />
 <route id="0_0_2" edges="
-np13_nt13 nt13_nt14 nt14_nt15 nt15_np10 np10_nt15 nt15_nt11 nt11_nt7 nt7_nt8 nt8_nt4 nt4_nt3 nt3_nt2 nt2_nt6
+np13_nt13 nt13_nt14 nt14_nt10 nt10_nt6 nt6_nt2 nt2_np2 np2_nt2 nt2_nt6
 " />
 <route id="1_0_0" edges="
-nt11_nt15 nt15_nt14 nt14_nt13 nt13_nt9 nt9_nt5 nt5_nt1 nt1_nt2 nt2_nt6
+nt11_nt15 nt15_nt14 nt14_nt10 nt10_nt6 nt6_nt2 nt2_np2 np2_nt2 nt2_nt6
 " />
 <route id="1_0_1" edges="
-nt11_nt15 nt15_nt14 nt14_nt13 nt13_nt9 nt9_nt5 nt5_np15 np15_nt5 nt5_nt1 nt1_nt2 nt2_nt6
+nt11_nt15 nt15_nt14 nt14_nt10 nt10_nt6 nt6_nt5 nt5_nt1 nt1_nt2 nt2_nt6
 " />
 <route id="1_0_2" edges="
-nt11_nt15 nt15_nt14 nt14_nt13 nt13_nt9 nt9_nt5 nt5_nt1 nt1_np1 np1_nt1 nt1_nt2 nt2_nt6
+nt11_nt15 nt15_nt14 nt14_nt13 nt13_nt9 nt9_nt5 nt5_nt1 nt1_nt2 nt2_nt6
 " />
 <route id="0_1_0" edges="
-np13_nt13 nt13_nt9 nt9_nt10 nt10_nt6 nt6_nt7 nt7_nt8 nt8_np6
-" />
-<route id="0_1_1" edges="
 np13_nt13 nt13_nt14 nt14_nt15 nt15_nt16 nt16_nt12 nt12_nt8 nt8_np6
 " />
+<route id="0_1_1" edges="
+np13_nt13 nt13_nt14 nt14_nt15 nt15_nt11 nt11_nt12 nt12_nt8 nt8_np6
+" />
 <route id="0_1_2" edges="
-np13_nt13 nt13_nt14 nt14_nt15 nt15_nt11 nt11_nt7 nt7_nt8 nt8_np6
+np13_nt13 nt13_nt14 nt14_nt10 nt10_nt11 nt11_nt12 nt12_nt8 nt8_np6
 " />
 <route id="1_1_0" edges="
 nt11_nt15 nt15_nt16 nt16_nt12 nt12_nt8 nt8_np6
 " />
 <route id="1_1_1" edges="
-nt11_nt15 nt15_nt14 nt14_nt10 nt10_nt6 nt6_nt7 nt7_nt8 nt8_np6
+nt11_nt15 nt15_nt16 nt16_nt12 nt12_np7 np7_nt12 nt12_nt8 nt8_np6
 " />
 <route id="1_1_2" edges="
-nt11_nt15 nt15_nt14 nt14_np11 np11_nt14 nt14_nt10 nt10_nt9 nt9_nt5 nt5_nt6 nt6_nt7 nt7_nt3 nt3_nt4 nt4_nt8 nt8_np6
+nt11_nt15 nt15_nt16 nt16_np8 np8_nt16 nt16_nt12 nt12_nt8 nt8_np6
 " />
 </routes>
