@@ -5,7 +5,8 @@ class Keychain:
     When change needed, just fix it here! Avoid hardcoding...
     """
     
-    MODE = "test" # empty string if not testing, test otherwise
+    MODE = "" # empty string if not testing, test otherwise
+    # In case of test, make sure to create a test param file named "testparams.json" in the root folder
 
     ################ PARAMETER ACCESS KEYS ####################
 
@@ -82,7 +83,6 @@ class Keychain:
 
     #################### CONSTANTS ############################
 
-    SMALL_BUT_NOT_ZERO = 1e-14
     NOT_AVAILABLE = "N/A"
     
     # Common dataframe headers
@@ -124,7 +124,7 @@ class Keychain:
     # Model encodings
     GAWRON = "gawron"
     DQN = "dqn"
-    Q = "q"
+    Q_LEARNING = "q"
     
     ###########################################################
 

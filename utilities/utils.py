@@ -108,7 +108,6 @@ def remove_double_quotes(text):
     return text
 
 
-
 def list_to_string(from_list, separator=', '):
     out_str = ""
     first_time = True
