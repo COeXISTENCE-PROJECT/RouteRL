@@ -60,7 +60,6 @@ class SumoSimulator(BaseSimulator):
         
         self.timestep = 0
         self.vehicles_in_network = dict()
-        self.travel_times = dict()
 
         print("[SUCCESS] Simulator is ready to simulate!")
 
@@ -90,7 +89,6 @@ class SumoSimulator(BaseSimulator):
         self.sumo_connection.load(['-c', self.sumo_config_path])
         self.timestep = 0
         self.vehicles_in_network = dict()
-        self.travel_times = dict()
 
     #####################
 
@@ -104,22 +102,15 @@ class SumoSimulator(BaseSimulator):
             for _, row in actions.iterrows():
                 self.vehicles_in_network[row[kc.AGENT_ID]] = row[kc.AGENT_START_TIME]
         
+        travel_times = dict()
         for veh_id in self.sumo_connection.simulation.getArrivedIDList():
-            self.travel_times[int(veh_id)] = (self.timestep - self.vehicles_in_network[int(veh_id)]) / 60
+            travel_times[int(veh_id)] = (self.timestep - self.vehicles_in_network[int(veh_id)]) / 60.0
             del self.vehicles_in_network[int(veh_id)]
+        travel_time_df = pd.DataFrame({kc.AGENT_ID: list(travel_times.keys()), kc.TRAVEL_TIME: list(travel_times.values())})
         
         self.sumo_connection.simulationStep()
         self.timestep += 1
-        return self.timestep
-
-
-    def get_travel_times(self):
-        travel_time_df = {kc.AGENT_ID: list(self.travel_times.keys()), kc.TRAVEL_TIME: list(self.travel_times.values())}
-        return pd.DataFrame(travel_time_df)
-        
-        
-    def check_simulation_continues(self):
-        return bool(len(self.vehicles_in_network))
+        return self.timestep, travel_time_df
         
     
     #####################

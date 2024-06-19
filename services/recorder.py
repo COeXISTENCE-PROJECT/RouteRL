@@ -38,14 +38,13 @@ class Recorder:
 
 #################### REMEMBER FUNCTIONS
     
-    def record(self, episode, joint_action, joint_observation, rewards_df, agents):
-        self.remember_episode(episode, joint_action, joint_observation, rewards_df)
+    def record(self, episode, joint_observation, rewards_df, agents):
+        self.remember_episode(episode, joint_observation, rewards_df)
 
 
-    def remember_episode(self, episode, joint_action, joint_observation, rewards_df):
+    def remember_episode(self, episode, joint_observation, rewards_df):
         joint_observation[kc.SUMO_ACTION] = joint_observation.apply(lambda row: f"{row[kc.AGENT_ORIGIN]}_{row[kc.AGENT_DESTINATION]}_{row[kc.ACTION]}", axis=1)
         joint_observation[kc.ARRIVAL_TIME] = joint_observation.apply(lambda row: row[kc.AGENT_START_TIME] + row[kc.TRAVEL_TIME], axis=1)
-        #merged_df = pd.merge(joint_action, joint_observation, on=kc.AGENT_ID)
         merged_df = pd.merge(joint_observation, rewards_df, on=kc.AGENT_ID)
         merged_df.to_csv(make_dir(self.episodes_folder, f"ep{episode}.csv"), index = False)
 

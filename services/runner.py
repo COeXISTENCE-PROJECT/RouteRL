@@ -26,8 +26,9 @@ class Runner:
         self.remember_episodes = [ep for ep in range(self.remember_every, self.num_episodes+1, self.remember_every)]
         self.remember_episodes += [1, self.num_episodes] + [ep-1 for ep in self.phases] + [ep for ep in self.phases]
         self.remember_episodes = set(self.remember_episodes)
-
         self.recorder = Recorder()
+        
+        self.curr_phase = -1
 
 
     def run(self, env: TrafficEnvironment, agents: list[BaseAgent]):
@@ -35,54 +36,43 @@ class Runner:
         agents = sorted(agents, key=lambda x: x.start_time)
 
         print(f"\n[INFO] Training is starting with {self.num_episodes} episodes.")
-        training_start_time, phase_start_time = time.time(), time.time()
-        curr_phase = -1
+        training_start_time = time.time()
         # Until we simulate num_episode episodes
         for episode in range(1, self.num_episodes+1):
 
             if episode in self.phases:
-                curr_phase += 1
-                agents = self._realize_phase(curr_phase, episode, agents)
+                self.curr_phase += 1
+                agents = self._realize_phase(episode, agents)
                 phase_start_time = time.time()
 
+            self.episode_observations = pd.DataFrame()
             env.reset()
             
-            acted_agents = 0
-            while acted_agents < len(agents):
+            done_agents = 0
+            while done_agents < len(agents):
                 timestep, obs = env.get_observation()
-                for agent in agents:
-                    if agent.start_time == timestep:
-                        action = agent.act(obs)
-                        env.register_action(agent, action)
-                        acted_agents += 1
-                env.step()
+                step_actions = [(agent, agent.act(obs)) for agent in agents if agent.start_time == timestep]
+                for agent, action in step_actions:  env.register_action(agent, action)
                 
-            observation_df = env.get_travel_times()
-            self._teach_agents(agents, observation_df)
-
-            self._record(episode, phase_start_time, curr_phase, env.all_actions, observation_df, self._get_rewards(agents), agents)
+                obs = env.step()
+                self._save_observations(obs)
+                for _, row in obs.iterrows():
+                    agent = next(agent for agent in agents if agent.id == row[kc.AGENT_ID])
+                    agent.learn(row[kc.ACTION], obs)
+                    done_agents += 1
+                
+            self._record(episode, phase_start_time, self._get_rewards(agents), agents)
 
         self._show_training_time(training_start_time)
         env.stop()
         self._save_losses(agents)
-
-
-    def _submit_actions(self, env, agents):
-        for agent in agents:
-            observation = env.get_observation()
-            action = agent.act(observation)
-            env.register_action(agent, action)
-
-
-    def _teach_agents(self, agents, observation_df):
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            teach_tasks = [executor.submit(self._learn_agent, agent, observation_df) for agent in agents]
-            concurrent.futures.wait(teach_tasks)
         
-
-    def _learn_agent(self, agent, observation_df):
-        action = observation_df.loc[observation_df[kc.AGENT_ID] == agent.id, kc.ACTION].item()
-        agent.learn(action, observation_df)
+        
+    def _save_observations(self, obs):
+        if self.episode_observations.empty:
+            self.episode_observations = obs
+        elif not obs.empty:
+            self.episode_observations = pd.concat([self.episode_observations, obs], ignore_index=True)
 
 
     def _get_rewards(self, agents):
@@ -93,25 +83,25 @@ class Runner:
         return rewards_df
     
 
-    def _record(self, episode, start_time, curr_phase, joint_action_df, joint_observation_df, rewards_df, agents):
+    def _record(self, episode, start_time, rewards_df, agents):
         if (episode in self.remember_episodes):
-            self.recorder.record(episode, joint_action_df, joint_observation_df, rewards_df, agents)
+            self.recorder.record(episode, self.episode_observations, rewards_df, agents)
         elif not self.frequent_progressbar:
             return
-        msg = f"{self.phase_names[curr_phase]} {curr_phase+1}/{len(self.phases)}"
-        curr_progress = episode-self.phases[curr_phase]+1
-        target = (self.phases[curr_phase+1]) if ((curr_phase+1) < len(self.phases)) else self.num_episodes+1
-        target -= self.phases[curr_phase]
+        msg = f"{self.phase_names[self.curr_phase]} {self.curr_phase+1}/{len(self.phases)}"
+        curr_progress = episode-self.phases[self.curr_phase]+1
+        target = (self.phases[self.curr_phase+1]) if ((self.curr_phase+1) < len(self.phases)) else self.num_episodes+1
+        target -= self.phases[self.curr_phase]
         show_progress_bar(msg, start_time, curr_progress, target)
 
 
-    def _realize_phase(self, curr_phase, episode, agents):
+    def _realize_phase(self, episode, agents):
         for idx, agent in enumerate(agents):
-            if getattr(agent, 'mutate_phase', None) == curr_phase:
+            if getattr(agent, 'mutate_phase', None) == self.curr_phase:
                 agents[idx] = agent.mutate()
 
         for agent in agents:
-            agent.is_learning = curr_phase
+            agent.is_learning = self.curr_phase
 
         counts = Counter([agent.kind for agent in agents])
         info_text = "[INFO]"
@@ -119,7 +109,7 @@ class Runner:
         info_text +=f" {kc.TYPE_MACHINE}: {counts[kc.TYPE_MACHINE]} " if counts[kc.TYPE_MACHINE] else ""
         learning_situation = [agent.is_learning for agent in agents]
         
-        print(f"\n[INFO] Phase {curr_phase+1} ({self.phase_names[curr_phase]}) has started at episode {episode}!")
+        print(f"\n[INFO] Phase {self.curr_phase+1} ({self.phase_names[self.curr_phase]}) has started at episode {episode}!")
         print(info_text)
         print(f"[INFO] Number of learning agents: {sum(learning_situation)}")
         return agents
