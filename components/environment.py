@@ -38,8 +38,11 @@ class TrafficEnvironment(BaseEnvironment):
         self.action_space_size = params[kc.ACTION_SPACE_SIZE]
         self.simulator = simulator
 
-        self.joint_action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
-        self.joint_action = pd.DataFrame(columns = self.joint_action_cols)
+        self.action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
+        self.actions = pd.DataFrame(columns = self.action_cols)
+        self.all_actions = pd.DataFrame(columns = self.action_cols)
+        
+        self.timestep = 0
 
         print("[SUCCESS] Environment initiated!")
 
@@ -54,8 +57,10 @@ class TrafficEnvironment(BaseEnvironment):
         self.simulator.stop()
 
     def reset(self):
-        self.joint_action = pd.DataFrame(columns = self.joint_action_cols)
+        self.actions = pd.DataFrame(columns = self.action_cols)
+        self.all_actions = pd.DataFrame(columns = self.action_cols)
         self.simulator.reset()
+        self.timestep = 0
 
     #####################
 
@@ -63,18 +68,22 @@ class TrafficEnvironment(BaseEnvironment):
 
     def register_action(self, agent, action):
         action_data = [agent.id, agent.kind, action, agent.origin, agent.destination, agent.start_time]
-        self.joint_action.loc[len(self.joint_action.index)] = {key : value for key, value in zip(self.joint_action_cols, action_data)}
+        self.actions.loc[len(self.actions.index)] = {key : value for key, value in zip(self.action_cols, action_data)}
     
-
     def get_observation(self):
-        return self.joint_action
-
+        return self.timestep, self.all_actions
 
     def step(self):
-        sumo_df = self.simulator.simulate_episode(self.joint_action)
-        sumo_df = sumo_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
-        joint_observation = sumo_df.merge(self.joint_action, on=kc.AGENT_ID)
-        return joint_observation
+        self.timestep = self.simulator.step(self.actions)
+        self.all_actions = pd.concat([self.all_actions, self.actions])
+        self.actions = pd.DataFrame(columns = self.action_cols)
+    
+    def get_travel_times(self):
+        while self.simulator.check_simulation_continues():
+            self.step()
+        travel_times = self.simulator.get_travel_times()
+        travel_times = travel_times.merge(self.all_actions, on=kc.AGENT_ID)
+        return travel_times
     
     #####################
 

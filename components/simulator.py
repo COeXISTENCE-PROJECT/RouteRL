@@ -30,7 +30,7 @@ class BaseSimulator(ABC):
         pass
 
     @abstractmethod
-    def simulate_episode(self):
+    def step(self):
         pass
 
 
@@ -57,6 +57,10 @@ class SumoSimulator(BaseSimulator):
 
         self._check_paths_ready()
         confirm_env_variable(self.env_var, append="tools")
+        
+        self.timestep = 0
+        self.vehicles_in_network = dict()
+        self.travel_times = dict()
 
         print("[SUCCESS] Simulator is ready to simulate!")
 
@@ -84,42 +88,39 @@ class SumoSimulator(BaseSimulator):
 
     def reset(self):
         self.sumo_connection.load(['-c', self.sumo_config_path])
+        self.timestep = 0
+        self.vehicles_in_network = dict()
+        self.travel_times = dict()
 
     #####################
 
     ##### SIMULATION #####
-
-    def simulate_episode(self, joint_action):
-        num_vehicles = len(joint_action)
-        # Construct SUMO actions
-        joint_action[kc.SUMO_ACTION] = joint_action.apply(self.sumonize_action, axis=1)
-        # Add all vehicles to the simulation at once
-        joint_action.apply(self.add_to_sim, axis=1)
-        # Collect arrivals
-        arrivals = {kc.AGENT_ID : list(), kc.ARRIVAL_TIME : list()}
-        timestep = 0
-        while len(arrivals[kc.AGENT_ID]) < num_vehicles:
-            self.sumo_connection.simulationStep()
-            timestep += 1
-            for veh_id in self.sumo_connection.simulation.getArrivedIDList():
-                arrivals[kc.AGENT_ID].append(int(veh_id))
-                arrivals[kc.ARRIVAL_TIME].append(timestep)
-        # Calculate travel times df
-        return self._prepare_travel_times_df(arrivals, joint_action)
+    
+    def step(self, actions):
         
+        if not actions.empty:
+            actions[kc.SUMO_ACTION] = actions.apply(self.sumonize_action, axis=1)
+            actions.apply(self.add_to_sim, axis=1)
+            for _, row in actions.iterrows():
+                self.vehicles_in_network[row[kc.AGENT_ID]] = row[kc.AGENT_START_TIME]
+        
+        for veh_id in self.sumo_connection.simulation.getArrivedIDList():
+            self.travel_times[int(veh_id)] = (self.timestep - self.vehicles_in_network[int(veh_id)]) / 60
+            del self.vehicles_in_network[int(veh_id)]
+        
+        self.sumo_connection.simulationStep()
+        self.timestep += 1
+        return self.timestep
 
-    def _prepare_travel_times_df(self, arrivals, joint_action):
-        # Initiate the travel_time_df
-        travel_times_df = pd.DataFrame(arrivals)
-        # Retrieve the start times of the agents from the joint_action dataframe
-        start_times_df = joint_action[[kc.AGENT_ID, kc.AGENT_START_TIME]]
-        # Merge the travel_time_df with the start_times_df for travel time calculation
-        travel_times_df = pd.merge(left=start_times_df, right=travel_times_df, on=kc.AGENT_ID, how='left')
-        # Calculate travel time
-        calculate_travel_duration = lambda row: ((row[kc.ARRIVAL_TIME] - row[kc.AGENT_START_TIME]) / 60.0)
-        travel_times_df[kc.TRAVEL_TIME] = travel_times_df.apply(calculate_travel_duration, axis=1)
-        # Retain only the necessary columns
-        return travel_times_df[[kc.AGENT_ID, kc.TRAVEL_TIME]]
+
+    def get_travel_times(self):
+        travel_time_df = {kc.AGENT_ID: list(self.travel_times.keys()), kc.TRAVEL_TIME: list(self.travel_times.values())}
+        return pd.DataFrame(travel_time_df)
+        
+        
+    def check_simulation_continues(self):
+        return bool(len(self.vehicles_in_network))
+        
     
     #####################
     

@@ -46,11 +46,21 @@ class Runner:
                 phase_start_time = time.time()
 
             env.reset()
-            self._submit_actions(env, agents)
-            observation_df = env.step()
-            self._teach_agents(agents, env.joint_action, observation_df)
+            
+            acted_agents = 0
+            while acted_agents < len(agents):
+                timestep, obs = env.get_observation()
+                for agent in agents:
+                    if agent.start_time == timestep:
+                        action = agent.act(obs)
+                        env.register_action(agent, action)
+                        acted_agents += 1
+                env.step()
+                
+            observation_df = env.get_travel_times()
+            self._teach_agents(agents, observation_df)
 
-            self._record(episode, phase_start_time, curr_phase, env.joint_action, observation_df, self._get_rewards(agents), agents)
+            self._record(episode, phase_start_time, curr_phase, env.all_actions, observation_df, self._get_rewards(agents), agents)
 
         self._show_training_time(training_start_time)
         env.stop()
@@ -64,14 +74,14 @@ class Runner:
             env.register_action(agent, action)
 
 
-    def _teach_agents(self, agents, joint_action_df, observation_df):
+    def _teach_agents(self, agents, observation_df):
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            teach_tasks = [executor.submit(self._learn_agent, agent, joint_action_df, observation_df) for agent in agents]
+            teach_tasks = [executor.submit(self._learn_agent, agent, observation_df) for agent in agents]
             concurrent.futures.wait(teach_tasks)
         
 
-    def _learn_agent(self, agent, joint_action_df, observation_df):
-        action = joint_action_df.loc[joint_action_df[kc.AGENT_ID] == agent.id, kc.ACTION].item()
+    def _learn_agent(self, agent, observation_df):
+        action = observation_df.loc[observation_df[kc.AGENT_ID] == agent.id, kc.ACTION].item()
         agent.learn(action, observation_df)
 
 
