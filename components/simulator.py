@@ -1,3 +1,4 @@
+import concurrent.futures
 import os
 import pandas as pd
 import random
@@ -51,9 +52,6 @@ class SumoSimulator(BaseSimulator):
 
         self.sumo_id = f"{random.randint(0, 1000)}"
         self.sumo_connection = None
-        
-        self.sumonize_action = lambda row: f'{row[kc.AGENT_ORIGIN]}_{row[kc.AGENT_DESTINATION]}_{row[kc.ACTION]}'
-        self.add_to_sim = lambda row: self.sumo_connection.vehicle.add(vehID=f"{row[kc.AGENT_ID]}", routeID=row[kc.SUMO_ACTION], depart=f"{row[kc.AGENT_START_TIME]}")
 
         self._check_paths_ready()
         confirm_env_variable(self.env_var, append="tools")
@@ -97,10 +95,11 @@ class SumoSimulator(BaseSimulator):
     def step(self, actions):
         
         if not actions.empty:
-            actions[kc.SUMO_ACTION] = actions.apply(self.sumonize_action, axis=1)
-            actions.apply(self.add_to_sim, axis=1)
-            for _, row in actions.iterrows():
-                self.vehicles_in_network[row[kc.AGENT_ID]] = row[kc.AGENT_START_TIME]
+            actions[kc.SUMO_ACTION] = actions.apply(lambda row: f'{row[kc.AGENT_ORIGIN]}_{row[kc.AGENT_DESTINATION]}_{row[kc.ACTION]}', axis=1)
+            #actions.apply(self.add_to_sim, axis=1)
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                executor.map(self.add_to_sim, actions.to_dict(orient='records'), [self.sumo_connection]*len(actions))
+            self.vehicles_in_network.update(actions.set_index(kc.AGENT_ID)[kc.AGENT_START_TIME].to_dict())
         
         travel_times = dict()
         for veh_id in self.sumo_connection.simulation.getArrivedIDList():
@@ -111,6 +110,10 @@ class SumoSimulator(BaseSimulator):
         self.sumo_connection.simulationStep()
         self.timestep += 1
         return self.timestep, travel_time_df
+    
+    
+    def add_to_sim (self, row, conn): 
+        conn.vehicle.add(vehID=f"{row[kc.AGENT_ID]}", routeID=row[kc.SUMO_ACTION], depart=f"{row[kc.AGENT_START_TIME]}")
         
     
     #####################

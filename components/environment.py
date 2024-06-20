@@ -39,7 +39,6 @@ class TrafficEnvironment(BaseEnvironment):
         self.simulator = simulator
 
         self.action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
-        self.step_actions = pd.DataFrame(columns = self.action_cols)
         self.episode_actions = pd.DataFrame(columns = self.action_cols)
         
         self.timestep = 0
@@ -57,7 +56,6 @@ class TrafficEnvironment(BaseEnvironment):
         self.simulator.stop()
 
     def reset(self):
-        self.step_actions = pd.DataFrame(columns = self.action_cols)
         self.episode_actions = pd.DataFrame(columns = self.action_cols)
         self.simulator.reset()
         self.timestep = 0
@@ -65,16 +63,19 @@ class TrafficEnvironment(BaseEnvironment):
     #####################
 
     ##### EPISODE OPS #####
-
-    def register_action(self, agent, action):
-        action_data = [agent.id, agent.kind, action, agent.origin, agent.destination, agent.start_time]
-        self.step_actions.loc[len(self.step_actions.index)] = {key : value for key, value in zip(self.action_cols, action_data)}
     
     def get_observation(self):
         return self.timestep, self.episode_actions
 
-    def step(self):
-        self.timestep, travel_times = self.simulator.step(self.step_actions)
+    def step(self, actions):
+        
+        action_data_list = list()
+        for agent, action in actions:
+            action_data = [agent.id, agent.kind, action, agent.origin, agent.destination, agent.start_time]
+            action_data_list.append({key : value for key, value in zip(self.action_cols, action_data)})
+        step_actions = pd.DataFrame(action_data_list)
+        
+        self.timestep, travel_times = self.simulator.step(step_actions)
         
         if not travel_times.empty:
             travel_times = travel_times.merge(self.episode_actions, how='left', on=kc.AGENT_ID)
@@ -82,8 +83,7 @@ class TrafficEnvironment(BaseEnvironment):
             cols = list(set(list(travel_times.columns) + list(self.episode_actions.columns)))
             travel_times = pd.DataFrame(columns = cols)
             
-        self.episode_actions = pd.concat([self.episode_actions, self.step_actions])
-        self.step_actions = pd.DataFrame(columns = self.action_cols)
+        self.episode_actions = pd.concat([self.episode_actions, step_actions])
         return travel_times
     
     #####################

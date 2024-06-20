@@ -1,5 +1,5 @@
 import os
-import pandas as pd
+import polars as pl
 
 from keychain import Keychain as kc
 from utilities import make_dir
@@ -43,10 +43,14 @@ class Recorder:
 
 
     def remember_episode(self, episode, joint_observation, rewards_df):
-        joint_observation[kc.SUMO_ACTION] = joint_observation.apply(lambda row: f"{row[kc.AGENT_ORIGIN]}_{row[kc.AGENT_DESTINATION]}_{row[kc.ACTION]}", axis=1)
-        joint_observation[kc.ARRIVAL_TIME] = joint_observation.apply(lambda row: row[kc.AGENT_START_TIME] + row[kc.TRAVEL_TIME], axis=1)
-        merged_df = pd.merge(joint_observation, rewards_df, on=kc.AGENT_ID)
-        merged_df.to_csv(make_dir(self.episodes_folder, f"ep{episode}.csv"), index = False)
+        joint_observation = pl.DataFrame(joint_observation).with_columns(pl.col(kc.AGENT_ID).cast(pl.Int64))
+        rewards_df = pl.DataFrame(rewards_df).with_columns(pl.col(kc.AGENT_ID).cast(pl.Int64))
+        joint_observation = joint_observation.with_columns([
+            (pl.col(kc.AGENT_ORIGIN).cast(str) + "_" + pl.col(kc.AGENT_DESTINATION).cast(str) + "_" + pl.col(kc.ACTION).cast(str)).alias(kc.SUMO_ACTION),
+            (pl.col(kc.AGENT_START_TIME) + pl.col(kc.TRAVEL_TIME)).alias(kc.ARRIVAL_TIME)
+        ])
+        merged_df = joint_observation.join(rewards_df, on=kc.AGENT_ID)
+        merged_df.write_csv(make_dir(self.episodes_folder, f"ep{episode}.csv"))
 
 
     def save_losses(self, agents):

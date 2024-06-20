@@ -75,6 +75,9 @@ class HumanAgent(BaseAgent):
         self.model = Gawron(params, initial_knowledge) 
         self.is_learning = -1
         self.last_reward = None
+        
+    def __repr__(self):
+        return f"Human {self.id}"
 
     @property
     def is_learning(self):
@@ -137,6 +140,9 @@ class MachineAgent(BaseAgent):
         self.model = DQN(params, self.state_size, self.action_space_size)
         self.is_learning = -1
         self.last_reward = None
+        
+    def __repr__(self):
+        return f"Machine {self.id}"
 
     @property
     def is_learning(self):
