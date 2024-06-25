@@ -1,4 +1,5 @@
 origin,destination,path,free_flow_time
+<<<<<<< HEAD
 0,0,"top1B3,B3B2,B2B1,B1B0,B0C0,C0bottom2",1.6529877609791217
 0,0,"top1B3,B3B2,B2B1,B1C1,C1C0,C0bottom2",1.6529877609791217
 0,0,"top1B3,B3C3,C3D3,D3D2,D2D1,D1C1,C1C0,C0bottom2",2.3076553875689947
@@ -11,3 +12,17 @@ origin,destination,path,free_flow_time
 1,1,"C3D3,D3D2,D2D1,D1C1,C1C0,C0D0",1.6366690664746821
 1,1,"C3D3,D3D2,D2C2,C2C1,C1C0,C0D0",1.6366690664746821
 1,1,"C3D3,D3D2,D2C2,C2B2,B2B1,B1B0,B0C0,C0D0",2.291336693064555
+=======
+0,0,"np13_nt13,nt13_nt9,nt9_nt5,nt5_nt1,nt1_nt2,nt2_nt6",1.2407272727272725
+0,0,"np13_nt13,nt13_nt9,nt9_np14,np14_nt9,nt9_nt5,nt5_nt1,nt1_nt2,nt2_nt6",1.3537272727272727
+0,0,"np13_nt13,nt13_nt14,nt14_nt10,nt10_nt6,nt6_nt2,nt2_np2,np2_nt2,nt2_nt6",1.4364848484848483
+1,0,"nt11_nt15,nt15_nt14,nt14_nt10,nt10_nt6,nt6_nt2,nt2_np2,np2_nt2,nt2_nt6",1.4364848484848483
+1,0,"nt11_nt15,nt15_nt14,nt14_nt10,nt10_nt6,nt6_nt5,nt5_nt1,nt1_nt2,nt2_nt6",1.550060606060606
+1,0,"nt11_nt15,nt15_nt14,nt14_nt13,nt13_nt9,nt9_nt5,nt5_nt1,nt1_nt2,nt2_nt6",1.550060606060606
+0,1,"np13_nt13,nt13_nt14,nt14_nt15,nt15_nt16,nt16_nt12,nt12_nt8,nt8_np6",1.069530303030303
+0,1,"np13_nt13,nt13_nt14,nt14_nt15,nt15_nt11,nt11_nt12,nt12_nt8,nt8_np6",1.069530303030303
+0,1,"np13_nt13,nt13_nt14,nt14_nt10,nt10_nt11,nt11_nt12,nt12_nt8,nt8_np6",1.069530303030303
+1,1,"nt11_nt15,nt15_nt16,nt16_nt12,nt12_nt8,nt8_np6",0.7601969696969696
+1,1,"nt11_nt15,nt15_nt16,nt16_nt12,nt12_np7,np7_nt12,nt12_nt8,nt8_np6",0.8851969696969696
+1,1,"nt11_nt15,nt15_nt16,nt16_np8,np8_nt16,nt16_nt12,nt12_nt8,nt8_np6",0.8851969696969696
+>>>>>>> 0e4c3d0dfcb643f52ef1dbfc0041de43d1affb16

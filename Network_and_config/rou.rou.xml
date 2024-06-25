@@ -1,5 +1,6 @@
 <routes>
 <route id="0_0_0" edges="
+<<<<<<< HEAD
 top1B3 B3B2 B2B1 B1B0 B0C0 C0bottom2
 " />
 <route id="0_0_1" edges="
@@ -22,17 +23,52 @@ top1B3 B3B2 B2C2 C2C1 C1C0 C0D0
 " />
 <route id="0_1_1" edges="
 top1B3 B3B2 B2B1 B1B0 B0C0 C0D0
+=======
+np13_nt13 nt13_nt9 nt9_nt5 nt5_nt1 nt1_nt2 nt2_nt6
+" />
+<route id="0_0_1" edges="
+np13_nt13 nt13_nt9 nt9_np14 np14_nt9 nt9_nt5 nt5_nt1 nt1_nt2 nt2_nt6
+" />
+<route id="0_0_2" edges="
+np13_nt13 nt13_nt14 nt14_nt10 nt10_nt6 nt6_nt2 nt2_np2 np2_nt2 nt2_nt6
+" />
+<route id="1_0_0" edges="
+nt11_nt15 nt15_nt14 nt14_nt10 nt10_nt6 nt6_nt2 nt2_np2 np2_nt2 nt2_nt6
+" />
+<route id="1_0_1" edges="
+nt11_nt15 nt15_nt14 nt14_nt10 nt10_nt6 nt6_nt5 nt5_nt1 nt1_nt2 nt2_nt6
+" />
+<route id="1_0_2" edges="
+nt11_nt15 nt15_nt14 nt14_nt13 nt13_nt9 nt9_nt5 nt5_nt1 nt1_nt2 nt2_nt6
+" />
+<route id="0_1_0" edges="
+np13_nt13 nt13_nt14 nt14_nt15 nt15_nt16 nt16_nt12 nt12_nt8 nt8_np6
+>>>>>>> 0e4c3d0dfcb643f52ef1dbfc0041de43d1affb16
+" />
+<route id="0_1_1" edges="
+np13_nt13 nt13_nt14 nt14_nt15 nt15_nt11 nt11_nt12 nt12_nt8 nt8_np6
 " />
 <route id="0_1_2" edges="
+<<<<<<< HEAD
 top1B3 B3A3 A3A2 A2A1 A1A0 A0B0 B0C0 C0D0
+=======
+np13_nt13 nt13_nt14 nt14_nt10 nt10_nt11 nt11_nt12 nt12_nt8 nt8_np6
+>>>>>>> 0e4c3d0dfcb643f52ef1dbfc0041de43d1affb16
 " />
 <route id="1_1_0" edges="
 C3D3 D3D2 D2D1 D1C1 C1C0 C0D0
 " />
 <route id="1_1_1" edges="
+<<<<<<< HEAD
 C3D3 D3D2 D2C2 C2C1 C1C0 C0D0
 " />
 <route id="1_1_2" edges="
 C3D3 D3D2 D2C2 C2B2 B2B1 B1B0 B0C0 C0D0
+=======
+nt11_nt15 nt15_nt16 nt16_nt12 nt12_np7 np7_nt12 nt12_nt8 nt8_np6
+" />
+<route id="1_1_2" edges="
+nt11_nt15 nt15_nt16 nt16_np8 np8_nt16 nt16_nt12 nt12_nt8 nt8_np6
+>>>>>>> 0e4c3d0dfcb643f52ef1dbfc0041de43d1affb16
 " />
 </routes>
