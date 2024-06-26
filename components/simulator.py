@@ -95,10 +95,7 @@ class SumoSimulator(BaseSimulator):
     def step(self, actions):
         
         if not actions.empty:
-            actions[kc.SUMO_ACTION] = actions.apply(lambda row: f'{row[kc.AGENT_ORIGIN]}_{row[kc.AGENT_DESTINATION]}_{row[kc.ACTION]}', axis=1)
-            #actions.apply(self.add_to_sim, axis=1)
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                executor.map(self.add_to_sim, actions.to_dict(orient='records'), [self.sumo_connection]*len(actions))
+            actions.apply(lambda row: self.sumo_connection.vehicle.add(vehID=str(row[kc.AGENT_ID]), routeID=f'{row[kc.AGENT_ORIGIN]}_{row[kc.AGENT_DESTINATION]}_{row[kc.ACTION]}', depart=str(row[kc.AGENT_START_TIME])), axis=1)
             self.vehicles_in_network.update(actions.set_index(kc.AGENT_ID)[kc.AGENT_START_TIME].to_dict())
         
         travel_times = dict()
@@ -110,11 +107,6 @@ class SumoSimulator(BaseSimulator):
         self.sumo_connection.simulationStep()
         self.timestep += 1
         return self.timestep, travel_time_df
-    
-    
-    def add_to_sim (self, row, conn): 
-        conn.vehicle.add(vehID=f"{row[kc.AGENT_ID]}", routeID=row[kc.SUMO_ACTION], depart=f"{row[kc.AGENT_START_TIME]}")
-        
     
     #####################
     
