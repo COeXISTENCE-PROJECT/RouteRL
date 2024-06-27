@@ -1,13 +1,13 @@
-from components import TrafficEnvironment
 from components import SumoSimulator
+from components import TrafficEnvironment
 from keychain import Keychain as kc
-from services import Plotter
-from services import Runner
+from services import plotter
+from services import runner
 
 from create_agents import create_agent_objects
+from utilities import check_device
 from utilities import get_params
 from utilities import set_seeds
-from utilities import check_device
 
 
 def main(params):
@@ -15,9 +15,8 @@ def main(params):
     env = TrafficEnvironment(params[kc.ENVIRONMENT], simulator)
     agents = create_agent_objects(params[kc.AGENTS], env.get_free_flow_times())
     
-    runner = Runner(params[kc.RUNNER])
-    runner.run(env, agents)
-    Plotter(params[kc.PLOTTER])
+    runner(env, agents, params[kc.RUNNER])
+    plotter(params[kc.PLOTTER])
 
 
 if __name__ == "__main__":

@@ -38,18 +38,15 @@ class Recorder:
 
 #################### REMEMBER FUNCTIONS
     
-    def record(self, episode, joint_observation, rewards_df, agents):
-        self.remember_episode(episode, joint_observation, rewards_df)
+    def record(self, episode, ep_observations, rewards):
+        self.remember_episode(episode, ep_observations, rewards)
+        # more to add
 
 
-    def remember_episode(self, episode, joint_observation, rewards_df):
-        joint_observation = pl.DataFrame(joint_observation).with_columns(pl.col(kc.AGENT_ID).cast(pl.Int64))
-        rewards_df = pl.DataFrame(rewards_df).with_columns(pl.col(kc.AGENT_ID).cast(pl.Int64))
-        joint_observation = joint_observation.with_columns([
-            (pl.col(kc.AGENT_ORIGIN).cast(str) + "_" + pl.col(kc.AGENT_DESTINATION).cast(str) + "_" + pl.col(kc.ACTION).cast(str)).alias(kc.SUMO_ACTION),
-            (pl.col(kc.AGENT_START_TIME) + pl.col(kc.TRAVEL_TIME)).alias(kc.ARRIVAL_TIME)
-        ])
-        merged_df = joint_observation.join(rewards_df, on=kc.AGENT_ID)
+    def remember_episode(self, episode, ep_observations, rewards):
+        ep_observations_df = pl.from_dicts(ep_observations)
+        rewards_df = pl.from_dicts(rewards)
+        merged_df = ep_observations_df.join(rewards_df, on=kc.AGENT_ID)
         merged_df.write_csv(make_dir(self.episodes_folder, f"ep{episode}.csv"))
 
 

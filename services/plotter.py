@@ -15,13 +15,11 @@ from utilities import running_average
 
 class Plotter:
 
-
     """
     Plot the results of the training
     """
 
-
-    def __init__(self, params, plot=True):
+    def __init__(self, params):
         self.phases = params[kc.PHASES]
         self.phase_names = params[kc.PHASE_NAMES]
         self.colors = params[kc.COLORS]
@@ -40,13 +38,10 @@ class Plotter:
 
         self.saved_episodes = list()
 
-        if plot:
-            self.visualize_all()
-
 
 #################### VISUALIZE ALL
 
-    def visualize_all(self):
+    def plot(self):
         self.saved_episodes = self._get_episodes()
 
         self.visualize_mean_rewards()
@@ -336,7 +331,7 @@ class Plotter:
         for episode in self.saved_episodes:
             data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
             data = pd.read_csv(data_path)
-            arrival_times = data[kc.ARRIVAL_TIME]
+            arrival_times = data.apply(lambda row: row[kc.AGENT_START_TIME] + row[kc.TRAVEL_TIME], axis=1)
             latest_arrival = max(arrival_times)
             latest_arrivals.append(latest_arrival)
         return latest_arrivals
@@ -455,3 +450,11 @@ class Plotter:
         return all_od_pairs
     
 ####################
+
+
+
+
+def plotter(params):
+    plotter = Plotter(params)
+    plotter.plot()
+    return plotter

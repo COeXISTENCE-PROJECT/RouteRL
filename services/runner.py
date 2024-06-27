@@ -1,8 +1,8 @@
-import concurrent.futures
-import pandas as pd
 import time
+import threading
 
 from collections import Counter
+from copy import deepcopy as dc
 
 from .recorder import Recorder
 from components import BaseAgent
@@ -31,9 +31,10 @@ class Runner:
         self.curr_phase = -1
 
 
+
     def run(self, env: TrafficEnvironment, agents: list[BaseAgent]):
         env.start()
-        agents_by_start = {time: [a for a in agents if a.start_time == time] for time in range(max([agent.start_time for agent in agents])+1)}
+        agents_by_start_time = {time: [a for a in agents if a.start_time == time] for time in range(max([agent.start_time for agent in agents])+1)}
         agents_by_id = {agent.id: agent for agent in agents}
 
         print(f"\n[INFO] Training is starting with {self.num_episodes} episodes.")
@@ -42,101 +43,70 @@ class Runner:
         # Until we simulate num_episode episodes
         for episode in range(1, self.num_episodes+1):
 
+            # If new phase, apply it
             if episode in self.phases:
+                while threading.active_count() > 1: time.sleep(1e-2)
                 self.curr_phase += 1
                 self._realize_phase(episode, agents)
-                agents_by_start = {time: [a for a in agents if a.start_time == time] for time in range(max([agent.start_time for agent in agents])+1)}
+                agents_by_start_time = {time: [a for a in agents if a.start_time == time] for time in range(max([agent.start_time for agent in agents])+1)}
                 agents_by_id = {agent.id: agent for agent in agents}
                 phase_start_time = time.time()
 
-            self.episode_observations = pd.DataFrame()
+            # For each agent, get observation, act, collect travel times
+            ep_observations = list()
             env.reset()
-            
-            done_agents = 0
-            while done_agents < len(agents):
+            while len(ep_observations) < len(agents):
                 timestep, obs = env.get_observation()
+                step_actions = [(agent, agent.act(obs)) for agent in agents_by_start_time.get(timestep, list())]
+                ep_observations.extend(env.step(step_actions))
                 
-                step_agents = agents_by_start.get(timestep, list())
-                if step_agents:
-                    with concurrent.futures.ThreadPoolExecutor() as executor:
-                        step_actions = list(executor.map(self._collect_actions, step_agents, [obs]*len(step_agents)))
-                else:
-                    step_actions = list()
-                    
-                obs = env.step(step_actions)
-                if not obs.empty:
-                    obs_agents = [agents_by_id[agent_id] for agent_id in obs[kc.AGENT_ID]]
-                    with concurrent.futures.ThreadPoolExecutor() as executor:
-                        list(executor.map(self._learn_agents, obs_agents, [obs]*len(obs)))
-                    self._save_observations(obs)
-                    done_agents += len(obs)
-                        
-            self._record(episode, phase_start_time, self._get_rewards(agents), agents)
-
+            # For each agent, learn
+            for obs in ep_observations:
+                agent = agents_by_id[obs[kc.AGENT_ID]]
+                agent.learn(obs[kc.ACTION], ep_observations)
+                
+            # Record data
+            recording_task = threading.Thread(target=self._record, args=(episode, ep_observations, phase_start_time, agents))
+            recording_task.start()
+            
+        while threading.active_count() > 1: time.sleep(1e-2)
         self._show_training_time(training_start_time)
         env.stop()
         self._save_losses(agents)
-            
-        
-    def _collect_actions(self, agent, obs):
-        try:
-            return (agent, agent.act(obs))
-        except Exception as e:
-            print(f"Error in _collect_actions: {e}")
-            return (agent, None)
-        
-    def _learn_agents(self, agent, obs):
-        try:
-            action = obs.loc[obs[kc.AGENT_ID] == agent.id, kc.ACTION].values[0]
-            agent.learn(action, obs)
-        except Exception as e:
-            print(f"Error in _learn_agents: {e}")
-        
-        
-    def _save_observations(self, obs):
-        if self.episode_observations.empty:
-            self.episode_observations = obs
-        elif not obs.empty:
-            self.episode_observations = pd.concat([self.episode_observations, obs], ignore_index=True)
-
-
-    def _get_rewards(self, agents):
-        rewards_df = pd.DataFrame(columns=[kc.AGENT_ID, kc.REWARD])
-        for agent in agents:
-            reward = agent.last_reward
-            rewards_df.loc[len(rewards_df.index)] = [agent.id, reward]
-        return rewards_df
+    
     
 
-    def _record(self, episode, start_time, rewards_df, agents):
-        if (episode in self.remember_episodes):
-            self.recorder.record(episode, self.episode_observations, rewards_df, agents)
+    def _record(self, episode, ep_observations, start_time, agents):
+        dc_episode, dc_ep_observations, dc_start_time, dc_agents = dc(episode), dc(ep_observations), dc(start_time), dc(agents)
+        rewards = [{kc.AGENT_ID: agent.id, kc.REWARD: agent.last_reward} for agent in dc_agents]
+        if (dc_episode in self.remember_episodes):
+            self.recorder.record(dc_episode, dc_ep_observations, rewards)
         elif not self.frequent_progressbar:
             return
         msg = f"{self.phase_names[self.curr_phase]} {self.curr_phase+1}/{len(self.phases)}"
-        curr_progress = episode-self.phases[self.curr_phase]+1
+        curr_progress = dc_episode-self.phases[self.curr_phase]+1
         target = (self.phases[self.curr_phase+1]) if ((self.curr_phase+1) < len(self.phases)) else self.num_episodes+1
         target -= self.phases[self.curr_phase]
-        show_progress_bar(msg, start_time, curr_progress, target)
+        show_progress_bar(msg, dc_start_time, curr_progress, target)
+
 
 
     def _realize_phase(self, episode, agents):
         for idx, agent in enumerate(agents):
             if getattr(agent, 'mutate_phase', None) == self.curr_phase:
                 agents[idx] = agent.mutate()
-
-        for agent in agents:
-            agent.is_learning = self.curr_phase
-
+            agents[idx].is_learning = self.curr_phase
+            
         counts = Counter([agent.kind for agent in agents])
         info_text = "[INFO]"
         info_text +=f" {kc.TYPE_HUMAN}: {counts[kc.TYPE_HUMAN]} " if counts[kc.TYPE_HUMAN] else ""
         info_text +=f" {kc.TYPE_MACHINE}: {counts[kc.TYPE_MACHINE]} " if counts[kc.TYPE_MACHINE] else ""
-        learning_situation = [agent.is_learning for agent in agents]
+        learning_situation = [agent.is_learning == True for agent in agents]
         
         print(f"\n[INFO] Phase {self.curr_phase+1} ({self.phase_names[self.curr_phase]}) has started at episode {episode}!")
         print(info_text)
         print(f"[INFO] Number of learning agents: {sum(learning_situation)}")
+
 
 
     def _show_training_time(self, start_time):
@@ -147,5 +117,15 @@ class Runner:
         print(f"\n[COMPLETE] Training completed in: {training_time} ({sec_ep} s/e)")
 
 
+
     def _save_losses(self, agents):
         self.recorder.save_losses(agents)
+      
+
+#############################################
+        
+        
+def runner(env, agents, params):
+    runner = Runner(params)
+    runner.run(env, agents)
+    return runner

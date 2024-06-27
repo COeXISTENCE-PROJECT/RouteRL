@@ -1,3 +1,5 @@
+import numpy as np
+
 from abc import ABC, abstractmethod
 
 from keychain import Keychain as kc
@@ -115,11 +117,11 @@ class HumanAgent(BaseAgent):
         if self.is_learning:
             self.model.learn(None, action, reward)
 
-    def get_state(self, observation):
+    def get_state(self, _):
         return None
 
-    def get_reward(self, observation):
-        own_tt = observation.loc[observation[kc.AGENT_ID] == self.id, kc.TRAVEL_TIME].item()
+    def get_reward(self, observation: list[dict]):
+        own_tt = next(obs[kc.TRAVEL_TIME] for obs in observation if obs[kc.AGENT_ID] == self.id)
         return own_tt
     
     def mutate(self):
@@ -140,6 +142,7 @@ class MachineAgent(BaseAgent):
         self.model = DQN(params, self.state_size, self.action_space_size)
         self.is_learning = -1
         self.last_reward = None
+        self.rewards_coefs = self._get_reward_coefs()
         
     def __repr__(self):
         return f"Machine {self.id}"
@@ -174,52 +177,62 @@ class MachineAgent(BaseAgent):
         if self.is_learning:
             self.model.learn(self.last_state, action, reward)
 
-    def get_state(self, observation):
+    def get_state(self, observation: list[dict]):
+        min_start_time = self.start_time - self.observed_span
+        human_prior, machine_prior = list(), list()
+        for obs in observation:
+            if ((obs[kc.AGENT_ORIGIN], obs[kc.AGENT_DESTINATION]) == (self.origin, self.destination)) and (obs[kc.AGENT_START_TIME] > min_start_time):
+                if obs[kc.AGENT_KIND] == kc.TYPE_HUMAN:
+                    human_prior.append(obs)
+                elif obs[kc.AGENT_KIND] == kc.TYPE_MACHINE:
+                    machine_prior.append(obs)
+
         warmth_human = [0] * (self.state_size // 2)
         warmth_machine = [0] * (self.state_size // 2)
-
-        min_start_time = self.start_time - self.observed_span
-        observation = observation.loc[(observation[kc.AGENT_ORIGIN] == self.origin) & (observation[kc.AGENT_DESTINATION] == self.destination)]
-        prior_agents = observation.loc[observation[kc.AGENT_START_TIME] > min_start_time]
-
-        human_prior = prior_agents.loc[prior_agents[kc.AGENT_KIND] == kc.TYPE_HUMAN]
-        machine_prior = prior_agents.loc[prior_agents[kc.AGENT_KIND] == kc.TYPE_MACHINE]
-
-        if not human_prior.empty:
-            for _, row in human_prior.iterrows():
+        
+        if human_prior:
+            for row in human_prior:
                 action = row[kc.ACTION]
                 start_time = row[kc.AGENT_START_TIME]
                 warmth = start_time - min_start_time
                 warmth_human[action] += warmth
-
-        if not machine_prior.empty:
-            for _, row in machine_prior.iterrows():
+                
+        if machine_prior:
+            for row in machine_prior:
                 action = row[kc.ACTION]
                 start_time = row[kc.AGENT_START_TIME]
                 warmth = start_time - min_start_time
                 warmth_machine[action] += warmth
 
-        state = warmth_human + warmth_machine
-        return state
+        return warmth_human + warmth_machine
     
-    def get_reward(self, observation):
+    def get_reward(self, observation: list[dict]):
         min_start_time, max_start_time = self.start_time - self.observed_span, self.start_time + self.observed_span
-        observation = observation.loc[(observation[kc.AGENT_ORIGIN] == self.origin) & (observation[kc.AGENT_DESTINATION] == self.destination)]
-        vicinity_obs = observation.loc[(observation[kc.AGENT_START_TIME] >= min_start_time) & (observation[kc.AGENT_START_TIME] <= max_start_time)]
-
-        group_obs = vicinity_obs.loc[vicinity_obs[kc.AGENT_KIND] == self.kind, kc.TRAVEL_TIME]
-        others_obs = vicinity_obs.loc[vicinity_obs[kc.AGENT_KIND] != self.kind, kc.TRAVEL_TIME]
-
-        own_tt = observation.loc[observation[kc.AGENT_ID] == self.id, kc.TRAVEL_TIME].item()
-        group_tt = group_obs.mean() if not group_obs.empty else 0
-        others_tt = others_obs.mean() if not others_obs.empty else 0
-        all_tt = vicinity_obs[kc.TRAVEL_TIME].mean()
         
-        a, b, c, d = self._reward_coefs()
-        reward = a * own_tt + b * group_tt + c * others_tt + d * all_tt
-        return reward
+        vicinity_obs = list()
+        for obs in observation:
+            if ((obs[kc.AGENT_ORIGIN], obs[kc.AGENT_DESTINATION]) == (self.origin, self.destination)):
+                if ((obs[kc.AGENT_START_TIME] >= min_start_time) and (obs[kc.AGENT_START_TIME] <= max_start_time)):
+                    vicinity_obs.append(obs)
+
+        group_obs, others_obs, all_obs, own_tt = list(), list(), list(), None
+        for obs in vicinity_obs:
+            all_obs.append(obs[kc.TRAVEL_TIME])
+            if obs[kc.AGENT_KIND] == self.kind:
+                group_obs.append(obs[kc.TRAVEL_TIME])
+            else:
+                others_obs.append(obs[kc.TRAVEL_TIME])
+            if obs[kc.AGENT_ID] == self.id:
+                own_tt = obs[kc.TRAVEL_TIME]
+                
+        group_tt = np.mean(group_obs) if group_obs else 0
+        others_tt = np.mean(others_obs) if others_obs else 0
+        all_tt = np.mean(all_obs) if all_obs else 0
+        
+        a, b, c, d = self.rewards_coefs
+        return (a * own_tt + b * group_tt + c * others_tt + d * all_tt)
     
-    def _reward_coefs(self):
+    def _get_reward_coefs(self):
         a, b, c, d = 0, 0, 0, 0
         if self.behavior == kc.SELFISH:
             a, b, c, d = 1, 0, 0, 0

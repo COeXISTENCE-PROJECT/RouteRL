@@ -1,46 +1,16 @@
-import concurrent.futures
 import os
 import pandas as pd
 import random
 import traci
 
-from abc import ABC, abstractmethod
-
 from keychain import Keychain as kc
 from utilities import confirm_env_variable
 
-class BaseSimulator(ABC):
-
-    """
-    The interface between the simulation software and the environment
-    """
-
-    def __init__(self,):
-        pass
-
-    @abstractmethod
-    def start(self):
-        pass
-
-    @abstractmethod
-    def stop(self):
-        pass
-
-    @abstractmethod
-    def reset(self):
-        pass
-
-    @abstractmethod
-    def step(self):
-        pass
-
-
-
-class SumoSimulator(BaseSimulator):
+import time
+import numpy as np
+class SumoSimulator():
 
     def __init__(self, params):
-        super().__init__()
-
         self.sumo_config_path = kc.SUMO_CONFIG_PATH
         self.paths_csv_path = kc.PATHS_CSV_SAVE_PATH
         self.routes_xml_path = kc.ROUTES_XML_SAVE_PATH
@@ -57,7 +27,6 @@ class SumoSimulator(BaseSimulator):
         confirm_env_variable(self.env_var, append="tools")
         
         self.timestep = 0
-        self.vehicles_in_network = dict()
 
         print("[SUCCESS] Simulator is ready to simulate!")
 
@@ -86,27 +55,19 @@ class SumoSimulator(BaseSimulator):
     def reset(self):
         self.sumo_connection.load(['-c', self.sumo_config_path])
         self.timestep = 0
-        self.vehicles_in_network = dict()
 
     #####################
 
     ##### SIMULATION #####
     
     def step(self, actions):
-        
-        if not actions.empty:
-            actions.apply(lambda row: self.sumo_connection.vehicle.add(vehID=str(row[kc.AGENT_ID]), routeID=f'{row[kc.AGENT_ORIGIN]}_{row[kc.AGENT_DESTINATION]}_{row[kc.ACTION]}', depart=str(row[kc.AGENT_START_TIME])), axis=1)
-            self.vehicles_in_network.update(actions.set_index(kc.AGENT_ID)[kc.AGENT_START_TIME].to_dict())
-        
-        travel_times = dict()
-        for veh_id in self.sumo_connection.simulation.getArrivedIDList():
-            travel_times[int(veh_id)] = (self.timestep - self.vehicles_in_network[int(veh_id)]) / 60.0
-            del self.vehicles_in_network[int(veh_id)]
-        travel_time_df = pd.DataFrame({kc.AGENT_ID: list(travel_times.keys()), kc.TRAVEL_TIME: list(travel_times.values())})
-        
+        for vehicle_id, data in actions.items():
+            route_id = f'{data[kc.AGENT_ORIGIN]}_{data[kc.AGENT_DESTINATION]}_{data[kc.ACTION]}'
+            self.sumo_connection.vehicle.add(vehID=str(vehicle_id), routeID=route_id, depart=str(data[kc.AGENT_START_TIME]))
+        arrivals = list(self.sumo_connection.simulation.getArrivedIDList())
         self.sumo_connection.simulationStep()
         self.timestep += 1
-        return self.timestep, travel_time_df
+        return self.timestep, arrivals
     
     #####################
     
