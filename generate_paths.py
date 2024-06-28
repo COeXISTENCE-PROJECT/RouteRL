@@ -165,7 +165,11 @@ def _path_generator(network, origin, destination, proximity_func, beta, maxlen):
         options = [node for node in network.neighbors(current_node) if node not in path]
         if   (destination in options):                  return path + [destination]
         elif (not options) or (len(path) > maxlen):     return None
-        else:                                           current_node = _logit(options, proximity_func, beta)
+        else:                                           
+            try:
+                current_node = _logit(options, proximity_func, beta)
+            except:
+                return None
 
 
 def _logit(options, cost_function, beta):

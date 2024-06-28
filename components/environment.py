@@ -65,8 +65,11 @@ class TrafficEnvironment(BaseEnvironment):
             self.simulator.add_vehice(action_dict)
             self.episode_actions[agent.id] = action_dict
         timestep, arrivals = self.simulator.step()
-        travel_times = {int(veh_id): {kc.TRAVEL_TIME : (timestep - self.episode_actions[int(veh_id)][kc.AGENT_START_TIME]) / 60.0} for veh_id in arrivals}
-        for key in travel_times:    travel_times[key].update(self.episode_actions[key])
+        travel_times = dict()
+        for veh_id in arrivals:
+            agent_id = int(veh_id)
+            travel_times[agent_id] = {kc.TRAVEL_TIME : (timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0}
+            travel_times[agent_id].update(self.episode_actions[agent_id])
         return travel_times.values()
     
     #####################
