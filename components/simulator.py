@@ -27,6 +27,7 @@ class SumoSimulator():
         confirm_env_variable(self.env_var, append="tools")
         
         self.timestep = 0
+        self.route_id_cache = dict()
 
         print("[SUCCESS] Simulator is ready to simulate!")
 
@@ -60,11 +61,13 @@ class SumoSimulator():
 
     ##### SIMULATION #####
     
-    def step(self, actions):
-        for vehicle_id, data in actions.items():
-            route_id = f'{data[kc.AGENT_ORIGIN]}_{data[kc.AGENT_DESTINATION]}_{data[kc.ACTION]}'
-            self.sumo_connection.vehicle.add(vehID=str(vehicle_id), routeID=route_id, depart=str(data[kc.AGENT_START_TIME]))
-        arrivals = list(self.sumo_connection.simulation.getArrivedIDList())
+    def add_vehice(self, act_dict: dict):
+        route_id = self.route_id_cache.setdefault((act_dict[kc.AGENT_ORIGIN], act_dict[kc.AGENT_DESTINATION], act_dict[kc.ACTION]), \
+                f'{act_dict[kc.AGENT_ORIGIN]}_{act_dict[kc.AGENT_DESTINATION]}_{act_dict[kc.ACTION]}')
+        self.sumo_connection.vehicle.add(vehID=str(act_dict[kc.AGENT_ID]), routeID=route_id, depart=str(act_dict[kc.AGENT_START_TIME]))
+    
+    def step(self):
+        arrivals = self.sumo_connection.simulation.getArrivedIDList()
         self.sumo_connection.simulationStep()
         self.timestep += 1
         return self.timestep, arrivals
