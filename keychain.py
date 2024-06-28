@@ -5,7 +5,7 @@ class Keychain:
     When change needed, just fix it here! Avoid hardcoding...
     """
     
-    MODE = "" # empty string if not testing, test otherwise
+    MODE = "test" # empty string if not testing, test otherwise
     # In case of test, make sure to create a test param file named "testparams.json" in the root folder
 
     ################ PARAMETER ACCESS KEYS ####################
@@ -57,6 +57,7 @@ class Keychain:
 
     ### Plotter
     COLORS = "colors"
+    LINESTYLES = "linestyles"
     SMOOTH_BY = "smooth_by"
     DEFAULT_WIDTH = "default_width"
     DEFAULT_HEIGHT = "default_height"

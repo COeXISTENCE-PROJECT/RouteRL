@@ -14,7 +14,6 @@ def main(params):
     simulator = SumoSimulator(params[kc.SIMULATOR])
     env = TrafficEnvironment(params[kc.ENVIRONMENT], simulator)
     agents = create_agent_objects(params[kc.AGENTS], env.get_free_flow_times())
-    
     runner(env, agents, params[kc.RUNNER])
     plotter(params[kc.PLOTTER])
 

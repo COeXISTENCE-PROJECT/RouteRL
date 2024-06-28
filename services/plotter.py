@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 import pandas as pd
 import seaborn as sns
@@ -24,6 +25,7 @@ class Plotter:
         self.phase_names = params[kc.PHASE_NAMES]
         self.colors = params[kc.COLORS]
         self.phase_colors = list(reversed(self.colors))
+        self.linestyles = params[kc.LINESTYLES]
 
         self.smooth_by = params[kc.SMOOTH_BY]
         self.default_width, self.default_height = params[kc.DEFAULT_WIDTH], params[kc.DEFAULT_HEIGHT]
@@ -85,6 +87,7 @@ class Plotter:
 
         plt.xlabel('Episode')
         plt.ylabel('Mean Reward')
+        plt.grid(True, axis='y')
         plt.title('Mean Rewards Over Episodes')
         plt.legend()
 
@@ -115,6 +118,7 @@ class Plotter:
 
         plt.xlabel('Episode')
         plt.ylabel('Mean Travel Time')
+        plt.grid(True, axis='y')
         plt.title('Mean Travel Times Over Episodes')
         plt.legend()
 
@@ -149,8 +153,10 @@ class Plotter:
             axes[0].axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color)
         axes[0].set_xlabel('Episode')
         axes[0].set_ylabel('Mean Travel Time')
-        axes[0].set_title('Mean Travel Times Per OD Over Episodes')
+        axes[0].grid(True, axis='y')
+        axes[0].set_title('Mean Human Travel Times Per OD Over Episodes')
         axes[0].legend()
+
 
         # Plot variance travel times for all, humans and machines
         variance_travel_times = self._retrieve_data_per_kind(kc.TRAVEL_TIME, transform='variance')
@@ -164,7 +170,8 @@ class Plotter:
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
             axes[1].axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color)
         axes[1].set_xlabel('Episode')
-        axes[1].set_ylabel('Variance TT')
+        axes[1].set_ylabel('Variance')
+        axes[1].grid(True, axis='y')
         axes[1].set_title('Variance Travel Times Over Episodes')
         axes[1].legend()
 
@@ -174,19 +181,32 @@ class Plotter:
         data_to_plot = [all_travel_times[kc.TYPE_HUMAN][ep] for ep in eps_to_plot]
         labels = [f'Humans ({ph})' for ph in self.phase_names]
 
-        axes[2].boxplot(data_to_plot, labels=labels, patch_artist=True)
+        bplot = axes[2].boxplot(data_to_plot, labels=labels, patch_artist=True)
+        for idx, (patch, med) in enumerate(zip(bplot['boxes'], bplot['medians'])):
+            color = self.phase_colors[idx]
+            patch.set_facecolor(color)
+            med.set_color('black')
+            med.set_linewidth(2)
         axes[2].grid(axis = 'y')
         axes[2].set_ylabel('Travel Times')
-        axes[2].set_title('Travel Time Distributions (End of Each Phase)')
+        axes[2].set_title(f'Human Travel Time Distributions (End of Each Phase)')
 
+
+        dark_gray = '#333333'
+        axes[3].set_facecolor(dark_gray)
         for idx, (label, data) in enumerate(zip(labels, data_to_plot)):
-            sns.kdeplot(data, ax=axes[3], label=label, alpha=0.3, fill=True, linewidth=0, color=self.colors[idx])
+            sns.kdeplot(data, ax=axes[3], label=label, alpha=0.8, fill=True, linewidth=3, color=self.colors[idx], clip=(0, None))
+            median_val, mean_val = np.median(data), np.mean(data)
+            # Plot a vertical line from top to mid-plot for median
+            axes[3].axvline(median_val, color=self.colors[idx], linestyle='-', linewidth=2, ymin=0.5, ymax=1, label=f'Median {label}')
+            # Plot a vertical line from bottom to mid-plot for mean
+            axes[3].axvline(mean_val, color=self.colors[idx], linestyle='--', linewidth=2, ymin=0, ymax=0.5, label=f'Mean {label}')
+        axes[3].set_xlim(0, None)
         axes[3].set_xlabel('Travel Times')
-        axes[3].set_ylabel('Density (Probability)')
-        axes[3].set_title('Travel Time Distribution (End of Each Phase)')
+        axes[3].set_ylabel('Probability Density')
+        axes[3].set_title(f'Human Travel Time Distributions (End of Each Phase)')
         axes[3].legend()
 
-        #plt.show()
         plt.savefig(save_to)
         plt.close()
         print(f"[SUCCESS] Travel time distributions are saved to {save_to}")
@@ -227,7 +247,8 @@ class Plotter:
 
             ax.set_title(f"Actions for {od}")
             ax.set_xlabel('Episodes')
-            ax.set_ylabel('Population')
+            ax.set_ylabel('Number of Drivers')
+            ax.grid(True, axis='y')
             ax.legend()
 
         # Hide unused subplots if any
@@ -251,6 +272,7 @@ class Plotter:
         save_to = make_dir(kc.PLOTS_FOLDER, kc.ACTIONS_SHIFTS_PLOT_FILE_NAME)
 
         all_od_pairs = self._retrieve_all_od_pairs()
+        all_od_pairs = sorted(all_od_pairs, key=lambda x: f"{x[0]}-{x[1]}")
         
         # Determine the layout of the subplots (rows x columns)
         num_columns = self.default_num_columns
@@ -275,16 +297,18 @@ class Plotter:
                 for idx3, action in enumerate(unique_actions):
                     action_data = [ep_counter[action] / sum(ep_counter.values()) for ep_counter in all_actions[kind].values()]
                     action_data = running_average(action_data, last_n=self.smooth_by)
-                    color = self.colors[(idx2 + (idx3*3))]
-                    ax.plot(episodes, action_data, color=color, label=f"{kind}-{action}")
+                    color = self.colors[idx3]
+                    linestyle = self.linestyles[idx2 % len(self.linestyles)]
+                    ax.plot(episodes, action_data, color=color, linestyle=linestyle, label=f"{kind}-{action}")
 
             for phase_idx, phase in enumerate(self.phases):
                 color = self.phase_colors[phase_idx % len(self.phase_colors)]
                 ax.axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color)
 
             ax.set_xlabel('Episodes')
-            ax.set_ylabel('Population')
-            ax.set_title(f'Actions for {od} (By group population')
+            ax.set_ylabel('Number of Drivers (Scaled by Group Size)')
+            ax.grid(True, axis='y')
+            ax.set_title(f'Actions for {od}')
             ax.legend()
 
         for ax in axes[idx+1:]:   ax.axis('off')    # Hide unused subplots if any
@@ -319,7 +343,6 @@ class Plotter:
         plt.title('Simulation Length Over Episodes')
         plt.legend()
 
-        #plt.show()
         plt.savefig(save_to)
         plt.close()
         print(f"[SUCCESS] Simulation lengths are saved to {save_to}")
@@ -350,12 +373,12 @@ class Plotter:
 
         plt.figure(figsize=(self.default_width, self.default_height))
         plt.plot(losses, color=self.colors[0])
-        plt.xlabel('Training Progress')
+        plt.xlabel('Training Progress (Episodes)')
         plt.ylabel('MSE Loss (Log Scale)')
-        plt.title('MSE Loss Over Training Progress')
+        plt.title('Mean MSE Loss Over Training Progress for AVs')
         plt.yscale('log')
+        plt.grid(True, axis='y')
 
-        #plt.show()
         plt.savefig(save_to)
         plt.close()
         print(f"[SUCCESS] Losses are saved to {save_to}")
