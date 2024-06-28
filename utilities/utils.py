@@ -1,12 +1,29 @@
 import json
+import numpy as np
 import os
+import random
 import sys
 import time
+import torch
 
 from prettytable import PrettyTable
 
 
-def confirm_env_variable(env_var, append=None): # RK: describe in doc string variables.
+
+def check_device():
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"[INFO] Running on device: {device}")
+    
+
+
+def get_params(file_path):      # Read params.json, resolve dependencies
+    params = read_json(file_path)
+    params = resolve_param_dependencies(params)
+    return params
+
+
+
+def confirm_env_variable(env_var, append=None):
     if env_var in os.environ:
         print("[CONFIRMED] Environment variable exists: %s" % env_var)
         if append:
@@ -15,13 +32,6 @@ def confirm_env_variable(env_var, append=None): # RK: describe in doc string var
             print("[SUCCESS] Added module directory: %s" % path)
     else:
         raise ImportError("Please declare the environment variable '%s'" % env_var)
-    
-
-
-def get_params(file_path):      # Read params.json, resolve dependencies
-    params = read_json(file_path)
-    params = resolve_param_dependencies(params)
-    return params
 
 
 
@@ -50,6 +60,12 @@ def read_json(file_path):    # Read json file, return as dict
 
 
 
+def set_seeds(seed=42):    # Set seeds for reproducibility
+    np.random.seed(seed)
+    random.seed(seed)
+
+
+
 def make_dir(folders, filename=None):    # Make dir if not exists, make full path
     if not folders:
         print("[ERROR] Expected at least one folder name.")
@@ -66,7 +82,7 @@ def make_dir(folders, filename=None):    # Make dir if not exists, make full pat
 
 
 
-def show_progress_bar(name_of_operation, start_time, progress, target, end_line=''):    # Just printing progress bar with ETA
+def show_progress_bar(message, start_time, progress, target, end_line=''):    # Just printing progress bar with ETA
     bar_length = 50
     progress_fraction = progress / target
     filled_length = int(bar_length * progress_fraction)
@@ -74,7 +90,7 @@ def show_progress_bar(name_of_operation, start_time, progress, target, end_line=
     elapsed_time = time.time() - start_time
     remaining_time = ((elapsed_time / progress_fraction) - elapsed_time) if progress_fraction else 0
     remaining_time = time.strftime("%H:%M:%S", time.gmtime(remaining_time))
-    print(f'\r[%s PROGRESS]: |%s| %.2f%%, ETA: %s' % (name_of_operation.upper(), bar, progress_fraction * 100, remaining_time), end=end_line)
+    print(f'\r[%s]: |%s| %.2f%%, ETA: %s' % (message.upper(), bar, progress_fraction * 100, remaining_time), end=end_line)
 
 
 
@@ -90,7 +106,6 @@ def show_progress(name_of_operation, start_time, progress, target, end_line=''):
 def remove_double_quotes(text):
     text = str(text).replace('"','')
     return text
-
 
 
 def list_to_string(from_list, separator=', '):
@@ -114,13 +129,14 @@ def string_to_list(text, seperator, brackets=False):
 
 
 
-def df_to_prettytable(df, header_message="DATA", print_every=1):
+def df_to_prettytable(df, header_message=None, print_every=1):
     table = PrettyTable()
     table.field_names = df.columns.tolist()
     for index, row in df.iterrows():
         if not (index % print_every):
             table.add_row(row.tolist())
-    print(f"##### {header_message} #####")
+    if header_message:
+        print(f"##### {header_message} #####")
     print(table)
 
 
