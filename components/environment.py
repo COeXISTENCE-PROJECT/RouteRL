@@ -109,9 +109,9 @@ class TrafficEnvironment(AECEnv):
 
         
 
-    #####################
+    #############################
 
-    ##### CONTROL #####
+    ##### SImulator control #####
 
     def start(self):
         self.simulator.start()
@@ -119,9 +119,9 @@ class TrafficEnvironment(AECEnv):
     def stop(self):
         self.simulator.stop()
 
-    #####################
+    ################################
 
-    ##### PETTINZOO FUNCTIONS #####
+    ##### PettingZoo functions #####
 
     def reset(self, seed=None, options=None):
         """Resets the environment."""
@@ -255,9 +255,9 @@ class TrafficEnvironment(AECEnv):
             travel_times[agent_id].update(self.episode_actions[agent_id])
         return travel_times.values()
     
-    #####################
+    ###########################
 
-    ##### SIMULATION LOOP #####
+    ##### Simulation loop #####
 
     def simulation_loop(self, machine_action):
         """ This function contains the integration of the agent's actions to SUMO. """
@@ -297,9 +297,9 @@ class TrafficEnvironment(AECEnv):
 
 
     
-    #####################
+    ###########################
 
-    ##### DATA #####
+    ##### Free flow times #####
 
     def get_free_flow_times(self):
         paths_df = pd.read_csv(self.simulator.paths_csv_path)
@@ -311,7 +311,7 @@ class TrafficEnvironment(AECEnv):
         return ff_dict
 
 
-    #####################
+    ###########################
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
