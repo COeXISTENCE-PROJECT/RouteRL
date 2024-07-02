@@ -11,7 +11,12 @@ from utilities import set_seeds
 
 
 def main(params):
-    env = TrafficEnvironment(params[kc.RUNNER], params[kc.ENVIRONMENT], params[kc.SIMULATOR], params[kc.AGENT_GEN], params[kc.AGENTS])    
+    env = TrafficEnvironment(params[kc.RUNNER], params[kc.ENVIRONMENT], params[kc.SIMULATOR], params[kc.AGENT_GEN], params[kc.AGENTS]) 
+
+    env.start()
+    env.reset()
+    env.stop()
+    
     #runner(env, agents, params[kc.RUNNER])
     #plotter(params[kc.PLOTTER])
 

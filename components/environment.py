@@ -7,7 +7,7 @@ from create_agents import create_agent_objects
 from .simulator import SumoSimulator
 from keychain import Keychain as kc
 from pettingzoo.utils.env import AECEnv
-from pettingzoo.utils import agent_selector, wrappers
+from pettingzoo.utils import agent_selector
 
 logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
@@ -127,7 +127,7 @@ class TrafficEnvironment(AECEnv):
         self.rewards = {agent: 0 for agent in self.possible_agents}
         self.rewards_humans = {agent.id: 0 for agent in self.human_agents}
 
-        if self.machines == True:
+        if len(self.machine_agents) > 0:
             self._agent_selector = agent_selector(self.possible_agents)
             self.agent_selection = self._agent_selector.next()
 
@@ -160,6 +160,16 @@ class TrafficEnvironment(AECEnv):
             travel_times[agent_id] = {kc.TRAVEL_TIME : (timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0}
             travel_times[agent_id].update(self.episode_actions[agent_id])
         return travel_times.values()
+    
+    def close(self):
+        """Close the environment and stop the SUMO simulation."""
+        self.simulator.stop()
+
+    def observe(self, agent):
+        return self.observation_obj.agent_observations(agent)
+    
+    def render(self):
+        pass
     
     #####################
 
