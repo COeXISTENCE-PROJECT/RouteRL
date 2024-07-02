@@ -74,11 +74,3 @@ class SumoSimulator():
     
     #####################
     
-    def get_free_flow_times(self):
-        paths_df = pd.read_csv(self.paths_csv_path)
-        origins = paths_df[kc.ORIGIN].unique()
-        destinations = paths_df[kc.DESTINATION].unique()
-        ff_dict = {(o, d): list() for o in origins for d in destinations}
-        for _, row in paths_df.iterrows():
-            ff_dict[(row[kc.ORIGIN], row[kc.DESTINATION])].append(row[kc.FREE_FLOW_TIME])
-        return ff_dict

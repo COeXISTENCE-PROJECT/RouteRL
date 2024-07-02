@@ -1,40 +1,107 @@
-from abc import ABC, abstractmethod
+from gymnasium.spaces import Box, Discrete
+from copy import copy
+import logging
+import pandas as pd
 
+from create_agents import create_agent_objects
 from .simulator import SumoSimulator
 from keychain import Keychain as kc
+from pettingzoo.utils.env import AECEnv
+from pettingzoo.utils import agent_selector, wrappers
 
-class BaseEnvironment(ABC):
-    def __init__(self):
-        pass
-
-    @abstractmethod
-    def start(self):
-        pass
-
-    @abstractmethod
-    def stop(self):
-        pass
-
-    @abstractmethod
-    def reset(self):
-        pass
-
-    @abstractmethod
-    def step(self):
-        pass
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
 
 
-
-class TrafficEnvironment(BaseEnvironment):
-    def __init__(self, params, simulator: SumoSimulator):
+class TrafficEnvironment(AECEnv):
+    metadata = {
+        "render_modes": ["human"],
+        "name": "TrafficEnvironment",
+    }
+    """ A PettingZoo AECEnv interface for route planning using SUMO simulator.
+    This environment is utilized for the training of human agents (rational decision-makers) and machine agents (reinforcement learning agents).
+    See https://sumo.dlr.de/docs/ for details on SUMO.
+    See https://pettingzoo.farama.org/ for details on PettingZoo. 
+    Args:
+        training_params (dict): Training parameters.
+        environment_params (dict): Environment parameters.
+        simulation_params (dict): Simulation parameters.
+        agent_params (dict): Agent parameters.
+        render_mode (str): The render mode.
+    
+    """
+    def __init__(self,
+                training_params,
+                environment_params,
+                simulation_params,
+                agent_gen_params,
+                agent_params, 
+                render_mode=None):
+        
         super().__init__()
 
-        self.action_space_size = params[kc.ACTION_SPACE_SIZE]
-        self.simulator = simulator
+        self.environment_params = environment_params
+        self.agent_gen_params = agent_gen_params
+        self.training_params = training_params
+        self.simulation_params = simulation_params
+        self.agent_params = agent_params
+        self.render_mode = render_mode
+
+        self.action_space_size = self.environment_params[kc.ACTION_SPACE_SIZE]
+
+        self.simulator = SumoSimulator(simulation_params)
+        logging.info("Simulator initiated!")
+
+        self.agents = create_agent_objects(self.agent_params, self.get_free_flow_times())
+        
+        self.machine_agents = []
+        self.human_agents = []
+        self.possible_agents = []
+
+        for agent in self.agents:
+            if agent.kind == kc.TYPE_MACHINE:
+                self.machine_agents.append(agent)
+                self.possible_agents.append(agent.id)
+
+            elif agent.kind == kc.TYPE_HUMAN:
+                self.human_agents.append(agent)
+            else:
+                raise ValueError('[AGENT TYPE INVALID] Unrecognized agent type: ' + agent.kind)
+            
+        self.n_agents = len(self.possible_agents)
+            
+        if len(self.machine_agents) != 0:
+            self._initialize_machine_agents(mutation=False)
+
+
+        logging.info(f"There are {self.n_agents} machine agents in the environment.")
+        logging.info(f"There are {len(self.human_agents)} human agents in the environment.")
 
         self.episode_actions = dict()
+
+
+    def _initialize_machine_agents(self, mutation):
+        """ Initialize the machine agents. """
+
+        ## Sort machine agents based on their start_time
+        sorted_machine_agents = sorted(self.machine_agents, key=lambda agent: agent.start_time)
+        self.possible_agents = [str(agent.id) for agent in sorted_machine_agents]
+        self.n_agents = len(self.possible_agents)
+
+        print("self.possible_agents are: ", self.possible_agents)
+
+        """self.observation_obj = PreviousAgentStart(self.machine_agents, self.simulation_params, self.agent_params, self.training_params)
+
+        self._observation_spaces = self.observation_obj.observation_space()"""
+
+        self._action_spaces = {
+            agent: Discrete(self.simulation_params[kc.NUMBER_OF_PATHS]) for agent in self.possible_agents
+        }
+
+        logging.info("\nMachine's observation space is: %s ", self._observation_spaces)
+        logging.info("Machine's action space is: %s", self._action_spaces)
+
         
-        print("[SUCCESS] Environment initiated!")
 
     #####################
 
@@ -47,8 +114,30 @@ class TrafficEnvironment(BaseEnvironment):
         self.simulator.stop()
 
     def reset(self):
+        """Resets the environment."""
         self.episode_actions = dict()
         self.simulator.reset()
+
+        self.agents = copy(self.possible_agents)
+
+        self.terminations = {agent: False for agent in self.possible_agents}
+        self.truncations = {agent: False for agent in self.possible_agents}
+        self._cumulative_rewards = {agent: 0 for agent in self.possible_agents}
+        self.infos = {agent: {} for agent in self.possible_agents}
+        self.rewards = {agent: 0 for agent in self.possible_agents}
+        self.rewards_humans = {agent.id: 0 for agent in self.human_agents}
+
+        if self.machines == True:
+            self._agent_selector = agent_selector(self.possible_agents)
+            self.agent_selection = self._agent_selector.next()
+
+            self.observations = self.observation_obj.reset_observation()
+        else:
+            self.observations = {}
+
+        infos = {a: {}  for a in self.possible_agents}
+
+        return self.observations, infos
 
     #####################
 
@@ -77,7 +166,13 @@ class TrafficEnvironment(BaseEnvironment):
     ##### DATA #####
 
     def get_free_flow_times(self):
-        free_flow_times = self.simulator.get_free_flow_times()
-        return free_flow_times
+        paths_df = pd.read_csv(self.simulator.paths_csv_path)
+        origins = paths_df[kc.ORIGIN].unique()
+        destinations = paths_df[kc.DESTINATION].unique()
+        ff_dict = {(o, d): list() for o in origins for d in destinations}
+        for _, row in paths_df.iterrows():
+            ff_dict[(row[kc.ORIGIN], row[kc.DESTINATION])].append(row[kc.FREE_FLOW_TIME])
+        return ff_dict
+
 
     #####################

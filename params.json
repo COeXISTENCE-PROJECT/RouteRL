@@ -10,7 +10,7 @@
     
     "runner_parameters":
     {
-        "num_episodes" : 6000,
+        "num_episodes" : 10,
         "phases" : [1, 1000, 4000],
         "phase_names" : ["Settle", "Shock", "Adapt"],
         "remember_every" : 2,

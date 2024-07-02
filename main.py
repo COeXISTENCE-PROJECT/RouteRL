@@ -11,11 +11,9 @@ from utilities import set_seeds
 
 
 def main(params):
-    simulator = SumoSimulator(params[kc.SIMULATOR])
-    env = TrafficEnvironment(params[kc.ENVIRONMENT], simulator)
-    agents = create_agent_objects(params[kc.AGENTS], env.get_free_flow_times())
-    runner(env, agents, params[kc.RUNNER])
-    plotter(params[kc.PLOTTER])
+    env = TrafficEnvironment(params[kc.RUNNER], params[kc.ENVIRONMENT], params[kc.SIMULATOR], params[kc.AGENT_GEN], params[kc.AGENTS])    
+    #runner(env, agents, params[kc.RUNNER])
+    #plotter(params[kc.PLOTTER])
 
 
 if __name__ == "__main__":
