@@ -20,6 +20,7 @@ class BaseAgent(ABC):
         self.destination = destination
         self.behavior = behavior
         self.learning_phases = learning_phases
+        self.save_last_action = 0
 
     @property
     @abstractmethod

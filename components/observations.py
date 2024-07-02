@@ -9,9 +9,10 @@ from keychain import Keychain as kc
 class Observations(ABC):
     """Abstract base class for observation functions."""
 
-    def __init__(self, machines_agents_list):
+    def __init__(self, machine_agents_list, human_agents_list):
         """Initialize observation function."""
-        self.machines_agents_list = machines_agents_list
+        self.machine_agents_list = machine_agents_list
+        self.human_agents_list = human_agents_list
 
     @abstractmethod
     def __call__(self):
@@ -27,9 +28,9 @@ class Observations(ABC):
 class PreviousAgentStart(Observations):
     """Observation function that returns the start time of the previous agent."""
 
-    def __init__(self, machines_agents_list, simulation_params, agent_params, training_params):
+    def __init__(self, machine_agents_list, human_agents_list, simulation_params, agent_params, training_params):
         """Initialize observation function."""
-        super().__init__(machines_agents_list)
+        super().__init__(machine_agents_list, human_agents_list)
 
         self.simulation_params = simulation_params
         self.agent_params = agent_params
@@ -38,7 +39,7 @@ class PreviousAgentStart(Observations):
     def __call__(self, all_agents):
         """Return the observations of all agents."""
 
-        for machine in self.machines_agents_list:
+        for machine in self.machine_agents_list:
             observation = np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=int)
 
             for agent in all_agents:
@@ -51,22 +52,22 @@ class PreviousAgentStart(Observations):
 
             self.observations[str(machine.id)] = observation.tolist()
 
-        with open(self.training_params[kc.MACHINE_OBSERVATIONS_FILE_PATH], "a") as json_file:
-            json.dump(self.observations, json_file, indent=4)
+        """with open(self.training_params[kc.MACHINE_OBSERVATIONS_FILE_PATH], "a") as json_file:
+            json.dump(self.observations, json_file, indent=4)"""
 
         return self.observations
     
     def reset_observation(self):
         """Reset the observations."""
         self.observations = {
-            str(a.id): np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.float32) for a in self.machines_agents_list
+            str(a.id): np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.float32) for a in self.machine_agents_list
         }
         return self.observations
 
     def observation_space(self):
         """Return the observation space of the observation function."""
         observations = {
-            str(agent.id): Box(low=0, high=self.agent_params[kc.NUM_HUMAN_AGENTS] + self.agent_params[kc.NUM_MACHINE_AGENTS], shape=(3,), dtype=np.float32) for agent in self.machines_agents_list 
+            str(agent.id): Box(low=0, high=len(self.human_agents_list) + len(self.machine_agents_list), shape=(3,), dtype=np.float32) for agent in self.machine_agents_list 
         }
         return observations
     

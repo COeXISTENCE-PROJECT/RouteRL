@@ -49,6 +49,9 @@ class TrafficEnvironment(AECEnv):
         self.simulation_params = simulation_params
         self.agent_params = agent_params
         self.render_mode = render_mode
+        self.travel_times_df = pd.DataFrame(columns=['id', 'travel_time'])
+        self.action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
+        self.step_actions = pd.DataFrame(columns = self.action_cols)
 
         self.action_space_size = self.environment_params[kc.ACTION_SPACE_SIZE]
 
@@ -93,7 +96,7 @@ class TrafficEnvironment(AECEnv):
 
         print("self.possible_agents are: ", self.possible_agents)
 
-        self.observation_obj = PreviousAgentStart(self.machine_agents, self.simulation_params, self.agent_params, self.training_params)
+        self.observation_obj = PreviousAgentStart(self.machine_agents, self.human_agents, self.simulation_params, self.agent_params, self.training_params)
 
         self._observation_spaces = self.observation_obj.observation_space()
 
@@ -116,7 +119,11 @@ class TrafficEnvironment(AECEnv):
     def stop(self):
         self.simulator.stop()
 
-    def reset(self):
+    #####################
+
+    ##### PETTINZOO FUNCTIONS #####
+
+    def reset(self, seed=None, options=None):
         """Resets the environment."""
         self.episode_actions = dict()
         self.simulator.reset()
@@ -142,28 +149,79 @@ class TrafficEnvironment(AECEnv):
 
         return self.observations, infos
 
-    #####################
-
-    ##### EPISODE OPS #####
     
-    def get_observation(self):
-        return self.simulator.timestep, self.episode_actions.values()
+    def step(self, machine_action):
+        """
+        This function takes in an action for the current agent (specified by
+        agent_selection) and needs to update
+        - rewards
+        - _cumulative_rewards (accumulating the rewards)
+        - terminations
+        - truncations
+        - infos
+        - agent_selection (to the next agent)
+        And any internal state used by observe() or render()
+        """
+        #print("------STEP------")
+        if (
+            self.terminations[self.agent_selection]
+            or self.truncations[self.agent_selection]
+        ):
+            # handles stepping an agent which is already dead
+            # accepts a None action for the one agent, and moves the agent_selection to
+            # the next dead agent,  or if there are no more dead agents, to the next live agent
+            self._was_dead_step(machine_action)
+            return
+
+        agent = self.agent_selection
+
+        # The cumulative reward of the last agent must be 0
+        self._cumulative_rewards[agent] = 0
+
+        self.simulation_loop(machine_action)
 
 
-    def step(self, actions: list[tuple]):
-        for agent, action in actions:
-            action_dict = {kc.AGENT_ID: agent.id, kc.AGENT_KIND: agent.kind, kc.ACTION: action, \
-                kc.AGENT_ORIGIN: agent.origin, kc.AGENT_DESTINATION: agent.destination, kc.AGENT_START_TIME: agent.start_time}
-            self.simulator.add_vehice(action_dict)
-            self.episode_actions[agent.id] = action_dict
-        timestep, arrivals = self.simulator.step()
-        travel_times = dict()
-        for veh_id in arrivals:
-            agent_id = int(veh_id)
-            travel_times[agent_id] = {kc.TRAVEL_TIME : (timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0}
-            travel_times[agent_id].update(self.episode_actions[agent_id])
-        return travel_times.values()
-    
+        # Collect rewards if it is the last agent to act
+        if self._agent_selector.is_last():
+
+            # Assign the travel times to the machine agents
+            if self.machines == True:
+                self._machine_rewards()
+
+            # Assign the travel times to the human agents
+            if self.humans == True:
+                self.human_rewards()            
+
+            # The truncations dictionary must be updated for all players.
+            self.truncations = {
+                agent: False for agent in self.agents
+            }
+
+            self.terminations = {
+                agent: False for agent in self.agents
+            }
+
+            self.info = {
+                agent: {} for agent in self.agents
+            }
+
+            self.observations = self.observation_obj(self.all_agents)
+
+            self.simulator.reset()
+            self.travel_times_df = self.travel_times_df[0:0]
+
+
+        else:
+            # no rewards are allocated until all players give an action
+            self._clear_rewards()
+
+            self.agent_selection = self._agent_selector.next()
+            
+        
+        # Adds .rewards to ._cumulative_rewards
+        self._accumulate_rewards()
+
+
     def close(self):
         """Close the environment and stop the SUMO simulation."""
         self.simulator.stop()
@@ -173,6 +231,71 @@ class TrafficEnvironment(AECEnv):
     
     def render(self):
         pass
+
+    #####################
+
+    ##### EPISODE OPS #####
+    
+    def get_observation(self):
+        return self.simulator.timestep, self.episode_actions.values()
+
+
+    def help_step(self, actions: list[tuple]):
+        for agent, action in actions:
+            action_dict = {kc.AGENT_ID: agent.id, kc.AGENT_KIND: agent.kind, kc.ACTION: action, \
+                kc.AGENT_ORIGIN: agent.origin, kc.AGENT_DESTINATION: agent.destination, kc.AGENT_START_TIME: agent.start_time}
+            self.simulator.add_vehice(action_dict)
+            self.episode_actions[agent.id] = action_dict
+        timestep, arrivals = self.simulator.step()
+        print("timestep is: ", timestep, "\n\n")
+        travel_times = dict()
+        for veh_id in arrivals:
+            agent_id = int(veh_id)
+            travel_times[agent_id] = {kc.TRAVEL_TIME : (timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0}
+            travel_times[agent_id].update(self.episode_actions[agent_id])
+        return travel_times.values()
+    
+    #####################
+
+    ##### SIMULATION LOOP #####
+
+    def simulation_loop(self, machine_action):
+        """ This function contains the integration of the agent's actions to SUMO. """
+
+        agent_action = 0
+        total_agents = len(self.human_agents) + len(self.machine_agents)
+        while self.simulator.timestep < self.simulation_params[kc.SIMULATION_TIMESTEPS] or self.travel_times_df.shape[0] < total_agents:
+            actions_timestep = []
+
+            # The agent provides the action to SUMO
+            for human in self.human_agents:
+                if human.start_time == self.simulator.timestep:
+                    action = human.act(0)
+                    actions_timestep.append((human, action))
+
+            for machine in self.machine_agents:
+                    
+                if machine.start_time == self.simulator.timestep:
+                    machine.save_last_action = machine_action
+                    actions_timestep.append((human, action))                
+                    
+                    if not self._agent_selector.is_last():
+                        agent_action = 1
+ 
+            #self.timestep, travel_times = self.simulator.step(self.step_actions)
+            travel_times = self.help_step(actions_timestep)
+
+            print("travel_time is: ", travel_times, "\n\n")
+            if travel_times:
+                self.travel_times_df = pd.concat([self.travel_times_df, travel_times], ignore_index=True) if not self.travel_times_df.empty and not travel_times.empty else travel_times if self.travel_times_df.empty else self.travel_times_df
+
+
+            self.step_actions = pd.DataFrame(columns = self.action_cols)
+            if agent_action == 1:
+                agent_action = 0
+                break
+
+
     
     #####################
 
