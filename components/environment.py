@@ -1,4 +1,5 @@
 from gymnasium.spaces import Box, Discrete
+import functools
 from copy import copy
 import logging
 import pandas as pd
@@ -8,6 +9,8 @@ from .simulator import SumoSimulator
 from keychain import Keychain as kc
 from pettingzoo.utils.env import AECEnv
 from pettingzoo.utils import agent_selector
+from .observations import PreviousAgentStart
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
@@ -90,9 +93,9 @@ class TrafficEnvironment(AECEnv):
 
         print("self.possible_agents are: ", self.possible_agents)
 
-        """self.observation_obj = PreviousAgentStart(self.machine_agents, self.simulation_params, self.agent_params, self.training_params)
+        self.observation_obj = PreviousAgentStart(self.machine_agents, self.simulation_params, self.agent_params, self.training_params)
 
-        self._observation_spaces = self.observation_obj.observation_space()"""
+        self._observation_spaces = self.observation_obj.observation_space()
 
         self._action_spaces = {
             agent: Discrete(self.simulation_params[kc.NUMBER_OF_PATHS]) for agent in self.possible_agents
@@ -186,3 +189,12 @@ class TrafficEnvironment(AECEnv):
 
 
     #####################
+
+    @functools.lru_cache(maxsize=None)
+    def observation_space(self, agent):
+        return self._observation_spaces[agent]
+
+
+    @functools.lru_cache(maxsize=None)
+    def action_space(self, agent):
+        return self._action_spaces[agent]
