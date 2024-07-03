@@ -1,6 +1,9 @@
 id,origin,destination,start_time,kind
-0,1,1,1401,AV
-1,0,0,2317,AV
-2,0,0,1220,AV
-3,0,1,1610,AV
+0,1,1,1401,Human
+1,0,0,2317,Human
+2,0,0,1220,Human
+3,0,1,1610,Human
 4,1,1,2307,AV
+5,0,1,2821,Human
+6,0,1,1698,Human
+7,1,1,2756,AV

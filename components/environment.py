@@ -1,15 +1,23 @@
 from gymnasium.spaces import Box, Discrete
 import functools
 from copy import copy
+from copy import deepcopy as dc
 import logging
+import os
 import pandas as pd
+import threading
+import sys
 
 from create_agents import create_agent_objects
 from .simulator import SumoSimulator
 from keychain import Keychain as kc
 from pettingzoo.utils.env import AECEnv
 from pettingzoo.utils import agent_selector
+from utilities import show_progress_bar
 from .observations import PreviousAgentStart
+
+
+from services.recorder import Recorder
 
 
 logger = logging.getLogger()
@@ -38,7 +46,7 @@ class TrafficEnvironment(AECEnv):
                 environment_params,
                 simulation_params,
                 agent_gen_params,
-                agent_params, 
+                agent_params,
                 render_mode=None):
         
         super().__init__()
@@ -53,6 +61,23 @@ class TrafficEnvironment(AECEnv):
         self.travel_times_dict = dict()
         self.travel_times_list = []
         self.action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
+        self.episode = 0
+
+        """ runner attributes """
+        self.num_episodes = self.training_params[kc.NUM_EPISODES]
+        self.phases = self.training_params[kc.PHASES]
+        self.phase_names = self.training_params[kc.PHASE_NAMES]
+        self.frequent_progressbar = self.training_params[kc.FREQUENT_PROGRESSBAR_UPDATE]
+        self.remember_every = self.training_params[kc.REMEMBER_EVERY]
+        
+        self.remember_episodes = [ep for ep in range(self.remember_every, self.num_episodes+1, self.remember_every)]
+        self.remember_episodes += [1, self.num_episodes] + [ep-1 for ep in self.phases] + [ep for ep in self.phases]
+        self.remember_episodes = set(self.remember_episodes)
+        self.recorder = Recorder()
+        
+        self.curr_phase = -1
+
+        #############################
 
         self.action_space_size = self.environment_params[kc.ACTION_SPACE_SIZE]
 
@@ -107,8 +132,7 @@ class TrafficEnvironment(AECEnv):
         logging.info("\nMachine's observation space is: %s ", self._observation_spaces)
         logging.info("Machine's action space is: %s", self._action_spaces)
 
-        
-
+    
     #############################
 
     ##### Simulator control #####
@@ -118,6 +142,7 @@ class TrafficEnvironment(AECEnv):
 
     def stop(self):
         self.simulator.stop()
+
 
     ################################
 
@@ -182,7 +207,8 @@ class TrafficEnvironment(AECEnv):
 
 
         # Collect rewards if it is the last agent to act
-        if self._agent_selector.is_last():  
+        if self._agent_selector.is_last(): 
+            self.episode = self.episode + 1
 
             # Calculate the rewards
             self._assign_rewards()      
@@ -246,14 +272,36 @@ class TrafficEnvironment(AECEnv):
             travel_times[agent_id].update(self.episode_actions[agent_id])
         return travel_times.values()
     
+
     def _reset_episode(self):
         self.simulator.reset()
 
-        self.travel_times_list = []
-        self.episode_actions = dict()
-
         self._agent_selector = agent_selector(self.possible_agents)
         self.agent_selection = self._agent_selector.next()
+
+        phase_start_time = 0
+        print("episode is: ", self.episode)
+        recording_task = threading.Thread(target=self._record, args=(self.episode, self.travel_times_list, phase_start_time, self.all_agents))
+        recording_task.start()
+
+        self.travel_times_list = []
+        self.episode_actions = dict()
+    
+    def _record(self, episode, ep_observations, start_time, agents):
+
+        dc_episode, dc_ep_observations, dc_start_time, dc_agents = dc(episode), dc(ep_observations), dc(start_time), dc(agents)
+
+        rewards = [{kc.AGENT_ID: agent.id, kc.REWARD: agent.last_reward} for agent in dc_agents]
+        if (dc_episode in self.remember_episodes):
+            self.recorder.record(dc_episode, dc_ep_observations, rewards)
+        elif not self.frequent_progressbar:
+            return
+        msg = f"{self.phase_names[self.curr_phase]} {self.curr_phase+1}/{len(self.phases)}"
+        curr_progress = dc_episode-self.phases[self.curr_phase]+1
+        target = (self.phases[self.curr_phase+1]) if ((self.curr_phase+1) < len(self.phases)) else self.num_episodes+1
+        target -= self.phases[self.curr_phase]
+        #show_progress_bar(msg, dc_start_time, curr_progress, target)
+
 
     ###########################
 
@@ -285,14 +333,13 @@ class TrafficEnvironment(AECEnv):
  
             travel_times = self.help_step(actions_timestep)
 
-            for agent in travel_times:
-                self.travel_times_list.append(agent)
+            for agent_dict in travel_times:
+                self.travel_times_list.append(agent_dict)
 
             # If the machine agent acted break
             if agent_action == 1:
                 agent_action = 0
                 break
-
 
     
     ###########################
@@ -312,6 +359,14 @@ class TrafficEnvironment(AECEnv):
     def _assign_rewards(self):
         for agent in self.all_agents:
             reward = agent.get_reward(self.travel_times_list)
+
+            # Add the reward in the travel_times_list
+            for agent_entry in self.travel_times_list:
+                if agent.id == agent_entry[kc.AGENT_ID]:
+                    self.travel_times_list.remove(agent_entry)
+                    agent_entry[kc.REWARD] = reward
+                    self.travel_times_list.append(agent_entry)
+
 
             if(agent.kind == 'AV'):
                 self.rewards[str(agent.id)] = reward

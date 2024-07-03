@@ -24,7 +24,7 @@ def main(params):
 
     env.reset()
 
-    for agent in env.agent_iter(max_iter=20):
+    for agent in env.agent_iter(max_iter=200):
         observation, reward, termination, truncation, info = env.last()
 
         if termination or truncation:
@@ -37,8 +37,7 @@ def main(params):
 
     env.stop()
 
-    #runner(env, agents, params[kc.RUNNER])
-    #plotter(params[kc.PLOTTER])
+    plotter(params[kc.PLOTTER])
 
 
 if __name__ == "__main__":
