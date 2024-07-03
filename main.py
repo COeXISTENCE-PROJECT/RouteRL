@@ -20,10 +20,11 @@ def main(params):
 
     api_test(env, num_cycles=1, verbose_progress=True)
 
+    print("\n\n\nAPI test passed\n\n\n")
 
+    env.reset()
 
-
-    for agent in env.agent_iter(max_iter=12):
+    for agent in env.agent_iter(max_iter=20):
         observation, reward, termination, truncation, info = env.last()
 
         if termination or truncation:

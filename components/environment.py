@@ -50,34 +50,32 @@ class TrafficEnvironment(AECEnv):
         self.agent_params = agent_params
         self.render_mode = render_mode
         self.travel_times_df = pd.DataFrame(columns=['id', 'travel_time'])
+        self.travel_times_dict = dict()
+        self.travel_times_list = []
         self.action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
-        self.step_actions = pd.DataFrame(columns = self.action_cols)
 
         self.action_space_size = self.environment_params[kc.ACTION_SPACE_SIZE]
 
         self.simulator = SumoSimulator(simulation_params)
         logging.info("Simulator initiated!")
 
-        self.agents = create_agent_objects(self.agent_params, self.get_free_flow_times())
+        self.all_agents = create_agent_objects(self.agent_params, self.get_free_flow_times())
         
         self.machine_agents = []
         self.human_agents = []
         self.possible_agents = []
 
-        for agent in self.agents:
+        for agent in self.all_agents:
             if agent.kind == kc.TYPE_MACHINE:
                 self.machine_agents.append(agent)
-                self.possible_agents.append(agent.id)
 
             elif agent.kind == kc.TYPE_HUMAN:
                 self.human_agents.append(agent)
             else:
                 raise ValueError('[AGENT TYPE INVALID] Unrecognized agent type: ' + agent.kind)
             
-        self.n_agents = len(self.possible_agents)
-            
         if len(self.machine_agents) != 0:
-            self._initialize_machine_agents(mutation=False)
+            self._initialize_machine_agents()
 
 
         logging.info(f"There are {self.n_agents} machine agents in the environment.")
@@ -86,7 +84,7 @@ class TrafficEnvironment(AECEnv):
         self.episode_actions = dict()
 
 
-    def _initialize_machine_agents(self, mutation):
+    def _initialize_machine_agents(self):
         """ Initialize the machine agents. """
 
         ## Sort machine agents based on their start_time
@@ -94,7 +92,9 @@ class TrafficEnvironment(AECEnv):
         self.possible_agents = [str(agent.id) for agent in sorted_machine_agents]
         self.n_agents = len(self.possible_agents)
 
-        print("self.possible_agents are: ", self.possible_agents)
+        self.agent_name_mapping = dict(
+            zip(self.possible_agents, list(range(len(self.possible_agents))))
+        )
 
         self.observation_obj = PreviousAgentStart(self.machine_agents, self.human_agents, self.simulation_params, self.agent_params, self.training_params)
 
@@ -111,7 +111,7 @@ class TrafficEnvironment(AECEnv):
 
     #############################
 
-    ##### SImulator control #####
+    ##### Simulator control #####
 
     def start(self):
         self.simulator.start()
@@ -162,7 +162,6 @@ class TrafficEnvironment(AECEnv):
         - agent_selection (to the next agent)
         And any internal state used by observe() or render()
         """
-        #print("------STEP------")
         if (
             self.terminations[self.agent_selection]
             or self.truncations[self.agent_selection]
@@ -178,19 +177,15 @@ class TrafficEnvironment(AECEnv):
         # The cumulative reward of the last agent must be 0
         self._cumulative_rewards[agent] = 0
 
+        print("Agent that has turn is: ", agent)
         self.simulation_loop(machine_action)
 
 
         # Collect rewards if it is the last agent to act
-        if self._agent_selector.is_last():
+        if self._agent_selector.is_last():  
 
-            # Assign the travel times to the machine agents
-            if self.machines == True:
-                self._machine_rewards()
-
-            # Assign the travel times to the human agents
-            if self.humans == True:
-                self.human_rewards()            
+            # Calculate the rewards
+            self._assign_rewards()      
 
             # The truncations dictionary must be updated for all players.
             self.truncations = {
@@ -206,18 +201,14 @@ class TrafficEnvironment(AECEnv):
             }
 
             self.observations = self.observation_obj(self.all_agents)
-
-            self.simulator.reset()
-            self.travel_times_df = self.travel_times_df[0:0]
-
+            self._reset_episode()
 
         else:
             # no rewards are allocated until all players give an action
             self._clear_rewards()
 
             self.agent_selection = self._agent_selector.next()
-            
-        
+
         # Adds .rewards to ._cumulative_rewards
         self._accumulate_rewards()
 
@@ -232,9 +223,9 @@ class TrafficEnvironment(AECEnv):
     def render(self):
         pass
 
-    #####################
+    #########################
 
-    ##### EPISODE OPS #####
+    ##### Help functions #####
     
     def get_observation(self):
         return self.simulator.timestep, self.episode_actions.values()
@@ -247,7 +238,7 @@ class TrafficEnvironment(AECEnv):
             self.simulator.add_vehice(action_dict)
             self.episode_actions[agent.id] = action_dict
         timestep, arrivals = self.simulator.step()
-        print("timestep is: ", timestep, "\n\n")
+
         travel_times = dict()
         for veh_id in arrivals:
             agent_id = int(veh_id)
@@ -255,6 +246,15 @@ class TrafficEnvironment(AECEnv):
             travel_times[agent_id].update(self.episode_actions[agent_id])
         return travel_times.values()
     
+    def _reset_episode(self):
+        self.simulator.reset()
+
+        self.travel_times_list = []
+        self.episode_actions = dict()
+
+        self._agent_selector = agent_selector(self.possible_agents)
+        self.agent_selection = self._agent_selector.next()
+
     ###########################
 
     ##### Simulation loop #####
@@ -263,34 +263,32 @@ class TrafficEnvironment(AECEnv):
         """ This function contains the integration of the agent's actions to SUMO. """
 
         agent_action = 0
-        total_agents = len(self.human_agents) + len(self.machine_agents)
-        while self.simulator.timestep < self.simulation_params[kc.SIMULATION_TIMESTEPS] or self.travel_times_df.shape[0] < total_agents:
+        while self.simulator.timestep < self.simulation_params[kc.SIMULATION_TIMESTEPS] or len(self.travel_times_list) < len(self.all_agents):
             actions_timestep = []
 
             # The agent provides the action to SUMO
             for human in self.human_agents:
                 if human.start_time == self.simulator.timestep:
                     action = human.act(0)
+                    human.last_action = action
                     actions_timestep.append((human, action))
 
             for machine in self.machine_agents:
                     
                 if machine.start_time == self.simulator.timestep:
-                    machine.save_last_action = machine_action
-                    actions_timestep.append((human, action))                
+                    print("machine acting is: ", machine.id)
+                    machine.last_action = machine_action
+                    actions_timestep.append((machine, machine_action))                
                     
                     if not self._agent_selector.is_last():
                         agent_action = 1
  
-            #self.timestep, travel_times = self.simulator.step(self.step_actions)
             travel_times = self.help_step(actions_timestep)
 
-            print("travel_time is: ", travel_times, "\n\n")
-            if travel_times:
-                self.travel_times_df = pd.concat([self.travel_times_df, travel_times], ignore_index=True) if not self.travel_times_df.empty and not travel_times.empty else travel_times if self.travel_times_df.empty else self.travel_times_df
+            for agent in travel_times:
+                self.travel_times_list.append(agent)
 
-
-            self.step_actions = pd.DataFrame(columns = self.action_cols)
+            # If the machine agent acted break
             if agent_action == 1:
                 agent_action = 0
                 break
@@ -309,6 +307,14 @@ class TrafficEnvironment(AECEnv):
         for _, row in paths_df.iterrows():
             ff_dict[(row[kc.ORIGIN], row[kc.DESTINATION])].append(row[kc.FREE_FLOW_TIME])
         return ff_dict
+    
+
+    def _assign_rewards(self):
+        for agent in self.all_agents:
+            reward = agent.get_reward(self.travel_times_list)
+
+            if(agent.kind == 'AV'):
+                self.rewards[str(agent.id)] = reward
 
 
     ###########################

@@ -46,14 +46,11 @@ class PreviousAgentStart(Observations):
                 if (machine.id != agent.id and
                     machine.origin == agent.origin and 
                     machine.destination == agent.destination and 
-                    abs(machine.start_time - agent.start_time) < self.agent_params[kc.OBSERVED_SPAN]):
+                    abs(machine.start_time - agent.start_time) < machine.observed_span):
 
                     observation[agent.last_action] += 1  
 
             self.observations[str(machine.id)] = observation.tolist()
-
-        """with open(self.training_params[kc.MACHINE_OBSERVATIONS_FILE_PATH], "a") as json_file:
-            json.dump(self.observations, json_file, indent=4)"""
 
         return self.observations
     
