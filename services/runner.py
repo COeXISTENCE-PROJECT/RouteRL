@@ -5,8 +5,8 @@ from collections import Counter
 from copy import deepcopy as dc
 
 from .recorder import Recorder
-from components import BaseAgent
-from components import TrafficEnvironment
+from environment import BaseAgent
+from environment import TrafficEnvironment
 from keychain import Keychain as kc
 from utilities import show_progress_bar
 

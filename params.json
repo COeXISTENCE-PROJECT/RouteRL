@@ -11,7 +11,7 @@
     "runner_parameters":
     {
         "num_episodes" : 100,
-        "phases" : [1, 40, 80],
+        "phases" : [1, 30, 35],
         "phase_names" : ["Settle", "Shock", "Adapt"],
         "remember_every" : 2,
         "frequent_progressbar_update" : false

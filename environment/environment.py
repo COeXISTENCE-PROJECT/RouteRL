@@ -62,6 +62,7 @@ class TrafficEnvironment(AECEnv):
         self.travel_times_list = []
         self.action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
         self.episode = 0
+        self.human_learning = True
 
         """ runner attributes """
         self.num_episodes = self.training_params[kc.NUM_EPISODES]
@@ -111,6 +112,14 @@ class TrafficEnvironment(AECEnv):
 
     def _initialize_machine_agents(self):
         """ Initialize the machine agents. """
+
+        same_travel_time = 0
+        for agent in self.machine_agents:
+            for agent2 in self.machine_agents:
+                if(agent.start_time == agent2.start_time) and (agent.id != agent2.id):
+                    same_travel_time += 1
+        
+        print("Same travel time: ", same_travel_time, "\n\n")
 
         ## Sort machine agents based on their start_time
         sorted_machine_agents = sorted(self.machine_agents, key=lambda agent: agent.start_time)
@@ -187,6 +196,7 @@ class TrafficEnvironment(AECEnv):
         - agent_selection (to the next agent)
         And any internal state used by observe() or render()
         """
+        print("-------------------STEP-------------------")
         if (
             self.terminations[self.agent_selection]
             or self.truncations[self.agent_selection]
@@ -203,7 +213,7 @@ class TrafficEnvironment(AECEnv):
         self._cumulative_rewards[agent] = 0
 
         print("Agent that has turn is: ", agent)
-        self.simulation_loop(machine_action)
+        self.simulation_loop(machine_action, agent)
 
 
         # Collect rewards if it is the last agent to act
@@ -274,6 +284,7 @@ class TrafficEnvironment(AECEnv):
     
 
     def _reset_episode(self):
+        print("-------------------RESET EPISODE-------------------")
         self.simulator.reset()
 
         self._agent_selector = agent_selector(self.possible_agents)
@@ -281,6 +292,7 @@ class TrafficEnvironment(AECEnv):
 
         phase_start_time = 0
         print("episode is: ", self.episode)
+
         recording_task = threading.Thread(target=self._record, args=(self.episode, self.travel_times_list, phase_start_time, self.all_agents))
         recording_task.start()
 
@@ -303,12 +315,33 @@ class TrafficEnvironment(AECEnv):
         #show_progress_bar(msg, dc_start_time, curr_progress, target)
 
 
+    def _assign_rewards(self):
+        for agent in self.all_agents:
+            reward = agent.get_reward(self.travel_times_list)
+
+            # Add the reward in the travel_times_list
+            for agent_entry in self.travel_times_list:
+                if agent.id == agent_entry[kc.AGENT_ID]:
+                    self.travel_times_list.remove(agent_entry)
+                    agent_entry[kc.REWARD] = reward
+                    self.travel_times_list.append(agent_entry)
+
+
+            if(agent.kind == 'AV'):
+                self.rewards[str(agent.id)] = reward
+
+            elif self.human_learning == True:
+                agent.learn(agent.last_action, self.travel_times_list)
+
+
     ###########################
 
     ##### Simulation loop #####
 
-    def simulation_loop(self, machine_action):
+    def simulation_loop(self, machine_action, machine_id):
         """ This function contains the integration of the agent's actions to SUMO. """
+
+        print("-------------------SIMULATION LOOP-------------------")
 
         agent_action = 0
         while self.simulator.timestep < self.simulation_params[kc.SIMULATION_TIMESTEPS] or len(self.travel_times_list) < len(self.all_agents):
@@ -322,8 +355,8 @@ class TrafficEnvironment(AECEnv):
                     actions_timestep.append((human, action))
 
             for machine in self.machine_agents:
-                    
-                if machine.start_time == self.simulator.timestep:
+                
+                if machine.start_time == self.simulator.timestep and str(machine.id) == machine_id:
                     print("machine acting is: ", machine.id)
                     machine.last_action = machine_action
                     actions_timestep.append((machine, machine_action))                
@@ -354,23 +387,6 @@ class TrafficEnvironment(AECEnv):
         for _, row in paths_df.iterrows():
             ff_dict[(row[kc.ORIGIN], row[kc.DESTINATION])].append(row[kc.FREE_FLOW_TIME])
         return ff_dict
-    
-
-    def _assign_rewards(self):
-        for agent in self.all_agents:
-            reward = agent.get_reward(self.travel_times_list)
-
-            # Add the reward in the travel_times_list
-            for agent_entry in self.travel_times_list:
-                if agent.id == agent_entry[kc.AGENT_ID]:
-                    self.travel_times_list.remove(agent_entry)
-                    agent_entry[kc.REWARD] = reward
-                    self.travel_times_list.append(agent_entry)
-
-
-            if(agent.kind == 'AV'):
-                self.rewards[str(agent.id)] = reward
-
 
     ###########################
 
@@ -382,3 +398,11 @@ class TrafficEnvironment(AECEnv):
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
         return self._action_spaces[agent]
+    
+
+
+
+
+"""
+Think how to handle machines that have the same start time.
+"""

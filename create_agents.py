@@ -1,8 +1,8 @@
 import os
 import pandas as pd
 
-from components import HumanAgent
-from components import MachineAgent
+from environment import HumanAgent
+from environment import MachineAgent
 from keychain import Keychain as kc
 
 

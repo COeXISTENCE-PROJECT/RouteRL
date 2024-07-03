@@ -1,5 +1,5 @@
-from components import SumoSimulator
-from components import TrafficEnvironment
+from environment import SumoSimulator
+from environment import TrafficEnvironment
 from keychain import Keychain as kc
 from services import plotter
 from services import runner
@@ -16,15 +16,15 @@ def main(params):
     env = TrafficEnvironment(params[kc.RUNNER], params[kc.ENVIRONMENT], params[kc.SIMULATOR], params[kc.AGENT_GEN], params[kc.AGENTS]) 
 
     env.start()
-    env.reset()
+    """env.reset()
 
     api_test(env, num_cycles=1, verbose_progress=True)
 
-    print("\n\n\nAPI test passed\n\n\n")
+    print("\n\n\nAPI test passed\n\n\n")"""
 
     env.reset()
 
-    for agent in env.agent_iter(max_iter=200):
+    for agent in env.agent_iter(max_iter=377000):
         observation, reward, termination, truncation, info = env.last()
 
         if termination or truncation:
