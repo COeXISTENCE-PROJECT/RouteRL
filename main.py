@@ -24,7 +24,10 @@ def main(params):
 
     env.reset()
 
-    for agent in env.agent_iter(max_iter=377000):
+    iter = 0
+    for agent in env.agent_iter(max_iter=35200):
+        print("\n\n\n\niter is: ", iter, "\n\n\n\n")
+        iter += 1
         observation, reward, termination, truncation, info = env.last()
 
         if termination or truncation:

@@ -355,12 +355,18 @@ class TrafficEnvironment(AECEnv):
                     actions_timestep.append((human, action))
 
             for machine in self.machine_agents:
-                
-                if machine.start_time == self.simulator.timestep and str(machine.id) == machine_id:
-                    print("machine acting is: ", machine.id)
+                #print("machine.start_time is: ", machine.start_time, "self.simulator.timestep is: ", self.simulator.timestep, "\n\n\n")
+                if machine.start_time == self.simulator.timestep:
+                    print("machine acting is: ", machine.id, machine.start_time)
+
                     machine.last_action = machine_action
-                    actions_timestep.append((machine, machine_action))                
-                    
+                    actions_timestep.append((machine, machine_action))  
+
+                    # In case there are machine agents that have the same start time
+                    if str(machine.id) != machine_id:
+                        print("inside next agent\n\n")
+                        self.agent_selection = self._agent_selector.next()
+
                     if not self._agent_selector.is_last():
                         agent_action = 1
  
@@ -369,7 +375,7 @@ class TrafficEnvironment(AECEnv):
             for agent_dict in travel_times:
                 self.travel_times_list.append(agent_dict)
 
-            # If the machine agent acted break
+            # If the machine agent that had turn acted
             if agent_action == 1:
                 agent_action = 0
                 break
