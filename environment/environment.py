@@ -121,14 +121,10 @@ class TrafficEnvironment(AECEnv):
                 if(agent.start_time == agent2.start_time) and (agent.id != agent2.id):
                     same_travel_time += 1
         
-        print("Same travel time: ", same_travel_time, "\n\n")
-
         ## Sort machine agents based on their start_time
         sorted_machine_agents = sorted(self.machine_agents, key=lambda agent: agent.start_time)
         self.possible_agents = [str(agent.id) for agent in sorted_machine_agents]
         self.n_agents = len(self.possible_agents)
-
-        print("self.possible agents are: ", self.possible_agents, "\n\n")
 
         self.agent_name_mapping = dict(
             zip(self.possible_agents, list(range(len(self.possible_agents))))
@@ -295,7 +291,6 @@ class TrafficEnvironment(AECEnv):
         self.agent_selection = self._agent_selector.next()
 
         phase_start_time = 0
-        print("episode is: ", self.episode)
 
         recording_task = threading.Thread(target=self._record, args=(self.episode, self.travel_times_list, phase_start_time, self.all_agents))
         recording_task.start()
@@ -349,7 +344,6 @@ class TrafficEnvironment(AECEnv):
 
         agent_action = 0
         while self.simulator.timestep < self.simulation_params[kc.SIMULATION_TIMESTEPS] or len(self.travel_times_list) < len(self.all_agents):
-            #print("Timestep is: ", self.simulator.timestep, self.travel_times_list, "\n\n")
 
             # If there are more than one machines with the same start time
             # the humans must be added once
@@ -361,29 +355,20 @@ class TrafficEnvironment(AECEnv):
                         self.actions_timestep.append((human, action))
 
             for machine in self.machine_agents:
-                #print("machine.start_time is: ", machine.start_time, "self.simulator.timestep is: ", self.simulator.timestep, "\n\n\n")
                 if machine.start_time == self.simulator.timestep:
-                    #print("if machine acting is: ", machine.id, machine_action, self.machine_same_start_time, "\n\n")
-
                     # In case there are machine agents that have the same start time but it's not their turn
                     if (str(machine.id) != machine_id):
-                        #print("inside if statement", machine.id, "\n\n")
-
-                        #print("self.actions_timestep is: ", self.actions_timestep, "\n\n")
 
                         if (machine not in self.machine_same_start_time) and not any(machine == item[0] for item in self.actions_timestep):
                             self.machine_same_start_time.append(machine)
-                        #print("self.machine_same_start_time is: ", self.machine_same_start_time)
                         continue
 
                     else:
-                        print("\n\n\nAgent acting is: ", machine.id, machine.start_time, self.machine_same_start_time, "\n\n\n")
                         machine.last_action = machine_action
                         self.actions_timestep.append((machine, machine_action))  
 
                         # If the turn of the machine with the same start time came remove it from the list
                         if machine in self.machine_same_start_time:
-                            #print("GOING TO REMOVE MACHINE\n\n")
                             self.machine_same_start_time.remove(machine)
 
                     
@@ -396,7 +381,6 @@ class TrafficEnvironment(AECEnv):
 
                 for agent_dict in travel_times:
                     self.travel_times_list.append(agent_dict)
-                    #print("self.travel_times_list is: ", self.travel_times_list, "\n\n")
 
                 self.actions_timestep = []
                 self.machine_same_start_time = []
