@@ -1,9 +1,12 @@
+import logging
 import os
 import polars as pl
 
 from keychain import Keychain as kc
 from utilities import make_dir
 
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
 
 class Recorder:
 
@@ -17,7 +20,7 @@ class Recorder:
         self._clear_records(self.episodes_folder)
         self.sim_length_file_path = self._get_txt_file_path(kc.SIMULATION_LENGTH_LOG_FILE_NAME)
         self.loss_file_path = self._get_txt_file_path(kc.LOSSES_LOG_FILE_NAME)
-        print(f"[SUCCESS] Recorder is now here to record!")
+        logging.info(f"[SUCCESS] Recorder is now here to record!")
 
 #################### INIT HELPERS
 

@@ -1,12 +1,10 @@
-from gymnasium.spaces import Box, Discrete
+from gymnasium.spaces import Discrete
 import functools
 from copy import copy
 from copy import deepcopy as dc
 import logging
-import os
 import pandas as pd
 import threading
-import sys
 
 from create_agents import create_agent_objects
 from .simulator import SumoSimulator
@@ -106,7 +104,7 @@ class TrafficEnvironment(AECEnv):
             self._initialize_machine_agents()
 
 
-        logging.info(f"There are {self.n_agents} machine agents in the environment.")
+        logging.info(f"There are {len(self.machine_agents)} machine agents in the environment.")
         logging.info(f"There are {len(self.human_agents)} human agents in the environment.")
 
         self.episode_actions = dict()
@@ -196,7 +194,6 @@ class TrafficEnvironment(AECEnv):
         - agent_selection (to the next agent)
         And any internal state used by observe() or render()
         """
-        print("-------------------STEP-------------------")
         if (
             self.terminations[self.agent_selection]
             or self.truncations[self.agent_selection]
@@ -212,9 +209,7 @@ class TrafficEnvironment(AECEnv):
         # The cumulative reward of the last agent must be 0
         self._cumulative_rewards[agent] = 0
 
-        print("Agent that has turn is: ", agent, self.simulator.timestep)
         self.simulation_loop(machine_action, agent)
-
 
         # Collect rewards if it is the last agent to act
         if self._agent_selector.is_last(): 
@@ -284,7 +279,6 @@ class TrafficEnvironment(AECEnv):
     
 
     def _reset_episode(self):
-        print("-------------------RESET EPISODE-------------------")
         self.simulator.reset()
 
         self._agent_selector = agent_selector(self.possible_agents)
@@ -326,10 +320,11 @@ class TrafficEnvironment(AECEnv):
                     agent_entry[kc.REWARD] = reward
                     self.travel_times_list.append(agent_entry)
 
-
+            # Save machine's rewards based on PettingZoo standards
             if(agent.kind == 'AV'):
                 self.rewards[str(agent.id)] = reward
 
+            # Human learning
             elif self.human_learning == True:
                 agent.learn(agent.last_action, self.travel_times_list)
 
@@ -339,14 +334,23 @@ class TrafficEnvironment(AECEnv):
     ##### Simulation loop #####
 
     def simulation_loop(self, machine_action, machine_id):
-        """ This function contains the integration of the agent's actions to SUMO. """
-        print("-------------------SIMULATION LOOP-------------------")
-
-        agent_action = 0
+        """ This function contains the integration of the agent's actions to SUMO. 
+        Description:
+            We iterate through all the timesteps of the simulation.
+            For each timestep there are None, one or more than one agents (humans, machines) that start. 
+            If more than one machine agents have the same start time, we break from this function because we need to take the agent's action from the STEP function.
+        Data structures:
+            self.machine_same_start_time (list): contains the machine agents that their start time is equal to the simulator timestep
+                and haven't acted yet.
+            self.actions_timestep (list): includes the agents (machines/humans) that have acted in this timestep and
+                their action will be send in the simulator
+            agent_action (bool): break if the agent acting is not the last one (because the next agent should STEP first)
+        """
+        agent_action = False
         while self.simulator.timestep < self.simulation_params[kc.SIMULATION_TIMESTEPS] or len(self.travel_times_list) < len(self.all_agents):
 
             # If there are more than one machines with the same start time
-            # the humans must be added once
+            # the humans should act once
             if not self.actions_timestep:
                 for human in self.human_agents:
                     if human.start_time == self.simulator.timestep:
@@ -356,27 +360,30 @@ class TrafficEnvironment(AECEnv):
 
             for machine in self.machine_agents:
                 if machine.start_time == self.simulator.timestep:
+
                     # In case there are machine agents that have the same start time but it's not their turn
                     if (str(machine.id) != machine_id):
 
+                        # If some machines have the same start time and they haven't acted yet
                         if (machine not in self.machine_same_start_time) and not any(machine == item[0] for item in self.actions_timestep):
                             self.machine_same_start_time.append(machine)
                         continue
 
                     else:
+                        # Machine acting
                         machine.last_action = machine_action
                         self.actions_timestep.append((machine, machine_action))  
 
-                        # If the turn of the machine with the same start time came remove it from the list
+                        # The machine acted should be deleted from the self.machine_same_start_time list
                         if machine in self.machine_same_start_time:
                             self.machine_same_start_time.remove(machine)
 
-                    
+                        # If the machine isn't the last agent to act then we need to step again for the next agent
                         if not self._agent_selector.is_last():
-                            agent_action = 1
+                            agent_action = True
 
- 
-            if not self.machine_same_start_time: #check that the list is empty
+            # If all machines that have start time as the simulator timestep acted
+            if not self.machine_same_start_time: 
                 travel_times = self.help_step(self.actions_timestep)
 
                 for agent_dict in travel_times:
@@ -386,8 +393,8 @@ class TrafficEnvironment(AECEnv):
                 self.machine_same_start_time = []
 
             # If the machine agent that had turn acted
-            if agent_action == 1:
-                agent_action = 0
+            if agent_action == True:
+                agent_action = False
                 break
 
     

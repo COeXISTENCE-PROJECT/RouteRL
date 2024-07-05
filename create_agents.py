@@ -1,9 +1,13 @@
+import logging
 import os
 import pandas as pd
 
 from environment import HumanAgent
 from environment import MachineAgent
 from keychain import Keychain as kc
+
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
 
 
 def create_agent_objects(params, free_flow_times):
@@ -17,7 +21,7 @@ def create_agent_objects(params, free_flow_times):
 
     agents_data_path = kc.AGENTS_DATA_PATH
     if os.path.isfile(agents_data_path):
-        print("[CONFIRMED] Agents data file is ready.")
+        logging.info("[CONFIRMED] Agents data file is ready.")
     else:
         raise FileNotFoundError("Agents data file is not ready. Please generate agents data first.")
     
@@ -44,5 +48,5 @@ def create_agent_objects(params, free_flow_times):
         else:
             raise ValueError('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_KIND])
 
-    print(f'[SUCCESS] Created agent objects (%d)' % (len(agents)))
+    logging.info(f'[SUCCESS] Created agent objects (%d)' % (len(agents)))
     return agents

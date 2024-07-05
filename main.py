@@ -3,6 +3,7 @@ from environment import TrafficEnvironment
 from keychain import Keychain as kc
 from services import plotter
 from services import runner
+from tqdm import tqdm
 
 from create_agents import create_agent_objects
 from utilities import check_device
@@ -16,18 +17,10 @@ def main(params):
     env = TrafficEnvironment(params[kc.RUNNER], params[kc.ENVIRONMENT], params[kc.SIMULATOR], params[kc.AGENT_GEN], params[kc.AGENTS]) 
 
     env.start()
-    """env.reset()
-
-    api_test(env, num_cycles=1, verbose_progress=True)
-
-    print("\n\n\nAPI test passed\n\n\n")"""
-
     env.reset()
 
-    iter = 0
-    for agent in env.agent_iter(max_iter=35200):
-        print("\n\n\n\niter is: ", iter, "\n\n\n\n")
-        iter += 1
+    max_iter = 35200 #because 352 machine agents * 100 episodes (days)
+    for agent in tqdm(env.agent_iter(max_iter=max_iter), total=max_iter):
         observation, reward, termination, truncation, info = env.last()
 
         if termination or truncation:

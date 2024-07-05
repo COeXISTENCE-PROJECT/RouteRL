@@ -1,3 +1,4 @@
+import logging
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -12,7 +13,8 @@ from keychain import Keychain as kc
 from utilities import make_dir
 from utilities import running_average
 
-
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
 
 class Plotter:
 
@@ -93,7 +95,7 @@ class Plotter:
 
         plt.savefig(save_to)
         plt.close()
-        print(f"[SUCCESS] Rewards are saved to {save_to}")
+        logging.info(f"[SUCCESS] Rewards are saved to {save_to}")
         
 ####################   
 
@@ -124,7 +126,7 @@ class Plotter:
 
         plt.savefig(save_to)
         plt.close()
-        print(f"[SUCCESS] Travel times are saved to {save_to}")
+        logging.info(f"[SUCCESS] Travel times are saved to {save_to}")
 
 ####################
     
@@ -209,7 +211,7 @@ class Plotter:
 
         plt.savefig(save_to)
         plt.close()
-        print(f"[SUCCESS] Travel time distributions are saved to {save_to}")
+        logging.info(f"[SUCCESS] Travel time distributions are saved to {save_to}")
 
 ####################
     
@@ -261,7 +263,7 @@ class Plotter:
 
         plt.savefig(save_to)
         plt.close()
-        print(f"[SUCCESS] Actions are saved to {save_to}")
+        logging.info(f"[SUCCESS] Actions are saved to {save_to}")
             
 ####################
     
@@ -320,7 +322,7 @@ class Plotter:
 
         plt.savefig(save_to)
         plt.close()
-        print(f"[SUCCESS] Actions shifts are saved to {save_to}")
+        logging.info(f"[SUCCESS] Actions shifts are saved to {save_to}")
     
 ####################
     
@@ -345,7 +347,7 @@ class Plotter:
 
         plt.savefig(save_to)
         plt.close()
-        print(f"[SUCCESS] Simulation lengths are saved to {save_to}")
+        logging.info(f"[SUCCESS] Simulation lengths are saved to {save_to}")
 
 
 
@@ -381,7 +383,7 @@ class Plotter:
 
         plt.savefig(save_to)
         plt.close()
-        print(f"[SUCCESS] Losses are saved to {save_to}")
+        logging.info(f"[SUCCESS] Losses are saved to {save_to}")
 
 
 

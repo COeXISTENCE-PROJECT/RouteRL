@@ -1,4 +1,5 @@
 import os
+import logging
 import pandas as pd
 import random
 import traci
@@ -8,6 +9,10 @@ from utilities import confirm_env_variable
 
 import time
 import numpy as np
+
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
+
 class SumoSimulator():
 
     def __init__(self, params):
@@ -29,7 +34,7 @@ class SumoSimulator():
         self.timestep = 0
         self.route_id_cache = dict()
 
-        print("[SUCCESS] Simulator is ready to simulate!")
+        logging.info("[SUCCESS] Simulator is ready to simulate!")
 
     #####################
 
@@ -37,7 +42,7 @@ class SumoSimulator():
 
     def _check_paths_ready(self):
         if os.path.isfile(self.paths_csv_path) and os.path.isfile(self.routes_xml_path):
-            print("[CONFIRMED] Paths file is ready.")
+            logging.info("[CONFIRMED] Paths file is ready.")
         else:
             raise FileNotFoundError("Paths file is not ready. Please generate paths first.")
         
