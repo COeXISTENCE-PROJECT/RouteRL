@@ -63,6 +63,8 @@ class TrafficEnvironment(AECEnv):
         self.action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
         self.episode = 0
         self.human_learning = True
+        self.machine_same_start_time = []
+        self.actions_timestep = []
 
         """ runner attributes """
         self.num_episodes = self.training_params[kc.NUM_EPISODES]
@@ -125,6 +127,8 @@ class TrafficEnvironment(AECEnv):
         sorted_machine_agents = sorted(self.machine_agents, key=lambda agent: agent.start_time)
         self.possible_agents = [str(agent.id) for agent in sorted_machine_agents]
         self.n_agents = len(self.possible_agents)
+
+        print("self.possible agents are: ", self.possible_agents, "\n\n")
 
         self.agent_name_mapping = dict(
             zip(self.possible_agents, list(range(len(self.possible_agents))))
@@ -212,7 +216,7 @@ class TrafficEnvironment(AECEnv):
         # The cumulative reward of the last agent must be 0
         self._cumulative_rewards[agent] = 0
 
-        print("Agent that has turn is: ", agent)
+        print("Agent that has turn is: ", agent, self.simulator.timestep)
         self.simulation_loop(machine_action, agent)
 
 
@@ -299,6 +303,7 @@ class TrafficEnvironment(AECEnv):
         self.travel_times_list = []
         self.episode_actions = dict()
     
+
     def _record(self, episode, ep_observations, start_time, agents):
 
         dc_episode, dc_ep_observations, dc_start_time, dc_agents = dc(episode), dc(ep_observations), dc(start_time), dc(agents)
@@ -340,40 +345,61 @@ class TrafficEnvironment(AECEnv):
 
     def simulation_loop(self, machine_action, machine_id):
         """ This function contains the integration of the agent's actions to SUMO. """
-
         print("-------------------SIMULATION LOOP-------------------")
 
         agent_action = 0
         while self.simulator.timestep < self.simulation_params[kc.SIMULATION_TIMESTEPS] or len(self.travel_times_list) < len(self.all_agents):
-            actions_timestep = []
+            #print("Timestep is: ", self.simulator.timestep, self.travel_times_list, "\n\n")
 
-            # The agent provides the action to SUMO
-            for human in self.human_agents:
-                if human.start_time == self.simulator.timestep:
-                    action = human.act(0)
-                    human.last_action = action
-                    actions_timestep.append((human, action))
+            # If there are more than one machines with the same start time
+            # the humans must be added once
+            if not self.actions_timestep:
+                for human in self.human_agents:
+                    if human.start_time == self.simulator.timestep:
+                        action = human.act(0)
+                        human.last_action = action
+                        self.actions_timestep.append((human, action))
 
             for machine in self.machine_agents:
                 #print("machine.start_time is: ", machine.start_time, "self.simulator.timestep is: ", self.simulator.timestep, "\n\n\n")
                 if machine.start_time == self.simulator.timestep:
-                    print("machine acting is: ", machine.id, machine.start_time)
+                    #print("if machine acting is: ", machine.id, machine_action, self.machine_same_start_time, "\n\n")
 
-                    machine.last_action = machine_action
-                    actions_timestep.append((machine, machine_action))  
+                    # In case there are machine agents that have the same start time but it's not their turn
+                    if (str(machine.id) != machine_id):
+                        #print("inside if statement", machine.id, "\n\n")
 
-                    # In case there are machine agents that have the same start time
-                    if str(machine.id) != machine_id:
-                        print("inside next agent\n\n")
-                        self.agent_selection = self._agent_selector.next()
+                        #print("self.actions_timestep is: ", self.actions_timestep, "\n\n")
 
-                    if not self._agent_selector.is_last():
-                        agent_action = 1
+                        if (machine not in self.machine_same_start_time) and not any(machine == item[0] for item in self.actions_timestep):
+                            self.machine_same_start_time.append(machine)
+                        #print("self.machine_same_start_time is: ", self.machine_same_start_time)
+                        continue
+
+                    else:
+                        print("\n\n\nAgent acting is: ", machine.id, machine.start_time, self.machine_same_start_time, "\n\n\n")
+                        machine.last_action = machine_action
+                        self.actions_timestep.append((machine, machine_action))  
+
+                        # If the turn of the machine with the same start time came remove it from the list
+                        if machine in self.machine_same_start_time:
+                            #print("GOING TO REMOVE MACHINE\n\n")
+                            self.machine_same_start_time.remove(machine)
+
+                    
+                        if not self._agent_selector.is_last():
+                            agent_action = 1
+
  
-            travel_times = self.help_step(actions_timestep)
+            if not self.machine_same_start_time: #check that the list is empty
+                travel_times = self.help_step(self.actions_timestep)
 
-            for agent_dict in travel_times:
-                self.travel_times_list.append(agent_dict)
+                for agent_dict in travel_times:
+                    self.travel_times_list.append(agent_dict)
+                    #print("self.travel_times_list is: ", self.travel_times_list, "\n\n")
+
+                self.actions_timestep = []
+                self.machine_same_start_time = []
 
             # If the machine agent that had turn acted
             if agent_action == 1:
@@ -405,10 +431,3 @@ class TrafficEnvironment(AECEnv):
     def action_space(self, agent):
         return self._action_spaces[agent]
     
-
-
-
-
-"""
-Think how to handle machines that have the same start time.
-"""
