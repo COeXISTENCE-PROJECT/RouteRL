@@ -45,6 +45,7 @@ class TrafficEnvironment(AECEnv):
                 simulation_params,
                 agent_gen_params,
                 agent_params,
+                phases_params,
                 render_mode=None):
         
         super().__init__()
@@ -55,11 +56,12 @@ class TrafficEnvironment(AECEnv):
         self.simulation_params = simulation_params
         self.agent_params = agent_params
         self.render_mode = render_mode
+        self.phases_params = phases_params
         self.travel_times_df = pd.DataFrame(columns=['id', 'travel_time'])
         self.travel_times_dict = dict()
         self.travel_times_list = []
         self.action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
-        self.episode = 0
+        self.day = 0
         self.human_learning = True
         self.machine_same_start_time = []
         self.actions_timestep = []
@@ -70,7 +72,11 @@ class TrafficEnvironment(AECEnv):
         self.phase_names = self.training_params[kc.PHASE_NAMES]
         self.frequent_progressbar = self.training_params[kc.FREQUENT_PROGRESSBAR_UPDATE]
         self.remember_every = self.training_params[kc.REMEMBER_EVERY]
+
+        """ phase """
+        #self.phase_management = HumanLearning_Mutation(self.phases_params)
         
+        """ recorder attributes """
         self.remember_episodes = [ep for ep in range(self.remember_every, self.num_episodes+1, self.remember_every)]
         self.remember_episodes += [1, self.num_episodes] + [ep-1 for ep in self.phases] + [ep for ep in self.phases]
         self.remember_episodes = set(self.remember_episodes)
@@ -213,18 +219,18 @@ class TrafficEnvironment(AECEnv):
 
         # Collect rewards if it is the last agent to act
         if self._agent_selector.is_last(): 
-            self.episode = self.episode + 1
+            self.day= self.day+ 1
 
             # Calculate the rewards
-            self._assign_rewards()      
+            self._assign_rewards() 
 
-            # The truncations dictionary must be updated for all players.
+            # The episode ends when we complete episode_length days
             self.truncations = {
-                agent: False for agent in self.agents
+                agent: self.day% self.training_params[kc.EPISODE_LENGTH] for agent in self.agents
             }
 
             self.terminations = {
-                agent: False for agent in self.agents
+                agent: self.day% self.training_params[kc.EPISODE_LENGTH] for agent in self.agents
             }
 
             self.info = {
@@ -286,7 +292,7 @@ class TrafficEnvironment(AECEnv):
 
         phase_start_time = 0
 
-        recording_task = threading.Thread(target=self._record, args=(self.episode, self.travel_times_list, phase_start_time, self.all_agents))
+        recording_task = threading.Thread(target=self._record, args=(self.day, self.travel_times_list, phase_start_time, self.all_agents))
         recording_task.start()
 
         self.travel_times_list = []
@@ -322,7 +328,7 @@ class TrafficEnvironment(AECEnv):
 
             # Save machine's rewards based on PettingZoo standards
             if(agent.kind == 'AV'):
-                self.rewards[str(agent.id)] = reward
+                self.rewards[str(agent.id)] = -1 * reward
 
             # Human learning
             elif self.human_learning == True:
@@ -410,7 +416,7 @@ class TrafficEnvironment(AECEnv):
         for _, row in paths_df.iterrows():
             ff_dict[(row[kc.ORIGIN], row[kc.DESTINATION])].append(row[kc.FREE_FLOW_TIME])
         return ff_dict
-
+    
     ###########################
 
     @functools.lru_cache(maxsize=None)

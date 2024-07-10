@@ -14,23 +14,33 @@ from pettingzoo.test import api_test
 
 
 def main(params):
-    env = TrafficEnvironment(params[kc.RUNNER], params[kc.ENVIRONMENT], params[kc.SIMULATOR], params[kc.AGENT_GEN], params[kc.AGENTS]) 
+    env = TrafficEnvironment(params[kc.RUNNER], params[kc.ENVIRONMENT], params[kc.SIMULATOR], params[kc.AGENT_GEN], params[kc.AGENTS], params[kc.PHASE])
 
     env.start()
     env.reset()
 
-    max_iter = 35200 #because 352 machine agents * 100 episodes (days)
-    for agent in tqdm(env.agent_iter(max_iter=max_iter), total=max_iter):
-        observation, reward, termination, truncation, info = env.last()
+    num_episodes = 100
 
-        if termination or truncation:
-            action = None
-        else:
-            # this is where you would insert your policy
-            action = env.action_space(agent).sample()
+    for agent in env.agent_iter():
+         print("agent", agent, "\n\n")
+         break
 
-        env.step(action)
+    for episode in range(num_episodes):
+        print("episode is: ", episode, "\n\n")
+        env.reset()
 
+        while(1):
+            observation, reward, termination, truncation, info = env.last()
+
+            if termination or truncation:
+                print("truncations break\n\n")
+                break
+            else:
+                # This is where you would insert your policy
+                action = env.action_space(agent).sample()
+
+            env.step(action)
+            
     env.stop()
 
     plotter(params[kc.PLOTTER])

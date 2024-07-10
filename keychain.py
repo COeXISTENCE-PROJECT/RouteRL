@@ -17,6 +17,7 @@ class Keychain:
     PLOTTER = "plotter_parameters"
     AGENT_GEN = "agent_generation_parameters"
     PATH_GEN = "path_generation_parameters"
+    PHASE = "phase_parameters"
 
     ### Agent parameters
     HUMAN_PARAMETERS = "human_parameters"
@@ -41,8 +42,13 @@ class Keychain:
     NUM_HIDDEN = "num_hidden"
     WIDTHS = "widths"
 
+    ### Phase parameters
+    NUMBER_OF_PHASES = "number_of_phases"
+    NUMBER_OF_EPISODES_EACH_PHASE = "number_episodes_each_phase"
+
     ### Runner
     NUM_EPISODES = "num_episodes"
+    EPISODE_LENGTH = "episode_length"
     REMEMBER_EVERY = "remember_every"
     PHASES = "phases"
     PHASE_NAMES = "phase_names"
