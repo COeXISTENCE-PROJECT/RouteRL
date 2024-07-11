@@ -19,7 +19,7 @@ def main(params):
     env.start()
     env.reset()
 
-    num_episodes = 100
+    num_episodes = 10
 
     for agent in env.agent_iter():
          print("agent", agent, "\n\n")
@@ -40,7 +40,27 @@ def main(params):
                 action = env.action_space(agent).sample()
 
             env.step(action)
-            
+
+    env.mutation()
+    env.reset()
+
+    for episode in range(num_episodes):
+        print("episode is: ", episode, "\n\n")
+        env.reset()
+
+        while(1):
+            observation, reward, termination, truncation, info = env.last()
+
+            if termination or truncation:
+                print("truncations break\n\n")
+                break
+            else:
+                # This is where you would insert your policy
+                action = env.action_space(agent).sample()
+
+            env.step(action)
+
+
     env.stop()
 
     plotter(params[kc.PLOTTER])

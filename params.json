@@ -10,9 +10,9 @@
     
     "runner_parameters":
     {
-        "num_episodes" : 40,
-        "episode_length": 5,
-        "phases" : [1, 15, 35],
+        "num_episodes" : 100,
+        "episode_length": 2,
+        "phases" : [1, 15, 17],
         "phase_names" : ["Settle", "Shock", "Adapt"],
         "remember_every" : 2,
         "frequent_progressbar_update" : false
@@ -94,6 +94,7 @@
     "agent_generation_parameters" :
     {
         "num_agents" : 1200,
+        "new_machines_after_mutation": 3,
         "ratio_mutating" : 0.33,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",

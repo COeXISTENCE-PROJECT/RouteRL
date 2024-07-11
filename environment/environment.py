@@ -3,7 +3,9 @@ import functools
 from copy import copy
 from copy import deepcopy as dc
 import logging
+import numpy as np
 import pandas as pd
+import random
 import threading
 
 from create_agents import create_agent_objects
@@ -13,6 +15,7 @@ from pettingzoo.utils.env import AECEnv
 from pettingzoo.utils import agent_selector
 from utilities import show_progress_bar
 from .observations import PreviousAgentStart
+from .agent import MachineAgent
 
 
 from services.recorder import Recorder
@@ -72,9 +75,6 @@ class TrafficEnvironment(AECEnv):
         self.phase_names = self.training_params[kc.PHASE_NAMES]
         self.frequent_progressbar = self.training_params[kc.FREQUENT_PROGRESSBAR_UPDATE]
         self.remember_every = self.training_params[kc.REMEMBER_EVERY]
-
-        """ phase """
-        #self.phase_management = HumanLearning_Mutation(self.phases_params)
         
         """ recorder attributes """
         self.remember_episodes = [ep for ep in range(self.remember_every, self.num_episodes+1, self.remember_every)]
@@ -211,6 +211,7 @@ class TrafficEnvironment(AECEnv):
             return
 
         agent = self.agent_selection
+        #print("agent acting is: ", agent, "\n\n\n")
 
         # The cumulative reward of the last agent must be 0
         self._cumulative_rewards[agent] = 0
@@ -226,11 +227,13 @@ class TrafficEnvironment(AECEnv):
 
             # The episode ends when we complete episode_length days
             self.truncations = {
-                agent: self.day% self.training_params[kc.EPISODE_LENGTH] for agent in self.agents
+                agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
             }
 
+            print("Before truncations: ", self.day, self.training_params[kc.EPISODE_LENGTH], self.day % self.training_params[kc.EPISODE_LENGTH], "\n\n\n")
+
             self.terminations = {
-                agent: self.day% self.training_params[kc.EPISODE_LENGTH] for agent in self.agents
+                agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
             }
 
             self.info = {
@@ -259,6 +262,62 @@ class TrafficEnvironment(AECEnv):
     
     def render(self):
         pass
+
+
+    #########################
+
+    ### Mutation function ###
+
+
+    def mutation(self):
+        """logging.info("Mutation is about to happen!\n")
+        logging.info("There were %s human agents.\n", len(self.human_agents))"""
+        print("Mutation is about to happen!\n")
+        print("There were human agents.", len(self.human_agents), "\n")
+        print("self.possible agents before is: ", self.possible_agents, "\n\n")
+
+        ### Mutate to a human that starts after the 25% of the rest of the vehicles
+
+        # Calculate the 25th percentile of the start_time values
+        start_times = [human.start_time for human in self.human_agents]
+        percentile_25 = np.percentile(start_times, 25)
+
+        # Filter the human agents whose start_time is higher than the 25th percentile
+        filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile_25]
+        print("filtered_human_agents is: ", filtered_human_agents, "\n\n")
+
+        number_of_machines_to_be_added = self.agent_gen_params[kc.NEW_MACHINES_AFTER_MUTATION]
+
+        ### Need to mutate to humans that have start time after the 25% of the rest of the vehicles
+        random_humans_deleted = []
+
+        for i in range(0, number_of_machines_to_be_added):
+            random_human = random.choice(filtered_human_agents)
+            print("Human that will be mutated is: ", random_human.id)
+
+            self.human_agents.remove(random_human)
+            filtered_human_agents.remove(random_human)
+
+            random_humans_deleted.append(random_human)
+            self.machine_agents.append(MachineAgent(random_human.id,
+                                                    random_human.start_time,
+                                                    random_human.origin, 
+                                                    random_human.destination, 
+                                                    self.agent_params[kc.MACHINE_PARAMETERS], 
+                                                    self.simulation_params[kc.NUMBER_OF_PATHS]))
+            print("The new machine agent is: ", random_human.id)
+            self.possible_agents.append(str(random_human.id))
+            print("self.possible agents is: ", self.possible_agents, "\n\n")
+
+        self.n_agents = len(self.possible_agents)
+        self.machines = True
+        self.human_learning = False
+
+        #logging.info("Now there are %s human agents.\n", len(self.human_agents))
+        print("Now there are %s human agents.\n", len(self.human_agents))
+
+        self._initialize_machine_agents()
+
 
     #########################
 
@@ -316,9 +375,11 @@ class TrafficEnvironment(AECEnv):
 
 
     def _assign_rewards(self):
+
         for agent in self.all_agents:
+
             reward = agent.get_reward(self.travel_times_list)
-            print(f"Agent {agent.id} reward: {reward}\n")
+            #print(f"Agent {agent.id} reward: {reward}\n")
 
             # Add the reward in the travel_times_list
             for agent_entry in self.travel_times_list:
@@ -329,7 +390,7 @@ class TrafficEnvironment(AECEnv):
 
             # Save machine's rewards based on PettingZoo standards
             if(agent.kind == 'AV'):
-                self.rewards[str(agent.id)] = -1 * reward
+                self.rewards[str(agent.id)] = reward
 
             # Human learning
             elif self.human_learning == True:

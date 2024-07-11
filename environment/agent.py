@@ -122,7 +122,7 @@ class HumanAgent(BaseAgent):
         return None
 
     def get_reward(self, observation: list[dict]):
-        own_tt = next(obs[kc.TRAVEL_TIME] for obs in observation if obs[kc.AGENT_ID] == self.id)
+        own_tt = -1 * next(obs[kc.TRAVEL_TIME] for obs in observation if obs[kc.AGENT_ID] == self.id) ## Anastasia added the -1
         return own_tt
     
     def mutate(self):
@@ -236,7 +236,7 @@ class MachineAgent(BaseAgent):
     def _get_reward_coefs(self):
         a, b, c, d = 0, 0, 0, 0
         if self.behavior == kc.SELFISH:
-            a, b, c, d = 1, 0, 0, 0
+            a, b, c, d = -1, 0, 0, 0 ### Anastasia changed the -1 here
         elif self.behavior == kc.COMPETITIVE:
             a, b, c, d = 2, 0, -1, 0
         elif self.behavior == kc.COLLABORATIVE:

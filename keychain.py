@@ -75,6 +75,7 @@ class Keychain:
     NUM_AGENTS = "num_agents"
     RATIO_MUTATING = "ratio_mutating"
     AGENT_ATTRIBUTES = "agent_attributes"
+    NEW_MACHINES_AFTER_MUTATION = "new_machines_after_mutation"
 
     ### Path generation
     NUMBER_OF_PATHS = "number_of_paths"
