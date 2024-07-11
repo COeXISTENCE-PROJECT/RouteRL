@@ -318,6 +318,7 @@ class TrafficEnvironment(AECEnv):
     def _assign_rewards(self):
         for agent in self.all_agents:
             reward = agent.get_reward(self.travel_times_list)
+            print(f"Agent {agent.id} reward: {reward}\n")
 
             # Add the reward in the travel_times_list
             for agent_entry in self.travel_times_list:
