@@ -197,8 +197,11 @@ class Plotter:
         dark_gray = '#333333'
         axes[3].set_facecolor(dark_gray)
         for idx, (label, data) in enumerate(zip(labels, data_to_plot)):
+            data = np.array(data)
+            data[np.isinf(data)] = np.nan  # Convert inf to NaN
+
             sns.kdeplot(data, ax=axes[3], label=label, alpha=0.8, fill=True, linewidth=3, color=self.colors[idx], clip=(0, None))
-            median_val, mean_val = np.median(data), np.mean(data)
+            median_val, mean_val = np.nanmedian(data), np.nanmean(data)
             # Plot a vertical line from top to mid-plot for median
             axes[3].axvline(median_val, color=self.colors[idx], linestyle='-', linewidth=2, ymin=0.5, ymax=1, label=f'Median {label}')
             # Plot a vertical line from bottom to mid-plot for mean

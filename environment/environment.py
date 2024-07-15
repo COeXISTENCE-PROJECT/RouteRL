@@ -187,8 +187,7 @@ class TrafficEnvironment(AECEnv):
 
         return self.observations, infos
 
-    
-    def step(self, machine_action):
+    def step(self, machine_action=None):
         """
         This function takes in an action for the current agent (specified by
         agent_selection) and needs to update
@@ -200,57 +199,64 @@ class TrafficEnvironment(AECEnv):
         - agent_selection (to the next agent)
         And any internal state used by observe() or render()
         """
-        if (
-            self.terminations[self.agent_selection]
-            or self.truncations[self.agent_selection]
-        ):
-            # handles stepping an agent which is already dead
-            # accepts a None action for the one agent, and moves the agent_selection to
-            # the next dead agent,  or if there are no more dead agents, to the next live agent
-            self._was_dead_step(machine_action)
-            return
+        # If there are machines in the system
+        if self.possible_agents:
+            if (self.terminations[self.agent_selection]
+                or self.truncations[self.agent_selection]):
 
-        agent = self.agent_selection
-        #print("agent acting is: ", agent, "\n\n\n")
+                # handles stepping an agent which is already dead
+                # accepts a None action for the one agent, and moves the agent_selection to
+                # the next dead agent,  or if there are no more dead agents, to the next live agent
+                self._was_dead_step(machine_action)
+                return
 
-        # The cumulative reward of the last agent must be 0
-        self._cumulative_rewards[agent] = 0
+            agent = self.agent_selection
 
-        self.simulation_loop(machine_action, agent)
+            # The cumulative reward of the last agent must be 0
+            self._cumulative_rewards[agent] = 0
 
-        # Collect rewards if it is the last agent to act
-        if self._agent_selector.is_last(): 
-            self.day= self.day+ 1
+            self.simulation_loop(machine_action, agent)
 
-            # Calculate the rewards
-            self._assign_rewards() 
+            # Collect rewards if it is the last agent to act
+            if self._agent_selector.is_last(): 
+                self.day= self.day + 1
 
-            # The episode ends when we complete episode_length days
-            self.truncations = {
-                agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
-            }
+                # Calculate the rewards
+                self._assign_rewards() 
 
-            print("Before truncations: ", self.day, self.training_params[kc.EPISODE_LENGTH], self.day % self.training_params[kc.EPISODE_LENGTH], "\n\n\n")
+                # The episode ends when we complete episode_length days
+                self.truncations = {
+                    agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
+                }
 
-            self.terminations = {
-                agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
-            }
+                self.terminations = {
+                    agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
+                }
 
-            self.info = {
-                agent: {} for agent in self.agents
-            }
+                self.info = {
+                    agent: {} for agent in self.agents
+                }
 
-            self.observations = self.observation_obj(self.all_agents)
-            self._reset_episode()
+                self.observations = self.observation_obj(self.all_agents)
+                self._reset_episode()
+
+            else:
+                # no rewards are allocated until all players give an action
+                self._clear_rewards()
+
+                self.agent_selection = self._agent_selector.next()
+
+            # Adds .rewards to ._cumulative_rewards
+            self._accumulate_rewards()
 
         else:
-            # no rewards are allocated until all players give an action
-            self._clear_rewards()
+            self.simulation_loop(machine_action=0, machine_id=0)
 
-            self.agent_selection = self._agent_selector.next()
+            self.day = self.day + 1
 
-        # Adds .rewards to ._cumulative_rewards
-        self._accumulate_rewards()
+            self._assign_rewards()
+
+            self._reset_episode()
 
 
     def close(self):
@@ -346,8 +352,9 @@ class TrafficEnvironment(AECEnv):
     def _reset_episode(self):
         self.simulator.reset()
 
-        self._agent_selector = agent_selector(self.possible_agents)
-        self.agent_selection = self._agent_selector.next()
+        if self.possible_agents:
+            self._agent_selector = agent_selector(self.possible_agents)
+            self.agent_selection = self._agent_selector.next()
 
         phase_start_time = 0
 
@@ -379,7 +386,6 @@ class TrafficEnvironment(AECEnv):
         for agent in self.all_agents:
 
             reward = agent.get_reward(self.travel_times_list)
-            #print(f"Agent {agent.id} reward: {reward}\n")
 
             # Add the reward in the travel_times_list
             for agent_entry in self.travel_times_list:
