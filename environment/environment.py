@@ -108,7 +108,9 @@ class TrafficEnvironment(AECEnv):
             
         if len(self.machine_agents) != 0:
             self._initialize_machine_agents()
-
+        
+        if not self.human_agents:
+            self.human_learning = False
 
         logging.info(f"There are {len(self.machine_agents)} machine agents in the environment.")
         logging.info(f"There are {len(self.human_agents)} human agents in the environment.")

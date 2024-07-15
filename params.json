@@ -10,10 +10,10 @@
     
     "runner_parameters":
     {
-        "num_episodes" : 100,
+        "num_episodes" : 20,
         "episode_length": 1,
         "phases" : [0],
-        "phase_names" : ["Human_learning"],
+        "phase_names" : ["Machine_learning"],
         "remember_every" : 1,
         "frequent_progressbar_update" : false
     },
