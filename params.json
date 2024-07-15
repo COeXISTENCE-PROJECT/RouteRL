@@ -2,7 +2,7 @@
 
     "training_parameters":
     {
-        "num_episodes" : 2,
+        "num_episodes" : 300,
         "mutation_time" : 301,
         "remember_every" : 1,
 
@@ -20,7 +20,7 @@
 
     "agent_generation_parameters" :
     {
-        "num_agents" : 1000,
+        "num_agents" : 1500,
         "ratio_mutating" : 0.2,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulation_parameters.simulation_timesteps}",
@@ -66,23 +66,26 @@
     "simulation_parameters":
     {
         "sumo_type" : "sumo",
-        "sumo_config_path" : "Network_and_config/grid4x4.sumocfg",
-        "connection_file_path" : "Network_and_config/grid.con.xml",
-        "edge_file_path" : "Network_and_config/grid.edg.xml",
-        "route_file_path" : "Network_and_config/grid.rou.xml",
+        "seed" : "23423",
+        "sumo_config_path" : "Network_and_config/ingolstadt21.sumocfg",
+        "connection_file_path" : "Network_and_config/ingolstadt.con.xml",
+        "edge_file_path" : "Network_and_config/ingolstadt.edg.xml",
+        "route_file_path" : "Network_and_config/ingolstadt.rou.xml",
         "routes_xml_save_path" : "Network_and_config/rou.rou.xml",
+        "detector_xml_save_path" : "Network_and_config/det.add.xml",
         "path_csv_save_path" : "Network_and_config/paths.csv",
+        "path_csv_save_detectors" : "Network_and_config/detectors.csv",
 
         "number_of_paths" : 3,
         "weight" : "time",
         "num_samples" : 100,
         "max_path_length" : 100,
         "simulation_timesteps" : 3600,
-        "beta" : -1.5,
+        "beta" : -2,
         "route_utility_coeffs" : [0.2, 0.2, 0.2, 0.4],
 
-        "origins" : ["top1B3", "C3D3"],
-        "destinations" : ["C0bottom2", "C0D0"],
+        "origins" : ["22716072#4", "18813598#2"],
+        "destinations" : ["653473569#2", "233675413#2"],
 
         "ONUR_COMMENT3" : "Make sure origins are not dead-ends",
         "ONUR_COMMENT4" : "Make sure destinations are reachable"

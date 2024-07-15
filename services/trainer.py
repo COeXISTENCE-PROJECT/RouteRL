@@ -42,11 +42,11 @@ class Trainer:
 
             while not done:     # Until the episode concludes
                 joint_action = self.get_joint_action(agents, observations)
-                sample_observation, joint_reward, terminated, truncated, info = env.step(joint_action)
+                sample_observation, joint_reward, terminated, truncated, info, det_dict = env.step(joint_action)
                 self.teach_agents(agents, joint_action, joint_reward, sample_observation)
                 done = all(terminated.values())
 
-            self.record(ep, joint_action, joint_reward, agents, env.get_last_sim_duration())
+            self.record(ep, joint_action, joint_reward, agents, env.get_last_sim_duration(), det_dict)
             show_progress_bar("TRAINING", start_time, ep+1, self.num_episodes)
 
         self.show_training_time(start_time)
@@ -77,9 +77,9 @@ class Trainer:
         agent.learn(action, reward, observation)
     
 
-    def record(self, episode, joint_action_df, joint_reward_df, agents, last_sim_duration):
+    def record(self, episode, joint_action_df, joint_reward_df, agents, last_sim_duration, det_dict):
         if (not (episode % self.remember_every)) or (episode in self.remember_also):
-            self.recorder.remember_all(episode, joint_action_df, joint_reward_df, agents, last_sim_duration)
+            self.recorder.remember_all(episode, joint_action_df, joint_reward_df, agents, last_sim_duration, det_dict)
 
 
     def mutate_agents(self, agents):

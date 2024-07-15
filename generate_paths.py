@@ -162,10 +162,14 @@ def _path_generator(network, origin, destination, proximity_func, beta, maxlen):
     path, current_node = list(), origin
     while True:
         path.append(current_node)
-        options = [node for node in network.neighbors(current_node) if node not in path]
+        options = [node for node in network.neighbors(current_node) if (node not in path)]
         if   (destination in options):                  return path + [destination]
         elif (not options) or (len(path) > maxlen):     return None
-        else:                                           current_node = _logit(options, proximity_func, beta)
+        else:       
+            try:            
+                current_node = _logit(options, proximity_func, beta)
+            except:
+                return None
 
 
 def _logit(options, cost_function, beta):
@@ -233,6 +237,14 @@ def calculate_free_flow_times(od_paths_dict, network, show=False):
                             rou.append(length[2][k])
             free_flows.append(sum(rou))
         free_flows_dict[od] = free_flows
+    rows = []
+    for (origins, destinations), free_flow_times_1 in free_flows_dict.items():
+        for path_index, free_flow_time in enumerate(free_flow_times_1):
+            rows.append([origins, destinations, path_index, free_flow_time])
+
+    free_flow_times = pd.DataFrame(rows, columns=['origins', 'destinations', 'path_index', 'free_flow_time'])
+    free_flow_times.to_csv('Network_and_config/free_flow_times.csv',index=False)
+    free_flow_times.to_csv('training_records/free_flow_times.csv',index=False)
     if show: df_to_prettytable(pd.DataFrame(free_flows_dict), "FF Times")
     return free_flows_dict
 
@@ -255,7 +267,7 @@ def _get_ff(path, network):
 
 ################## Disk Ops #####################
 
-def save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path):
+def save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path, detector_xml_save_path, paths_csv_save_detectors):
     """ Save paths and ff times to disk """
     # csv file, for us
     paths_df = pd.DataFrame(columns = [kc.ORIGIN, kc.DESTINATION, kc.PATH, kc.FREE_FLOW_TIME])
@@ -264,6 +276,23 @@ def save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path):
             paths_df.loc[len(paths_df.index)] = [od[0], od[1], list_to_string(path, ","), ff_times[od][path_idx]]
     paths_df.to_csv(paths_csv_save_path, index=False)
     # XML file, for sumo
+
+    with open(detector_xml_save_path,'w') as det:
+        consistence = []
+        print("""<additional>""",file=det)
+        print("""<!-- Detectors -->""",file=det)
+        for od, paths in routes.items():
+                for idx, path in enumerate(paths):
+                    for id, path_id in enumerate(path):
+                        if path_id not in consistence:
+                            consistence.append(path_id)
+                            print(f'<inductionLoop id="{path_id}_det" lane="{path_id}_1" pos="5" file="NUL"',file=det)
+                            print('/>',file=det)
+        print("</additional>", file=det)
+    df_consistence = pd.DataFrame(consistence,columns=['name'])
+    df_consistence.to_csv(paths_csv_save_detectors, index=False)
+
+
     with open(routes_xml_save_path, "w") as rou:
         print("""<routes>""", file=rou)
         for od, paths in routes.items():
@@ -272,7 +301,7 @@ def save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path):
                     print(list_to_string(path,separator=' '),file=rou)
                     print('" />',file=rou)
         print("</routes>", file=rou)
-    print(f"[SUCCESS] Saved {len(paths_df)} paths to: {paths_csv_save_path} and {routes_xml_save_path}")
+    print(f"[SUCCESS] Saved {len(paths_df)} paths to: {paths_csv_save_path}, {routes_xml_save_path} and {detector_xml_save_path}")
 
 #################################################
 
@@ -296,7 +325,9 @@ if __name__ == "__main__":
     edge_file_path = params[kc.EDGE_FILE_PATH]
     route_file_path = params[kc.ROUTE_FILE_PATH]
     paths_csv_save_path = params[kc.PATHS_CSV_SAVE_PATH]
+    paths_csv_save_detectors = params[kc.PATHS_CSV_SAVE_DETECTORS]
     routes_xml_save_path = params[kc.ROUTES_XML_SAVE_PATH]
+    detector_xml_save_path = params[kc.DETECTOR_XML_SAVE_PATH]
 
     origins = {i : origin for i, origin in enumerate(origins)}
     destinations = {i : dest for i, dest in enumerate(destinations)}
@@ -305,6 +336,6 @@ if __name__ == "__main__":
     check_od_integrity(network, origins, destinations)
     routes = create_routes(network, number_of_paths, origins, destinations, beta, weight, coeffs, num_samples, max_path_length)
     ff_times = calculate_free_flow_times(routes, network, show=True)
-    save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path)
+    save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path, detector_xml_save_path, paths_csv_save_detectors)
 
 #################################################

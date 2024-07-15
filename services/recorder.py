@@ -4,6 +4,7 @@ import pandas as pd
 from keychain import Keychain as kc
 from utilities import list_to_string
 from utilities import make_dir
+from bs4 import BeautifulSoup
 
 
 class Recorder:
@@ -16,6 +17,7 @@ class Recorder:
 
         self.episodes_folder = make_dir([kc.RECORDS_FOLDER, kc.EPISODES_LOGS_FOLDER])
         self.agents_folder = make_dir([kc.RECORDS_FOLDER, kc.AGENTS_LOGS_FOLDER])
+        self.detector_folder = make_dir([kc.RECORDS_FOLDER, kc.DETECTOR_LOGS_FOLDER])
         self.sim_length_file_path = self.get_sim_length_file_path()
 
         self.saved_episodes = list()
@@ -36,11 +38,12 @@ class Recorder:
 
 #################### REMEMBER FUNCTIONS
     
-    def remember_all(self, episode, joint_action, joint_reward, agents, last_sim_duration):
+    def remember_all(self, episode, joint_action, joint_reward, agents, last_sim_duration, det_dict):
         self.saved_episodes.append(episode)
         self.remember_episode(episode, joint_action, joint_reward)
         self.remember_agents_status(episode, agents)
         self.remember_last_sim_duration(last_sim_duration)
+        self.remember_detector(episode, det_dict)
 
 
     def remember_episode(self, episode, joint_action, joint_reward):
@@ -51,6 +54,10 @@ class Recorder:
         joint_df = joint_df.drop(columns=['kind'])
         merged_df.to_csv(make_dir(self.episodes_folder, f"ep_ep{episode}.csv"), index = False)
         #joint_df.to_csv(make_dir(self.episodes_folder, f"ep_ep{episode}.csv"), index = False)
+
+    def remember_detector(self,episode, det_dict):
+            df = pd.DataFrame(list(det_dict.items()), columns=['detid', 'flow'])
+            df.to_csv(make_dir(self.detector_folder, f'detector_ep{episode}.csv'),index=False)
 
 
 

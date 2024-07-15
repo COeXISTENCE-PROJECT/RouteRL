@@ -69,7 +69,7 @@ class TrafficEnvironment:
 
     def step(self, joint_action):        
 
-        sumo_df = self.simulator.run_simulation_iteration(joint_action)
+        sumo_df, det_dict = self.simulator.run_simulation_iteration(joint_action)
         joint_reward = self.calculate_rewards(sumo_df)
 
         sample_observation = {
@@ -89,7 +89,7 @@ class TrafficEnvironment:
         if any(terminated.values()) or all(truncated.values()):
             self.agents = []
 
-        return sample_observation, joint_reward, terminated, truncated, info
+        return sample_observation, joint_reward, terminated, truncated, info, det_dict
 
 
     def calculate_rewards(self, sumo_df):

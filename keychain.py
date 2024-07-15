@@ -12,6 +12,7 @@ class Keychain:
 
     RECORDS_FOLDER = "training_records"
     EPISODES_LOGS_FOLDER = "episodes"
+    DETECTOR_LOGS_FOLDER = 'detector'
     AGENTS_LOGS_FOLDER = "agents"
 
     AGENTS_DATA_FILE_NAME = "agents_data.csv"
@@ -82,11 +83,13 @@ class Keychain:
 
     # Simulation
     SUMO_TYPE = "sumo_type"
+    SEED = 'seed'
     SUMO_CONFIG_PATH = "sumo_config_path"
     CONNECTION_FILE_PATH = "connection_file_path"
     EDGE_FILE_PATH = "edge_file_path" 
     ROUTE_FILE_PATH = "route_file_path"
     ROUTES_XML_SAVE_PATH = "routes_xml_save_path"
+    DETECTOR_XML_SAVE_PATH = "detector_xml_save_path"
     PATHS_SAVE_PATH = "paths_save_path"
     NUMBER_OF_PATHS = "number_of_paths"
     ROUTE_UTILITY_COEFFS = "route_utility_coeffs"
@@ -96,6 +99,7 @@ class Keychain:
     NUM_SAMPLES = "num_samples"
     MAX_PATH_LENGTH = "max_path_length"
     PATHS_CSV_SAVE_PATH = "path_csv_save_path"
+    PATHS_CSV_SAVE_DETECTORS = "path_csv_save_detectors"
 
     # Recorder
     RECORDER_PARAMETERS = "recorder_parameters"

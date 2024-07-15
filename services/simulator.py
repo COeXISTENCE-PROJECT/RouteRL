@@ -21,7 +21,10 @@ class Simulator:
         self.routes_xml_save_path = params[kc.ROUTES_XML_SAVE_PATH] # RK: why do we want to double variables - this is exactly the same and static?
         self.number_of_paths = params[kc.NUMBER_OF_PATHS] #RK: same here
         self.simulation_length = params[kc.SIMULATION_TIMESTEPS] #RK: same here
+        self.detector_name = params[kc.PATHS_CSV_SAVE_DETECTORS]
         self.beta = params[kc.BETA] #why this is here? this is main of simulator
+
+        self.det_dict = {}
 
         self.origins = {i : origin for i, origin in enumerate(params[kc.ORIGINS])}  # RK: I think it should be more generic, and operate on sth like nx.get_nearest_node(lon, lat) - otherwise it is very error prone.
         self.destinations = {i : dest for i, dest in enumerate(params[kc.DESTINATIONS])}
@@ -81,6 +84,12 @@ class Simulator:
             arrived_now = traci.simulation.getArrivedIDList()   # returns a list of arrived vehicle ids
             arrived_now = [int(value) for value in arrived_now]   # Convert values to int
 
+            detectors_name = list(pd.read_csv(self.detector_name).name)
+            if timestep==3600:
+                for id,name in enumerate(detectors_name):
+
+                    self.det_dict[name] = traci.inductionloop.getIntervalVehicleNumber(f"{name}_det")
+
             for id in arrived_now:
                 arrivals[kc.AGENT_ID].append(id)
                 arrivals[kc.ARRIVAL_TIME].append(timestep) #RK: are you sure you keep track of indexes? it seems easy to be mixed up
@@ -95,7 +104,7 @@ class Simulator:
         # Calculate travel times
         travel_times_df = self.prepare_travel_times_df(arrivals, joint_action)
         # RK: here add: get_state
-        return travel_times_df
+        return travel_times_df,self.det_dict
         
 
     def prepare_travel_times_df(self, arrivals, joint_action): #RK: this shall be a more generic reward. including distance, travel time, emmisions, etc. it can also become part of the state and observation.
