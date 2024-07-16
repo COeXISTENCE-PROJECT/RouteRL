@@ -5,8 +5,8 @@ See [here](server_scripts/how_to.md).
 # PettingZoo environment
 
 <div style="display:flex; justify-content:center;">
-  <img src="images/multiple_humans_timesteps.png" alt="Image 1" style="margin-right: 12px;" width="605" />
-  <img src="images/multiple_machines_timesteps.png" alt="Image 2" style="margin-left: 12px;" width="375" />
+  <img src="images/multiple_humans_timesteps.png" alt="Image 1" width="605" />
+  <img src="images/multiple_machines_timesteps.png" alt="Image 2"  width="375" />
 </div>
 
 
