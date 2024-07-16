@@ -10,10 +10,10 @@
     
     "runner_parameters":
     {
-        "num_episodes" : 1000,
+        "num_episodes" : 300,
         "episode_length": 1,
-        "phases" : [0],
-        "phase_names" : ["Machine_learning PPO"],
+        "phases" : [0, 100],
+        "phase_names" : ["Human learning", "Mutation - Machine learning PPO"],
         "remember_every" : 1,
         "frequent_progressbar_update" : false
     },
@@ -52,7 +52,7 @@
             "learning_phases" : [0, 2],
             "model" : "gawron",
             "alpha" : 0.2,
-            "beta" : -0.5,
+            "beta" : 0.5,
             "beta_randomness" : 0.3,
             "appearance_phase" : "No need for this, by default appears in 0",
             "behavior" : "No need for this, by default selfish"
@@ -94,7 +94,7 @@
     "agent_generation_parameters" :
     {
         "num_agents" : 1200,
-        "new_machines_after_mutation": 3,
+        "new_machines_after_mutation": 4,
         "ratio_mutating" : 0.33,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",

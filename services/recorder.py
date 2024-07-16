@@ -1,6 +1,7 @@
 import logging
 import os
 import polars as pl
+import pandas as pd
 
 from keychain import Keychain as kc
 from utilities import make_dir
@@ -43,6 +44,7 @@ class Recorder:
     
     def record(self, episode, ep_observations, rewards):
         self.remember_episode(episode, ep_observations, rewards)
+        #self.remember_detector(episode, ep_observations) ## pass self.det_dict
         # more to add
 
 
@@ -51,6 +53,11 @@ class Recorder:
         rewards_df = pl.from_dicts(rewards)
         merged_df = ep_observations_df.join(rewards_df, on=kc.AGENT_ID)
         merged_df.write_csv(make_dir(self.episodes_folder, f"ep{episode}.csv"))
+
+
+    def remember_detector(self,episode, det_dict):
+            df = pd.DataFrame(list(det_dict.items()), columns=['detid', 'flow'])
+            df.to_csv(make_dir(self.detector_folder, f'detector_ep{episode}.csv'),index=False)
 
 
     def save_losses(self, agents):

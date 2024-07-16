@@ -120,12 +120,6 @@ class TrafficEnvironment(AECEnv):
 
     def _initialize_machine_agents(self):
         """ Initialize the machine agents. """
-
-        same_travel_time = 0
-        for agent in self.machine_agents:
-            for agent2 in self.machine_agents:
-                if(agent.start_time == agent2.start_time) and (agent.id != agent2.id):
-                    same_travel_time += 1
         
         ## Sort machine agents based on their start_time
         sorted_machine_agents = sorted(self.machine_agents, key=lambda agent: agent.start_time)
@@ -176,6 +170,7 @@ class TrafficEnvironment(AECEnv):
         self.infos = {agent: {} for agent in self.possible_agents}
         self.rewards = {agent: 0 for agent in self.possible_agents}
         self.rewards_humans = {agent.id: 0 for agent in self.human_agents}
+        self.travel_times_list = []
 
         if len(self.machine_agents) > 0:
             self._agent_selector = agent_selector(self.possible_agents)
@@ -281,9 +276,6 @@ class TrafficEnvironment(AECEnv):
         """logging.info("Mutation is about to happen!\n")
         logging.info("There were %s human agents.\n", len(self.human_agents))"""
         print("Mutation is about to happen!\n")
-        print("There were human agents.", len(self.human_agents), "\n")
-        print("self.possible agents before is: ", self.possible_agents, "\n\n")
-
         ### Mutate to a human that starts after the 25% of the rest of the vehicles
 
         # Calculate the 25th percentile of the start_time values
@@ -292,7 +284,6 @@ class TrafficEnvironment(AECEnv):
 
         # Filter the human agents whose start_time is higher than the 25th percentile
         filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile_25]
-        print("filtered_human_agents is: ", filtered_human_agents, "\n\n")
 
         number_of_machines_to_be_added = self.agent_gen_params[kc.NEW_MACHINES_AFTER_MUTATION]
 
@@ -301,7 +292,6 @@ class TrafficEnvironment(AECEnv):
 
         for i in range(0, number_of_machines_to_be_added):
             random_human = random.choice(filtered_human_agents)
-            print("Human that will be mutated is: ", random_human.id)
 
             self.human_agents.remove(random_human)
             filtered_human_agents.remove(random_human)
@@ -313,11 +303,11 @@ class TrafficEnvironment(AECEnv):
                                                     random_human.destination, 
                                                     self.agent_params[kc.MACHINE_PARAMETERS], 
                                                     self.simulation_params[kc.NUMBER_OF_PATHS]))
-            print("The new machine agent is: ", random_human.id)
             self.possible_agents.append(str(random_human.id))
-            print("self.possible agents is: ", self.possible_agents, "\n\n")
+
 
         self.n_agents = len(self.possible_agents)
+        self.all_agents = self.machine_agents + self.human_agents
         self.machines = True
         self.human_learning = False
 
@@ -386,12 +376,11 @@ class TrafficEnvironment(AECEnv):
     def _assign_rewards(self):
 
         for agent in self.all_agents:
-
             reward = agent.get_reward(self.travel_times_list)
 
             # Add the reward in the travel_times_list
             for agent_entry in self.travel_times_list:
-                if agent.id == agent_entry[kc.AGENT_ID]:
+                if agent.id == agent_entry[kc.AGENT_ID]: #agent_entry['id']
                     self.travel_times_list.remove(agent_entry)
                     agent_entry[kc.REWARD] = reward
                     self.travel_times_list.append(agent_entry)
