@@ -14,30 +14,23 @@ See [here](server_scripts/how_to.md).
 # Training setting
 
 ## Number of agents
-- 1200 agents
-- Humans: 823 | AVs: 377 
-- Humans: Gawron | AVs: DQN (Single)
+- 8 agents
+- Humans: 4 | AVs: 4 
+- Humans: Gawron | AVs: PPO / SAC
 ## AVs' objective
-- **Competitive**: Minimize own travel time, maximize other group's travel times.
+- **Selfish**: Minimize own travel time.
 ## Training episodes
 - 10000 episodes, 3 phases
-- Phase 1 (**Settle**) : Starts in episode 1
-    - Humans: 1200
+- Phase 1 (**Human Learning**) : Starts in episode 0
+    - Humans: 8
     - Only humans learn.
-- Phase 2 (**Shock**) : Starts in episode 1000
-    - Humans: 823  AVs: 377 
+- Phase 2 (**Mutation**) : Starts in episode 100
+    - Humans: 4  AVs: 4 
     - Only machines learn.
-- Phase 3 (**Adapt**) : Starts in episode 5000
-    - Humans: 823  AVs: 377
-    - Both machines and humans learn.
 ## Training duration
-- ~17 hours
-- ~7 seconds per episode in average
+- ~1.30 hours
 ## Hardware
- - gpu=gpu:1
- - mem=64G
- - cpus-per-task=4
- - partition=dgx
+- Anastasia's PC
 
 <br><br><br>
 
