@@ -10,10 +10,10 @@
     
     "runner_parameters":
     {
-        "num_episodes" : 300,
+        "num_episodes" : 10,
         "episode_length": 1,
-        "phases" : [0, 100],
-        "phase_names" : ["Human learning", "Mutation - Machine learning PPO"],
+        "phases" : [0, 9],
+        "phase_names" : ["Human learning", "Mutation - Machine learning SAC"],
         "remember_every" : 1,
         "frequent_progressbar_update" : false
     },
@@ -69,6 +69,7 @@
     "simulator_parameters":
     {
         "simulation_timesteps" : 3600,
+        "seed" : "23423",
         "sumo_type" : "sumo",
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "env_var" : "SUMO_HOME"

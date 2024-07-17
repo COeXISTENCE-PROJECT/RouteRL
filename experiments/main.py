@@ -47,7 +47,7 @@ def main(params):
 
             env.step(action)
 
-    env.mutation()
+    """env.mutation()
     env.reset()
 
     for episode in range(num_episodes):
@@ -66,6 +66,8 @@ def main(params):
 
             env.step(action)
 
+
+    env.stop()"""
 
     env.stop()
 

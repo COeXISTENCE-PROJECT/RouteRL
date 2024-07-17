@@ -24,9 +24,11 @@ class SumoSimulator():
         self.env_var = params[kc.ENV_VAR]
         self.number_of_paths = params[kc.NUMBER_OF_PATHS]
         self.simulation_length = params[kc.SIMULATION_TIMESTEPS]
-        #self.detectors_name = list(pd.read_csv(params[kc.PATHS_CSV_SAVE_DETECTORS]).name) ###FIX THIS
-        #self.detector_name = params[kc.PATHS_CSV_SAVE_DETECTORS] ###FIX THIS
-        #self.seed=params[kc.SEED]  ####FIX THIS
+        self.seed = params[kc.SEED] 
+
+        ## Detectors
+        self.detectors_name = list(pd.read_csv(kc.PATHS_CSV_SAVE_DETECTORS).name) ###FIX THIS
+        self.det_dict = {name: [] for name in self.detectors_name}
 
         self.sumo_id = f"{random.randint(0, 1000)}"
         self.sumo_connection = None
@@ -54,8 +56,7 @@ class SumoSimulator():
     ##### SUMO CONTROL #####
 
     def start(self):
-        #sumo_cmd = [sumo_binary,"--seed", self.seed, "-c", self.config] ###FIX THIS
-        sumo_cmd = [self.sumo_type, "-c", self.sumo_config_path]
+        sumo_cmd = [self.sumo_type,"--seed", self.seed, "-c", self.sumo_config_path] 
         traci.start(sumo_cmd, label=self.sumo_id)
         self.sumo_connection = traci.getConnection(self.sumo_id)
 
@@ -63,8 +64,7 @@ class SumoSimulator():
         self.sumo_connection.close()
 
     def reset(self):##make empty the det_dict
-        ##traci.load(["--seed", self.seed,'-c', self.config]) FIX THIS
-        self.sumo_connection.load(['-c', self.sumo_config_path])
+        self.sumo_connection.load(["--seed", self.seed,'-c', self.sumo_config_path])
         self.timestep = 0
 
     #####################
@@ -82,13 +82,12 @@ class SumoSimulator():
         self.timestep += 1
 
         #### Function
-        """for id, name in enumerate(self.detectors_name):
+        for id, name in enumerate(self.detectors_name):
             
             link = self.sumo_connection.inductionloop.getIntervalVehicleNumber(f"{name}_det")
-            ### initialize it in init
-            self.det_dict[name].append((link / self.timestep) * 3600) ## 1hour - append value for each detector"""
-
-        return self.timestep, arrivals
+            self.det_dict[name] = ((link / self.timestep) * 3600) # 1hour
+        
+        return self.timestep, arrivals, self.det_dict
     
     #####################
     

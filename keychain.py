@@ -58,6 +58,7 @@ class Keychain:
 
     ### Simulator
     SUMO_TYPE = "sumo_type"
+    SEED = 'seed'
     ENV_VAR = "env_var"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
 
@@ -141,11 +142,13 @@ class Keychain:
 
     PARAMS_PATH = MODE + "../params.json"
 
-    CONNECTION_FILE_PATH = "../network_and_config/csomor1.con.xml"
-    EDGE_FILE_PATH = "../network_and_config/csomor1.edg.xml"
-    ROUTE_FILE_PATH = "../network_and_config/csomor1.rou.xml"
-    ROUTES_XML_SAVE_PATH = "../network_and_config/route.rou.xml"
-    SUMO_CONFIG_PATH = "../network_and_config/csomor1.sumocfg"
+    CONNECTION_FILE_PATH = "../network_and_config/csomor/csomor1.con.xml"
+    EDGE_FILE_PATH = "../network_and_config/csomor/csomor1.edg.xml"
+    ROUTE_FILE_PATH = "../network_and_config/csomor/csomor1.rou.xml"
+    ROUTES_XML_SAVE_PATH = "../network_and_config/csomor/route.rou.xml"
+    SUMO_CONFIG_PATH = "../network_and_config/csomor/csomor1.sumocfg"
+    PATHS_CSV_SAVE_DETECTORS = "../network_and_config/csomor/detectors.csv"
+    DETECTOR_XML_SAVE_PATH = "../network_and_config/csomor/det.add.xml"
     
     PATHS_CSV_SAVE_PATH = "../network_and_config/paths.csv"
     AGENTS_DATA_PATH = "../network_and_config/agents_data.csv"
@@ -154,6 +157,7 @@ class Keychain:
     EPISODES_LOGS_FOLDER = "episodes"
     SIMULATION_LENGTH_LOG_FILE_NAME = "simulation_length.txt"
     LOSSES_LOG_FILE_NAME = "losses.txt"
+    DETECTOR_LOGS_FOLDER = 'detector'
     PATHS_CSV_FILE_NAME = "paths.csv"
     FREE_FLOW_TIMES_CSV_FILE_NAME = "free_flow_times.csv"
 

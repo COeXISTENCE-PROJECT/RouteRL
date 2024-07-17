@@ -18,7 +18,11 @@ class Recorder:
     def __init__(self):
 
         self.episodes_folder = make_dir([kc.RECORDS_FOLDER, kc.EPISODES_LOGS_FOLDER])
+        self.detector_folder = make_dir([kc.RECORDS_FOLDER, kc.DETECTOR_LOGS_FOLDER])
+
         self._clear_records(self.episodes_folder)
+        self._clear_records(self.detector_folder)
+        
         self.sim_length_file_path = self._get_txt_file_path(kc.SIMULATION_LENGTH_LOG_FILE_NAME)
         self.loss_file_path = self._get_txt_file_path(kc.LOSSES_LOG_FILE_NAME)
         logging.info(f"[SUCCESS] Recorder is now here to record!")
@@ -42,9 +46,9 @@ class Recorder:
 
 #################### REMEMBER FUNCTIONS
     
-    def record(self, episode, ep_observations, rewards):
+    def record(self, episode, ep_observations, rewards, det_dict):
         self.remember_episode(episode, ep_observations, rewards)
-        #self.remember_detector(episode, ep_observations) ## pass self.det_dict
+        self.remember_detector(episode, det_dict) ## pass self.det_dict
         # more to add
 
 
@@ -56,8 +60,8 @@ class Recorder:
 
 
     def remember_detector(self,episode, det_dict):
-            df = pd.DataFrame(list(det_dict.items()), columns=['detid', 'flow'])
-            df.to_csv(make_dir(self.detector_folder, f'detector_ep{episode}.csv'),index=False)
+        df = pd.DataFrame(list(det_dict.items()), columns=['detid', 'flow'])
+        df.to_csv(make_dir(self.detector_folder, f'detector_ep{episode}.csv'),index=False)
 
 
     def save_losses(self, agents):

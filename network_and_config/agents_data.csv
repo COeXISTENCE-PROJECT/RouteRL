@@ -1,9 +1,9 @@
 id,origin,destination,start_time,kind
-17,0,1,2408,Human
-18,0,1,1206,Human
-19,1,0,1009,Human
-20,1,0,2240,Human
-21,1,0,1778,Human
-22,1,1,2242,Human
-23,1,0,1540,Human
-24,1,1,3400,Human
+0,0,1,1022,Human
+1,0,1,1807,Human
+2,1,0,1065,Human
+3,1,0,1818,Human
+4,1,1,1842,Human
+5,0,0,2100,Human
+6,0,1,1598,AV
+7,0,1,525,AV
