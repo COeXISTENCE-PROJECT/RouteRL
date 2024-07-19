@@ -46,9 +46,9 @@ class Recorder:
 
 #################### REMEMBER FUNCTIONS
     
-    def record(self, episode, ep_observations, rewards, det_dict):
+    def record(self, episode, ep_observations, rewards):#, det_dict):
         self.remember_episode(episode, ep_observations, rewards)
-        self.remember_detector(episode, det_dict) ## pass self.det_dict
+        #self.remember_detector(episode, det_dict) ## pass self.det_dict
         # more to add
 
 

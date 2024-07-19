@@ -1,0 +1,125 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+800it [24:03,  1.46s/it]
+Training took 1447.19 seconds to finish
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: C:\Program Files (x86)\Eclipse\Sumo\tools
+Mutation is about to happen!
+Now there are %s human agents.
+ 4
+[('2', 'episode_reward'), ('6', 'episode_reward'), ('1', 'episode_reward'), ('5', 'episode_reward')]
+module is:  TensorDictModule(
+    module=MultiAgentMLP(
+      (agent_networks): ModuleList(
+        (0): MLP(
+          (0): Linear(in_features=3, out_features=64, bias=True)
+          (1): ReLU()
+          (2): Linear(in_features=64, out_features=64, bias=True)
+          (3): ReLU()
+          (4): Linear(in_features=64, out_features=64, bias=True)
+          (5): ReLU()
+          (6): Linear(in_features=64, out_features=64, bias=True)
+          (7): ReLU()
+          (8): Linear(in_features=64, out_features=3, bias=True)
+        )
+      )
+    ),
+    device=cpu,
+    in_keys=[('2', 'observation')],
+    out_keys=[('2', 'action_value')])
+module is:  TensorDictModule(
+    module=MultiAgentMLP(
+      (agent_networks): ModuleList(
+        (0): MLP(
+          (0): Linear(in_features=3, out_features=64, bias=True)
+          (1): ReLU()
+          (2): Linear(in_features=64, out_features=64, bias=True)
+          (3): ReLU()
+          (4): Linear(in_features=64, out_features=64, bias=True)
+          (5): ReLU()
+          (6): Linear(in_features=64, out_features=64, bias=True)
+          (7): ReLU()
+          (8): Linear(in_features=64, out_features=3, bias=True)
+        )
+      )
+    ),
+    device=cpu,
+    in_keys=[('6', 'observation')],
+    out_keys=[('6', 'action_value')])
+module is:  TensorDictModule(
+    module=MultiAgentMLP(
+      (agent_networks): ModuleList(
+        (0): MLP(
+          (0): Linear(in_features=3, out_features=64, bias=True)
+          (1): ReLU()
+          (2): Linear(in_features=64, out_features=64, bias=True)
+          (3): ReLU()
+          (4): Linear(in_features=64, out_features=64, bias=True)
+          (5): ReLU()
+          (6): Linear(in_features=64, out_features=64, bias=True)
+          (7): ReLU()
+          (8): Linear(in_features=64, out_features=3, bias=True)
+        )
+      )
+    ),
+    device=cpu,
+    in_keys=[('1', 'observation')],
+    out_keys=[('1', 'action_value')])
+module is:  TensorDictModule(
+    module=MultiAgentMLP(
+      (agent_networks): ModuleList(
+        (0): MLP(
+          (0): Linear(in_features=3, out_features=64, bias=True)
+          (1): ReLU()
+          (2): Linear(in_features=64, out_features=64, bias=True)
+          (3): ReLU()
+          (4): Linear(in_features=64, out_features=64, bias=True)
+          (5): ReLU()
+          (6): Linear(in_features=64, out_features=64, bias=True)
+          (7): ReLU()
+          (8): Linear(in_features=64, out_features=3, bias=True)
+        )
+      )
+    ),
+    device=cpu,
+    in_keys=[('5', 'observation')],
+

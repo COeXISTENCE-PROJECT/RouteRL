@@ -5,5 +5,5 @@ id,origin,destination,start_time,kind
 3,1,0,1818,Human
 4,1,1,1842,Human
 5,0,0,2100,Human
-6,0,1,1598,AV
-7,0,1,525,AV
+6,0,1,1598,Human
+7,0,1,525,Human
