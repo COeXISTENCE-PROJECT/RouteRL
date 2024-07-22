@@ -10,10 +10,10 @@
     
     "runner_parameters":
     {
-        "num_episodes" : 300,
+        "num_episodes" : 400,
         "episode_length": 1,
         "phases" : [0, 100],
-        "phase_names" : ["Human learning", "Mutation - Machine learning DQN Prioritized Replay"],
+        "phase_names" : ["Human learning", "Mutation - Machine learning PPO"],
         "remember_every" : 1,
         "frequent_progressbar_update" : false
     },
