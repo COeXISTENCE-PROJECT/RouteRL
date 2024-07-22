@@ -38,7 +38,9 @@ class TrafficEnvironment(AECEnv):
         training_params (dict): Training parameters.
         environment_params (dict): Environment parameters.
         simulation_params (dict): Simulation parameters.
+        agent_gen_params (dict): Agent generation parameters.
         agent_params (dict): Agent parameters.
+        phases_params (dict): Phases parameters.
         render_mode (str): The render mode.
     
     """
@@ -130,6 +132,7 @@ class TrafficEnvironment(AECEnv):
             zip(self.possible_agents, list(range(len(self.possible_agents))))
         )
 
+        ## Initialize the observation object
         self.observation_obj = PreviousAgentStart(self.machine_agents, self.human_agents, self.simulation_params, self.agent_params, self.training_params)
 
         self._observation_spaces = self.observation_obj.observation_space()
@@ -184,6 +187,7 @@ class TrafficEnvironment(AECEnv):
 
         return self.observations, infos
 
+
     def step(self, machine_action=None):
         """
         This function takes in an action for the current agent (specified by
@@ -196,6 +200,7 @@ class TrafficEnvironment(AECEnv):
         - agent_selection (to the next agent)
         And any internal state used by observe() or render()
         """
+
         # If there are machines in the system
         if self.possible_agents:
             if (self.terminations[self.agent_selection]
@@ -246,6 +251,7 @@ class TrafficEnvironment(AECEnv):
             # Adds .rewards to ._cumulative_rewards
             self._accumulate_rewards()
 
+        # If there are only humans in the system
         else:
             self.simulation_loop(machine_action=0, machine_id=0)
 
@@ -273,21 +279,17 @@ class TrafficEnvironment(AECEnv):
 
 
     def mutation(self):
-        """logging.info("Mutation is about to happen!\n")
-        logging.info("There were %s human agents.\n", len(self.human_agents))"""
-        print("Mutation is about to happen!\n")
-        ### Mutate to a human that starts after the 25% of the rest of the vehicles
+        logging.info("Mutation is about to happen!\n")
+        logging.info("There were %s human agents.\n", len(self.human_agents))
 
-        # Calculate the 25th percentile of the start_time values
+        # Mutate to a human that starts after the 25% of the rest of the vehicles
         start_times = [human.start_time for human in self.human_agents]
         percentile_25 = np.percentile(start_times, 25)
 
-        # Filter the human agents whose start_time is higher than the 25th percentile
         filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile_25]
 
         number_of_machines_to_be_added = self.agent_gen_params[kc.NEW_MACHINES_AFTER_MUTATION]
 
-        ### Need to mutate to humans that have start time after the 25% of the rest of the vehicles
         random_humans_deleted = []
 
         for i in range(0, number_of_machines_to_be_added):
@@ -311,9 +313,8 @@ class TrafficEnvironment(AECEnv):
         self.machines = True
         self.human_learning = False
 
-        #logging.info("Now there are %s human agents.\n", len(self.human_agents))
-        print("Now there are %s human agents.\n", len(self.human_agents))
-
+        logging.info("Now there are %s human agents.\n", len(self.human_agents))
+        
         self._initialize_machine_agents()
 
 
@@ -324,8 +325,11 @@ class TrafficEnvironment(AECEnv):
     def get_observation(self):
         return self.simulator.timestep, self.episode_actions.values()
 
-
     def help_step(self, actions: list[tuple]):
+        """ This function is responsible for supplying the simulator with the actions of vehicles
+        that begin their journey at the current timestep. 
+        Simultaneously, it records the travel times of vehicles that finished their trip this timestep."""
+
         for agent, action in actions:
             action_dict = {kc.AGENT_ID: agent.id, kc.AGENT_KIND: agent.kind, kc.ACTION: action, \
                 kc.AGENT_ORIGIN: agent.origin, kc.AGENT_DESTINATION: agent.destination, kc.AGENT_START_TIME: agent.start_time}
@@ -374,6 +378,7 @@ class TrafficEnvironment(AECEnv):
 
 
     def _assign_rewards(self):
+        """ This function assigns rewards to the agents. """
 
         for agent in self.all_agents:
             reward = agent.get_reward(self.travel_times_list)
