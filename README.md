@@ -9,7 +9,7 @@ See [here](server_scripts/how_to.md).
   <img src="images/multiple_machines_timesteps.png" alt="Image 2"  width="300" />
 </p>
 
-
+<!--
 
 # Training setting
 
@@ -63,4 +63,4 @@ See [here](server_scripts/how_to.md).
 
 
 ## Action Selection Shifts After Mutation
-![](readme_plots/actions_shifts.png)
+![](readme_plots/actions_shifts.png)-->
