@@ -2,6 +2,6 @@
 
 cd /app/
 echo "--- Installing dependencies ---"
-pip install --no-cache-dir -r requirements.txt
+pip3 install --no-cache-dir -r requirements.txt
 echo "--- Running main.py ---"
-python main.py
+python experiments/mutation-ppo-sac-experiments/mutation_sac.py

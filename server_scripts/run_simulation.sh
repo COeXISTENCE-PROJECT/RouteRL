@@ -4,7 +4,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --mem=64G
 #SBATCH --cpus-per-task=4
-#SBATCH --partition=dgx
+#SBATCH --partition=rtx2080
 
 PATH_PROGRAM="/home/$USER/Milestone-One"
 PUT_PROGRAM_TO="/app"

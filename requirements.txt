@@ -8,3 +8,4 @@ prettytable==3.10.0
 seaborn==0.13.2
 torch==2.2.2
 traci==1.19.0
+torchrl

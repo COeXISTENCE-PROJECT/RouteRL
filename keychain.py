@@ -142,16 +142,16 @@ class Keychain:
 
     PARAMS_PATH = MODE + "../../params.json"
 
-    CONNECTION_FILE_PATH = "../network_and_config/csomor/csomor1.con.xml"
-    EDGE_FILE_PATH = "../network_and_config/csomor/csomor1.edg.xml"
-    ROUTE_FILE_PATH = "../network_and_config/csomor/csomor1.rou.xml"
-    ROUTES_XML_SAVE_PATH = "../network_and_config/csomor/route.rou.xml"
-    SUMO_CONFIG_PATH = "../network_and_config/csomor/csomor1.sumocfg"
-    PATHS_CSV_SAVE_DETECTORS = "../network_and_config/csomor/detectors.csv"
-    DETECTOR_XML_SAVE_PATH = "../network_and_config/csomor/det.add.xml"
+    CONNECTION_FILE_PATH = "../../network_and_config/csomor/csomor1.con.xml"
+    EDGE_FILE_PATH = "../../network_and_config/csomor/csomor1.edg.xml"
+    ROUTE_FILE_PATH = "../../network_and_config/csomor/csomor1.rou.xml"
+    ROUTES_XML_SAVE_PATH = "../../network_and_config/csomor/route.rou.xml"
+    SUMO_CONFIG_PATH = "../../network_and_config/csomor/csomor1.sumocfg"
+    PATHS_CSV_SAVE_DETECTORS = "../../network_and_config/csomor/detectors.csv"
+    DETECTOR_XML_SAVE_PATH = "../../network_and_config/csomor/det.add.xml"
     
-    PATHS_CSV_SAVE_PATH = "../network_and_config/paths.csv"
-    AGENTS_DATA_PATH = "../network_and_config/agents_data.csv"
+    PATHS_CSV_SAVE_PATH = "../../network_and_config/paths.csv"
+    AGENTS_DATA_PATH = "../../network_and_config/agents_data.csv"
 
     RECORDS_FOLDER = "training_records"
     EPISODES_LOGS_FOLDER = "episodes"
