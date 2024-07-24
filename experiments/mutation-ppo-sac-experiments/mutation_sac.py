@@ -5,6 +5,7 @@ import pickle
 from tensordict.nn import TensorDictModule, TensorDictSequential
 import torch
 from torchrl.collectors import SyncDataCollector
+from torchrl._utils import logger as torchrl_logger
 from torch.distributions import Categorical
 from torchrl.envs.libs.pettingzoo import PettingZooWrapper
 from torchrl.envs.transforms import TransformedEnv, RewardSum
@@ -15,6 +16,10 @@ from torchrl.data.replay_buffers.storages import LazyTensorStorage
 from torchrl.modules import MultiAgentMLP, ProbabilisticActor
 from torchrl.objectives.value import GAE
 from torchrl.objectives import ClipPPOLoss, ValueEstimators
+from torchrl.data import TensorDictReplayBuffer
+from torchrl.objectives import DiscreteSACLoss
+from torchrl.data.replay_buffers import LazyMemmapStorage
+from torchrl.modules.tensordict_module import ValueOperator
 from torchrl.modules import MLP, QValueActor
 from torchrl.data import CompositeSpec
 from torchrl.modules import EGreedyModule
@@ -33,11 +38,13 @@ from torchrl.trainers import (
     UpdateWeights,
 )
 import wandb
+import time
 from tqdm import tqdm
 import sys
 
-parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
-sys.path.append(parent_dir)
+current_dir = os.getcwd()
+parent_of_parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
+sys.path.append(parent_of_parent_dir)
 
 from environment import TrafficEnvironment
 from keychain import Keychain as kc
@@ -68,7 +75,7 @@ max_grad_norm = 1.0  # Maximum norm for the gradients
 # DQN
 gamma = 0.99  # discount factor
 hard_update_freq = 10
-
+tau = 0.02
 init_bias = 2.0 #To speed up learning, we set the bias of the last layer of our value network to a predefined value (this is not mandatory)
 
 
@@ -114,6 +121,8 @@ def policy_network(env):
         
         policies[group] = policy
 
+    return policies
+
     
 def critic_network(env):
 
@@ -141,6 +150,8 @@ def critic_network(env):
             out_keys=[(group, "action_value")],
         )
         critic_modules[group] = value_module
+
+    return critic_modules
 
 
 def transform_environment(env):
@@ -191,7 +202,7 @@ def replay_buffer(env):
 
     return replay_buffers
 
-def sac_loss_function(env):
+def sac_loss_function(env, policies, critic_modules):
     losses = {}
     optimizers = {}
     target_net_updaters = {}
@@ -278,7 +289,7 @@ collector = collector(env)
 replay_buffers = replay_buffer(env)
 
 ## Loss function
-optimizers, losses, target_net_updaters = sac_loss_function
+optimizers, losses, target_net_updaters = sac_loss_function(env, policies, critic_modules)
 
 
 ## Training loop
@@ -325,7 +336,7 @@ for i, tensordict_data in enumerate(collector):
                 loss_value.backward()
 
                 total_norm = torch.nn.utils.clip_grad_norm_(
-                    loss_module.parameters(), max_grad_norm
+                    losses[group].parameters(), max_grad_norm
                 )
                 training_tds[-1].set("grad_norm", total_norm.mean())
 
