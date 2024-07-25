@@ -200,7 +200,6 @@ class TrafficEnvironment(AECEnv):
         - agent_selection (to the next agent)
         And any internal state used by observe() or render()
         """
-
         # If there are machines in the system
         if self.possible_agents:
             if (self.terminations[self.agent_selection]
@@ -292,6 +291,13 @@ class TrafficEnvironment(AECEnv):
 
         random_humans_deleted = []
 
+        if len(filtered_human_agents) < number_of_machines_to_be_added:
+            raise ValueError(
+                f"Insufficient human agents for mutation. Required: {number_of_machines_to_be_added}, "
+                f"Available: {len(filtered_human_agents)}.\n"
+                f"Decrease the number of machines to be added after the mutation.\n"
+            )
+
         for i in range(0, number_of_machines_to_be_added):
             random_human = random.choice(filtered_human_agents)
 
@@ -346,6 +352,7 @@ class TrafficEnvironment(AECEnv):
     
 
     def _reset_episode(self):
+        """ Reset the environment after one day implementation."""
         self.simulator.reset()
 
         if self.possible_agents:
@@ -385,7 +392,7 @@ class TrafficEnvironment(AECEnv):
 
             # Add the reward in the travel_times_list
             for agent_entry in self.travel_times_list:
-                if agent.id == agent_entry[kc.AGENT_ID]: #agent_entry['id']
+                if agent.id == agent_entry[kc.AGENT_ID]:
                     self.travel_times_list.remove(agent_entry)
                     agent_entry[kc.REWARD] = reward
                     self.travel_times_list.append(agent_entry)

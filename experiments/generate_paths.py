@@ -331,7 +331,6 @@ if __name__ == "__main__":
     route_file_path = kc.ROUTE_FILE_PATH
     paths_csv_save_path = kc.PATHS_CSV_SAVE_PATH
     paths_csv_save_detectors = kc.PATHS_CSV_SAVE_DETECTORS
-    routes_xml_save_path = kc.ROUTES_XML_SAVE_PATH
     detector_xml_save_path = kc.DETECTOR_XML_SAVE_PATH
 
     origins = {i : origin for i, origin in enumerate(origins)}
@@ -341,6 +340,6 @@ if __name__ == "__main__":
     check_od_integrity(network, origins, destinations)
     routes = create_routes(network, number_of_paths, origins, destinations, beta, weight, coeffs, num_samples, max_path_length)
     ff_times = calculate_free_flow_times(routes, network, show=True)
-    save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path, detector_xml_save_path, paths_csv_save_detectors)
+    save_paths(routes, ff_times, paths_csv_save_path, route_file_path, detector_xml_save_path, paths_csv_save_detectors)
 
 #################################################

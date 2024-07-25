@@ -140,15 +140,14 @@ class Keychain:
 
     ####################### FILE PATHS ########################
 
-    PARAMS_PATH = MODE + "../../params.json"
+    PARAMS_PATH = MODE + "params.json"
 
-    CONNECTION_FILE_PATH = "../../network_and_config/csomor/csomor1.con.xml"
-    EDGE_FILE_PATH = "../../network_and_config/csomor/csomor1.edg.xml"
-    ROUTE_FILE_PATH = "../../network_and_config/csomor/csomor1.rou.xml"
-    ROUTES_XML_SAVE_PATH = "../../network_and_config/csomor/route.rou.xml"
-    SUMO_CONFIG_PATH = "../../network_and_config/csomor/csomor1.sumocfg"
-    PATHS_CSV_SAVE_DETECTORS = "../../network_and_config/csomor/detectors.csv"
-    DETECTOR_XML_SAVE_PATH = "../../network_and_config/csomor/det.add.xml"
+    CONNECTION_FILE_PATH = "../../network_and_config/two_route_yield/csomor1.con.xml"
+    EDGE_FILE_PATH = "../../network_and_config/two_route_yield/csomor1.edg.xml"
+    ROUTE_FILE_PATH = "../../network_and_config/two_route_yield/rou.rou.xml"
+    SUMO_CONFIG_PATH = "../../network_and_config/two_route_yield/SUMO.sumocfg"
+    PATHS_CSV_SAVE_DETECTORS = "../../network_and_config/two_route_yield/detectors.csv"
+    DETECTOR_XML_SAVE_PATH = "../../network_and_config/two_route_yield/det.add.xml"
     
     PATHS_CSV_SAVE_PATH = "../../network_and_config/paths.csv"
     AGENTS_DATA_PATH = "../../network_and_config/agents_data.csv"

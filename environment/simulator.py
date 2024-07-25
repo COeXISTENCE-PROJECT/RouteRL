@@ -18,7 +18,7 @@ class SumoSimulator():
     def __init__(self, params):
         self.sumo_config_path = kc.SUMO_CONFIG_PATH
         self.paths_csv_path = kc.PATHS_CSV_SAVE_PATH
-        self.routes_xml_path = kc.ROUTES_XML_SAVE_PATH
+        self.routes_xml_path = kc.ROUTE_FILE_PATH
 
         self.sumo_type = params[kc.SUMO_TYPE]
         self.env_var = params[kc.ENV_VAR]
@@ -63,9 +63,11 @@ class SumoSimulator():
     def stop(self):
         self.sumo_connection.close()
 
-    def reset(self):##make empty the det_dict
+    def reset(self):
         self.sumo_connection.load(["--seed", self.seed,'-c', self.sumo_config_path])
+
         self.timestep = 0
+        self.det_dict = []
 
     #####################
 
