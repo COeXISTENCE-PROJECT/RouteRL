@@ -34,24 +34,27 @@ class TrafficEnvironment(AECEnv):
     This environment is utilized for the training of human agents (rational decision-makers) and machine agents (reinforcement learning agents).
     See https://sumo.dlr.de/docs/ for details on SUMO.
     See https://pettingzoo.farama.org/ for details on PettingZoo. 
-    Args:
-        training_params (dict): Training parameters.
-        environment_params (dict): Environment parameters.
-        simulation_params (dict): Simulation parameters.
-        agent_gen_params (dict): Agent generation parameters.
-        agent_params (dict): Agent parameters.
-        phases_params (dict): Phases parameters.
-        render_mode (str): The render mode.
-    
     """
     def __init__(self,
-                training_params,
-                environment_params,
-                simulation_params,
-                agent_gen_params,
-                agent_params,
-                phases_params,
-                render_mode=None):
+                 training_params: dict,
+                 environment_params: dict,
+                 simulation_params: dict,
+                 agent_gen_params: dict,
+                 agent_params: dict,
+                 phases_params: dict,
+                 render_mode: str = None) -> None:
+        
+        """
+        Args:
+
+            training_params (dict): Training parameters.
+            environment_params (dict): Environment parameters.
+            simulation_params (dict): Simulation parameters.
+            agent_gen_params (dict): Agent generation parameters.
+            agent_params (dict): Agent parameters.
+            phases_params (dict): Phases parameters.
+            render_mode (str): The render mode.
+        """
         
         super().__init__()
 
@@ -120,7 +123,7 @@ class TrafficEnvironment(AECEnv):
         self.episode_actions = dict()
 
 
-    def _initialize_machine_agents(self):
+    def _initialize_machine_agents(self)-> None:
         """ Initialize the machine agents. """
         
         ## Sort machine agents based on their start_time
@@ -149,10 +152,10 @@ class TrafficEnvironment(AECEnv):
 
     ##### Simulator control #####
 
-    def start(self):
+    def start(self) -> None:
         self.simulator.start()
 
-    def stop(self):
+    def stop(self) -> None:
         self.simulator.stop()
 
 
@@ -160,8 +163,17 @@ class TrafficEnvironment(AECEnv):
 
     ##### PettingZoo functions #####
 
-    def reset(self, seed=None, options=None):
-        """Resets the environment."""
+    def reset(self, seed: int = None, options: dict = None) -> tuple:
+        """
+        Resets the environment.
+        
+        Args:
+            seed (int, optional): Seed for random number generation. Defaults to None.
+            options (dict, optional): Additional options for resetting the environment. Defaults to None.
+
+        Returns:
+            tuple: A tuple containing the initial observations and information for the agents.
+        """
         self.episode_actions = dict()
         self.simulator.reset()
 
@@ -188,17 +200,14 @@ class TrafficEnvironment(AECEnv):
         return self.observations, infos
 
 
-    def step(self, machine_action=None):
+    def step(self, machine_action: int = None) -> None:
         """
-        This function takes in an action for the current agent (specified by
-        agent_selection) and needs to update
-        - rewards
-        - _cumulative_rewards (accumulating the rewards)
-        - terminations
-        - truncations
-        - infos
-        - agent_selection (to the next agent)
-        And any internal state used by observe() or render()
+        Takes an action for the current agent (specified by agent_selection) and updates
+        various parameters including rewards, cumulative rewards, terminations, truncations,
+        infos, and agent_selection. Also updates any internal state used by observe() or render().
+
+        Args:
+            machine_action (int, optional): The action to be taken by the machine agent. Defaults to None.
         """
         # If there are machines in the system
         if self.possible_agents:
@@ -261,14 +270,23 @@ class TrafficEnvironment(AECEnv):
             self._reset_episode()
 
 
-    def close(self):
+    def close(self) -> None:
         """Close the environment and stop the SUMO simulation."""
         self.simulator.stop()
 
-    def observe(self, agent):
+    def observe(self, agent: str) -> dict:
+        """
+        Retrieve the observations for a specific agent.
+
+        Args:
+            agent (str): The identifier for the agent whose observations are to be retrieved.
+
+        Returns:
+            dict: The observations for the specified agent.
+        """
         return self.observation_obj.agent_observations(agent)
     
-    def render(self):
+    def render(self) -> None:
         pass
 
 
@@ -277,7 +295,17 @@ class TrafficEnvironment(AECEnv):
     ### Mutation function ###
 
 
-    def mutation(self):
+    def mutation(self) -> None:
+        """
+        Perform mutation by converting selected human agents into machine agents.
+
+        This method identifies a subset of human agents that start after the 25th percentile of
+        start times of other vehicles, removes a specified number of these agents, and replaces them with machine agents.
+
+        Raises:
+            ValueError: If there are insufficient human agents available for mutation.
+        """
+
         logging.info("Mutation is about to happen!\n")
         logging.info("There were %s human agents.\n", len(self.human_agents))
 
@@ -328,10 +356,18 @@ class TrafficEnvironment(AECEnv):
 
     ##### Help functions #####
     
-    def get_observation(self):
+    def get_observation(self) -> tuple:
+        """
+        Retrieve the current observation from the simulator.
+
+        This method returns the current timestep of the simulation and the values of the episode actions.
+
+        Returns:
+            tuple: A tuple containing the current timestep and the episode actions.
+        """
         return self.simulator.timestep, self.episode_actions.values()
 
-    def help_step(self, actions: list[tuple]):
+    def help_step(self, actions: list[tuple]) -> dict:
         """ This function is responsible for supplying the simulator with the actions of vehicles
         that begin their journey at the current timestep. 
         Simultaneously, it records the travel times of vehicles that finished their trip this timestep."""
@@ -351,7 +387,7 @@ class TrafficEnvironment(AECEnv):
         return travel_times.values()
     
 
-    def _reset_episode(self):
+    def _reset_episode(self) -> None:
         """ Reset the environment after one day implementation."""
         self.simulator.reset()
 
@@ -368,7 +404,18 @@ class TrafficEnvironment(AECEnv):
         self.episode_actions = dict()
     
 
-    def _record(self, episode, ep_observations, start_time, agents):
+    def _record(self, episode: int, ep_observations: dict, start_time: float, agents: list) -> None:
+        """
+        Record the episode data, including observations and rewards.
+
+        This method logs the observations and rewards for the current episode and updates the progress of the simulation.
+
+        Args:
+            episode (int): The current episode number.
+            ep_observations (dict): Observations recorded during the episode.
+            start_time (float): The start time of the episode.
+            agents (list): List of agent objects to record rewards for.
+        """
 
         dc_episode, dc_ep_observations, dc_start_time, dc_agents = dc(episode), dc(ep_observations), dc(start_time), dc(agents)
 
@@ -384,7 +431,7 @@ class TrafficEnvironment(AECEnv):
         #show_progress_bar(msg, dc_start_time, curr_progress, target)
 
 
-    def _assign_rewards(self):
+    def _assign_rewards(self) -> None:
         """ This function assigns rewards to the agents. """
 
         for agent in self.all_agents:
@@ -410,7 +457,7 @@ class TrafficEnvironment(AECEnv):
 
     ##### Simulation loop #####
 
-    def simulation_loop(self, machine_action, machine_id):
+    def simulation_loop(self, machine_action: int, machine_id: str) -> None:
         """ This function contains the integration of the agent's actions to SUMO. 
         Description:
             We iterate through all the timesteps of the simulation.
@@ -479,23 +526,32 @@ class TrafficEnvironment(AECEnv):
 
     ##### Free flow times #####
 
-    def get_free_flow_times(self):
+    def get_free_flow_times(self) -> dict:
+        """
+        Retrieve free flow times for all origin-destination pairs from the simulator paths data.
+
+        Returns:
+            dict: A dictionary where keys are tuples of origin and destination, and values are lists of free flow times.
+        """
+
         paths_df = pd.read_csv(self.simulator.paths_csv_path)
         origins = paths_df[kc.ORIGIN].unique()
         destinations = paths_df[kc.DESTINATION].unique()
         ff_dict = {(o, d): list() for o in origins for d in destinations}
+
         for _, row in paths_df.iterrows():
             ff_dict[(row[kc.ORIGIN], row[kc.DESTINATION])].append(row[kc.FREE_FLOW_TIME])
+
         return ff_dict
     
     ###########################
 
     @functools.lru_cache(maxsize=None)
-    def observation_space(self, agent):
+    def observation_space(self, agent: str) -> any:
         return self._observation_spaces[agent]
 
 
     @functools.lru_cache(maxsize=None)
-    def action_space(self, agent):
+    def action_space(self, agent: str) -> any:
         return self._action_spaces[agent]
     
