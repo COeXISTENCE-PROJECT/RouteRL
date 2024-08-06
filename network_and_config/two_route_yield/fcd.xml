@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2024-08-06 15:25:28 by Eclipse SUMO sumo Version 1.19.0
+<!-- generated on 2024-08-06 15:29:03 by Eclipse SUMO sumo Version 1.19.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
@@ -6315,4 +6315,3 @@
     </timestep>
     <timestep time="577.00"/>
     <timestep time="578.00"/>
-</fcd-export>
