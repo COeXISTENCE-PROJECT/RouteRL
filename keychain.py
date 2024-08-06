@@ -150,9 +150,14 @@ class Keychain:
     DETECTOR_XML_SAVE_PATH = "../../network_and_config/two_route_yield/det.add.xml"
     TRIP_INFO_XML = "../../network_and_config/two_route_yield/tripinfo.xml"
     SUMMARY_XML = "../../network_and_config/two_route_yield/summary.xml"
+    SUMO_FCD = "../../network_and_config/two_route_yield/fcd.xml"
+    PLOT_XML = "C:/Program Files (x86)/Eclipse/Sumo/tools/visualization/plotXMLAttributes.py"
     
     PATHS_CSV_SAVE_PATH = "../../network_and_config/paths.csv"
     AGENTS_DATA_PATH = "../../network_and_config/agents_data.csv"
+    SAVE_TRIPINFO_XML = "plots/tripinfo"
+    SAVE_TRAJECTORIES_XML = "plots/trajectories"
+    SAVE_SUMMARY_XML = "plots/summary.xml"
 
     RECORDS_FOLDER = "training_records"
     EPISODES_LOGS_FOLDER = "episodes"
