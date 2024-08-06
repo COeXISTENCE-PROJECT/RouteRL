@@ -6,6 +6,7 @@ import logging
 import numpy as np
 import pandas as pd
 import random
+import subprocess
 import threading
 
 from create_agents import create_agent_objects
@@ -377,18 +378,33 @@ class TrafficEnvironment(AECEnv):
                 kc.AGENT_ORIGIN: agent.origin, kc.AGENT_DESTINATION: agent.destination, kc.AGENT_START_TIME: agent.start_time}
             self.simulator.add_vehice(action_dict)
             self.episode_actions[agent.id] = action_dict
-        timestep, arrivals, self.det_dict = self.simulator.step()
+        timestep, arrivals, self.det_dict = self.simulator.step()  
 
         travel_times = dict()
         for veh_id in arrivals:
             agent_id = int(veh_id)
             travel_times[agent_id] = {kc.TRAVEL_TIME : (timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0}
             travel_times[agent_id].update(self.episode_actions[agent_id])
+
         return travel_times.values()
     
 
     def _reset_episode(self) -> None:
         """ Reset the environment after one day implementation."""
+        self.plot_tripinfo(
+            self.day,
+            kc.TRIP_INFO_XML
+            #"C:/Users/Anastasia/OneDrive - Uniwersytet Jagielloński/Documents/torch-rl-trials/Milestone-One/network_and_config/two_route_yield/tripinfo.xml"
+        )
+
+        self.plot_summary(
+            self.day,
+            'time',
+            'running,halting',
+            kc.SUMMARY_XML
+            #"C:/Users/Anastasia/OneDrive - Uniwersytet Jagielloński/Documents/torch-rl-trials/Milestone-One/network_and_config/two_route_yield/summary.xml"
+        )
+
         self.simulator.reset()
 
         if self.possible_agents:
@@ -545,6 +561,74 @@ class TrafficEnvironment(AECEnv):
         return ff_dict
     
     ###########################
+
+    ### Plot SUMO xml files ###
+
+    def plot_tripinfo(self, episode, xml_file):
+        """
+        Run the plotting script for a specific episode.
+
+        Args:
+            episode (int): The current episode number.
+            x (str): The x-axis attribute.
+            y (str): The y-axis attribute.
+            xml_file (str): The path to the XML file to plot.
+        """
+
+        command = [
+            'python', 'C:/Program Files (x86)/Eclipse/Sumo/tools/visualization/plotXMLAttributes.py',
+            '-i', 'id',
+            '-x', 'depart',
+            '-y', 'departDelay',
+            '--scatterplot',
+            '--xlabel', 'depart time [s]',
+            '--ylabel', 'depart delay [s]',
+            '--ylim', '0,40',
+            '--xticks', '0,1200,200,10',
+            '--yticks', '0,40,5,10',
+            '--xgrid',
+            '--ygrid',
+            '--title', 'depart delay over depart time',
+            '--titlesize', '16',
+            xml_file
+            #'C:/Users/Anastasia/OneDrive - Uniwersytet Jagielloński/Documents/torch-rl-trials/Milestone-One/network_and_config/two_route_yield/tripInfo.xml'
+        ]
+
+        
+        # Execute the command
+        try:
+            subprocess.run(command, check=True)
+            print(f"Successfully plotted episode {episode}.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error occurred while plotting episode {episode}: {e}")
+
+
+    def plot_summary(self, episode, x, y, xml_file):
+        print("\n\nInside plot summary\n\n")
+        print("xml file is: ", xml_file)
+        
+        command = [
+            'python', 'C:\\Program Files (x86)\\Eclipse\\Sumo\\tools\\visualization\\plotXMLAttributes.py',
+            xml_file,
+            '-x', x,
+            '-y', y,
+            '-o', 'plot-running.png',
+            '--legend'
+        ]
+        
+        try:
+            result = subprocess.run(command, check=True, capture_output=True, text=True)
+            print("Command Output:", result.stdout)
+            print("Command Error Output:", result.stderr)
+        except subprocess.CalledProcessError as e:
+            print("Error occurred while running command:")
+            print(e)
+            print("Output:", e.output)
+            print("Error Output:", e.stderr)
+
+    ############################
+    ### PettingZoo functions ###
+
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent: str) -> any:

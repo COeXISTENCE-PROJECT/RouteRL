@@ -1,7 +1,9 @@
 import sys
 import os
 import random
+import subprocess
 from tqdm import tqdm
+import time
 
 current_dir = os.getcwd()
 parent_of_parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
@@ -54,7 +56,7 @@ def main(params):
 
             env.step(action)
 
-
+        
     env.stop()
 
     plotter(params[kc.PLOTTER])

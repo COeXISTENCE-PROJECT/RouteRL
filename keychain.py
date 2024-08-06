@@ -148,6 +148,8 @@ class Keychain:
     SUMO_CONFIG_PATH = "../../network_and_config/two_route_yield/SUMO.sumocfg"
     PATHS_CSV_SAVE_DETECTORS = "../../network_and_config/two_route_yield/detectors.csv"
     DETECTOR_XML_SAVE_PATH = "../../network_and_config/two_route_yield/det.add.xml"
+    TRIP_INFO_XML = "../../network_and_config/two_route_yield/tripinfo.xml"
+    SUMMARY_XML = "../../network_and_config/two_route_yield/summary.xml"
     
     PATHS_CSV_SAVE_PATH = "../../network_and_config/paths.csv"
     AGENTS_DATA_PATH = "../../network_and_config/agents_data.csv"
