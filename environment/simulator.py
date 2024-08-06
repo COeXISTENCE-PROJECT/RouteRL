@@ -46,7 +46,7 @@ class SumoSimulator():
 
     ##### CONFIG CHECK #####
 
-    def _check_paths_ready(self):
+    def _check_paths_ready(self) -> None:
         if os.path.isfile(self.paths_csv_path) and os.path.isfile(self.routes_xml_path):
             logging.info("[CONFIRMED] Paths file is ready.")
         else:
@@ -56,15 +56,15 @@ class SumoSimulator():
 
     ##### SUMO CONTROL #####
 
-    def start(self):
+    def start(self) -> None:
         sumo_cmd = [self.sumo_type,"--seed", self.seed, "--fcd-output", self.sumo_fcd, "-c", self.sumo_config_path] 
         traci.start(sumo_cmd, label=self.sumo_id)
         self.sumo_connection = traci.getConnection(self.sumo_id)
 
-    def stop(self):
+    def stop(self) -> None:
         self.sumo_connection.close()
 
-    def reset(self):
+    def reset(self) -> None:
         self.sumo_connection.load(["--seed", self.seed, "--fcd-output", self.sumo_fcd, '-c', self.sumo_config_path])
 
         self.timestep = 0
@@ -74,12 +74,12 @@ class SumoSimulator():
 
     ##### SIMULATION #####
     
-    def add_vehice(self, act_dict: dict):
+    def add_vehice(self, act_dict: dict) -> None:
         route_id = self.route_id_cache.setdefault((act_dict[kc.AGENT_ORIGIN], act_dict[kc.AGENT_DESTINATION], act_dict[kc.ACTION]), \
                 f'{act_dict[kc.AGENT_ORIGIN]}_{act_dict[kc.AGENT_DESTINATION]}_{act_dict[kc.ACTION]}')
         self.sumo_connection.vehicle.add(vehID=str(act_dict[kc.AGENT_ID]), routeID=route_id, depart=str(act_dict[kc.AGENT_START_TIME]))
     
-    def step(self):
+    def step(self) -> tuple:
         arrivals = self.sumo_connection.simulation.getArrivedIDList()
         self.sumo_connection.simulationStep()
         self.timestep += 1
