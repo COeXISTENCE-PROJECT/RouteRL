@@ -1,7 +1,6 @@
 from keychain import Keychain as kc
 import os
 import subprocess
-import shutil
 
 
 def plot_all_xmls(episode: int) -> None:
@@ -12,7 +11,9 @@ def plot_all_xmls(episode: int) -> None:
         episode (int): The current episode number.
     """
     plot_tripinfo(episode, kc.TRIP_INFO_XML)
-    plot_fcd(episode, kc.SUMO_FCD)
+    plot_fcd_trajectories(episode, kc.SUMO_FCD)
+    plot_fcd_based_speeds(episode, kc.SUMO_FCD)
+    #plot_network(episode, kc.NETWORK_XML)
     #plot_summary(episode, kc.SUMMARY_XML)
 
 
@@ -38,7 +39,8 @@ def plot_tripinfo(episode: int, xml_file: str) -> None:
         '--xlabel', 'depart time [s]',
         '--ylabel', 'depart delay [s]',
         '--ylim', '0,40',
-        '--xticks', '0,1200,200,10',
+        '--xlim', '0,500',
+        '--xticks', '0,500,200,10',
         '--yticks', '0,40,5,10',
         '--xgrid',
         '--ygrid',
@@ -50,9 +52,9 @@ def plot_tripinfo(episode: int, xml_file: str) -> None:
     run_command(command, episode, "tripinfo")
 
 
-def plot_fcd(episode: int, xml_file: str) -> None:
+def plot_fcd_trajectories(episode: int, xml_file: str) -> None:
     """
-    Run the plotting script for the FCD XML file.
+    Plot all the trajectories over time.
 
     Args:
         episode (int): The current episode number.
@@ -63,14 +65,63 @@ def plot_fcd(episode: int, xml_file: str) -> None:
         os.makedirs(directory_path)
 
     command = [
-        'python', kc.PLOT_XML,
-        '-x', 'x',
-        '-y', 'y',
+        'python', kc.PLOT_TRAJECTORIES,
+        '-t', 'xy',
+        "--legend",
         '-o', f"{directory_path}/plot-{episode}.png",
+        '--filter-ids', '10,20,30,40,50,60,70,80,90,100',
         xml_file
     ]
 
     run_command(command, episode, "FCD")
+
+
+def plot_fcd_based_speeds(episode: int, xml_file: str) -> None:
+    """
+    Plot the FCD based speeds over time.
+
+    Args:
+        episode (int): The current episode number.
+        xml_file (str): The path to the FCD XML file to plot.
+    """
+    directory_path = kc.SAVE_FCD_BASED_SPEEDS
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+
+    command = [
+        'python', kc.PLOT_TRAJECTORIES,
+        '-t', 'ts',
+        '-o', f"{directory_path}/plot-{episode}.png",
+        '--filter-ids', '10,20,30,40,50,60,70,80,90,100',
+        xml_file
+    ]
+
+    run_command(command, episode, "FCD")
+
+def plot_network(episode: int, xml_file: str) -> None:
+    print(kc.NETWORK_XML)
+
+    command = [
+        'python', 'C:/Program Files (x86)/Eclipse/Sumo/tools/visualization/plot_net_speeds.py',
+        '-n', kc.NETWORK_XML,
+        '--xlim', '1000,25000',
+        '--ylim', '2000,26000',
+        '--edge-width', '.5',
+        '-o', 'speeds2.png',
+        '--minV', '0',
+        '--maxV', '60',
+        '--xticks', '16',
+        '--yticks', '16',
+        '--xlabel', '[m]',
+        '--ylabel', '[m]',
+        '--xlabelsize', '16',
+        '--ylabelsize', '16',
+        '--colormap', 'jet'
+    ]
+
+    
+
+    run_command(command, episode, "NETWORK")
 
 
 def plot_summary(episode, xml_file: str) -> None:

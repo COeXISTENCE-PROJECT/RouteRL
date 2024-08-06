@@ -6,9 +6,7 @@ import logging
 import numpy as np
 import pandas as pd
 import random
-import subprocess
 import threading
-import os
 
 from create_agents import create_agent_objects
 from .simulator import SumoSimulator
@@ -393,7 +391,7 @@ class TrafficEnvironment(AECEnv):
 
     def _reset_episode(self) -> None:
         """ Reset the environment after one day implementation."""
-        #plot_all_xmls(self.day)
+        plot_all_xmls(self.day)
 
         self.simulator.reset()
 

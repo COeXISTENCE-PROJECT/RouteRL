@@ -4,6 +4,8 @@ import random
 import subprocess
 from tqdm import tqdm
 import time
+from keychain import Keychain as kc
+
 
 current_dir = os.getcwd()
 parent_of_parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
@@ -11,7 +13,6 @@ sys.path.append(parent_of_parent_dir)
 
 from environment import SumoSimulator
 from environment import TrafficEnvironment
-from keychain import Keychain as kc
 from services import plotter
 from services import runner
 
