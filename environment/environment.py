@@ -383,6 +383,7 @@ class TrafficEnvironment(AECEnv):
         travel_times = dict()
         for veh_id in arrivals:
             agent_id = int(veh_id)
+            #print("agent_id is: ", agent_id)
             travel_times[agent_id] = {kc.TRAVEL_TIME : (timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0}
             travel_times[agent_id].update(self.episode_actions[agent_id])
 
@@ -391,7 +392,7 @@ class TrafficEnvironment(AECEnv):
 
     def _reset_episode(self) -> None:
         """ Reset the environment after one day implementation."""
-        plot_all_xmls(self.day)
+        #plot_all_xmls(self.day)
 
         self.simulator.reset()
 
