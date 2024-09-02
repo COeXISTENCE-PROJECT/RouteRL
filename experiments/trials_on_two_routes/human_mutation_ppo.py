@@ -33,7 +33,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 # Devices
 device = (
     torch.device(0)
-    if torch.cuda.is_available() and not is_fork
+    if torch.cuda.is_available()
     else torch.device("cpu")
 )
 vmas_device = device  # The device where the simulator is run

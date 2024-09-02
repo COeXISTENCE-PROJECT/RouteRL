@@ -6,4 +6,4 @@ summary.xml
 tripinfo.xml
 testparams.json
 playground.py
-fcd.xml
+*.xml
