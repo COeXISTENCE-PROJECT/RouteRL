@@ -19,11 +19,9 @@ import sys
 import os
 from keychain import Keychain as kc
 
-current_dir = os.getcwd()
-parent_of_parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir, os.pardir))
-sys.path.append(parent_of_parent_dir)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
-from environment import TrafficEnvironment
+from environment.environment import TrafficEnvironment
 from services.plotter import Plotter
 from utilities import get_params
 
@@ -36,6 +34,8 @@ device = (
     if torch.cuda.is_available()
     else torch.device("cpu")
 )
+print("device is: ", device)
+
 vmas_device = device  # The device where the simulator is run
 
 # Sampling
@@ -83,7 +83,8 @@ env = PettingZooWrapper(
     use_mask=True,
     group_map=None,
     categorical_actions=True,
-    done_on_any = False
+    done_on_any = False,
+    device=device
 )
 
 env = TransformedEnv(
@@ -92,6 +93,7 @@ env = TransformedEnv(
         in_keys=env.reward_keys,
         reset_keys=["_reset"] * len(env.group_map.keys()),
     ),
+    device = device
 )
 
 check_env_specs(env)

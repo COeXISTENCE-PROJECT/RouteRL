@@ -49,8 +49,8 @@ class SumoSimulator():
     def _check_paths_ready(self) -> None:
         if os.path.isfile(self.paths_csv_path) and os.path.isfile(self.routes_xml_path):
             logging.info("[CONFIRMED] Paths file is ready.")
-        else:
-            raise FileNotFoundError("Paths file is not ready. Please generate paths first.")
+        """else:
+            raise FileNotFoundError("Paths file is not ready. Please generate paths first.")"""
         
     #####################
 

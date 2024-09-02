@@ -7,9 +7,6 @@ import xml.etree.ElementTree as ET
 
 from bs4 import BeautifulSoup
 
-parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
-sys.path.append(parent_dir)
-
 from keychain import Keychain as kc
 from utilities import df_to_prettytable
 from utilities import get_params
