@@ -7,3 +7,4 @@ tripinfo.xml
 testparams.json
 playground.py
 *.xml
+*.out
