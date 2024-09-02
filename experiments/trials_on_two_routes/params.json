@@ -10,7 +10,7 @@
     
     "runner_parameters":
     {
-        "num_episodes" : 400,
+        "num_episodes" : 500,
         "episode_length": 1,
         "phases" : [0, 100],
         "phase_names" : ["Human learning", "Mutation - Machine learning PPO"],
@@ -20,8 +20,8 @@
 
     "phase_parameters":
     {
-        "number_of_phases": 3,
-        "number_episodes_each_phase": [10, 20, 10]
+        "number_of_phases": 2,
+        "number_episodes_each_phase": [100, 400]
     },
 
 

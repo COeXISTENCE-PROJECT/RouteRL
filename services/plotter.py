@@ -12,7 +12,9 @@ from statistics import variance
 from keychain import Keychain as kc
 from utilities import make_dir
 from utilities import running_average
+import warnings
 
+warnings.filterwarnings("ignore")
 logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
 

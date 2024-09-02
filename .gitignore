@@ -6,4 +6,4 @@ summary.xml
 tripinfo.xml
 testparams.json
 playground.py
-network_and_config/two_route_yield/fcd.xml
+fcd.xml
