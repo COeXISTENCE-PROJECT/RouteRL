@@ -1,1 +1,0 @@
-{"train/episode_reward": -1.7433334589004517, "trainer/step": 200, "_timestamp": 1721398567.901887, "_runtime": 216.54522395133972, "_step": 2399, "train/q_values": -10.032307434082032, "train/q_loss": 3.103395700454712, "train/epsilon": 0.8200058937072754, "train/sampling_time": 35.23677158355713, "train/training_time": 10.853276014328003}
