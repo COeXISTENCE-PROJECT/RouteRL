@@ -5,7 +5,7 @@ class Keychain:
     When change needed, just fix it here! Avoid hardcoding...
     """
     
-    MODE = "" # empty string if not testing, test otherwise
+    MODE = "experiments/trials_on_two_routes/" # empty string if not testing, test otherwise
     # In case of test, make sure to create a test param file named "testparams.json" in the root folder
 
     ################ PARAMETER ACCESS KEYS ####################
