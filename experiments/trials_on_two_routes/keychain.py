@@ -162,7 +162,7 @@ class Keychain:
     SAVE_FCD_BASED_SPEEDS = "plots/fcd_speeds"
     SAVE_SUMMARY_XML = "plots/summary.xml"
 
-    RECORDS_FOLDER = "training_records"
+    RECORDS_FOLDER = "experiments/trials_on_two_routes/training_records/ppo"
     EPISODES_LOGS_FOLDER = "episodes"
     SIMULATION_LENGTH_LOG_FILE_NAME = "simulation_length.txt"
     LOSSES_LOG_FILE_NAME = "losses.txt"
