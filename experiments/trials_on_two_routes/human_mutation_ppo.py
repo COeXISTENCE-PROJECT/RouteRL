@@ -39,8 +39,8 @@ print("device is: ", device)
 vmas_device = device  # The device where the simulator is run
 
 # Sampling
-frames_per_batch = 200  # Number of team frames collected per training iteration
-n_iters = 100  # Number of sampling and training iterations - the episodes the plotter plots
+frames_per_batch = 20  # Number of team frames collected per training iteration
+n_iters = 10  # Number of sampling and training iterations - the episodes the plotter plots
 total_frames = frames_per_batch * n_iters
 
 # Training
@@ -375,7 +375,7 @@ plt.savefig('rewards.png')
 plt.figure(figsize=(10, 6))
 
 for agent_id, losses in loss.items():
-    losses_np = [loss.detach().numpy() for loss in losses]
+    losses_np = [loss.detach().cpu().numpy() for loss in losses]
     plt.plot(losses_np, label=f'Agent {agent_id}')
 
 plt.title('Total Loss per Agent')
@@ -390,7 +390,7 @@ plt.savefig('total_loss.png')
 plt.figure(figsize=(10, 6)) 
 
 for agent_id, losses in loss_objective.items():
-    losses_np = [loss.detach().numpy() for loss in losses]
+    losses_np = [loss.detach().cpu().numpy() for loss in losses]
     plt.plot(losses_np, label=f'Agent {agent_id}')
 
 plt.title('Objective Loss per Agent')
@@ -406,7 +406,7 @@ plt.savefig('objective_loss.png')
 plt.figure(figsize=(10, 6))  # Adjust the figure size as needed
 
 for agent_id, losses in loss_entropy.items():
-    losses_np = [loss.detach().numpy() for loss in losses]
+    losses_np = [loss.detach().cpu().numpy() for loss in losses]
     plt.plot(losses_np, label=f'Agent {agent_id}')
 
 plt.title('Entropy Loss per Agent')
@@ -422,7 +422,7 @@ plt.savefig('entropy_loss.png')
 plt.figure(figsize=(10, 6))
 
 for agent_id, losses in loss_critic.items():
-    losses_np = [loss.detach().numpy() for loss in losses]
+    losses_np = [loss.detach().cpu().numpy() for loss in losses]
     plt.plot(losses_np, label=f'Agent {agent_id}')
 
 plt.title('Critic Loss per Agent')

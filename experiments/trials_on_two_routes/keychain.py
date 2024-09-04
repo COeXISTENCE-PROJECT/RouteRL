@@ -5,7 +5,7 @@ class Keychain:
     When change needed, just fix it here! Avoid hardcoding...
     """
     
-    MODE = "" # empty string if not testing, test otherwise
+    MODE = "experiments/trials_on_two_routes/" # empty string if not testing, test otherwise
     # In case of test, make sure to create a test param file named "testparams.json" in the root folder
 
     ################ PARAMETER ACCESS KEYS ####################
@@ -162,7 +162,7 @@ class Keychain:
     SAVE_FCD_BASED_SPEEDS = "plots/fcd_speeds"
     SAVE_SUMMARY_XML = "plots/summary.xml"
 
-    RECORDS_FOLDER = "training_records"
+    RECORDS_FOLDER = "experiments/trials_on_two_routes/training_records/ppo"
     EPISODES_LOGS_FOLDER = "episodes"
     SIMULATION_LENGTH_LOG_FILE_NAME = "simulation_length.txt"
     LOSSES_LOG_FILE_NAME = "losses.txt"
