@@ -29,6 +29,7 @@ from torchrl.trainers import (
     UpdateWeights,
 )
 import wandb
+import json
 import time
 from tqdm import tqdm
 import sys
@@ -55,7 +56,7 @@ vmas_device = device  # The device where the simulator is run
 
 # Sampling
 frames_per_batch = 200  # Number of team frames collected per training iteration
-n_iters = 100  # Number of sampling and training iterations
+n_iters = 10  # Number of sampling and training iterations
 total_frames = frames_per_batch * n_iters
 
 # Training
@@ -76,7 +77,7 @@ env = TrafficEnvironment(params[kc.RUNNER], params[kc.ENVIRONMENT], params[kc.SI
 env.start()
 
 ##################### Human Learning #####################
-num_episodes = 10
+num_episodes = 100
 
 for episode in range(num_episodes):
     env.step()
@@ -236,6 +237,7 @@ group = next(iter(env.group_map))
 
 
 q_losses_loop = {group: [] for group in env.group_map.keys()}
+q_values = {group: [] for group in env.group_map.keys()}
 
 
 ##################### Create the logger #####################
@@ -331,6 +333,7 @@ for i, tensordict_data in enumerate(collector):
             q_loss = loss_td["loss"]
 
             q_losses_loop[group].append(q_loss)
+            q_values[group].append((data[group, "action_value"] * data[group, "action"]).sum().item()/ frames_per_batch)
 
             optimizer.zero_grad()
             q_loss.backward()
@@ -370,6 +373,14 @@ collector.shutdown()
 end_time = time.time()
 execution_time = end_time - start_time
 print(f"Training took {execution_time:.2f} seconds to finish")
+
+q_losses_file = kc.RECORDS_FOLDER + 'q_losses_loop.json'
+with open(q_losses_file, 'w') as f:
+    json.dump(q_losses_loop, f)
+
+q_values_file = kc.RECORDS_FOLDER + 'q_values_loop.json'
+with open(q_values_file, 'w') as f:
+    json.dump(q_values, f)
 
 from services import plotter
 plotter(params[kc.PLOTTER])

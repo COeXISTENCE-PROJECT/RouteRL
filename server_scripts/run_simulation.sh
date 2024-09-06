@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=sac_traffic_simulation
+#SBATCH --job-name=dqn_traffic_simulation
 #SBATCH --qos=big
 #SBATCH --gres=gpu:1
 #SBATCH --mem=64G

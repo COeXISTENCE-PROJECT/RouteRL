@@ -37,6 +37,7 @@ from torchrl.trainers import (
     Trainer,
     UpdateWeights,
 )
+import json
 import wandb
 import time
 from tqdm import tqdm
@@ -61,8 +62,8 @@ device = torch.device("cpu")
 vmas_device = device  # The device where the simulator is run
 
 # Sampling
-frames_per_batch = 20  # Number of team frames collected per training iteration
-n_iters = 40  # Number of sampling and training iterations
+frames_per_batch = 50  # Number of team frames collected per training iteration
+n_iters = 10  # Number of sampling and training iterations
 total_frames = frames_per_batch * n_iters
 
 # Training
@@ -254,6 +255,11 @@ sampling_start = time.time()
 total_time = 0
 episode_reward_mean_map = {group: [] for group in env.group_map.keys()}
 
+loss = {group: [] for group in env.group_map.keys()}
+loss_actor = {group: [] for group in env.group_map.keys()}
+loss_alpha = {group: [] for group in env.group_map.keys()}
+loss_qvalue = {group: [] for group in env.group_map.keys()}
+
 
 for i, tensordict_data in enumerate(collector):
     torchrl_logger.info(f"\nIteration {i}")
@@ -285,6 +291,11 @@ for i, tensordict_data in enumerate(collector):
                 )
 
                 loss_value.backward()
+
+                loss[group].append(loss_value)
+                loss_actor[group].append(loss_vals["loss_actor"])
+                loss_alpha[group].append(loss_vals["loss_alpha"])
+                loss_qvalue[group].append(loss_vals["loss_qvalue"])
 
                 total_norm = torch.nn.utils.clip_grad_norm_(
                     losses[group].parameters(), max_grad_norm
@@ -328,9 +339,30 @@ for i, tensordict_data in enumerate(collector):
     )
     pbar.update()
 
+######### Save
+# Total loss
+loss_file = kc.RECORDS_FOLDER + 'loss_file.json'
+with open(loss_file, 'w') as f:
+    json.dump(loss, f)
+
+# Actor loss
+actor_loss_file = kc.RECORDS_FOLDER + 'actor_loss.json'
+with open(actor_loss_file, 'w') as f:
+    json.dump(loss_actor, f)
+
+# Alpha loss
+alpha_loss_file = kc.RECORDS_FOLDER + 'alpha_loss.json'
+with open(alpha_loss_file, 'w') as f:
+    json.dump(loss_alpha, f)
+
+# Critic loss
+qvalue_loss_file = kc.RECORDS_FOLDER + 'qvalue_loss.json'
+with open(qvalue_loss_file, 'w') as f:
+    json.dump(loss_qvalue, f)
+
 
 ################### Plot results
-plt.figure()
+"""plt.figure()
 for group in env.group_map.keys():
     rewards = episode_reward_mean_map[group]
     plt.plot(rewards, label=group)
@@ -351,7 +383,7 @@ for key, tensor in training_tds.items():
     plt.xlabel('Index')
     plt.ylabel('Value')
     plt.grid(True)
-    plt.savefig('sac_loss.png')
+    plt.savefig('sac_loss.png')"""
 
 
 from services import plotter

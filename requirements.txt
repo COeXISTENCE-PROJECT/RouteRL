@@ -9,3 +9,4 @@ seaborn==0.13.2
 torch
 traci==1.19.0
 torchrl
+json

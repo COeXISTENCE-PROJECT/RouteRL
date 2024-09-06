@@ -17,6 +17,7 @@ from torchrl.objectives import ClipPPOLoss, ValueEstimators
 from tqdm import tqdm
 import sys
 import os
+import json
 from keychain import Keychain as kc
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
@@ -39,7 +40,7 @@ print("device is: ", device)
 vmas_device = device  # The device where the simulator is run
 
 # Sampling
-frames_per_batch = 20  # Number of team frames collected per training iteration
+frames_per_batch = 50  # Number of team frames collected per training iteration
 n_iters = 10  # Number of sampling and training iterations - the episodes the plotter plots
 total_frames = frames_per_batch * n_iters
 
@@ -356,9 +357,34 @@ for tensordict_data in collector: ##loops over frame_per_batch
     pbar.update()
 
 
-############ Plotting
+############ Save
+# Mean episode reward
+episode_reward_mean_file = kc.RECORDS_FOLDER + 'episode_reward_mean.json'
+with open(episode_reward_mean_file, 'w') as f:
+    json.dump(episode_reward_mean_map, f)
 
-plt.figure()
+# Total loss
+loss_file = kc.RECORDS_FOLDER + 'loss_file.json'
+with open(loss_file, 'w') as f:
+    json.dump(loss, f)
+
+# Objective loss
+objective_loss_file = kc.RECORDS_FOLDER + 'objective_loss.json'
+with open(objective_loss_file, 'w') as f:
+    json.dump(loss_objective, f)
+
+# Entropy loss
+entropy_loss_file = kc.RECORDS_FOLDER + 'entropy_loss.json'
+with open(entropy_loss_file, 'w') as f:
+    json.dump(loss_entropy, f)
+
+# Critic loss
+critic_loss_file = kc.RECORDS_FOLDER + 'critic_loss.json'
+with open(critic_loss_file, 'w') as f:
+    json.dump(loss_critic, f)
+
+
+"""plt.figure()
 for group in env.group_map.keys():
     rewards = episode_reward_mean_map[group]
     plt.plot(rewards, label=group)
@@ -430,7 +456,7 @@ plt.xlabel('Training Step')
 plt.ylabel('Loss')
 plt.legend()
 plt.grid(True)
-plt.savefig('critic_loss.png')
+plt.savefig('critic_loss.png')"""
 
 
 ############ Plotter

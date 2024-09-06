@@ -157,12 +157,12 @@ class Keychain:
     
     PATHS_CSV_SAVE_PATH = "network_and_config/paths.csv"
     AGENTS_DATA_PATH = "network_and_config/agents_data.csv"
-    SAVE_TRIPINFO_XML = "plots/tripinfo"
-    SAVE_TRAJECTORIES_XML = "plots/trajectories"
-    SAVE_FCD_BASED_SPEEDS = "plots/fcd_speeds"
-    SAVE_SUMMARY_XML = "plots/summary.xml"
+    SAVE_TRIPINFO_XML = "experiments/trials_on_two_routes/plots/dqn/tripinfo"
+    SAVE_TRAJECTORIES_XML = "experiments/trials_on_two_routes/plots/dqn/trajectories"
+    SAVE_FCD_BASED_SPEEDS = "experiments/trials_on_two_routes/plots/dqn/fcd_speeds"
+    SAVE_SUMMARY_XML = "experiments/trials_on_two_routes/plots/dqn/summary.xml"
 
-    RECORDS_FOLDER = "experiments/trials_on_two_routes/training_records/ppo"
+    RECORDS_FOLDER = "experiments/trials_on_two_routes/training_records/dqn"
     EPISODES_LOGS_FOLDER = "episodes"
     SIMULATION_LENGTH_LOG_FILE_NAME = "simulation_length.txt"
     LOSSES_LOG_FILE_NAME = "losses.txt"
@@ -170,7 +170,7 @@ class Keychain:
     PATHS_CSV_FILE_NAME = "paths.csv"
     FREE_FLOW_TIMES_CSV_FILE_NAME = "free_flow_times.csv"
 
-    PLOTS_FOLDER = "plots"
+    PLOTS_FOLDER = "experiments/trials_on_two_routes/plots/dqn"
     REWARDS_PLOT_FILE_NAME = "rewards.png"
     TRAVEL_TIMES_PLOT_FILE_NAME = "travel_times.png"
     TT_DIST_PLOT_FILE_NAME = "tt_dist.png"

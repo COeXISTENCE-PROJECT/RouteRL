@@ -8,3 +8,4 @@ testparams.json
 playground.py
 *.xml
 *.out
+*.txt
