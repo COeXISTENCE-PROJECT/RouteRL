@@ -340,23 +340,37 @@ for i, tensordict_data in enumerate(collector):
     pbar.update()
 
 ######### Save
+# Episode reward mean
+episode_reward_mean_file = kc.RECORDS_FOLDER + '/episode_reward_mean.json'
+with open(episode_reward_mean_file, 'w') as f:
+    json.dump(episode_reward_mean_map, f)
+
 # Total loss
-loss_file = kc.RECORDS_FOLDER + 'loss_file.json'
+loss_file = kc.RECORDS_FOLDER + '/loss_file.json'
+# loss is a tensor so I transform it to a list
+loss = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
+        for group, tensors in loss.items()}
 with open(loss_file, 'w') as f:
     json.dump(loss, f)
 
 # Actor loss
-actor_loss_file = kc.RECORDS_FOLDER + 'actor_loss.json'
+actor_loss_file = kc.RECORDS_FOLDER + '/actor_loss.json'
+loss_actor = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
+        for group, tensors in loss_actor.items()}
 with open(actor_loss_file, 'w') as f:
     json.dump(loss_actor, f)
 
 # Alpha loss
-alpha_loss_file = kc.RECORDS_FOLDER + 'alpha_loss.json'
+alpha_loss_file = kc.RECORDS_FOLDER + '/alpha_loss.json'
+loss_alpha = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
+        for group, tensors in loss_alpha.items()}
 with open(alpha_loss_file, 'w') as f:
     json.dump(loss_alpha, f)
 
 # Critic loss
-qvalue_loss_file = kc.RECORDS_FOLDER + 'qvalue_loss.json'
+qvalue_loss_file = kc.RECORDS_FOLDER + '/qvalue_loss.json'
+loss_qvalue = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
+        for group, tensors in loss_qvalue.items()}
 with open(qvalue_loss_file, 'w') as f:
     json.dump(loss_qvalue, f)
 

@@ -290,7 +290,6 @@ for i, tensordict_data in enumerate(collector):
 
     log_info = {}
     sampling_time = time.time() - sampling_start
-    pbar.update(tensordict_data.numel())
 
     data = tensordict_data.reshape(-1)
     current_frames = data.numel()
@@ -367,6 +366,7 @@ for i, tensordict_data in enumerate(collector):
             # update weights of the inference policy
             collector.update_policy_weights_()
             sampling_start = time.time()
+    pbar.update()
 
 
 collector.shutdown()
@@ -375,10 +375,15 @@ execution_time = end_time - start_time
 print(f"Training took {execution_time:.2f} seconds to finish")
 
 q_losses_file = kc.RECORDS_FOLDER + 'q_losses_loop.json'
+# loss is a tensor so I transform it to a list
+q_losses_loop = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
+        for group, tensors in q_losses_loop.items()}
 with open(q_losses_file, 'w') as f:
     json.dump(q_losses_loop, f)
 
 q_values_file = kc.RECORDS_FOLDER + 'q_values_loop.json'
+q_values = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
+        for group, tensors in q_values.items()}
 with open(q_values_file, 'w') as f:
     json.dump(q_values, f)
 

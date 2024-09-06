@@ -359,30 +359,44 @@ for tensordict_data in collector: ##loops over frame_per_batch
 
 ############ Save
 # Mean episode reward
-episode_reward_mean_file = kc.RECORDS_FOLDER + 'episode_reward_mean.json'
+episode_reward_mean_file = kc.RECORDS_FOLDER + '/episode_reward_mean.json'
 with open(episode_reward_mean_file, 'w') as f:
     json.dump(episode_reward_mean_map, f)
 
 # Total loss
-loss_file = kc.RECORDS_FOLDER + 'loss_file.json'
+loss_file = kc.RECORDS_FOLDER + '/loss_file.json'
+# loss is a tensor so I transform it to a list
+loss = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
+        for group, tensors in loss.items()}
 with open(loss_file, 'w') as f:
     json.dump(loss, f)
 
 # Objective loss
-objective_loss_file = kc.RECORDS_FOLDER + 'objective_loss.json'
+objective_loss_file = kc.RECORDS_FOLDER + '/objective_loss.json'
+loss_objective = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
+        for group, tensors in loss_objective.items()}
 with open(objective_loss_file, 'w') as f:
     json.dump(loss_objective, f)
 
 # Entropy loss
-entropy_loss_file = kc.RECORDS_FOLDER + 'entropy_loss.json'
+entropy_loss_file = kc.RECORDS_FOLDER + '/entropy_loss.json'
+loss_entropy = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
+        for group, tensors in loss_entropy.items()}
 with open(entropy_loss_file, 'w') as f:
     json.dump(loss_entropy, f)
 
 # Critic loss
-critic_loss_file = kc.RECORDS_FOLDER + 'critic_loss.json'
+critic_loss_file = kc.RECORDS_FOLDER + '/critic_loss.json'
+loss_critic = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
+        for group, tensors in loss_critic.items()}
 with open(critic_loss_file, 'w') as f:
     json.dump(loss_critic, f)
 
+
+############ Plotter
+from services import plotter
+
+plotter(params[kc.PLOTTER])
 
 """plt.figure()
 for group in env.group_map.keys():
@@ -457,9 +471,3 @@ plt.ylabel('Loss')
 plt.legend()
 plt.grid(True)
 plt.savefig('critic_loss.png')"""
-
-
-############ Plotter
-from services import plotter
-
-plotter(params[kc.PLOTTER])
