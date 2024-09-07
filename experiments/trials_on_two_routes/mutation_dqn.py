@@ -374,14 +374,14 @@ end_time = time.time()
 execution_time = end_time - start_time
 print(f"Training took {execution_time:.2f} seconds to finish")
 
-q_losses_file = kc.RECORDS_FOLDER + 'q_losses_loop.json'
+q_losses_file = kc.RECORDS_FOLDER + '/q_losses_loop.json'
 # loss is a tensor so I transform it to a list
 q_losses_loop = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
         for group, tensors in q_losses_loop.items()}
 with open(q_losses_file, 'w') as f:
     json.dump(q_losses_loop, f)
 
-q_values_file = kc.RECORDS_FOLDER + 'q_values_loop.json'
+q_values_file = kc.RECORDS_FOLDER + '/q_values_loop.json'
 q_values = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
         for group, tensors in q_values.items()}
 with open(q_values_file, 'w') as f:

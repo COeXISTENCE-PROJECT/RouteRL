@@ -40,7 +40,7 @@ print("device is: ", device)
 vmas_device = device  # The device where the simulator is run
 
 # Sampling
-frames_per_batch = 50  # Number of team frames collected per training iteration
+frames_per_batch = 200  # Number of team frames collected per training iteration
 n_iters = 10  # Number of sampling and training iterations - the episodes the plotter plots
 total_frames = frames_per_batch * n_iters
 
