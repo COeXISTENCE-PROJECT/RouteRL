@@ -1,0 +1,60 @@
+--- Installing dependencies ---
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: beautifulsoup4==4.12.3 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (4.12.3)
+Requirement already satisfied: matplotlib==3.8.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (3.8.2)
+Requirement already satisfied: networkx==3.2.1 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (3.2.1)
+Requirement already satisfied: numpy in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 4)) (1.26.3)
+Requirement already satisfied: pandas==2.2.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 5)) (2.2.2)
+Requirement already satisfied: polars==0.20.31 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 6)) (0.20.31)
+Requirement already satisfied: prettytable==3.10.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 7)) (3.10.0)
+Requirement already satisfied: seaborn==0.13.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 8)) (0.13.2)
+Requirement already satisfied: torch in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 9)) (2.4.0)
+Requirement already satisfied: traci==1.19.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 10)) (1.19.0)
+Requirement already satisfied: torchrl in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 11)) (0.5.0)
+Requirement already satisfied: soupsieve>1.2 in /home/psarou/.local/lib/python3.12/site-packages (from beautifulsoup4==4.12.3->-r requirements.txt (line 1)) (2.5)
+Requirement already satisfied: contourpy>=1.0.1 in /home/psarou/.local/lib/python3.12/site-packages (from matplotlib==3.8.2->-r requirements.txt (line 2)) (1.2.1)
+Requirement already satisfied: cycler>=0.10 in /home/psarou/.local/lib/python3.12/site-packages (from matplotlib==3.8.2->-r requirements.txt (line 2)) (0.12.1)
+Requirement already satisfied: fonttools>=4.22.0 in /home/psarou/.local/lib/python3.12/site-packages (from matplotlib==3.8.2->-r requirements.txt (line 2)) (4.53.1)
+Requirement already satisfied: kiwisolver>=1.3.1 in /home/psarou/.local/lib/python3.12/site-packages (from matplotlib==3.8.2->-r requirements.txt (line 2)) (1.4.5)
+Requirement already satisfied: packaging>=20.0 in /home/psarou/.local/lib/python3.12/site-packages (from matplotlib==3.8.2->-r requirements.txt (line 2)) (24.1)
+Requirement already satisfied: pillow>=8 in /home/psarou/.local/lib/python3.12/site-packages (from matplotlib==3.8.2->-r requirements.txt (line 2)) (10.4.0)
+Requirement already satisfied: pyparsing>=2.3.1 in /home/psarou/.local/lib/python3.12/site-packages (from matplotlib==3.8.2->-r requirements.txt (line 2)) (3.1.2)
+Requirement already satisfied: python-dateutil>=2.7 in /home/psarou/.local/lib/python3.12/site-packages (from matplotlib==3.8.2->-r requirements.txt (line 2)) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in /home/psarou/.local/lib/python3.12/site-packages (from pandas==2.2.2->-r requirements.txt (line 5)) (2024.1)
+Requirement already satisfied: tzdata>=2022.7 in /home/psarou/.local/lib/python3.12/site-packages (from pandas==2.2.2->-r requirements.txt (line 5)) (2024.1)
+Requirement already satisfied: wcwidth in /home/psarou/.local/lib/python3.12/site-packages (from prettytable==3.10.0->-r requirements.txt (line 7)) (0.2.13)
+Requirement already satisfied: sumolib>=1.19.0 in /home/psarou/.local/lib/python3.12/site-packages (from traci==1.19.0->-r requirements.txt (line 10)) (1.20.0)
+Requirement already satisfied: filelock in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (3.13.1)
+Requirement already satisfied: typing-extensions>=4.8.0 in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (4.12.2)
+Requirement already satisfied: sympy in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (1.12)
+Requirement already satisfied: jinja2 in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (3.1.3)
+Requirement already satisfied: fsspec in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (2024.2.0)
+Requirement already satisfied: setuptools in /usr/local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (69.1.0)
+Requirement already satisfied: nvidia-cuda-nvrtc-cu12==12.1.105 in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (12.1.105)
+Requirement already satisfied: nvidia-cuda-runtime-cu12==12.1.105 in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (12.1.105)
+Requirement already satisfied: nvidia-cuda-cupti-cu12==12.1.105 in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (12.1.105)
+Requirement already satisfied: nvidia-cudnn-cu12==9.1.0.70 in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (9.1.0.70)
+Requirement already satisfied: nvidia-cublas-cu12==12.1.3.1 in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (12.1.3.1)
+Requirement already satisfied: nvidia-cufft-cu12==11.0.2.54 in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (11.0.2.54)
+Requirement already satisfied: nvidia-curand-cu12==10.3.2.106 in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (10.3.2.106)
+Requirement already satisfied: nvidia-cusolver-cu12==11.4.5.107 in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (11.4.5.107)
+Requirement already satisfied: nvidia-cusparse-cu12==12.1.0.106 in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (12.1.0.106)
+Requirement already satisfied: nvidia-nccl-cu12==2.20.5 in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (2.20.5)
+Requirement already satisfied: nvidia-nvtx-cu12==12.1.105 in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (12.1.105)
+Requirement already satisfied: triton==3.0.0 in /home/psarou/.local/lib/python3.12/site-packages (from torch->-r requirements.txt (line 9)) (3.0.0)
+Requirement already satisfied: nvidia-nvjitlink-cu12 in /home/psarou/.local/lib/python3.12/site-packages (from nvidia-cusolver-cu12==11.4.5.107->torch->-r requirements.txt (line 9)) (12.3.101)
+Requirement already satisfied: cloudpickle in /home/psarou/.local/lib/python3.12/site-packages (from torchrl->-r requirements.txt (line 11)) (3.0.0)
+Requirement already satisfied: tensordict>=0.5.0 in /home/psarou/.local/lib/python3.12/site-packages (from torchrl->-r requirements.txt (line 11)) (0.5.0)
+Requirement already satisfied: six>=1.5 in /home/psarou/.local/lib/python3.12/site-packages (from python-dateutil>=2.7->matplotlib==3.8.2->-r requirements.txt (line 2)) (1.16.0)
+Requirement already satisfied: orjson in /home/psarou/.local/lib/python3.12/site-packages (from tensordict>=0.5.0->torchrl->-r requirements.txt (line 11)) (3.10.6)
+Requirement already satisfied: MarkupSafe>=2.0 in /home/psarou/.local/lib/python3.12/site-packages (from jinja2->torch->-r requirements.txt (line 9)) (2.1.5)
+Requirement already satisfied: mpmath>=0.19 in /home/psarou/.local/lib/python3.12/site-packages (from sympy->torch->-r requirements.txt (line 9)) (1.3.0)
+--- Running main.py ---
+2024-09-05 17:50:18,723 [torchrl][INFO] check_env_specs succeeded!
+device is:  cuda:0
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+episode_reward_mean_9 = 0, episode_reward_mean_4 = 0, episode_reward_mean_1 = 0, episode_reward_mean_6 = 0, episode_reward_mean_8 = 0:   0%|          | 0/10 [00:00<?, ?it/s]episode_reward_mean_9 = -0.6716666221618652, episode_reward_mean_4 = -0.8166666030883789, episode_reward_mean_1 = -0.8016666769981384, episode_reward_mean_6 = -0.9399999976158142, episode_reward_mean_8 = -0.8466666340827942:  10%|█         | 1/10 [07:07<1:04:11, 427.95s/it]episode_reward_mean_9 = -0.628333330154419, episode_reward_mean_4 = -0.8649999499320984, episode_reward_mean_1 = -0.7900000214576721, episode_reward_mean_6 = -0.8483333587646484, episode_reward_mean_8 = -0.8399999737739563:  20%|██        | 2/10 [14:15<57:03, 427.94s/it]   episode_reward_mean_9 = -0.625, episode_reward_mean_4 = -0.8649999499320984, episode_reward_mean_1 = -0.7433333396911621, episode_reward_mean_6 = -0.768333375453949, episode_reward_mean_8 = -0.7833333611488342:  30%|███       | 3/10 [21:18<49:39, 425.64s/it]             episode_reward_mean_9 = -0.6666666865348816, episode_reward_mean_4 = -0.7733333110809326, episode_reward_mean_1 = -0.7216666340827942, episode_reward_mean_6 = -0.7716666460037231, episode_reward_mean_8 = -0.70333331823349:  40%|████      | 4/10 [28:39<43:09, 431.59s/it]episode_reward_mean_9 = -0.5883333086967468, episode_reward_mean_4 = -0.7833333015441895, episode_reward_mean_1 = -0.8116666674613953, episode_reward_mean_6 = -0.7433333396911621, episode_reward_mean_8 = -0.6266666650772095:  50%|█████     | 5/10 [36:00<36:15, 435.09s/it]episode_reward_mean_9 = -0.75, episode_reward_mean_4 = -0.9183333516120911, episode_reward_mean_1 = -0.8700000643730164, episode_reward_mean_6 = -0.7866666913032532, episode_reward_mean_8 = -0.6833333373069763:  60%|██████    | 6/10 [43:18<29:03, 435.94s/it]              episode_reward_mean_9 = -0.5849999785423279, episode_reward_mean_4 = -0.7150000929832458, episode_reward_mean_1 = -0.7433333396911621, episode_reward_mean_6 = -0.8050000071525574, episode_reward_mean_8 = -0.6766666769981384:  70%|███████   | 7/10 [50:37<21:50, 436.94s/it]episode_reward_mean_9 = -0.5049999952316284, episode_reward_mean_4 = -0.7333332896232605, episode_reward_mean_1 = -0.8316666483879089, episode_reward_mean_6 = -0.925000011920929, episode_reward_mean_8 = -0.6000000238418579:  80%|████████  | 8/10 [57:48<14:30, 435.12s/it] episode_reward_mean_9 = -0.5416666865348816, episode_reward_mean_4 = -0.7249999642372131, episode_reward_mean_1 = -0.7416666746139526, episode_reward_mean_6 = -0.8266666531562805, episode_reward_mean_8 = -0.7016666531562805:  90%|█████████ | 9/10 [1:04:52<07:11, 431.68s/it]episode_reward_mean_9 = -0.550000011920929, episode_reward_mean_4 = -0.75, episode_reward_mean_1 = -0.7966666221618652, episode_reward_mean_6 = -0.8700000047683716, episode_reward_mean_8 = -0.6600000262260437: 100%|██████████| 10/10 [1:11:55<00:00, 428.90s/it]              WARNING:matplotlib.legend:No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+WARNING:matplotlib.legend:No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+episode_reward_mean_9 = -0.550000011920929, episode_reward_mean_4 = -0.75, episode_reward_mean_1 = -0.7966666221618652, episode_reward_mean_6 = -0.8700000047683716, episode_reward_mean_8 = -0.6600000262260437: 100%|██████████| 10/10 [1:12:21<00:00, 434.12s/it]
