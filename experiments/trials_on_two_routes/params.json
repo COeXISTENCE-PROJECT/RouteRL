@@ -12,7 +12,7 @@
     {
         "num_episodes" : 500,
         "episode_length": 1,
-        "phases" : [0, 100],
+        "phases" : [0, 200],
         "phase_names" : ["Human learning", "Mutation - Machine learning SAC"],
         "remember_every" : 1,
         "frequent_progressbar_update" : false
@@ -21,7 +21,7 @@
     "phase_parameters":
     {
         "number_of_phases": 2,
-        "number_episodes_each_phase": [100, 400]
+        "number_episodes_each_phase": [200, 400]
     },
 
 
@@ -52,8 +52,8 @@
             "learning_phases" : [0, 2],
             "model" : "gawron",
             "alpha" : 0.2,
-            "beta" : 0.5,
-            "beta_randomness" : 0.3,
+            "beta" : 100,
+            "beta_randomness" : 0,
             "appearance_phase" : "No need for this, by default appears in 0",
             "behavior" : "No need for this, by default selfish"
         }

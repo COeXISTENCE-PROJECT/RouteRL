@@ -425,8 +425,16 @@ class TrafficEnvironment(AECEnv):
         dc_episode, dc_ep_observations, dc_start_time, dc_agents = dc(episode), dc(ep_observations), dc(start_time), dc(agents)
 
         rewards = [{kc.AGENT_ID: agent.id, kc.REWARD: agent.last_reward} for agent in dc_agents]
+        cost_tables = [
+            {
+                kc.AGENT_ID: agent.id,
+                kc.COST_TABLE: getattr(agent.model, 'cost', [0] * self.action_space_size) if hasattr(agent, 'model') else [0] * self.action_space_size
+            }
+            for agent in dc_agents
+        ]
+
         if (dc_episode in self.remember_episodes):
-            self.recorder.record(dc_episode, dc_ep_observations, rewards)#, self.det_dict)
+            self.recorder.record(dc_episode, dc_ep_observations, rewards, cost_tables)#, self.det_dict)
         elif not self.frequent_progressbar:
             return
         msg = f"{self.phase_names[self.curr_phase]} {self.curr_phase+1}/{len(self.phases)}"
@@ -456,7 +464,6 @@ class TrafficEnvironment(AECEnv):
             # Human learning
             elif self.human_learning == True:
                 agent.learn(agent.last_action, self.travel_times_list)
-
 
     ###########################
 

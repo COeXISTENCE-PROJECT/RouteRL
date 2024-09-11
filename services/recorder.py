@@ -46,16 +46,23 @@ class Recorder:
 
 #################### REMEMBER FUNCTIONS
     
-    def record(self, episode, ep_observations, rewards):#, det_dict):
-        self.remember_episode(episode, ep_observations, rewards)
+    def record(self, episode, ep_observations, rewards, cost_tables):#, det_dict):
+        self.remember_episode(episode, ep_observations, rewards, cost_tables)
         #self.remember_detector(episode, det_dict) ## pass self.det_dict
         # more to add
 
 
-    def remember_episode(self, episode, ep_observations, rewards):
+    def remember_episode(self, episode, ep_observations, rewards, cost_tables):
         ep_observations_df = pl.from_dicts(ep_observations)
         rewards_df = pl.from_dicts(rewards)
+
+        for entry in cost_tables:
+            entry['cost_table'] = ','.join(map(str, entry['cost_table']))
+
+        cost_tables_df = pl.from_dicts(cost_tables)
+
         merged_df = ep_observations_df.join(rewards_df, on=kc.AGENT_ID)
+        merged_df = merged_df.join(cost_tables_df, on=kc.AGENT_ID)
         merged_df.write_csv(make_dir(self.episodes_folder, f"ep{episode}.csv"))
 
 

@@ -76,7 +76,7 @@ class HumanAgent(BaseAgent):
         super().__init__(id, kind, start_time, origin, destination, behavior, learning_phases)
         self.mutate_to = mutate_to
         self.model = Gawron(params, initial_knowledge) 
-        self.is_learning = -1
+        self.is_learning = True
         self.last_reward = None
         
     def __repr__(self):
@@ -88,10 +88,13 @@ class HumanAgent(BaseAgent):
 
     @is_learning.setter
     def is_learning(self, phase):
-        if phase in self.learning_phases:
+        ### In the environement is implemented the learning or not learning
+        ### Maybe it should be deleted from here ~ Anastasia
+        self._is_learning = True
+        """if phase in self.learning_phases:
             self._is_learning = True
         else:
-            self._is_learning = False
+            self._is_learning = False"""
 
     @property
     def last_reward(self):
