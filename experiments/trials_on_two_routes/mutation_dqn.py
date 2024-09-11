@@ -332,6 +332,7 @@ for i, tensordict_data in enumerate(collector):
             q_loss = loss_td["loss"]
 
             q_losses_loop[group].append(q_loss)
+            ## One qvalue saved for each agent, each time it takes an action
             q_values[group].append((data[group, "action_value"] * data[group, "action"]).sum().item()/ frames_per_batch)
 
             optimizer.zero_grad()
