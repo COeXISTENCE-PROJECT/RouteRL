@@ -77,7 +77,7 @@ env = TrafficEnvironment(params[kc.RUNNER], params[kc.ENVIRONMENT], params[kc.SI
 env.start()
 
 ##################### Human Learning #####################
-num_episodes = 100
+num_episodes = 200
 
 for episode in range(num_episodes):
     env.step()

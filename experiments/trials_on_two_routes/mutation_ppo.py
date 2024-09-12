@@ -67,7 +67,7 @@ env.reset()
 
 ############ Human learning
 
-num_episodes = 100
+num_episodes = 200
 
 for episode in range(num_episodes):
     env.step()

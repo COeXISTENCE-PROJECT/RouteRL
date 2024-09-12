@@ -52,7 +52,7 @@
             "learning_phases" : [0, 2],
             "model" : "gawron",
             "alpha" : 0.2,
-            "beta" : 100,
+            "beta" : 10,
             "beta_randomness" : 0,
             "appearance_phase" : "No need for this, by default appears in 0",
             "behavior" : "No need for this, by default selfish"
