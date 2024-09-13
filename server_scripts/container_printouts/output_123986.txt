@@ -21,7 +21,7 @@ ERROR: No matching distribution found for json
 [CONFIRMED] Environment variable exists: SUMO_HOME
 [SUCCESS] Added module directory: /usr/share/sumo/tools
  Retrying in 1 seconds
-  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [04:26<40:01, 266.81s/it] 20%|██        | 2/10 [08:52<35:30, 266.36s/it] 30%|███       | 3/10 [13:18<31:02, 266.11s/it] 40%|████      | 4/10 [17:44<26:35, 265.87s/it] 50%|█████     | 5/10 [22:10<22:09, 265.91s/it] 60%|██████    | 6/10 [26:35<17:43, 265.86s/it] 70%|███████   | 7/10 [31:01<13:17, 265.86s/it] 80%|████████  | 8/10 [34:35<08:18, 249.35s/it] 90%|█████████ | 9/10 [36:11<03:21, 201.25s/it]100%|██████████| 10/10 [38:45<00:00, 186.78s/it]WARNING:matplotlib.legend:No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [01:07<10:10, 67.83s/it] 20%|██        | 2/10 [02:14<08:57, 67.13s/it] 30%|███       | 3/10 [03:21<07:49, 67.05s/it] 40%|████      | 4/10 [04:28<06:41, 66.97s/it] 50%|█████     | 5/10 [05:35<05:35, 67.11s/it] 60%|██████    | 6/10 [06:42<04:27, 66.95s/it] 70%|███████   | 7/10 [07:49<03:21, 67.07s/it] 80%|████████  | 8/10 [08:56<02:13, 67.00s/it] 90%|█████████ | 9/10 [10:03<01:07, 67.12s/it]100%|██████████| 10/10 [11:11<00:00, 67.42s/it]WARNING:matplotlib.legend:No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
 WARNING:matplotlib.legend:No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-Training took 2325.62 seconds to finish
-100%|██████████| 10/10 [38:56<00:00, 233.64s/it]
+Training took 671.92 seconds to finish
+100%|██████████| 10/10 [11:23<00:00, 68.34s/it]

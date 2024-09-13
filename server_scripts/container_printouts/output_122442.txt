@@ -1,46 +1,0 @@
---- Installing dependencies ---
-Defaulting to user installation because normal site-packages is not writeable
-Requirement already satisfied: beautifulsoup4==4.12.3 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (4.12.3)
-Requirement already satisfied: matplotlib==3.8.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (3.8.2)
-Requirement already satisfied: networkx==3.2.1 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (3.2.1)
-Requirement already satisfied: numpy in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 4)) (1.26.3)
-Requirement already satisfied: pandas==2.2.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 5)) (2.2.2)
-Requirement already satisfied: polars==0.20.31 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 6)) (0.20.31)
-Requirement already satisfied: prettytable==3.10.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 7)) (3.10.0)
-Requirement already satisfied: seaborn==0.13.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 8)) (0.13.2)
-Requirement already satisfied: torch in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 9)) (2.4.0)
-Requirement already satisfied: traci==1.19.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 10)) (1.19.0)
-Requirement already satisfied: torchrl in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 11)) (0.5.0)
-ERROR: Could not find a version that satisfies the requirement json (from versions: none)
-ERROR: No matching distribution found for json
---- Running main.py ---
-<frozen importlib._bootstrap>:488: DeprecationWarning: Type google._upb._message.MessageMapContainer uses PyType_Spec with a metaclass that has custom tp_new. This is deprecated and will no longer be allowed in Python 3.14.
-<frozen importlib._bootstrap>:488: DeprecationWarning: Type google._upb._message.ScalarMapContainer uses PyType_Spec with a metaclass that has custom tp_new. This is deprecated and will no longer be allowed in Python 3.14.
-/home/psarou/.local/lib/python3.12/site-packages/wandb/analytics/sentry.py:90: SentryHubDeprecationWarning: `sentry_sdk.Hub` is deprecated and will be removed in a future major release. Please consult our 1.x to 2.x migration guide for details on how to migrate `Hub` usage to the new API: https://docs.sentry.io/platforms/python/migration/1.x-to-2.x
-  self.hub = sentry_sdk.Hub(client)
-[CONFIRMED] Environment variable exists: SUMO_HOME
-[SUCCESS] Added module directory: /usr/share/sumo/tools
- Retrying in 1 seconds
-episode_reward_mean_9 = 0, episode_reward_mean_7 = 0, episode_reward_mean_1 = 0, episode_reward_mean_3 = 0, episode_reward_mean_8 = 0:   0%|          | 0/10 [00:00<?, ?it/s]2024-09-07 14:26:39,132 [torchrl][INFO] 
-Iteration 0
-episode_reward_mean_9 = -0.7695833444595337, episode_reward_mean_7 = -0.6379166841506958, episode_reward_mean_1 = -0.7433333396911621, episode_reward_mean_3 = -0.7829167246818542, episode_reward_mean_8 = -0.814583420753479:  10%|█         | 1/10 [22:46<3:24:57, 1366.43s/it]2024-09-07 14:49:25,428 [torchrl][INFO] 
-Iteration 1
-episode_reward_mean_9 = -0.7208333611488342, episode_reward_mean_7 = -0.7583333253860474, episode_reward_mean_1 = -0.7216666340827942, episode_reward_mean_3 = -0.7870833277702332, episode_reward_mean_8 = -0.8016666173934937:  20%|██        | 2/10 [41:38<2:43:49, 1228.69s/it]2024-09-07 15:08:17,623 [torchrl][INFO] 
-Iteration 2
-episode_reward_mean_9 = -0.7420833706855774, episode_reward_mean_7 = -0.7674999833106995, episode_reward_mean_1 = -0.777916669845581, episode_reward_mean_3 = -0.778333306312561, episode_reward_mean_8 = -0.7695833444595337:  30%|███       | 3/10 [1:05:03<2:32:42, 1308.99s/it]2024-09-07 15:31:42,292 [torchrl][INFO] 
-Iteration 3
-episode_reward_mean_9 = -0.6804165840148926, episode_reward_mean_7 = -0.6854166388511658, episode_reward_mean_1 = -0.7995833158493042, episode_reward_mean_3 = -0.7841666340827942, episode_reward_mean_8 = -0.8199999928474426:  40%|████      | 4/10 [1:24:45<2:05:54, 1259.12s/it]2024-09-07 15:51:24,988 [torchrl][INFO] 
-Iteration 4
-episode_reward_mean_9 = -0.6358333826065063, episode_reward_mean_7 = -0.7066666483879089, episode_reward_mean_1 = -0.7945834398269653, episode_reward_mean_3 = -0.7866666913032532, episode_reward_mean_8 = -0.8087499737739563:  50%|█████     | 5/10 [1:48:19<1:49:34, 1314.94s/it]2024-09-07 16:14:58,883 [torchrl][INFO] 
-Iteration 5
-episode_reward_mean_9 = -0.6354166269302368, episode_reward_mean_7 = -0.6787500381469727, episode_reward_mean_1 = -0.7658333778381348, episode_reward_mean_3 = -0.7433333992958069, episode_reward_mean_8 = -0.8237500190734863:  60%|██████    | 6/10 [2:11:54<1:29:55, 1348.89s/it]2024-09-07 16:38:33,740 [torchrl][INFO] 
-Iteration 6
-episode_reward_mean_9 = -0.6587499380111694, episode_reward_mean_7 = -0.7054166793823242, episode_reward_mean_1 = -0.7445833086967468, episode_reward_mean_3 = -0.7662500143051147, episode_reward_mean_8 = -0.8008333444595337:  70%|███████   | 7/10 [2:31:12<1:04:19, 1286.49s/it]2024-09-07 16:57:51,583 [torchrl][INFO] 
-Iteration 7
-episode_reward_mean_9 = -0.6470832824707031, episode_reward_mean_7 = -0.6670833230018616, episode_reward_mean_1 = -0.7745833396911621, episode_reward_mean_3 = -0.78166663646698, episode_reward_mean_8 = -0.7691666483879089:  80%|████████  | 8/10 [2:54:47<44:14, 1327.36s/it]    2024-09-07 17:21:26,681 [torchrl][INFO] 
-Iteration 8
-episode_reward_mean_9 = -0.6575000882148743, episode_reward_mean_7 = -0.6754166483879089, episode_reward_mean_1 = -0.7433333396911621, episode_reward_mean_3 = -0.75083327293396, episode_reward_mean_8 = -0.784166693687439:  90%|█████████ | 9/10 [3:14:14<21:17, 1277.29s/it] 2024-09-07 17:40:53,723 [torchrl][INFO] 
-Iteration 9
-episode_reward_mean_9 = -0.6766666769981384, episode_reward_mean_7 = -0.6645833253860474, episode_reward_mean_1 = -0.7116667032241821, episode_reward_mean_3 = -0.7383332848548889, episode_reward_mean_8 = -0.7829166650772095: 100%|██████████| 10/10 [3:32:18<00:00, 1217.41s/it]WARNING:matplotlib.legend:No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-WARNING:matplotlib.legend:No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-episode_reward_mean_9 = -0.6766666769981384, episode_reward_mean_7 = -0.6645833253860474, episode_reward_mean_1 = -0.7116667032241821, episode_reward_mean_3 = -0.7383332848548889, episode_reward_mean_8 = -0.7829166650772095: 100%|██████████| 10/10 [3:33:58<00:00, 1283.81s/it]

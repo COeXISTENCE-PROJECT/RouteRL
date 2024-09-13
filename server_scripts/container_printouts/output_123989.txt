@@ -21,22 +21,7 @@ ERROR: No matching distribution found for json
 [CONFIRMED] Environment variable exists: SUMO_HOME
 [SUCCESS] Added module directory: /usr/share/sumo/tools
  Retrying in 1 seconds
-  0%|          | 0/10 [00:00<?, ?it/s]200it [00:52,  3.77it/s]              400it [05:18,  1.13it/s]600it [09:41,  1.08s/it]800it [14:06,  1.18s/it]1000it [18:31,  1.23s/it]1200it [21:59,  1.17s/it]1400it [23:37,  1.06it/s]1600it [26:34,  1.08it/s]1800it [31:00,  1.05s/it]2000it [35:24,  1.14s/it]Training took 2335.57 seconds to finish
-Traceback (most recent call last):
-  File "/app/experiments/trials_on_two_routes/mutation_dqn.py", line 379, in <module>
-    json.dump(q_losses_loop, f)
-  File "/usr/local/lib/python3.12/json/__init__.py", line 179, in dump
-    for chunk in iterable:
-  File "/usr/local/lib/python3.12/json/encoder.py", line 432, in _iterencode
-    yield from _iterencode_dict(o, _current_indent_level)
-  File "/usr/local/lib/python3.12/json/encoder.py", line 406, in _iterencode_dict
-    yield from chunks
-  File "/usr/local/lib/python3.12/json/encoder.py", line 326, in _iterencode_list
-    yield from chunks
-  File "/usr/local/lib/python3.12/json/encoder.py", line 439, in _iterencode
-    o = _default(o)
-        ^^^^^^^^^^^
-  File "/usr/local/lib/python3.12/json/encoder.py", line 180, in default
-    raise TypeError(f'Object of type {o.__class__.__name__} '
-TypeError: Object of type Tensor is not JSON serializable
-2000it [38:56,  1.17s/it]
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [01:06<10:02, 66.98s/it] 20%|██        | 2/10 [02:13<08:54, 66.79s/it] 30%|███       | 3/10 [03:20<07:46, 66.71s/it] 40%|████      | 4/10 [04:26<06:39, 66.60s/it] 50%|█████     | 5/10 [05:33<05:32, 66.52s/it] 60%|██████    | 6/10 [06:38<04:24, 66.20s/it] 70%|███████   | 7/10 [07:45<03:18, 66.33s/it] 80%|████████  | 8/10 [08:52<02:13, 66.55s/it] 90%|█████████ | 9/10 [09:58<01:06, 66.58s/it]100%|██████████| 10/10 [11:06<00:00, 67.01s/it]WARNING:matplotlib.legend:No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+WARNING:matplotlib.legend:No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+Training took 666.87 seconds to finish
+100%|██████████| 10/10 [11:18<00:00, 67.86s/it]
