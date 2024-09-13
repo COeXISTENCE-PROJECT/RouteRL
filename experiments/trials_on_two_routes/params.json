@@ -10,7 +10,7 @@
     
     "runner_parameters":
     {
-        "num_episodes" : 500,
+        "num_episodes" : 600,
         "episode_length": 1,
         "phases" : [0, 200],
         "phase_names" : ["Human learning", "Mutation - Machine learning SAC"],
