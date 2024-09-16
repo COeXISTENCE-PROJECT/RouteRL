@@ -62,8 +62,8 @@ device = torch.device("cpu")
 vmas_device = device  # The device where the simulator is run
 
 # Sampling
-frames_per_batch = 200  # Number of team frames collected per training iteration
-n_iters = 10  # Number of sampling and training iterations
+frames_per_batch = 100  # Number of team frames collected per training iteration
+n_iters = 20  # Number of sampling and training iterations
 total_frames = frames_per_batch * n_iters
 
 # Training
