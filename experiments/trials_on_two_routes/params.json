@@ -10,10 +10,10 @@
     
     "runner_parameters":
     {
-        "num_episodes" : 600,
+        "num_episodes" : 800,
         "episode_length": 1,
         "phases" : [0, 200],
-        "phase_names" : ["Human learning", "Mutation - Machine learning SAC"],
+        "phase_names" : ["Human learning", "Mutation - Machine learning DQN"],
         "remember_every" : 1,
         "frequent_progressbar_update" : false
     },
@@ -36,7 +36,7 @@
 
             "appearance_phase" : 1,
             "learning_phases" : [1, 2],
-            "behavior" : "selfish",
+            "behavior" : "social",
             "model" : "DQN",
             "observed_span" : 300,
             "epsilon" : 0.99,

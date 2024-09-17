@@ -229,7 +229,6 @@ class MachineAgent(BaseAgent):
             if obs[kc.AGENT_ID] == self.id:
                 own_tt = obs[kc.TRAVEL_TIME]
                 
-        print('group_obs', group_obs, "\n", "others_obs", others_obs, "\n", "all_obs", all_obs, "\n", "own_tt", own_tt)
         group_tt = np.mean(group_obs) if group_obs else 0
         others_tt = np.mean(others_obs) if others_obs else 0
         all_tt = np.mean(all_obs) if all_obs else 0
@@ -238,9 +237,10 @@ class MachineAgent(BaseAgent):
         return (a * own_tt + b * group_tt + c * others_tt + d * all_tt)
     
     def _get_reward_coefs(self):
+        ### Anastasia multiplied all the coeff with -1
         a, b, c, d = 0, 0, 0, 0
         if self.behavior == kc.SELFISH:
-            a, b, c, d = -1, 0, 0, 0 ### Anastasia changed the -1 here
+            a, b, c, d = -1, 0, 0, 0 
         elif self.behavior == kc.COMPETITIVE:
             a, b, c, d = -2, 0, 1, 0
         elif self.behavior == kc.COLLABORATIVE:
@@ -250,5 +250,5 @@ class MachineAgent(BaseAgent):
         elif self.behavior == kc.ALTRUISTIC:
             a, b, c, d = 0, 0, 0, -1
         elif self.behavior == kc.MALICIOUS:
-            a, b, c, d = 0, 0, 1, 0
+            a, b, c, d = 0, 0, -1, 0
         return a, b, c, d

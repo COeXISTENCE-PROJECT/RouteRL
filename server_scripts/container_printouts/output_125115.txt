@@ -1,52 +1,0 @@
---- Installing dependencies ---
-Defaulting to user installation because normal site-packages is not writeable
-Requirement already satisfied: beautifulsoup4==4.12.3 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (4.12.3)
-Requirement already satisfied: matplotlib==3.8.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (3.8.2)
-Requirement already satisfied: networkx==3.2.1 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (3.2.1)
-Requirement already satisfied: numpy in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 4)) (1.26.3)
-Requirement already satisfied: pandas==2.2.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 5)) (2.2.2)
-Requirement already satisfied: polars==0.20.31 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 6)) (0.20.31)
-Requirement already satisfied: prettytable==3.10.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 7)) (3.10.0)
-Requirement already satisfied: seaborn==0.13.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 8)) (0.13.2)
-Requirement already satisfied: torch in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 9)) (2.4.0)
-Requirement already satisfied: traci==1.19.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 10)) (1.19.0)
-Requirement already satisfied: torchrl in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 11)) (0.5.0)
-ERROR: Could not find a version that satisfies the requirement json (from versions: none)
-ERROR: No matching distribution found for json
---- Running main.py ---
-<frozen importlib._bootstrap>:488: DeprecationWarning: Type google._upb._message.MessageMapContainer uses PyType_Spec with a metaclass that has custom tp_new. This is deprecated and will no longer be allowed in Python 3.14.
-<frozen importlib._bootstrap>:488: DeprecationWarning: Type google._upb._message.ScalarMapContainer uses PyType_Spec with a metaclass that has custom tp_new. This is deprecated and will no longer be allowed in Python 3.14.
-/home/psarou/.local/lib/python3.12/site-packages/wandb/analytics/sentry.py:90: SentryHubDeprecationWarning: `sentry_sdk.Hub` is deprecated and will be removed in a future major release. Please consult our 1.x to 2.x migration guide for details on how to migrate `Hub` usage to the new API: https://docs.sentry.io/platforms/python/migration/1.x-to-2.x
-  self.hub = sentry_sdk.Hub(client)
-[CONFIRMED] Environment variable exists: SUMO_HOME
-[SUCCESS] Added module directory: /usr/share/sumo/tools
- Retrying in 1 seconds
-episode_reward_mean_0 = 0, episode_reward_mean_12 = 0, episode_reward_mean_17 = 0, episode_reward_mean_19 = 0, episode_reward_mean_3 = 0:   0%|          | 0/20 [00:00<?, ?it/s]2024-09-16 15:59:14,403 [torchrl][INFO] 
-Iteration 0
-episode_reward_mean_0 = -0.9104167222976685, episode_reward_mean_12 = -0.7762500047683716, episode_reward_mean_17 = -0.8799999952316284, episode_reward_mean_19 = -0.9429166913032532, episode_reward_mean_3 = -1.0041667222976685:   5%|▌         | 1/20 [19:24<6:08:51, 1164.79s/it]2024-09-16 16:18:38,874 [torchrl][INFO] 
-Iteration 1
-episode_reward_mean_0 = -0.8891666531562805, episode_reward_mean_12 = -0.8325001001358032, episode_reward_mean_17 = -0.8391666412353516, episode_reward_mean_19 = -0.9891666173934937, episode_reward_mean_3 = -0.8837500810623169:  10%|█         | 2/20 [39:11<5:53:13, 1177.44s/it]2024-09-16 16:38:25,189 [torchrl][INFO] 
-Iteration 2
-episode_reward_mean_0 = -0.8533333539962769, episode_reward_mean_12 = -0.8283333778381348, episode_reward_mean_17 = -0.8637501001358032, episode_reward_mean_19 = -0.9462500810623169, episode_reward_mean_3 = -0.9333333969116211:  15%|█▌        | 3/20 [59:09<5:36:15, 1186.81s/it]2024-09-16 16:58:23,074 [torchrl][INFO] 
-Iteration 3
-episode_reward_mean_0 = -0.85875004529953, episode_reward_mean_12 = -0.8462499380111694, episode_reward_mean_17 = -0.8612500429153442, episode_reward_mean_19 = -0.9262499809265137, episode_reward_mean_3 = -0.966666579246521:  20%|██        | 4/20 [1:19:34<5:20:31, 1201.97s/it] 2024-09-16 17:18:48,472 [torchrl][INFO] 
-Iteration 4
-episode_reward_mean_0 = -0.8445833921432495, episode_reward_mean_12 = -0.8295833468437195, episode_reward_mean_17 = -0.8329166173934937, episode_reward_mean_19 = -0.9729167222976685, episode_reward_mean_3 = -0.9183333516120911:  25%|██▌       | 5/20 [1:40:04<5:03:02, 1212.17s/it]2024-09-16 17:39:18,678 [torchrl][INFO] 
-Iteration 5
-episode_reward_mean_0 = -0.8783332705497742, episode_reward_mean_12 = -0.8045833706855774, episode_reward_mean_17 = -0.8362500071525574, episode_reward_mean_19 = -1.034166693687439, episode_reward_mean_3 = -0.9429166913032532:  30%|███       | 6/20 [2:00:28<4:43:46, 1216.17s/it] 2024-09-16 17:59:42,682 [torchrl][INFO] 
-Iteration 6
-episode_reward_mean_0 = -0.9012500643730164, episode_reward_mean_12 = -0.8174999952316284, episode_reward_mean_17 = -0.8545833826065063, episode_reward_mean_19 = -1.0, episode_reward_mean_3 = -0.9825000762939453:  35%|███▌      | 7/20 [2:21:09<4:25:16, 1224.31s/it]              2024-09-16 18:20:23,671 [torchrl][INFO] 
-Iteration 7
-episode_reward_mean_0 = -0.9112499952316284, episode_reward_mean_12 = -0.8079166412353516, episode_reward_mean_17 = -0.87541663646698, episode_reward_mean_19 = -0.9512500762939453, episode_reward_mean_3 = -0.9237499237060547:  40%|████      | 8/20 [2:41:49<4:05:51, 1229.28s/it]2024-09-16 18:41:03,800 [torchrl][INFO] 
-Iteration 8
-episode_reward_mean_0 = -0.8675000071525574, episode_reward_mean_12 = -0.8366667032241821, episode_reward_mean_17 = -0.81208336353302, episode_reward_mean_19 = -0.971666693687439, episode_reward_mean_3 = -0.9774999618530273:  45%|████▌     | 9/20 [3:02:26<3:45:50, 1231.84s/it] 2024-09-16 19:01:41,046 [torchrl][INFO] 
-Iteration 9
-episode_reward_mean_0 = -0.8654167056083679, episode_reward_mean_12 = -0.7895833253860474, episode_reward_mean_17 = -0.8329166173934937, episode_reward_mean_19 = -0.9620834589004517, episode_reward_mean_3 = -0.9170833826065063:  50%|█████     | 10/20 [3:21:29<3:20:43, 1204.38s/it]2024-09-16 19:20:44,017 [torchrl][INFO] 
-Iteration 10
-episode_reward_mean_0 = -0.8570834398269653, episode_reward_mean_12 = -0.7983332872390747, episode_reward_mean_17 = -0.8424999117851257, episode_reward_mean_19 = -0.9137498736381531, episode_reward_mean_3 = -0.956250011920929:  55%|█████▌    | 11/20 [3:40:30<2:57:44, 1184.90s/it] 2024-09-16 19:39:44,817 [torchrl][INFO] 
-Iteration 11
-episode_reward_mean_0 = -0.7883332967758179, episode_reward_mean_12 = -0.79583340883255, episode_reward_mean_17 = -0.9008333086967468, episode_reward_mean_19 = -0.9462500810623169, episode_reward_mean_3 = -0.9550000429153442:  60%|██████    | 12/20 [3:59:23<2:35:52, 1169.12s/it] 2024-09-16 19:58:37,703 [torchrl][INFO] 
-Iteration 12
-/home/psarou/Milestone-One/server_scripts/cmd_container.sh: line 7: 128868 Killed                  python experiments/trials_on_two_routes/mutation_sac.py
-/usr/local/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 11 leaked semaphore objects to clean up at shutdown
-  warnings.warn('resource_tracker: There appear to be %d '

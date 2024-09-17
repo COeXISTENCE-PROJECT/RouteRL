@@ -1,66 +1,0 @@
---- Installing dependencies ---
-Defaulting to user installation because normal site-packages is not writeable
-Requirement already satisfied: beautifulsoup4==4.12.3 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (4.12.3)
-Requirement already satisfied: matplotlib==3.8.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (3.8.2)
-Requirement already satisfied: networkx==3.2.1 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (3.2.1)
-Requirement already satisfied: numpy in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 4)) (1.26.3)
-Requirement already satisfied: pandas==2.2.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 5)) (2.2.2)
-Requirement already satisfied: polars==0.20.31 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 6)) (0.20.31)
-Requirement already satisfied: prettytable==3.10.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 7)) (3.10.0)
-Requirement already satisfied: seaborn==0.13.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 8)) (0.13.2)
-Requirement already satisfied: torch in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 9)) (2.4.0)
-Requirement already satisfied: traci==1.19.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 10)) (1.19.0)
-Requirement already satisfied: torchrl in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 11)) (0.5.0)
-ERROR: Could not find a version that satisfies the requirement json (from versions: none)
-ERROR: No matching distribution found for json
---- Running main.py ---
-<frozen importlib._bootstrap>:488: DeprecationWarning: Type google._upb._message.MessageMapContainer uses PyType_Spec with a metaclass that has custom tp_new. This is deprecated and will no longer be allowed in Python 3.14.
-<frozen importlib._bootstrap>:488: DeprecationWarning: Type google._upb._message.ScalarMapContainer uses PyType_Spec with a metaclass that has custom tp_new. This is deprecated and will no longer be allowed in Python 3.14.
-/home/psarou/.local/lib/python3.12/site-packages/wandb/analytics/sentry.py:90: SentryHubDeprecationWarning: `sentry_sdk.Hub` is deprecated and will be removed in a future major release. Please consult our 1.x to 2.x migration guide for details on how to migrate `Hub` usage to the new API: https://docs.sentry.io/platforms/python/migration/1.x-to-2.x
-  self.hub = sentry_sdk.Hub(client)
-[CONFIRMED] Environment variable exists: SUMO_HOME
-[SUCCESS] Added module directory: /usr/share/sumo/tools
- Retrying in 1 seconds
-episode_reward_mean_0 = 0, episode_reward_mean_7 = 0, episode_reward_mean_14 = 0, episode_reward_mean_1 = 0, episode_reward_mean_6 = 0:   0%|          | 0/20 [00:00<?, ?it/s]2024-09-16 10:08:24,576 [torchrl][INFO] 
-Iteration 0
-episode_reward_mean_0 = -0.8083333969116211, episode_reward_mean_7 = -0.8916667103767395, episode_reward_mean_14 = -0.8016666173934937, episode_reward_mean_1 = -0.872499942779541, episode_reward_mean_6 = -0.9566666483879089:   5%|▌         | 1/20 [10:07<3:12:26, 607.72s/it]2024-09-16 10:18:32,672 [torchrl][INFO] 
-Iteration 1
-episode_reward_mean_0 = -0.7850000262260437, episode_reward_mean_7 = -0.9116666913032532, episode_reward_mean_14 = -0.8808333277702332, episode_reward_mean_1 = -0.8766667246818542, episode_reward_mean_6 = -1.006666660308838:  10%|█         | 2/20 [20:21<3:03:26, 611.47s/it]2024-09-16 10:28:46,288 [torchrl][INFO] 
-Iteration 2
-episode_reward_mean_0 = -0.8516666293144226, episode_reward_mean_7 = -0.7833333015441895, episode_reward_mean_14 = -0.8258332014083862, episode_reward_mean_1 = -0.8966667056083679, episode_reward_mean_6 = -0.9458333253860474:  15%|█▌        | 3/20 [30:50<2:55:30, 619.45s/it]2024-09-16 10:39:15,526 [torchrl][INFO] 
-Iteration 3
-episode_reward_mean_0 = -0.7625000476837158, episode_reward_mean_7 = -0.9399999380111694, episode_reward_mean_14 = -0.8700000643730164, episode_reward_mean_1 = -0.9191667437553406, episode_reward_mean_6 = -0.9533332586288452:  20%|██        | 4/20 [41:29<2:47:16, 627.25s/it]2024-09-16 10:49:54,621 [torchrl][INFO] 
-Iteration 4
-episode_reward_mean_0 = -0.7633333802223206, episode_reward_mean_7 = -0.8633334040641785, episode_reward_mean_14 = -0.862500011920929, episode_reward_mean_1 = -0.8908333778381348, episode_reward_mean_6 = -0.8658334016799927:  25%|██▌       | 5/20 [52:55<2:42:04, 648.31s/it] 2024-09-16 11:01:20,307 [torchrl][INFO] 
-Iteration 5
-episode_reward_mean_0 = -0.9750000834465027, episode_reward_mean_7 = -0.8633333444595337, episode_reward_mean_14 = -0.92249995470047, episode_reward_mean_1 = -0.9450000524520874, episode_reward_mean_6 = -1.0449999570846558:  30%|███       | 6/20 [1:03:36<2:30:39, 645.71s/it]2024-09-16 11:12:00,922 [torchrl][INFO] 
-Iteration 6
-episode_reward_mean_0 = -0.9416667819023132, episode_reward_mean_7 = -0.8966667056083679, episode_reward_mean_14 = -0.9233332872390747, episode_reward_mean_1 = -0.9350000619888306, episode_reward_mean_6 = -0.9566667675971985:  35%|███▌      | 7/20 [1:14:15<2:19:25, 643.48s/it]2024-09-16 11:22:39,825 [torchrl][INFO] 
-Iteration 7
-episode_reward_mean_0 = -0.8100000619888306, episode_reward_mean_7 = -0.9750000834465027, episode_reward_mean_14 = -0.9366666674613953, episode_reward_mean_1 = -0.9441666603088379, episode_reward_mean_6 = -0.9591666460037231:  40%|████      | 8/20 [1:24:54<2:08:27, 642.30s/it]2024-09-16 11:33:19,555 [torchrl][INFO] 
-Iteration 8
-episode_reward_mean_0 = -0.8774999380111694, episode_reward_mean_7 = -0.8850000500679016, episode_reward_mean_14 = -0.8550000190734863, episode_reward_mean_1 = -0.9291666150093079, episode_reward_mean_6 = -0.8974999189376831:  45%|████▌     | 9/20 [1:35:36<1:57:41, 641.99s/it]2024-09-16 11:44:00,927 [torchrl][INFO] 
-Iteration 9
-episode_reward_mean_0 = -0.8091667294502258, episode_reward_mean_7 = -0.9099999666213989, episode_reward_mean_14 = -0.8383333086967468, episode_reward_mean_1 = -0.9408333897590637, episode_reward_mean_6 = -0.9333332777023315:  50%|█████     | 10/20 [1:45:24<1:44:14, 625.45s/it]2024-09-16 11:53:49,338 [torchrl][INFO] 
-Iteration 10
-episode_reward_mean_0 = -0.8300000429153442, episode_reward_mean_7 = -0.8866666555404663, episode_reward_mean_14 = -0.8125, episode_reward_mean_1 = -0.9791666865348816, episode_reward_mean_6 = -0.9983333349227905:  55%|█████▌    | 11/20 [1:55:39<1:33:21, 622.34s/it]            2024-09-16 12:04:04,659 [torchrl][INFO] 
-Iteration 11
-episode_reward_mean_0 = -0.7583333253860474, episode_reward_mean_7 = -0.9599999189376831, episode_reward_mean_14 = -0.7558333277702332, episode_reward_mean_1 = -0.9191667437553406, episode_reward_mean_6 = -0.9225000143051147:  60%|██████    | 12/20 [2:05:59<1:22:51, 621.46s/it]2024-09-16 12:14:24,117 [torchrl][INFO] 
-Iteration 12
-episode_reward_mean_0 = -0.925000011920929, episode_reward_mean_7 = -0.8908333778381348, episode_reward_mean_14 = -0.9008333086967468, episode_reward_mean_1 = -0.9391666650772095, episode_reward_mean_6 = -1.0750000476837158:  65%|██████▌   | 13/20 [2:15:58<1:11:43, 614.73s/it] 2024-09-16 12:24:23,216 [torchrl][INFO] 
-Iteration 13
-episode_reward_mean_0 = -0.8950001001358032, episode_reward_mean_7 = -0.9108333587646484, episode_reward_mean_14 = -0.7608333826065063, episode_reward_mean_1 = -0.9291666150093079, episode_reward_mean_6 = -0.9649999737739563:  70%|███████   | 14/20 [2:25:37<1:00:22, 603.76s/it]2024-09-16 12:34:01,736 [torchrl][INFO] 
-Iteration 14
-episode_reward_mean_0 = -0.8066667318344116, episode_reward_mean_7 = -1.0049999952316284, episode_reward_mean_14 = -0.9325000047683716, episode_reward_mean_1 = -0.9175000190734863, episode_reward_mean_6 = -0.9408333897590637:  75%|███████▌  | 15/20 [2:36:00<50:48, 609.63s/it]  2024-09-16 12:44:25,038 [torchrl][INFO] 
-Iteration 15
-episode_reward_mean_0 = -0.8524999618530273, episode_reward_mean_7 = -0.9108333587646484, episode_reward_mean_14 = -0.78166663646698, episode_reward_mean_1 = -0.8925000429153442, episode_reward_mean_6 = -0.9133332967758179:  80%|████████  | 16/20 [2:45:53<40:18, 604.62s/it]  2024-09-16 12:54:18,044 [torchrl][INFO] 
-Iteration 16
-episode_reward_mean_0 = -0.8533333539962769, episode_reward_mean_7 = -0.9416667222976685, episode_reward_mean_14 = -0.89000004529953, episode_reward_mean_1 = -0.8891666531562805, episode_reward_mean_6 = -1.0399999618530273:  85%|████████▌ | 17/20 [2:56:30<30:42, 614.32s/it]2024-09-16 13:04:54,719 [torchrl][INFO] 
-Iteration 17
-episode_reward_mean_0 = -0.92249995470047, episode_reward_mean_7 = -0.9149999618530273, episode_reward_mean_14 = -0.84333336353302, episode_reward_mean_1 = -0.9675000309944153, episode_reward_mean_6 = -1.0:  90%|█████████ | 18/20 [3:07:01<20:38, 619.31s/it]                 2024-09-16 13:15:25,822 [torchrl][INFO] 
-Iteration 18
-episode_reward_mean_0 = -0.8291667103767395, episode_reward_mean_7 = -0.9800000190734863, episode_reward_mean_14 = -0.7825000286102295, episode_reward_mean_1 = -0.8783332705497742, episode_reward_mean_6 = -1.0149998664855957:  95%|█████████▌| 19/20 [3:17:46<10:27, 627.19s/it]2024-09-16 13:26:11,459 [torchrl][INFO] 
-Iteration 19
-episode_reward_mean_0 = -0.8816665410995483, episode_reward_mean_7 = -0.9366666674613953, episode_reward_mean_14 = -0.8358333706855774, episode_reward_mean_1 = -0.8858333826065063, episode_reward_mean_6 = -0.9716666340827942: 100%|██████████| 20/20 [3:28:25<00:00, 630.76s/it]WARNING:matplotlib.legend:No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-WARNING:matplotlib.legend:No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-episode_reward_mean_0 = -0.8816665410995483, episode_reward_mean_7 = -0.9366666674613953, episode_reward_mean_14 = -0.8358333706855774, episode_reward_mean_1 = -0.8858333826065063, episode_reward_mean_6 = -0.9716666340827942: 100%|██████████| 20/20 [3:30:20<00:00, 631.02s/it]
