@@ -1,0 +1,22 @@
+--- Installing dependencies ---
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: beautifulsoup4==4.12.3 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (4.12.3)
+Requirement already satisfied: matplotlib==3.8.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (3.8.2)
+Requirement already satisfied: networkx==3.2.1 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (3.2.1)
+Requirement already satisfied: numpy in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 4)) (1.26.3)
+Requirement already satisfied: pandas==2.2.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 5)) (2.2.2)
+Requirement already satisfied: polars==0.20.31 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 6)) (0.20.31)
+Requirement already satisfied: prettytable==3.10.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 7)) (3.10.0)
+Requirement already satisfied: seaborn==0.13.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 8)) (0.13.2)
+Requirement already satisfied: torch in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 9)) (2.4.0)
+Requirement already satisfied: traci==1.19.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 10)) (1.19.0)
+Requirement already satisfied: torchrl in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 11)) (0.5.0)
+ERROR: Could not find a version that satisfies the requirement json (from versions: none)
+ERROR: No matching distribution found for json
+--- Running main.py ---
+2024-09-17 09:05:59,107 [torchrl][INFO] check_env_specs succeeded!
+device is:  cuda:0
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+episode_reward_mean_9 = 0, episode_reward_mean_7 = 0, episode_reward_mean_14 = 0, episode_reward_mean_19 = 0, episode_reward_mean_6 = 0:   0%|          | 0/20 [00:00<?, ?it/s]episode_reward_mean_9 = -0.9483333826065063, episode_reward_mean_7 = -0.8458333015441895, episode_reward_mean_14 = -0.8929166793823242, episode_reward_mean_19 = -0.9945833086967468, episode_reward_mean_6 = -1.0724999904632568:   5%|▌         | 1/20 [12:21<3:54:50, 741.62s/it]episode_reward_mean_9 = -0.8754167556762695, episode_reward_mean_7 = -0.9316667914390564, episode_reward_mean_14 = -0.8754166960716248, episode_reward_mean_19 = -0.9016666412353516, episode_reward_mean_6 = -0.9962499737739563:  10%|█         | 2/20 [24:34<3:40:54, 736.36s/it]

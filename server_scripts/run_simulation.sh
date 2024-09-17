@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --job-name=sac_traffic_simulation
+#SBATCH --job-name=ppo_traffic_simulation
 #SBATCH --qos=big
 #SBATCH --gres=gpu:1
-#SBATCH --mem=64G
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=10
+#SBATCH --mem-per-cpu=8G
 #SBATCH --partition=dgx
 
 PATH_PROGRAM="/home/$USER/Milestone-One"
