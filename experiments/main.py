@@ -2,10 +2,8 @@ import sys
 import os
 from tqdm import tqdm
 
-parent_dir = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
-sys.path.append(parent_dir)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
-from environment import SumoSimulator
 from environment import TrafficEnvironment
 from keychain import Keychain as kc
 from services import plotter
