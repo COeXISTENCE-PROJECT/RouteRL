@@ -52,6 +52,8 @@
             "learning_phases" : [0, 2],
             "model" : "gawron",
             "alpha" : 0.2,
+            "alpha_sigma": 0.1,
+            "alpha_zero": 0.2,
             "beta" : 0.5,
             "beta_randomness" : 0.3,
             "appearance_phase" : "No need for this, by default appears in 0",

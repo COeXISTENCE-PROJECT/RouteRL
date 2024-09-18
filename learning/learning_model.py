@@ -32,21 +32,55 @@ class Gawron(BaseLearningModel):
         super().__init__()
         beta_randomness = params[kc.BETA_RANDOMNESS]
         self.beta = random.uniform(params[kc.BETA] - beta_randomness, params[kc.BETA] + beta_randomness)
-        self.alpha = params[kc.ALPHA]
+        self.alpha_zero = params[kc.ALPHA_ZERO]
+        self.alpha_sigma = 1 - self.alpha_zero
         self.cost = np.array(initial_knowledge, dtype=float)
 
     def act(self, state):
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
-        prob_dist = [self.calculate_prob(utilities, j) for j in range(len(self.cost))]
-        action = np.random.choice(list(range(len(self.cost))), p=prob_dist) 
+        action =  utilities.index(min(utilities))
         return action   
 
     def learn(self, state, action, reward):
-        self.cost[action] = ((1-self.alpha) * self.cost[action]) + (self.alpha * reward)
+        self.cost[action] = (self.alpha_sigma * self.cost[action]) + (self.alpha_zero * reward)
 
-    def calculate_prob(self, utilities, n):
-        prob = utilities[n] / sum(utilities)
-        return prob
+
+
+class Culo(BaseLearningModel):
+    def __init__(self, params, initial_knowledge):
+        super().__init__()
+        beta_randomness = params[kc.BETA_RANDOMNESS]
+        self.beta = random.uniform(params[kc.BETA] - beta_randomness, params[kc.BETA] + beta_randomness)
+        self.alpha_zero = 1
+        self.alpha_sigma = params[kc.ALPHA_SIGMA]
+        self.cost = np.array(initial_knowledge, dtype=float)
+
+    def act(self, state):
+        utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
+        action =  utilities.index(min(utilities))
+        return action   
+
+    def learn(self, state, action, reward):
+        self.cost[action] = (self.alpha_sigma * self.cost[action]) + (self.alpha_zero * reward)
+
+
+class WeightedAverage(BaseLearningModel):
+    def __init__(self, params, initial_knowledge):
+        super().__init__()
+        beta_randomness = params[kc.BETA_RANDOMNESS]
+        self.beta = random.uniform(params[kc.BETA] - beta_randomness, params[kc.BETA] + beta_randomness)
+        self.alpha_zero = 0
+        self.alpha_sigma = params[kc.ALPHA_SIGMA]
+        self.cost = np.array(initial_knowledge, dtype=float)
+
+    def act(self, state):
+        utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
+        action =  utilities.index(min(utilities))
+        return action   
+
+    #### Check with Onur to save previous reward
+    def learn(self, state, action, reward):
+        self.cost[action] = (self.alpha_sigma * self.cost[action]) + (self.alpha_zero * reward)
 
 
 
