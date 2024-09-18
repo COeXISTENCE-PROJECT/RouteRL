@@ -2,8 +2,8 @@
 #SBATCH --job-name=dqn_traffic_simulation
 #SBATCH --qos=big
 #SBATCH --gres=gpu:1
-#SBATCH --mem=16G
-#SBATCH --cpus-per-task=4
+#SBATCH --mem=2G
+#SBATCH --cpus-per-task=2
 #SBATCH --partition=dgx
 
 PATH_PROGRAM="/home/$USER/Milestone-One"
