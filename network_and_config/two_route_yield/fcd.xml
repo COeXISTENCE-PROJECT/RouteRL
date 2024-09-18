@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2024-09-17 16:45:24 by Eclipse SUMO sumo Version 1.15.0
+<!-- generated on 2024-09-18 19:51:50 by Eclipse SUMO sumo Version 1.15.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
-        <net-file value="network_and_config/two_route_yield/network.net.xml"/>
+        <net-file value="network_and_config/two_route_yield/network_1quarter_bigger.net.xml"/>
         <route-files value="network_and_config/two_route_yield/rou.rou.xml"/>
     </input>
 

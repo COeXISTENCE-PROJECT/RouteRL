@@ -54,7 +54,7 @@ max_grad_norm = 1.0  # Maximum norm for the gradients
 clip_epsilon = 0.2  # clip value for PPO loss
 gamma = 0.99  # discount factor
 lmbda = 0.9  # lambda for generalised advantage estimation
-entropy_eps = 1e-5  # coefficient of the entropy term in the PPO loss
+entropy_eps = 1e-4  # coefficient of the entropy term in the PPO loss
 
 ############ Environment creation
 
