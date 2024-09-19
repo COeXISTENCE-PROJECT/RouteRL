@@ -36,7 +36,7 @@
 
             "appearance_phase" : 1,
             "learning_phases" : [1, 2],
-            "behavior" : "altruistic",
+            "behavior" : "selfish",
             "model" : "DQN",
             "observed_span" : 300,
             "epsilon" : 0.99,
@@ -54,8 +54,8 @@
             "alpha" : 0.2,
             "alpha_sigma": 0.2,
             "alpha_zero": 0.2,
-            "beta" : 2,
-            "beta_randomness" : 0,
+            "beta" : 0.01,
+            "beta_randomness" : 0.3,
             "appearance_phase" : "No need for this, by default appears in 0",
             "behavior" : "No need for this, by default selfish"
         }
