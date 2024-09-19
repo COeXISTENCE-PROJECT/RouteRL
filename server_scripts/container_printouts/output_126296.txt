@@ -1,0 +1,16 @@
+--- Installing dependencies ---
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: beautifulsoup4==4.12.3 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (4.12.3)
+Requirement already satisfied: matplotlib==3.8.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (3.8.2)
+Requirement already satisfied: networkx==3.2.1 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (3.2.1)
+Requirement already satisfied: numpy in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 4)) (1.26.3)
+Requirement already satisfied: pandas==2.2.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 5)) (2.2.2)
+Requirement already satisfied: polars==0.20.31 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 6)) (0.20.31)
+Requirement already satisfied: prettytable==3.10.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 7)) (3.10.0)
+Requirement already satisfied: seaborn==0.13.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 8)) (0.13.2)
+Requirement already satisfied: torch in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 9)) (2.4.0)
+Requirement already satisfied: traci==1.19.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 10)) (1.19.0)
+Requirement already satisfied: torchrl in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 11)) (0.5.0)
+ERROR: Could not find a version that satisfies the requirement json (from versions: none)
+ERROR: No matching distribution found for json
+--- Running main.py ---
