@@ -56,7 +56,7 @@ vmas_device = device  # The device where the simulator is run
 
 # Sampling
 frames_per_batch = 100  # Number of team frames collected per training iteration
-n_iters = 40  # Number of sampling and training iterations
+n_iters = 100  # Number of sampling and training iterations
 total_frames = frames_per_batch * n_iters
 
 # Training
@@ -369,7 +369,6 @@ for i, tensordict_data in enumerate(collector):
             sampling_start = time.time()
     pbar.update()
 
-
 collector.shutdown()
 end_time = time.time()
 execution_time = end_time - start_time
@@ -388,5 +387,9 @@ q_values = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else ten
 with open(q_values_file, 'w') as f:
     json.dump(q_values, f)
 
+env.rollout(max_steps=100, policy=col_policies)
+
 from services import plotter
 plotter(params[kc.PLOTTER])
+
+env.stop()

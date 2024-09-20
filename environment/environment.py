@@ -74,6 +74,7 @@ class TrafficEnvironment(AECEnv):
         self.human_learning = True
         self.machine_same_start_time = []
         self.actions_timestep = []
+        self.last_episode = False # Avoid collector call env.close()
 
         """ runner attributes """
         self.num_episodes = self.training_params[kc.NUM_EPISODES]
@@ -273,7 +274,10 @@ class TrafficEnvironment(AECEnv):
 
     def close(self) -> None:
         """Close the environment and stop the SUMO simulation."""
-        self.simulator.stop()
+        self.human_learning = True
+
+        if(self.last_episode):
+            self.simulator.stop()
 
     def observe(self, agent: str) -> dict:
         """
@@ -383,7 +387,6 @@ class TrafficEnvironment(AECEnv):
         travel_times = dict()
         for veh_id in arrivals:
             agent_id = int(veh_id)
-            #print("agent_id is: ", agent_id)
             travel_times[agent_id] = {kc.TRAVEL_TIME : (timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0}
             travel_times[agent_id].update(self.episode_actions[agent_id])
 
