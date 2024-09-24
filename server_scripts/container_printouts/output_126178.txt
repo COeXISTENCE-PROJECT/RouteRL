@@ -1,27 +1,0 @@
---- Installing dependencies ---
-Defaulting to user installation because normal site-packages is not writeable
-Requirement already satisfied: beautifulsoup4==4.12.3 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (4.12.3)
-Requirement already satisfied: matplotlib==3.8.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (3.8.2)
-Requirement already satisfied: networkx==3.2.1 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (3.2.1)
-Requirement already satisfied: numpy in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 4)) (1.26.3)
-Requirement already satisfied: pandas==2.2.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 5)) (2.2.2)
-Requirement already satisfied: polars==0.20.31 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 6)) (0.20.31)
-Requirement already satisfied: prettytable==3.10.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 7)) (3.10.0)
-Requirement already satisfied: seaborn==0.13.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 8)) (0.13.2)
-Requirement already satisfied: torch in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 9)) (2.4.0)
-Requirement already satisfied: traci==1.19.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 10)) (1.19.0)
-Requirement already satisfied: torchrl in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 11)) (0.5.0)
-ERROR: Could not find a version that satisfies the requirement json (from versions: none)
-ERROR: No matching distribution found for json
---- Running main.py ---
-<frozen importlib._bootstrap>:488: DeprecationWarning: Type google._upb._message.MessageMapContainer uses PyType_Spec with a metaclass that has custom tp_new. This is deprecated and will no longer be allowed in Python 3.14.
-<frozen importlib._bootstrap>:488: DeprecationWarning: Type google._upb._message.ScalarMapContainer uses PyType_Spec with a metaclass that has custom tp_new. This is deprecated and will no longer be allowed in Python 3.14.
-/home/psarou/.local/lib/python3.12/site-packages/wandb/analytics/sentry.py:90: SentryHubDeprecationWarning: `sentry_sdk.Hub` is deprecated and will be removed in a future major release. Please consult our 1.x to 2.x migration guide for details on how to migrate `Hub` usage to the new API: https://docs.sentry.io/platforms/python/migration/1.x-to-2.x
-  self.hub = sentry_sdk.Hub(client)
-[CONFIRMED] Environment variable exists: SUMO_HOME
-[SUCCESS] Added module directory: /usr/share/sumo/tools
- Retrying in 1 seconds
-  0%|          | 0/40 [00:00<?, ?it/s]  2%|▎         | 1/40 [00:37<24:09, 37.16s/it]  5%|▌         | 2/40 [01:14<23:27, 37.04s/it]  8%|▊         | 3/40 [01:51<22:48, 36.98s/it] 10%|█         | 4/40 [02:27<22:04, 36.80s/it] 12%|█▎        | 5/40 [03:04<21:29, 36.84s/it] 15%|█▌        | 6/40 [03:41<20:51, 36.80s/it] 18%|█▊        | 7/40 [04:17<20:14, 36.80s/it] 20%|██        | 8/40 [04:54<19:36, 36.77s/it] 22%|██▎       | 9/40 [05:31<19:01, 36.82s/it] 25%|██▌       | 10/40 [06:08<18:24, 36.83s/it] 28%|██▊       | 11/40 [06:45<17:49, 36.88s/it] 30%|███       | 12/40 [07:22<17:12, 36.87s/it] 32%|███▎      | 13/40 [07:59<16:34, 36.83s/it] 35%|███▌      | 14/40 [08:35<15:58, 36.86s/it] 38%|███▊      | 15/40 [09:13<15:23, 36.95s/it] 40%|████      | 16/40 [09:49<14:43, 36.83s/it] 42%|████▎     | 17/40 [10:26<14:04, 36.71s/it] 45%|████▌     | 18/40 [11:03<13:29, 36.81s/it] 48%|████▊     | 19/40 [11:40<12:54, 36.88s/it] 50%|█████     | 20/40 [12:16<12:15, 36.77s/it] 52%|█████▎    | 21/40 [12:54<11:46, 37.18s/it] 55%|█████▌    | 22/40 [13:32<11:11, 37.29s/it] 57%|█████▊    | 23/40 [14:09<10:34, 37.35s/it] 60%|██████    | 24/40 [14:46<09:54, 37.18s/it] 62%|██████▎   | 25/40 [15:23<09:17, 37.16s/it] 65%|██████▌   | 26/40 [16:00<08:40, 37.15s/it] 68%|██████▊   | 27/40 [16:37<08:02, 37.10s/it] 70%|███████   | 28/40 [17:14<07:24, 37.04s/it] 72%|███████▎  | 29/40 [17:51<06:47, 37.01s/it] 75%|███████▌  | 30/40 [18:28<06:09, 36.94s/it] 78%|███████▊  | 31/40 [19:05<05:31, 36.82s/it] 80%|████████  | 32/40 [19:42<04:55, 36.99s/it] 82%|████████▎ | 33/40 [20:19<04:18, 36.98s/it] 85%|████████▌ | 34/40 [20:56<03:41, 36.94s/it] 88%|████████▊ | 35/40 [21:32<03:04, 36.84s/it] 90%|█████████ | 36/40 [22:09<02:27, 36.90s/it] 92%|█████████▎| 37/40 [22:46<01:50, 36.93s/it] 95%|█████████▌| 38/40 [23:24<01:13, 36.99s/it] 98%|█████████▊| 39/40 [24:01<00:37, 37.02s/it]100%|██████████| 40/40 [24:38<00:00, 36.98s/it]WARNING:matplotlib.legend:No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-WARNING:matplotlib.legend:No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-Training took 1478.02 seconds to finish
-100%|██████████| 40/40 [24:59<00:00, 37.48s/it]

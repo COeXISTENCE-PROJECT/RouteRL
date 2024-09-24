@@ -45,7 +45,6 @@ class Gawron(BaseLearningModel):
         self.cost[action] = (self.alpha_sigma * self.cost[action]) + (self.alpha_zero * reward)
 
 
-
 class Culo(BaseLearningModel):
     def __init__(self, params, initial_knowledge):
         super().__init__()

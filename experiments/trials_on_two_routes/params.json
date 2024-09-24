@@ -10,18 +10,18 @@
     
     "runner_parameters":
     {
-        "num_episodes" : 1200,
+        "num_episodes" : 3000,
         "episode_length": 1,
-        "phases" : [0, 200],
-        "phase_names" : ["Human learning", "Mutation - Machine learning DQN"],
+        "phases" : [0, 200, 2200],
+        "phase_names" : ["Human learning", "Mutation - Machine learning DQN", "Human learning"],
         "remember_every" : 1,
         "frequent_progressbar_update" : false
     },
 
     "phase_parameters":
     {
-        "number_of_phases": 2,
-        "number_episodes_each_phase": [200, 400]
+        "number_of_phases": 3,
+        "number_episodes_each_phase": [200, 2000, 200]
     },
 
 
@@ -70,7 +70,7 @@
 
     "simulator_parameters":
     {
-        "simulation_timesteps" : 50,
+        "simulation_timesteps" : 20,
         "seed" : "23423",
         "sumo_type" : "sumo",
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
@@ -98,7 +98,7 @@
     {
         "num_agents" : 10,
         "new_machines_after_mutation": 5,
-        "ratio_mutating" : 0.33,
+        "ratio_mutating" : 0.5,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",
         "origins" : "${path_generation_parameters.origins}",

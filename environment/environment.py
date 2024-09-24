@@ -238,11 +238,13 @@ class TrafficEnvironment(AECEnv):
 
                 # The episode ends when we complete episode_length days
                 self.truncations = {
-                    agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
+                    agent: False for agent in self.agents
+                    #agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
                 }
 
                 self.terminations = {
-                    agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
+                    agent: False for agent in self.agents
+                    #agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
                 }
 
                 self.info = {

@@ -387,7 +387,9 @@ q_values = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else ten
 with open(q_values_file, 'w') as f:
     json.dump(q_values, f)
 
-env.rollout(max_steps=100, policy=col_policies)
+print("Human Learning")
+env.rollout(1000, policy=col_policies)
+print("Human Learning done")
 
 from services import plotter
 plotter(params[kc.PLOTTER])
