@@ -41,12 +41,12 @@ print("device is: ", device)
 vmas_device = device  # The device where the simulator is run
 
 # Sampling
-frames_per_batch = 50  # Number of team frames collected per training iteration
+frames_per_batch = 20  # Number of team frames collected per training iteration
 n_iters = 10  # Number of sampling and training iterations - the episodes the plotter plots
 total_frames = frames_per_batch * n_iters
 
 # Training
-num_epochs = 100  # Number of optimization steps per training iteration
+num_epochs = 10  # Number of optimization steps per training iteration
 minibatch_size = 2  # Size of the mini-batches in each optimization step
 lr = 3e-4  # Learning rate
 max_grad_norm = 1.0  # Maximum norm for the gradients
@@ -55,7 +55,7 @@ max_grad_norm = 1.0  # Maximum norm for the gradients
 clip_epsilon = 0.2  # clip value for PPO loss
 gamma = 0.99  # discount factor
 lmbda = 0.9  # lambda for generalised advantage estimation
-entropy_eps = 1e-5  # coefficient of the entropy term in the PPO loss
+entropy_eps = 1e-4  # coefficient of the entropy term in the PPO loss
 
 ############ Environment creation
 
@@ -79,19 +79,29 @@ for episode in range(num_episodes):
 env.mutation()
 
 ############ Machine learning
-
+machine_list = []
+for machines in env.machine_agents:
+    machine_list.append(str(machines.id))
+      
+group = {'agents': machine_list}
+      
 env = PettingZooWrapper(
     env=env,
     use_mask=True,
     categorical_actions=True,
     done_on_any = False,
+    group_map=group,
     device=device
 )
+
+print("\n\n\nenv.machine_agents are: ", env.reward_key, "\n\n\n")
+
 
 print("action_spec:", env.full_action_spec)
 print("reward_spec:", env.full_reward_spec)
 print("done_spec:", env.full_done_spec)
 print("observation_spec:", env.observation_spec)
+print("env.group is: ", env.group_map)
 
 env = TransformedEnv(
     env,
@@ -110,10 +120,8 @@ share_parameters_policy = False  # Can change this based on the group
 
 policy_net = torch.nn.Sequential(
     MultiAgentMLP(
-        n_agent_inputs=env.observation_spec["agents", "observation"].shape[
-            -1
-        ],  # n_obs_per_agent
-        n_agent_outputs= env.full_action_spec["action"].space.n,  # n_actions_per_agents
+        n_agent_inputs=env.observation_spec["agents", "observation"].shape[-1],  # n_obs_per_agent
+        n_agent_outputs= 2 ,  # n_actions_per_agents
         n_agents=env.n_agents,  # Number of agents in the group
         centralised=False,  # the policies are decentralised (i.e., each agent will act from its local observation)
         share_params=share_parameters_policy,
@@ -135,20 +143,21 @@ policy_module = TensorDictModule(
     out_keys=[("agents", "logits")],
 )  # We just name the input and output that the network will read and write to the input tensordict
 
+
+
 policy = ProbabilisticActor(
     module=policy_module,
-    spec=env.unbatched_action_spec,
+    spec=env.action_spec, ## had unbatched action_spec before
     in_keys=[("agents", "logits")],
-    out_keys=[("agents", "action")],
+    out_keys=[env.action_key],
     distribution_class=Categorical,
     return_log_prob=True,
     log_prob_key=("agents", "sample_log_prob"),
 )
 
-
 ############ Critic network
-share_parameters_critic = False
-mappo = False  # IPPO if False
+share_parameters_critic = True
+mappo = True  # IPPO if False
 
 critic_net = MultiAgentMLP(
     n_agent_inputs=env.observation_spec["agents", "observation"].shape[-1],
@@ -159,7 +168,7 @@ critic_net = MultiAgentMLP(
     device=device,
     depth=4,
     num_cells=64,
-    activation_class=torch.nn.Tanh,
+    activation_class=torch.nn.ReLU,
 )
 
 critic = TensorDictModule(
@@ -167,8 +176,6 @@ critic = TensorDictModule(
     in_keys=[("agents", "observation")],
     out_keys=[("agents", "state_value")],
 )
-
-
 
 
 ############ Collector
@@ -179,7 +186,6 @@ collector = SyncDataCollector(
     device=device,
     storing_device=device,
     frames_per_batch=frames_per_batch,
-    reset_at_each_iter=False,
     total_frames=total_frames,
 ) 
 
@@ -211,7 +217,6 @@ loss_module.set_keys(
     value=("agents", "state_value"),
     done=("agents", "done"),
     terminated=("agents", "terminated"),
-    advantage=("agents", "advantage")
 )
 
 loss_module.make_value_estimator(
@@ -227,6 +232,10 @@ optim = torch.optim.Adam(loss_module.parameters(), lr)
 pbar = tqdm(total=n_iters, desc="episode_reward_mean = 0")
 
 episode_reward_mean_list = []
+loss_values = []
+loss_entropy = []
+loss_objective = []
+loss_critic = []
 
 for tensordict_data in collector: ##loops over frame_per_batch
 
@@ -235,13 +244,13 @@ for tensordict_data in collector: ##loops over frame_per_batch
         ("next", "agents", "done"),
         tensordict_data.get(("next", "done"))
         .unsqueeze(-1)
-        .expand(tensordict_data.get_item_shape(("next", "agents", "reward"))),  # Adjust index to start from 0
+        .expand(tensordict_data.get_item_shape(("next", env.reward_key))),  # Adjust index to start from 0
     )
     tensordict_data.set(
         ("next", "agents", "terminated"),
         tensordict_data.get(("next", "terminated"))
         .unsqueeze(-1)
-        .expand(tensordict_data.get_item_shape(("next", "agents", "reward"))),  # Adjust index to start from 0
+        .expand(tensordict_data.get_item_shape(("next", env.reward_key))),  # Adjust index to start from 0
     )
 
     # Compute GAE for both agents
@@ -256,84 +265,117 @@ for tensordict_data in collector: ##loops over frame_per_batch
     replay_buffer.extend(data_view)
 
     for _ in range(num_epochs):
-            for _ in range(frames_per_batch // minibatch_size):
-                subdata = replay_buffer.sample()
-                #print("Inside inner loop", subdata, replay_buffers, "\n\n")
-                loss_vals = loss_module(subdata)
+        for _ in range(frames_per_batch // minibatch_size):
+            subdata = replay_buffer.sample()
+            loss_vals = loss_module(subdata)
 
-                loss_value = (
-                    loss_vals["loss_objective"]
-                    + loss_vals["loss_critic"]
-                    + loss_vals["loss_entropy"]
-                )
+            loss_value = (
+                loss_vals["loss_objective"]
+                + loss_vals["loss_critic"]
+                + loss_vals["loss_entropy"]
+            )
 
-                loss_value.backward()
+            loss_value.backward()
 
-                torch.nn.utils.clip_grad_norm_(
-                    loss_module.parameters(), max_grad_norm
-                )  # Optional
+            torch.nn.utils.clip_grad_norm_(
+                loss_module.parameters(), max_grad_norm
+            )  # Optional
 
-                optim.step()
-                optim.zero_grad()
+            optim.step()
+            optim.zero_grad()
+
+            loss_values.append(loss_value.item())
+
+            loss_entropy.append(loss_vals["loss_entropy"].item())
+
+            loss_objective.append(loss_vals["loss_objective"].item())
+
+            loss_critic.append(loss_vals["loss_critic"].item())
+
 
     # Update policy weights for both agents
     #for group, _agents in env.group_map.items():
     collector.update_policy_weights_()
    
-
+    # Logging
     done = tensordict_data.get(("next", "agents", "done"))  # Get done status for the group
 
     episode_reward_mean = (
-        tensordict_data.get(("next", "agents", "reward"))[
-            tensordict_data.get(("next", "agents", "done"))
-        ]
-        .mean()
-        .item()
+        tensordict_data.get(("next", "agents", "episode_reward"))[done].mean().item()
     )
-
     episode_reward_mean_list.append(episode_reward_mean)
 
-    pbar.set_description(
-        ", ".join(f"episode_reward_mean = {episode_reward_mean}", refresh=False)
-    )
+
+    pbar.set_description(f"episode_reward_mean = {episode_reward_mean}", refresh=False)
     pbar.update()
 
 
 ############ Save
 # Mean episode reward
-"""
-episode_reward_mean_file = kc.RECORDS_FOLDER + '/episode_reward_mean.json'
-with open(episode_reward_mean_file, 'w') as f:
-    json.dump(episode_reward_mean_map, f)
+#with plt.style.context(['science']):
+    # Create the plot
+plt.figure(figsize=(8, 5), dpi=100)  # Increase the figure size for better readability
+plt.plot(episode_reward_mean_list, linestyle='-', linewidth=2, markersize=6)  # Add markers for better visualization
 
-# Total loss
-loss_file = kc.RECORDS_FOLDER + '/loss_file.json'
-# loss is a tensor so I transform it to a list
-loss = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
-        for group, tensors in loss.items()}
-with open(loss_file, 'w') as f:
-    json.dump(loss, f)
+# Customize the axes and title
+plt.xlabel("Training Iterations", fontsize=16)
+plt.ylabel("Reward", fontsize=16)
+#plt.title("Episode Mean Reward", fontsize=22)
+plt.xticks(fontsize=16)
+plt.yticks(fontsize=16)
 
-# Objective loss
-objective_loss_file = kc.RECORDS_FOLDER + '/objective_loss.json'
-loss_objective = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
-        for group, tensors in loss_objective.items()}
-with open(objective_loss_file, 'w') as f:
-    json.dump(loss_objective, f)
 
-# Entropy loss
-entropy_loss_file = kc.RECORDS_FOLDER + '/entropy_loss.json'
-loss_entropy = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
-        for group, tensors in loss_entropy.items()}
-with open(entropy_loss_file, 'w') as f:
-    json.dump(loss_entropy, f)
+# Add grid lines for better readability
+plt.grid(True, linestyle='--', alpha=0.7)
 
-# Critic loss
-critic_loss_file = kc.RECORDS_FOLDER + '/critic_loss.json'
-loss_critic = {group: [tensor.tolist() if isinstance(tensor, torch.Tensor) else tensor for tensor in tensors]
-        for group, tensors in loss_critic.items()}
-with open(critic_loss_file, 'w') as f:
-    json.dump(loss_critic, f)"""
+# Improve layout
+plt.tight_layout()
+
+# Show the plot
+plt.show()
+
+plt.figure(figsize=(8, 5))
+
+plt.plot(loss_critic)
+plt.xlabel("Total Data Utilized (Collected Frames × Training Iterations)", fontsize=18)
+plt.ylabel("Critic loss", fontsize=18)
+#plt.title("Episode critic loss", fontsize=18)
+plt.xticks(fontsize=16)  # Increase x-axis tick font size
+plt.yticks(fontsize=16)  
+plt.show()
+
+plt.figure(figsize=(8, 5))
+
+
+plt.plot(loss_objective)
+plt.xlabel("Total Data Utilized (Collected Frames × Training Iterations)", fontsize=18)
+plt.ylabel("Objective loss", fontsize=18)
+#plt.title("Episode objective loss", fontsize=18)
+plt.xticks(fontsize=16)  # Increase x-axis tick font size
+plt.yticks(fontsize=16)  
+plt.show()
+
+plt.figure(figsize=(8, 5))
+
+
+plt.plot(loss_entropy)
+plt.xlabel("Total Data Utilized (Collected Frames × Training Iterations)", fontsize=18)
+plt.ylabel("Entropy loss", fontsize=18)
+#plt.title("Episode entropy loss", fontsize=18)
+plt.xticks(fontsize=16)  # Increase x-axis tick font size
+plt.yticks(fontsize=16)  
+plt.show()
+
+plt.figure(figsize=(8, 5))
+
+
+plt.plot(loss_values)
+plt.xlabel("Total Data Utilized (Collected Frames × Training Iterations)", fontsize=18)
+plt.ylabel("Total loss", fontsize=18)
+#plt.title("Episode total loss", fontsize=18)
+plt.xticks(fontsize=16)  # Increase x-axis tick font size
+plt.yticks(fontsize=16)  
+plt.show()
 
 
 ############ Plotter
