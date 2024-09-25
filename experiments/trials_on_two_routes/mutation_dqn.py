@@ -388,7 +388,7 @@ with open(q_values_file, 'w') as f:
     json.dump(q_values, f)
 
 print("Human Learning")
-env.rollout(1000, policy=col_policies)
+env.rollout(2000, policy=col_policies)
 print("Human Learning done")
 
 from services import plotter
