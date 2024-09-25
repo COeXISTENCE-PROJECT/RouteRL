@@ -10,7 +10,7 @@
     
     "runner_parameters":
     {
-        "num_episodes" : 1400,
+        "num_episodes" : 1600,
         "episode_length": 1,
         "phases" : [0, 200, 1200],
         "phase_names" : ["Human learning", "Mutation - Machine learning DQN", "Human learning"],
@@ -21,7 +21,7 @@
     "phase_parameters":
     {
         "number_of_phases": 3,
-        "number_episodes_each_phase": [200, 1000, 200]
+        "number_episodes_each_phase": [200, 1000, 400]
     },
 
 
