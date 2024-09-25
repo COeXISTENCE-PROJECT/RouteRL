@@ -1,20 +1,22 @@
 import sys
 import os
 from tqdm import tqdm
+from keychain import Keychain as kc
 
+original_sys_path = sys.path.copy()
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
-from environment import TrafficEnvironment
-from keychain import Keychain as kc
-from services import plotter
-from services import runner
+from RouteRL.environment.environment import TrafficEnvironment
+from RouteRL.services import plotter
 
-from create_agents import create_agent_objects
-from utilities import check_device
-from utilities import get_params
-from utilities import set_seeds
+from RouteRL.create_agents import create_agent_objects
+from RouteRL.utilities import check_device
+from RouteRL.utilities import get_params
+from RouteRL.utilities import set_seeds
 
 from pettingzoo.test import api_test
+
+sys.path = original_sys_path
 
 
 def main(params):
@@ -33,17 +35,11 @@ def main(params):
         print("episode is: ", episode, "\n\n")
         env.reset()
 
-        while(1):
-            observation, reward, termination, truncation, info = env.last()
+        
+        observation, reward, termination, truncation, info = env.last()
+        action = env.action_space(agent).sample()
 
-            if termination or truncation:
-                print("truncations break\n\n")
-                break
-            else:
-                # This is where you would insert your policy
-                action = env.action_space(agent).sample()
-
-            env.step(action)
+        env.step(action)
 
     """env.mutation()
     env.reset()
