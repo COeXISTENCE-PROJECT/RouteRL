@@ -2,7 +2,7 @@
 #SBATCH --job-name=dqn_traffic_simulation
 #SBATCH --qos=big
 #SBATCH --gres=gpu:1
-#SBATCH --mem=2G
+#SBATCH --mem=10G
 #SBATCH --cpus-per-task=2
 #SBATCH --partition=dgx
 
