@@ -35,7 +35,7 @@ from tqdm import tqdm
 import sys
 from keychain import Keychain as kc
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 from RouteRL.environment.environment import TrafficEnvironment
 from RouteRL.services.plotter import Plotter

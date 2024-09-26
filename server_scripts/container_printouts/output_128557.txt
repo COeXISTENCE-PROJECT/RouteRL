@@ -1,0 +1,24 @@
+--- Installing dependencies ---
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: beautifulsoup4==4.12.3 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (4.12.3)
+Requirement already satisfied: matplotlib==3.8.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (3.8.2)
+Requirement already satisfied: networkx==3.2.1 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (3.2.1)
+Requirement already satisfied: numpy in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 4)) (1.26.3)
+Requirement already satisfied: pandas==2.2.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 5)) (2.2.2)
+Requirement already satisfied: polars==0.20.31 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 6)) (0.20.31)
+Requirement already satisfied: prettytable==3.10.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 7)) (3.10.0)
+Requirement already satisfied: seaborn==0.13.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 8)) (0.13.2)
+Requirement already satisfied: torch in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 9)) (2.4.0)
+Requirement already satisfied: traci==1.19.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 10)) (1.19.0)
+Requirement already satisfied: torchrl in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 11)) (0.5.0)
+ERROR: Could not find a version that satisfies the requirement json (from versions: none)
+ERROR: No matching distribution found for json
+--- Running main.py ---
+<frozen importlib._bootstrap>:488: DeprecationWarning: Type google._upb._message.MessageMapContainer uses PyType_Spec with a metaclass that has custom tp_new. This is deprecated and will no longer be allowed in Python 3.14.
+<frozen importlib._bootstrap>:488: DeprecationWarning: Type google._upb._message.ScalarMapContainer uses PyType_Spec with a metaclass that has custom tp_new. This is deprecated and will no longer be allowed in Python 3.14.
+/home/psarou/.local/lib/python3.12/site-packages/wandb/analytics/sentry.py:90: SentryHubDeprecationWarning: `sentry_sdk.Hub` is deprecated and will be removed in a future major release. Please consult our 1.x to 2.x migration guide for details on how to migrate `Hub` usage to the new API: https://docs.sentry.io/platforms/python/migration/1.x-to-2.x
+  self.hub = sentry_sdk.Hub(client)
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+  0%|          | 0/100 [00:00<?, ?it/s]  1%|          | 1/100 [03:37<5:58:31, 217.29s/it]  2%|▏         | 2/100 [07:14<5:54:34, 217.09s/it]  3%|▎         | 3/100 [10:51<5:50:49, 217.01s/it]  4%|▍         | 4/100 [14:28<5:47:27, 217.16s/it]  5%|▌         | 5/100 [18:06<5:44:00, 217.27s/it]  6%|▌         | 6/100 [21:43<5:40:37, 217.42s/it]  7%|▋         | 7/100 [25:22<5:37:32, 217.77s/it]  8%|▊         | 8/100 [28:59<5:33:40, 217.62s/it]  9%|▉         | 9/100 [32:38<5:30:37, 217.99s/it] 10%|█         | 10/100 [36:17<5:27:25, 218.29s/it] 11%|█         | 11/100 [39:55<5:23:50, 218.32s/it] 12%|█▏        | 12/100 [43:33<5:20:10, 218.30s/it] 13%|█▎        | 13/100 [47:11<5:16:25, 218.22s/it] 14%|█▍        | 14/100 [50:49<5:12:27, 217.99s/it] 15%|█▌        | 15/100 [54:27<5:08:50, 218.01s/it] 16%|█▌        | 16/100 [58:04<5:04:48, 217.72s/it] 17%|█▋        | 17/100 [1:01:41<5:00:50, 217.48s/it] 18%|█▊        | 18/100 [1:05:18<4:57:05, 217.38s/it] 19%|█▉        | 19/100 [1:08:55<4:53:18, 217.27s/it] 20%|██        | 20/100 [1:12:32<4:49:31, 217.14s/it] 21%|██        | 21/100 [1:16:09<4:45:46, 217.04s/it] 22%|██▏       | 22/100 [1:19:46<4:42:24, 217.23s/it] 23%|██▎       | 23/100 [1:23:24<4:38:48, 217.25s/it] 24%|██▍       | 24/100 [1:27:00<4:34:57, 217.07s/it] 25%|██▌       | 25/100 [1:30:37<4:31:09, 216.93s/it]

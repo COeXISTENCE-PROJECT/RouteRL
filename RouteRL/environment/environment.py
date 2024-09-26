@@ -1,3 +1,4 @@
+""" PettingZoo environment for optimal route choice using SUMO simulator. """
 from gymnasium.spaces import Discrete
 import functools
 from copy import copy
@@ -31,7 +32,7 @@ class TrafficEnvironment(AECEnv):
         "render_modes": ["human"],
         "name": "TrafficEnvironment",
     }
-    """ A PettingZoo AECEnv interface for route planning using SUMO simulator.
+    """ A PettingZoo AECEnv interface for optimal route choice using SUMO simulator.
     This environment is utilized for the training of human agents (rational decision-makers) and machine agents (reinforcement learning agents).
     See https://sumo.dlr.de/docs/ for details on SUMO.
     See https://pettingzoo.farama.org/ for details on PettingZoo. 

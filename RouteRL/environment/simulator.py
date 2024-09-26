@@ -14,6 +14,12 @@ logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
 
 class SumoSimulator():
+    """ 
+    A class responsible for managing the communication between our learning agents and the SUMO traffic simulator.
+    SUMO provides the traffic environment where vehicles travel between designated origins and destinations,
+    and it returns the corresponding travel times for these vehicles.
+
+    """
 
     def __init__(self, params):
         self.sumo_config_path = kc.SUMO_CONFIG_PATH
@@ -47,10 +53,10 @@ class SumoSimulator():
     ##### CONFIG CHECK #####
 
     def _check_paths_ready(self) -> None:
-        if os.path.isfile(self.paths_csv_path) and os.path.isfile(self.routes_xml_path):
+        if os.path.isfile(self.paths_csv_path):# and os.path.isfile(self.routes_xml_path):
             logging.info("[CONFIRMED] Paths file is ready.")
-        """else:
-            raise FileNotFoundError("Paths file is not ready. Please generate paths first.")"""
+        else:
+            raise FileNotFoundError("Paths file is not ready. Please generate paths first.")
         
     #####################
 
@@ -84,7 +90,7 @@ class SumoSimulator():
         self.sumo_connection.simulationStep()
         self.timestep += 1
 
-        #### Function
+        #### Detectors
         """for id, name in enumerate(self.detectors_name):
             
             link = self.sumo_connection.inductionloop.getIntervalVehicleNumber(f"{name}_det")

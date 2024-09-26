@@ -1,3 +1,4 @@
+"""This module contains the human and machine agent classes, which represent vehicles driving from an origin to a destination in the simulation."""
 import numpy as np
 
 from abc import ABC, abstractmethod
