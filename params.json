@@ -1,0 +1,124 @@
+{
+    "ATTENTION":
+    {
+        "COMMENT1" : "Pretty much everything can be controlled here",
+        "COMMENT2" : "The parameters are self-explanatory, but if you need help, please contact me",
+        "COMMENT3" : "Put all you variables into categories.",
+        "COMMENT4" : "You can use dependent variables (examples below), but not below level 2"
+    },
+    
+    
+    "runner_parameters":
+    {
+        "num_episodes" : 10,
+        "episode_length": 1,
+        "phases" : [0],
+        "phase_names" : ["Human learning"],
+        "remember_every" : 1,
+        "frequent_progressbar_update" : false
+    },
+
+    "phase_parameters":
+    {
+        "number_of_phases": 1,
+        "number_episodes_each_phase": [10]
+    },
+
+
+    "agent_parameters" :
+    {
+        "agents_data_path" : "${agent_generation_parameters.agents_data_path}",
+        "action_space_size" : "${path_generation_parameters.number_of_paths}",
+
+        "machine_parameters" :
+        {
+            "batch_size" : 32,
+
+            "appearance_phase" : 1,
+            "learning_phases" : [1, 2],
+            "behavior" : "selfish",
+            "model" : "DQN",
+            "observed_span" : 300,
+            "epsilon" : 0.99,
+            "epsilon_decay_rate" : 0.998,
+            "buffer_size" : 256,
+            "learning_rate" : 0.003,
+            "num_hidden" : 2,
+            "widths" : [32, 64, 32]
+        },
+
+        "human_parameters" :
+        {
+            "learning_phases" : [0, 2],
+            "model" : "gawron",
+            "alpha" : 0.2,
+            "alpha_sigma": 0.1,
+            "alpha_zero": 0.2,
+            "beta" : 0.5,
+            "beta_randomness" : 0.3,
+            "appearance_phase" : "No need for this, by default appears in 0",
+            "behavior" : "No need for this, by default selfish"
+        }
+    },
+
+
+    "environment_parameters":
+    {
+        "action_space_size" : "${path_generation_parameters.number_of_paths}"
+    },
+
+
+    "simulator_parameters":
+    {
+        "simulation_timesteps" : 500,
+        "seed" : "23423",
+        "sumo_type" : "sumo",
+        "number_of_paths" : "${path_generation_parameters.number_of_paths}",
+        "env_var" : "SUMO_HOME"
+    },
+
+
+    "plotter_parameters":
+    {
+        "smooth_by" : 50,
+        
+        "phases" : "${runner_parameters.phases}",
+        "phase_names" : "${runner_parameters.phase_names}",
+        "colors" : ["firebrick", "teal", "peru", "navy", "salmon", "slategray", "darkviolet", "goldenrod", "darkolivegreen", "dodgerblue"],
+        "linestyles" : ["solid", "dotted", "dashed", "dashdot"],
+        "default_width" : 12,
+        "default_height" : 6,
+        "multimode_width" : 8,
+        "multimode_height" : 5,
+        "default_num_columns" : 2
+    },
+
+
+    "agent_generation_parameters" :
+    {
+        "num_agents" : 100,
+        "new_machines_after_mutation": 50,
+        "ratio_mutating" : 0.33,
+        "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
+        "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",
+        "origins" : "${path_generation_parameters.origins}",
+        "destinations" : "${path_generation_parameters.destinations}"
+    },
+        
+
+    "path_generation_parameters":
+    {
+        "number_of_paths" : 2,
+        "beta" : -1.50,
+        "weight" : "time",
+        "num_samples" : 100,
+        "max_path_length" : 200,
+        "route_utility_coeffs" : [0.2, 0.2, 0.2, 0.4],
+
+        "origins" : ["441496282#0", "154551772#1"],
+        "destinations" : ["-115604057#1", "-279952229#4"],
+
+        "COMMENT5" : "Make sure origins are not dead-ends",
+        "COMMENT6" : "Make sure destinations are reachable"
+    } 
+}

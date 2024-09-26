@@ -23,9 +23,9 @@ from keychain import Keychain as kc
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
-from environment.environment import TrafficEnvironment
-from services.plotter import Plotter
-from utilities import get_params
+from RouteRL.environment.environment import TrafficEnvironment
+from RouteRL.services.plotter import Plotter
+from RouteRL.utilities import get_params
 
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
@@ -379,7 +379,7 @@ plt.show()
 
 
 ############ Plotter
-from services import plotter
+from RouteRL.services import plotter
 
 plotter(params[kc.PLOTTER])
 

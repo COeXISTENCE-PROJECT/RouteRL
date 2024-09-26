@@ -75,7 +75,6 @@ class TrafficEnvironment(AECEnv):
         self.human_learning = True
         self.machine_same_start_time = []
         self.actions_timestep = []
-        self.last_episode = False # Avoid collector call env.close()
 
         """ runner attributes """
         self.num_episodes = self.training_params[kc.NUM_EPISODES]
@@ -239,13 +238,11 @@ class TrafficEnvironment(AECEnv):
 
                 # The episode ends when we complete episode_length days
                 self.truncations = {
-                    agent: False for agent in self.agents
-                    #agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
+                    agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
                 }
 
                 self.terminations = {
-                    agent: False for agent in self.agents
-                    #agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
+                    agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
                 }
 
                 self.info = {
@@ -279,8 +276,6 @@ class TrafficEnvironment(AECEnv):
         """Close the environment and stop the SUMO simulation."""
         self.human_learning = True
 
-        if(self.last_episode):
-            self.simulator.stop()
 
     def observe(self, agent: str) -> dict:
         """
@@ -488,6 +483,7 @@ class TrafficEnvironment(AECEnv):
                 their action will be send in the simulator
             agent_action (bool): break if the agent acting is not the last one (because the next agent should STEP first)
         """
+        print("machine id is: ", machine_id, "\n\n")
         agent_action = False
         while self.simulator.timestep < self.simulation_params[kc.SIMULATION_TIMESTEPS] or len(self.travel_times_list) < len(self.all_agents):
 

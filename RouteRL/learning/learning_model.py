@@ -288,10 +288,9 @@ class DQN(BaseLearningModel):
             return torch.argmin(q_values).item()
 
     def learn(self, state, action, reward):
-         """
+        """
         Samples a batch from memory, computes the loss, and updates the Q-network.
         """
-
         self.memory.append((state, action, reward))
         if len(self.memory) < self.batch_size: return
 

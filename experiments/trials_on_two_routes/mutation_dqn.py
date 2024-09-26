@@ -388,7 +388,10 @@ with open(q_values_file, 'w') as f:
     json.dump(q_values, f)
 
 print("Human Learning")
-env.rollout(4000, policy=col_policies)
+num_episodes = 200
+for episode in range(num_episodes):
+    env.rollout(len(env.machine_agents), policy=col_policies)
+
 print("Human Learning done")
 
 from RouteRL.services import plotter
