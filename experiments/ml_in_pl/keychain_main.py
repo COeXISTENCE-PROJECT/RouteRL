@@ -142,7 +142,7 @@ class Keychain:
 
     ####################### FILE PATHS ########################
 
-    PARAMS_PATH = MODE + "params.json"
+    PARAMS_PATH = MODE + "params_main.json"
 
     CONNECTION_FILE_PATH = "../../RouteRL/network_and_config/csomor/csomor1.con.xml"
     EDGE_FILE_PATH = "../../RouteRL/network_and_config/csomor/csomor1.edg.xml"
