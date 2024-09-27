@@ -483,7 +483,6 @@ class TrafficEnvironment(AECEnv):
                 their action will be send in the simulator
             agent_action (bool): break if the agent acting is not the last one (because the next agent should STEP first)
         """
-        print("machine id is: ", machine_id, "\n\n")
         agent_action = False
         while self.simulator.timestep < self.simulation_params[kc.SIMULATION_TIMESTEPS] or len(self.travel_times_list) < len(self.all_agents):
 
