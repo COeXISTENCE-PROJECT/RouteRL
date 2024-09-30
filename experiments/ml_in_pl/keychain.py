@@ -142,14 +142,14 @@ class Keychain:
 
     ####################### FILE PATHS ########################
 
-    PARAMS_PATH = MODE + "params_ppo.json"
+    PARAMS_PATH = MODE + "params.json"
 
     CONNECTION_FILE_PATH = "../../RouteRL/network_and_config/csomor/csomor1.con.xml"
     EDGE_FILE_PATH = "../../RouteRL/network_and_config/csomor/csomor1.edg.xml"
     ROUTE_FILE_PATH = "../../RouteRL/network_and_config/two_route_yield/rou.rou.xml"
     SUMO_CONFIG_PATH = "../../RouteRL/network_and_config/two_route_yield/SUMO.sumocfg"
     PATHS_CSV_SAVE_DETECTORS = "../../RouteRL/network_and_config/two_route_yield/detectors.csv"
-    NETWORK_XML = "../../RouteRL/network_and_config/two_route_yield/network.net.xml"
+    NETWORK_XML = "../../../RouteRL/network_and_config/two_route_yield/network.net.xml"
     DETECTOR_XML_SAVE_PATH = "../../RouteRL/network_and_config/two_route_yield/det.add.xml"
     TRIP_INFO_XML = "../../RouteRL/network_and_config/two_route_yield/tripinfo.xml"
     SUMMARY_XML = "../../RouteRL/network_and_config/two_route_yield/summary.xml"
