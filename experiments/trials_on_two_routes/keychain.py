@@ -159,13 +159,13 @@ class Keychain:
     
     PATHS_CSV_SAVE_PATH = "RouteRL/network_and_config/paths.csv"
     AGENTS_DATA_PATH = "RouteRL/network_and_config/agents_data.csv"
-    SAVE_TRIPINFO_XML = "experiments/trials_on_two_routes/plots/dqn_malicious_halfnet_20agents/tripinfo"
-    SAVE_TRAJECTORIES_XML = "experiments/trials_on_two_routes/plots/dqn_malicious_halfnet_20agents/trajectories"
-    SAVE_FCD_BASED_SPEEDS = "experiments/trials_on_two_routes/plots/dqn_malicious_halfnet_20agents/fcd_speeds"
-    SAVE_SUMMARY_XML = "experiments/trials_on_two_routes/plots/dqn_malicious_halfnet_20agents/summary.xml"
-    HUMAN_COST_TABLE = "experiments/trials_on_two_routes/training_records/dqn_malicious_halfnet_20agents/costs.txt"
+    SAVE_TRIPINFO_XML = "experiments/trials_on_two_routes/plots/dqn_malicious_1quarterbiggernet_20agents/tripinfo"
+    SAVE_TRAJECTORIES_XML = "experiments/trials_on_two_routes/plots/dqn_malicious_1quarterbiggernet_20agents/trajectories"
+    SAVE_FCD_BASED_SPEEDS = "experiments/trials_on_two_routes/plots/dqn_malicious_1quarterbiggernet_20agents/fcd_speeds"
+    SAVE_SUMMARY_XML = "experiments/trials_on_two_routes/plots/dqn_malicious_1quarterbiggernet_20agents/summary.xml"
+    HUMAN_COST_TABLE = "experiments/trials_on_two_routes/training_records/dqn_malicious_1quarterbiggernet_20agents/costs.txt"
 
-    RECORDS_FOLDER = "experiments/trials_on_two_routes/training_records/dqn_malicious_halfnet_20agents"
+    RECORDS_FOLDER = "experiments/trials_on_two_routes/training_records/dqn_malicious_1quarterbiggernet_20agents"
     EPISODES_LOGS_FOLDER = "episodes"
     SIMULATION_LENGTH_LOG_FILE_NAME = "simulation_length.txt"
     LOSSES_LOG_FILE_NAME = "losses.txt"
@@ -173,7 +173,7 @@ class Keychain:
     PATHS_CSV_FILE_NAME = "paths.csv"
     FREE_FLOW_TIMES_CSV_FILE_NAME = "free_flow_times.csv"
 
-    PLOTS_FOLDER = "experiments/trials_on_two_routes/plots/dqn_malicious_halfnet_20agents"
+    PLOTS_FOLDER = "experiments/trials_on_two_routes/plots/dqn_malicious_1quarterbiggernet_20agents"
     REWARDS_PLOT_FILE_NAME = "rewards.png"
     TRAVEL_TIMES_PLOT_FILE_NAME = "travel_times.png"
     TT_DIST_PLOT_FILE_NAME = "tt_dist.png"
