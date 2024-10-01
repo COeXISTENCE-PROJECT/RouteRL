@@ -21,4 +21,4 @@ ERROR: No matching distribution found for json
 [CONFIRMED] Environment variable exists: SUMO_HOME
 [SUCCESS] Added module directory: /usr/share/sumo/tools
  Retrying in 1 seconds
-  0%|          | 0/100 [00:00<?, ?it/s]  1%|          | 1/100 [03:49<6:18:29, 229.39s/it]
+  0%|          | 0/100 [00:00<?, ?it/s]  1%|          | 1/100 [03:49<6:18:29, 229.39s/it]  2%|▏         | 2/100 [07:36<6:12:18, 227.95s/it]  3%|▎         | 3/100 [11:25<6:09:24, 228.50s/it]  4%|▍         | 4/100 [15:12<6:04:47, 228.00s/it]  5%|▌         | 5/100 [19:00<6:01:07, 228.08s/it]  6%|▌         | 6/100 [22:49<5:57:25, 228.15s/it]  7%|▋         | 7/100 [26:39<5:54:39, 228.81s/it]  8%|▊         | 8/100 [30:26<5:50:08, 228.35s/it]  9%|▉         | 9/100 [34:14<5:46:07, 228.21s/it]
