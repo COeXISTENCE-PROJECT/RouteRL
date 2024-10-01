@@ -1,4 +1,9 @@
-# How to run on servers?
+# Route-RL 
+
+
+
+
+<!--# How to run on servers?
 
 See [here](server_scripts/how_to.md).
 
@@ -8,8 +13,6 @@ See [here](server_scripts/how_to.md).
   <img src="images/multiple_humans_timesteps.png" alt="Image 1" width="480" />
   <img src="images/multiple_machines_timesteps.png" alt="Image 2"  width="300" />
 </p>
-
-<!--
 
 # Training setting
 
