@@ -99,12 +99,7 @@ class SumoSimulator():
         Adds a vehicle to the SUMO simulation environment with the specified route and parameters.
 
         Parameters:
-        - act_dict (dict): A dictionary containing key vehicle attributes such as:
-            - kc.AGENT_ORIGIN: The starting location of the vehicle (origin node).
-            - kc.AGENT_DESTINATION: The ending location of the vehicle (destination node).
-            - kc.ACTION: The action or route choice made by the agent.
-            - kc.AGENT_ID: A unique identifier for the vehicle/agent.
-            - kc.AGENT_START_TIME: The simulation time at which the vehicle should depart.
+        - act_dict (dict): A dictionary containing key vehicle attributes.
         """
 
         route_id = self.route_id_cache.setdefault((act_dict[kc.AGENT_ORIGIN], act_dict[kc.AGENT_DESTINATION], act_dict[kc.ACTION]), \
