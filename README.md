@@ -1,4 +1,16 @@
-# Route-RL 
+# RouteRL
+
+
+RouteRL provides a Multi-Agent Reinforcement Environment (MARL) for optimal route choice in different city networks. 
+
+- The main class is [TrafficEnvironment](https://github.com/COeXISTENCE-PROJECT/Milestone-One/blob/env2pz/RouteRL/environment/environment.py) and is a [PettingZoo](https://pettingzoo.farama.org/index.html) AEC API environment.
+- There are two types of agents in the environment and are both represented by the [BaseAgent](https://github.com/COeXISTENCE-PROJECT/Milestone-One/blob/env2pz/RouteRL/environment/agent.py) class.
+  - Human drivers are simulated using human route-choice behavior from transportation research.
+  - Automated vehicles (AVs) are the RL agents that aim to optimize their routes and learn the most efficient paths.
+- It is compatible with popular RL libraries such as [stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/guide/examples.html) and [TorchRL](https://pytorch.org/rl/stable/tutorials/torchrl_demo.html).
+
+For more details, check the documentation online.
+
 
 
 
