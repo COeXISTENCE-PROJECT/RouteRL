@@ -53,6 +53,10 @@ class SumoSimulator():
     ##### CONFIG CHECK #####
 
     def _check_paths_ready(self) -> None:
+        """
+        Checks if the required paths file for the simulation exists.
+        """
+   
         if os.path.isfile(self.paths_csv_path):# and os.path.isfile(self.routes_xml_path):
             logging.info("[CONFIRMED] Paths file is ready.")
         else:
@@ -63,14 +67,24 @@ class SumoSimulator():
     ##### SUMO CONTROL #####
 
     def start(self) -> None:
+        """
+        Starts the SUMO simulation with the specified configuration.
+        """
+
         sumo_cmd = [self.sumo_type,"--seed", self.seed, "--fcd-output", self.sumo_fcd, "-c", self.sumo_config_path] 
         traci.start(sumo_cmd, label=self.sumo_id)
         self.sumo_connection = traci.getConnection(self.sumo_id)
 
     def stop(self) -> None:
+        """
+        Stops and closes the SUMO simulation.
+        """
         self.sumo_connection.close()
 
     def reset(self) -> None:
+        """
+        Resets the SUMO simulation to its initial state.
+        """
         self.sumo_connection.load(["--seed", self.seed, "--fcd-output", self.sumo_fcd, '-c', self.sumo_config_path])
 
         self.timestep = 0
@@ -81,11 +95,35 @@ class SumoSimulator():
     ##### SIMULATION #####
     
     def add_vehice(self, act_dict: dict) -> None:
+        """
+        Adds a vehicle to the SUMO simulation environment with the specified route and parameters.
+
+        Parameters:
+        - act_dict (dict): A dictionary containing key vehicle attributes such as:
+            - kc.AGENT_ORIGIN: The starting location of the vehicle (origin node).
+            - kc.AGENT_DESTINATION: The ending location of the vehicle (destination node).
+            - kc.ACTION: The action or route choice made by the agent.
+            - kc.AGENT_ID: A unique identifier for the vehicle/agent.
+            - kc.AGENT_START_TIME: The simulation time at which the vehicle should depart.
+        """
+
         route_id = self.route_id_cache.setdefault((act_dict[kc.AGENT_ORIGIN], act_dict[kc.AGENT_DESTINATION], act_dict[kc.ACTION]), \
                 f'{act_dict[kc.AGENT_ORIGIN]}_{act_dict[kc.AGENT_DESTINATION]}_{act_dict[kc.ACTION]}')
+        
         self.sumo_connection.vehicle.add(vehID=str(act_dict[kc.AGENT_ID]), routeID=route_id, depart=str(act_dict[kc.AGENT_START_TIME]))
     
     def step(self) -> tuple:
+        """
+        Advances the SUMO simulation by one timestep and retrieves information about vehicle arrivals and detector data.
+
+        Returns:
+        - tuple: A tuple containing:
+            - self.timestep (int): The current simulation timestep.
+            - arrivals (list): List of vehicle IDs that arrived at their destinations during the current timestep.
+            - self.det_dict (list): The current detector data (currently an empty list).
+    
+        """
+   
         arrivals = self.sumo_connection.simulation.getArrivedIDList()
         self.sumo_connection.simulationStep()
         self.timestep += 1

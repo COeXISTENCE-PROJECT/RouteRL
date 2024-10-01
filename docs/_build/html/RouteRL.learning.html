@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RouteRL.learning package &mdash; RouteRL 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="RouteRL.services package" href="RouteRL.services.html" />
+    <link rel="prev" title="RouteRL.environment package" href="RouteRL.environment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            RouteRL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">RouteRL</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="RouteRL.html">RouteRL package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="RouteRL.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="RouteRL.environment.html">RouteRL.environment package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">RouteRL.learning package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="RouteRL.services.html">RouteRL.services package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="RouteRL.utilities.html">RouteRL.utilities package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="RouteRL.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RouteRL.html#module-RouteRL.create_agents">RouteRL.create_agents module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RouteRL.html#module-RouteRL">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">RouteRL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">RouteRL</a></li>
+          <li class="breadcrumb-item"><a href="RouteRL.html">RouteRL package</a></li>
+      <li class="breadcrumb-item active">RouteRL.learning package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/RouteRL.learning.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="routerl-learning-package">
+<h1>RouteRL.learning package<a class="headerlink" href="#routerl-learning-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-RouteRL.learning.learning_model">
+<span id="routerl-learning-learning-model-module"></span><h2>RouteRL.learning.learning_model module<a class="headerlink" href="#module-RouteRL.learning.learning_model" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.BaseLearningModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">RouteRL.learning.learning_model.</span></span><span class="sig-name descname"><span class="pre">BaseLearningModel</span></span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#BaseLearningModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.BaseLearningModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>This is an abstract base class for the learning models used to train the human and machine agents.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.BaseLearningModel.act">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#BaseLearningModel.act"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.BaseLearningModel.act" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.BaseLearningModel.learn">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">learn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#BaseLearningModel.learn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.BaseLearningModel.learn" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.Culo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">RouteRL.learning.learning_model.</span></span><span class="sig-name descname"><span class="pre">Culo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_knowledge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#Culo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.Culo" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#RouteRL.learning.learning_model.BaseLearningModel" title="RouteRL.learning.learning_model.BaseLearningModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLearningModel</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.Culo.act">
+<span class="sig-name descname"><span class="pre">act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#Culo.act"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.Culo.act" title="Permalink to this definition"></a></dt>
+<dd><p>Selects an action based on the current state and cost.</p>
+<p>Parameters:
+state: The current state of the environment.</p>
+<p>Returns:
+int: The index of the selected action.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.Culo.learn">
+<span class="sig-name descname"><span class="pre">learn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#Culo.learn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.Culo.learn" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the cost associated with the taken action based on the received reward.</p>
+<p>Parameters:
+state: The current state of the environment.
+action (int): The action that was taken.
+reward (float): The reward received after taking the action.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.DQN">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">RouteRL.learning.learning_model.</span></span><span class="sig-name descname"><span class="pre">DQN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_space_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#DQN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.DQN" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#RouteRL.learning.learning_model.BaseLearningModel" title="RouteRL.learning.learning_model.BaseLearningModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLearningModel</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.DQN.act">
+<span class="sig-name descname"><span class="pre">act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#DQN.act"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.DQN.act" title="Permalink to this definition"></a></dt>
+<dd><p>Selects an action based on the current state using an epsilon-greedy strategy.</p>
+<p>Parameters:
+state (array-like): The current state of the environment.</p>
+<p>Returns:
+int: The index of the selected action.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.DQN.decay_epsilon">
+<span class="sig-name descname"><span class="pre">decay_epsilon</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#DQN.decay_epsilon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.DQN.decay_epsilon" title="Permalink to this definition"></a></dt>
+<dd><p>Decays the epsilon value to reduce exploration over time.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.DQN.learn">
+<span class="sig-name descname"><span class="pre">learn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#DQN.learn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.DQN.learn" title="Permalink to this definition"></a></dt>
+<dd><p>Samples a batch from memory, computes the loss, and updates the Q-network.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.Gawron">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">RouteRL.learning.learning_model.</span></span><span class="sig-name descname"><span class="pre">Gawron</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_knowledge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#Gawron"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.Gawron" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#RouteRL.learning.learning_model.BaseLearningModel" title="RouteRL.learning.learning_model.BaseLearningModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLearningModel</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.Gawron.act">
+<span class="sig-name descname"><span class="pre">act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#Gawron.act"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.Gawron.act" title="Permalink to this definition"></a></dt>
+<dd><p>Selects an action based on the current state and cost.</p>
+<p>Parameters:
+state: The current state of the environment.</p>
+<p>Returns:
+int: The index of the selected action.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.Gawron.learn">
+<span class="sig-name descname"><span class="pre">learn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#Gawron.learn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.Gawron.learn" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the cost associated with the taken action based on the received reward.</p>
+<p>Parameters:
+state: The current state of the environment.
+action (int): The action that was taken.
+reward (float): The reward received after taking the action.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.Network">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">RouteRL.learning.learning_model.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_space_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_hidden</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">widths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#Network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.Network" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.Network.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#Network.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.Network.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Forward pass through the network.</p>
+<p>Parameters:
+x (Tensor): The input tensor representing the state.</p>
+<p>Returns:
+Tensor: The output tensor representing Q-values for each action.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.QLearning">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">RouteRL.learning.learning_model.</span></span><span class="sig-name descname"><span class="pre">QLearning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_space_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#QLearning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.QLearning" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#RouteRL.learning.learning_model.BaseLearningModel" title="RouteRL.learning.learning_model.BaseLearningModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLearningModel</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.QLearning.act">
+<span class="sig-name descname"><span class="pre">act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#QLearning.act"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.QLearning.act" title="Permalink to this definition"></a></dt>
+<dd><p>Selects an action based on the current state using the epsilon-greedy strategy.</p>
+<p>Parameters:
+state (list): The current state of the environment.</p>
+<p>Returns:
+int: The index of the selected action.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.QLearning.decay_epsilon">
+<span class="sig-name descname"><span class="pre">decay_epsilon</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#QLearning.decay_epsilon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.QLearning.decay_epsilon" title="Permalink to this definition"></a></dt>
+<dd><p>Decays the epsilon value to reduce exploration over time.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.QLearning.ensure_row_in_q_table">
+<span class="sig-name descname"><span class="pre">ensure_row_in_q_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#QLearning.ensure_row_in_q_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.QLearning.ensure_row_in_q_table" title="Permalink to this definition"></a></dt>
+<dd><p>Ensures the state is present in the Q-table. If not, a new row is added.</p>
+<p>Parameters:
+state_str (str): The string representation of the current state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.QLearning.learn">
+<span class="sig-name descname"><span class="pre">learn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#QLearning.learn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.QLearning.learn" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the Q-values for the given state-action pair based on the reward.</p>
+<p>Parameters:
+state (list): The current state of the environment.
+action (int): The action that was taken.
+reward (float): The reward received after taking the action.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.WeightedAverage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">RouteRL.learning.learning_model.</span></span><span class="sig-name descname"><span class="pre">WeightedAverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_knowledge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#WeightedAverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.WeightedAverage" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#RouteRL.learning.learning_model.BaseLearningModel" title="RouteRL.learning.learning_model.BaseLearningModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLearningModel</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.WeightedAverage.act">
+<span class="sig-name descname"><span class="pre">act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#WeightedAverage.act"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.WeightedAverage.act" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.learning.learning_model.WeightedAverage.learn">
+<span class="sig-name descname"><span class="pre">learn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/RouteRL/learning/learning_model.html#WeightedAverage.learn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.learning.learning_model.WeightedAverage.learn" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-RouteRL.learning">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-RouteRL.learning" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="RouteRL.environment.html" class="btn btn-neutral float-left" title="RouteRL.environment package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="RouteRL.services.html" class="btn btn-neutral float-right" title="RouteRL.services package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Anastasia Psarou, Ahmet Onur Akman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
