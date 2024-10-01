@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RouteRL.environment.simulator &mdash; RouteRL 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            RouteRL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">RouteRL</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">RouteRL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">RouteRL.environment.simulator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for RouteRL.environment.simulator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">traci</span>
+
+<span class="kn">from</span> <span class="nn">keychain</span> <span class="kn">import</span> <span class="n">Keychain</span> <span class="k">as</span> <span class="n">kc</span>
+<span class="kn">from</span> <span class="nn">..utilities</span> <span class="kn">import</span> <span class="n">confirm_env_variable</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SumoSimulator"><a class="viewcode-back" href="../../../RouteRL.environment.html#RouteRL.environment.simulator.SumoSimulator">[docs]</a><span class="k">class</span> <span class="nc">SumoSimulator</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    A class responsible for managing the communication between our learning agents and the SUMO traffic simulator.</span>
+<span class="sd">    SUMO provides the traffic environment where vehicles travel between designated origins and destinations,</span>
+<span class="sd">    and it returns the corresponding travel times for these vehicles.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_config_path</span> <span class="o">=</span> <span class="n">kc</span><span class="o">.</span><span class="n">SUMO_CONFIG_PATH</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paths_csv_path</span> <span class="o">=</span> <span class="n">kc</span><span class="o">.</span><span class="n">PATHS_CSV_SAVE_PATH</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">routes_xml_path</span> <span class="o">=</span> <span class="n">kc</span><span class="o">.</span><span class="n">ROUTE_FILE_PATH</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_fcd</span> <span class="o">=</span> <span class="n">kc</span><span class="o">.</span><span class="n">SUMO_FCD</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_type</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">SUMO_TYPE</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env_var</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ENV_VAR</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_paths</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">NUMBER_OF_PATHS</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation_length</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">SIMULATION_TIMESTEPS</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">SEED</span><span class="p">]</span> 
+
+        <span class="c1">## Detectors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">detectors_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">kc</span><span class="o">.</span><span class="n">PATHS_CSV_SAVE_DETECTORS</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="c1">###FIX THIS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">det_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors_name</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_paths_ready</span><span class="p">()</span>
+        <span class="n">confirm_env_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env_var</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="s2">&quot;tools&quot;</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">route_id_cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[SUCCESS] Simulator is ready to simulate!&quot;</span><span class="p">)</span>
+
+    <span class="c1">#####################</span>
+
+    <span class="c1">##### CONFIG CHECK #####</span>
+
+    <span class="k">def</span> <span class="nf">_check_paths_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths_csv_path</span><span class="p">):</span><span class="c1"># and os.path.isfile(self.routes_xml_path):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[CONFIRMED] Paths file is ready.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;Paths file is not ready. Please generate paths first.&quot;</span><span class="p">)</span>
+        
+    <span class="c1">#####################</span>
+
+    <span class="c1">##### SUMO CONTROL #####</span>
+
+<div class="viewcode-block" id="SumoSimulator.start"><a class="viewcode-back" href="../../../RouteRL.environment.html#RouteRL.environment.simulator.SumoSimulator.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sumo_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sumo_type</span><span class="p">,</span><span class="s2">&quot;--seed&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span> <span class="s2">&quot;--fcd-output&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sumo_fcd</span><span class="p">,</span> <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sumo_config_path</span><span class="p">]</span> 
+        <span class="n">traci</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">sumo_cmd</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sumo_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span> <span class="o">=</span> <span class="n">traci</span><span class="o">.</span><span class="n">getConnection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sumo_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SumoSimulator.stop"><a class="viewcode-back" href="../../../RouteRL.environment.html#RouteRL.environment.simulator.SumoSimulator.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SumoSimulator.reset"><a class="viewcode-back" href="../../../RouteRL.environment.html#RouteRL.environment.simulator.SumoSimulator.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">load</span><span class="p">([</span><span class="s2">&quot;--seed&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span> <span class="s2">&quot;--fcd-output&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sumo_fcd</span><span class="p">,</span> <span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sumo_config_path</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">det_dict</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+    <span class="c1">#####################</span>
+
+    <span class="c1">##### SIMULATION #####</span>
+    
+<div class="viewcode-block" id="SumoSimulator.add_vehice"><a class="viewcode-back" href="../../../RouteRL.environment.html#RouteRL.environment.simulator.SumoSimulator.add_vehice">[docs]</a>    <span class="k">def</span> <span class="nf">add_vehice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">act_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">route_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_id_cache</span><span class="o">.</span><span class="n">setdefault</span><span class="p">((</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ORIGIN</span><span class="p">],</span> <span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_DESTINATION</span><span class="p">],</span> <span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ACTION</span><span class="p">]),</span> \
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ORIGIN</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_DESTINATION</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ACTION</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">vehID</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ID</span><span class="p">]),</span> <span class="n">routeID</span><span class="o">=</span><span class="n">route_id</span><span class="p">,</span> <span class="n">depart</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_START_TIME</span><span class="p">]))</span></div>
+    
+<div class="viewcode-block" id="SumoSimulator.step"><a class="viewcode-back" href="../../../RouteRL.environment.html#RouteRL.environment.simulator.SumoSimulator.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="n">arrivals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">getArrivedIDList</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">simulationStep</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1">#### Detectors</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;for id, name in enumerate(self.detectors_name):</span>
+<span class="sd">            </span>
+<span class="sd">            link = self.sumo_connection.inductionloop.getIntervalVehicleNumber(f&quot;{name}_det&quot;)</span>
+<span class="sd">            self.det_dict[name] = ((link / self.timestep) * 3600) # 1hour&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">det_dict</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span><span class="p">,</span> <span class="n">arrivals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">det_dict</span></div></div>
+    
+    <span class="c1">#####################</span>
+    
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Anastasia Psarou, Ahmet Onur Akman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
