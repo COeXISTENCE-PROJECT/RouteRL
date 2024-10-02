@@ -43,11 +43,9 @@ In this folder we experiment on a two route network.
 
 ### Results
 ---
-
-#### Action shifts for AV and humans drivers across different behaviors
-![Alt text](img/outputs.png)
+![Alt text](img/output.png)
 
 
-#### Mean Rewards for AV and human drivers across different behaviours
+---
 ![Alt text](img/mean_rewards.png)
 
