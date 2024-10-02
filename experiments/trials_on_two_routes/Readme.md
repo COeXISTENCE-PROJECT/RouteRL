@@ -8,23 +8,23 @@ In this folder we experiment on a two route network.
 
 ### Number of agents
 ---
-- 10 agents
-- Human: 5 | AVs: 5
-- Humans: Gawron | AVs: PPO, DQN, SAC
+- 20 agents
+- Human: 10 | AVs: 10
+- Humans: Gawron | AVs: DQN
 
 ### Training episodes
 ---
-- 500 episodes, 2 phases
+- 1400 episodes, 3 phases
 - Phase 1: Starts in episode 1
-    - Humans 10 (learn)
-- Phase 2: Start in episode 100
-    - Humans: 5 (don't learn) | AVs: 5 (learn)
+    - Humans 20 (learn)
+- Phase 2: Starts in episode 200
+    - Humans: 10 (don't learn) | AVs: 10 (learn)
+- Phase 3: Starts in episode 1200
+    - Humans: 10 (learn) | AVs: 10 (don't learn)
  
 ### Training duration
 ---
-- PPO: 02:06:09 (gpu)
-- DQN: 00:39:15 (gpu)
-- SAC: 03:34:15 (cpu)
+- DQN: 6-7h (gpu)
 
 ### Hardware
 ---
@@ -34,13 +34,5 @@ In this folder we experiment on a two route network.
 
 ### Results
 ---
-**All plots smoothed by n=50.**
 
-#### Average reward comparison betweeen AVs
-![Alt text](plots/comparisons/avg_rewards.png)
 
-#### Probability distributions of action 0 over episodes
-![Alt text](plots/comparisons/prob_dist_action_0.png)
-
-#### Probability distributions of action 1 over episodes
-![Alt text](plots/comparisons/prob_dist_action_1.png)
