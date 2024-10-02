@@ -1,4 +1,4 @@
-# AV agents
+# Automated Vehicle (AV) agents
 
 ```{eval-rst}
 .. autoclass:: RouteRL.environment.agent.MachineAgent

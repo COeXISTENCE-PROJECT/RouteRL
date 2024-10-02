@@ -198,11 +198,11 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="documentation/simulator.html">SUMO Simulator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="documentation/pz_env.html">Petting Zoo Sumo Environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="documentation/machine_agents.html">AV agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation/pz_env.html">PettingZoo environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation/simulator.html">SUMO simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation/machine_agents.html">Automated Vehicle (AV) agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="documentation/human_agents.html">Human drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="documentation/observations.html">Observation Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation/observations.html">Observation functions</a></li>
 </ul>
 
 </div>
@@ -240,18 +240,24 @@
           
 <section class="genindex-section">
   <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a></div>
+  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a></div>
 </section>
 <section id="A" class="genindex-section">
   <h2>A</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="documentation/pz_env.html#RouteRL.environment.environment.TrafficEnvironment.action_space">action_space() (RouteRL.environment.environment.TrafficEnvironment method)</a>
+        <li><a href="documentation/human_agents.html#RouteRL.environment.agent.HumanAgent.act">act() (RouteRL.environment.agent.HumanAgent method)</a>
+
+        <ul>
+          <li><a href="documentation/machine_agents.html#RouteRL.environment.agent.MachineAgent.act">(RouteRL.environment.agent.MachineAgent method)</a>
 </li>
-        <li><a href="documentation/pz_env.html#RouteRL.environment.environment.TrafficEnvironment.actions_timestep">actions_timestep (RouteRL.environment.environment.TrafficEnvironment attribute)</a>
+        </ul></li>
+        <li><a href="documentation/pz_env.html#RouteRL.environment.environment.TrafficEnvironment.action_space">action_space() (RouteRL.environment.environment.TrafficEnvironment method)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="documentation/pz_env.html#RouteRL.environment.environment.TrafficEnvironment.actions_timestep">actions_timestep (RouteRL.environment.environment.TrafficEnvironment attribute)</a>
+</li>
         <li><a href="documentation/simulator.html#RouteRL.environment.simulator.SumoSimulator.add_vehice">add_vehice() (RouteRL.environment.simulator.SumoSimulator method)</a>
 </li>
         <li><a href="documentation/observations.html#RouteRL.environment.observations.PreviousAgentStart.agent_observations">agent_observations() (RouteRL.environment.observations.PreviousAgentStart method)</a>
@@ -276,9 +282,17 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="documentation/pz_env.html#RouteRL.environment.environment.TrafficEnvironment.get_free_flow_times">get_free_flow_times() (RouteRL.environment.environment.TrafficEnvironment method)</a>
 </li>
+        <li><a href="documentation/pz_env.html#RouteRL.environment.environment.TrafficEnvironment.get_observation">get_observation() (RouteRL.environment.environment.TrafficEnvironment method)</a>
+</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="documentation/pz_env.html#RouteRL.environment.environment.TrafficEnvironment.get_observation">get_observation() (RouteRL.environment.environment.TrafficEnvironment method)</a>
+        <li><a href="documentation/human_agents.html#RouteRL.environment.agent.HumanAgent.get_reward">get_reward() (RouteRL.environment.agent.HumanAgent method)</a>
+
+        <ul>
+          <li><a href="documentation/machine_agents.html#RouteRL.environment.agent.MachineAgent.get_reward">(RouteRL.environment.agent.MachineAgent method)</a>
+</li>
+        </ul></li>
+        <li><a href="documentation/machine_agents.html#RouteRL.environment.agent.MachineAgent.get_state">get_state() (RouteRL.environment.agent.MachineAgent method)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -294,6 +308,20 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="documentation/human_agents.html#RouteRL.environment.agent.HumanAgent">HumanAgent (class in RouteRL.environment.agent)</a>
 </li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="L" class="genindex-section">
+  <h2>L</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="documentation/human_agents.html#RouteRL.environment.agent.HumanAgent.learn">learn() (RouteRL.environment.agent.HumanAgent method)</a>
+
+        <ul>
+          <li><a href="documentation/machine_agents.html#RouteRL.environment.agent.MachineAgent.learn">(RouteRL.environment.agent.MachineAgent method)</a>
+</li>
+        </ul></li>
     </ul></td>
   </tr></table>
 </section>

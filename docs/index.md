@@ -19,8 +19,8 @@ lastpage:
 :hidden:
 :caption: Documentation
 
-documentation/simulator.md
 documentation/pz_env.md
+documentation/simulator.md
 documentation/machine_agents.md
 documentation/human_agents.md
 documentation/observations.md

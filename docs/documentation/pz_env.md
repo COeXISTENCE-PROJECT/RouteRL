@@ -1,4 +1,4 @@
-# Petting Zoo Sumo Environment
+# PettingZoo environment
 
 ```{eval-rst}
 .. autoclass:: RouteRL.environment.environment.TrafficEnvironment

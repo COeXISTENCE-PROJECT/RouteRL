@@ -199,11 +199,11 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../documentation/simulator.html">SUMO Simulator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../documentation/pz_env.html">Petting Zoo Sumo Environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../documentation/machine_agents.html">AV agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation/pz_env.html">PettingZoo environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation/simulator.html">SUMO simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation/machine_agents.html">Automated Vehicle (AV) agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/human_agents.html">Human drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../documentation/observations.html">Observation Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation/observations.html">Observation functions</a></li>
 </ul>
 
 </div>
@@ -313,6 +313,8 @@
 <div class="viewcode-block" id="HumanAgent">
 <a class="viewcode-back" href="../../../documentation/human_agents.html#RouteRL.environment.agent.HumanAgent">[docs]</a>
 <span class="k">class</span> <span class="nc">HumanAgent</span><span class="p">(</span><span class="n">BaseAgent</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Class representing human drivers, responsible for modeling their learning process and decision-making in route selection. &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">initial_knowledge</span><span class="p">,</span> <span class="n">mutate_to</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">kind</span> <span class="o">=</span> <span class="n">kc</span><span class="o">.</span><span class="n">TYPE_HUMAN</span>
         <span class="n">behavior</span> <span class="o">=</span> <span class="n">kc</span><span class="o">.</span><span class="n">SELFISH</span>
@@ -356,21 +358,33 @@
     <span class="k">def</span> <span class="nf">mutate_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mutate_to</span><span class="p">,</span> <span class="s1">&#39;appearance_phase&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">):</span>  
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>  
+<div class="viewcode-block" id="HumanAgent.act">
+<a class="viewcode-back" href="../../../documentation/human_agents.html#RouteRL.environment.agent.HumanAgent.act">[docs]</a>
+    <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>  
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the agent&#39;s action (route of choice) based on the current observation from the environment. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>  </div>
 
-    <span class="k">def</span> <span class="nf">learn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">observation</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HumanAgent.learn">
+<a class="viewcode-back" href="../../../documentation/human_agents.html#RouteRL.environment.agent.HumanAgent.learn">[docs]</a>
+    <span class="k">def</span> <span class="nf">learn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">observation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Updates the agent&#39;s knowledge based on the action taken and the resulting observations. &quot;&quot;&quot;</span>
         <span class="n">reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_reward</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_reward</span> <span class="o">=</span> <span class="n">reward</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_learning</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">get_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]):</span>
+<div class="viewcode-block" id="HumanAgent.get_reward">
+<a class="viewcode-back" href="../../../documentation/human_agents.html#RouteRL.environment.agent.HumanAgent.get_reward">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; This function calculated the reward of each individual agent. &quot;&quot;&quot;</span>
         <span class="n">own_tt</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="nb">next</span><span class="p">(</span><span class="n">obs</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">TRAVEL_TIME</span><span class="p">]</span> <span class="k">for</span> <span class="n">obs</span> <span class="ow">in</span> <span class="n">observation</span> <span class="k">if</span> <span class="n">obs</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ID</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="c1">## Anastasia added the -1</span>
-        <span class="k">return</span> <span class="n">own_tt</span>
+        <span class="k">return</span> <span class="n">own_tt</span></div>
+
     
     <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutate_to</span></div>
@@ -381,6 +395,10 @@
 <div class="viewcode-block" id="MachineAgent">
 <a class="viewcode-back" href="../../../documentation/machine_agents.html#RouteRL.environment.agent.MachineAgent">[docs]</a>
 <span class="k">class</span> <span class="nc">MachineAgent</span><span class="p">(</span><span class="n">BaseAgent</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;  </span>
+<span class="sd">        A class that models Autonomous Vehicles (AVs), focusing on their learning mechanisms and decision-making processes for selecting optimal routes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">action_space_size</span><span class="p">):</span>
         <span class="n">kind</span> <span class="o">=</span> <span class="n">kc</span><span class="o">.</span><span class="n">TYPE_MACHINE</span>
         <span class="n">behavior</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">BEHAVIOR</span><span class="p">]</span>
@@ -417,18 +435,29 @@
     <span class="k">def</span> <span class="nf">last_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reward</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_reward</span> <span class="o">=</span> <span class="n">reward</span>
 
-    <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">):</span>
+<div class="viewcode-block" id="MachineAgent.act">
+<a class="viewcode-back" href="../../../documentation/machine_agents.html#RouteRL.environment.agent.MachineAgent.act">[docs]</a>
+    <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the agent&#39;s action (route of choice) based on the current observation from the environment. &quot;&quot;&quot;</span>
         <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_state</span> <span class="o">=</span> <span class="n">state</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">learn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">observation</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MachineAgent.learn">
+<a class="viewcode-back" href="../../../documentation/machine_agents.html#RouteRL.environment.agent.MachineAgent.learn">[docs]</a>
+    <span class="k">def</span> <span class="nf">learn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">observation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Updates the agent&#39;s knowledge based on the action taken and the resulting observations. &quot;&quot;&quot;</span>
         <span class="n">reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_reward</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_reward</span> <span class="o">=</span> <span class="n">reward</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_learning</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_state</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]):</span>
+
+<div class="viewcode-block" id="MachineAgent.get_state">
+<a class="viewcode-back" href="../../../documentation/machine_agents.html#RouteRL.environment.agent.MachineAgent.get_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Generates the current state representation based on recent observations of agents navigating from the same origin to the same destination. &quot;&quot;&quot;</span>
         <span class="n">min_start_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">observed_span</span>
         <span class="n">human_prior</span><span class="p">,</span> <span class="n">machine_prior</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">obs</span> <span class="ow">in</span> <span class="n">observation</span><span class="p">:</span>
@@ -455,9 +484,13 @@
                 <span class="n">warmth</span> <span class="o">=</span> <span class="n">start_time</span> <span class="o">-</span> <span class="n">min_start_time</span>
                 <span class="n">warmth_machine</span><span class="p">[</span><span class="n">action</span><span class="p">]</span> <span class="o">+=</span> <span class="n">warmth</span>
 
-        <span class="k">return</span> <span class="n">warmth_human</span> <span class="o">+</span> <span class="n">warmth_machine</span>
+        <span class="k">return</span> <span class="n">warmth_human</span> <span class="o">+</span> <span class="n">warmth_machine</span></div>
+
     
-    <span class="k">def</span> <span class="nf">get_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]):</span>
+<div class="viewcode-block" id="MachineAgent.get_reward">
+<a class="viewcode-back" href="../../../documentation/machine_agents.html#RouteRL.environment.agent.MachineAgent.get_reward">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; This function calculated the reward of each individual agent, based on the travel time of the agent, the group of agents, the other agents, and all agents. &quot;&quot;&quot;</span>
         <span class="n">min_start_time</span><span class="p">,</span> <span class="n">max_start_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">observed_span</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">observed_span</span>
         
         <span class="n">vicinity_obs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
@@ -481,10 +514,17 @@
         <span class="n">all_tt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">all_obs</span><span class="p">)</span> <span class="k">if</span> <span class="n">all_obs</span> <span class="k">else</span> <span class="mi">0</span>
         
         <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rewards_coefs</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">own_tt</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">group_tt</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">others_tt</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">all_tt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">own_tt</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">group_tt</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">others_tt</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">all_tt</span><span class="p">)</span></div>
+
     
-    <span class="k">def</span> <span class="nf">_get_reward_coefs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1">### Anastasia multiplied all the coeff with -1</span>
+    <span class="k">def</span> <span class="nf">_get_reward_coefs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; This function returns the coefficients for the reward calculation, based on the behavior of the agent.</span>
+<span class="sd">            Coeffient:</span>
+<span class="sd">                - a is the weight of the agent&#39;s travel time</span>
+<span class="sd">                - b is the weight of the group&#39;s travel time</span>
+<span class="sd">                - c is the weight of the other agents&#39; travel time</span>
+<span class="sd">                - d is the weight of all agents&#39; travel time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">behavior</span> <span class="o">==</span> <span class="n">kc</span><span class="o">.</span><span class="n">SELFISH</span><span class="p">:</span>
             <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> 

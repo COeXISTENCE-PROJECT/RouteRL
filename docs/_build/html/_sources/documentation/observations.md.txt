@@ -1,4 +1,4 @@
-# Observation Functions
+# Observation functions
 
 To create a new observation function, you must create a class that inherits from the Observations class:
 

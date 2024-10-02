@@ -1,4 +1,4 @@
-# SUMO Simulator
+# SUMO simulator
 
 ```{eval-rst}
 .. autoclass:: RouteRL.environment.simulator.SumoSimulator
