@@ -36,7 +36,7 @@
 
             "appearance_phase" : 1,
             "learning_phases" : [1, 2],
-            "behavior" : "selfish",
+            "behavior" : "malicious",
             "model" : "DQN",
             "observed_span" : 300,
             "epsilon" : 0.99,
