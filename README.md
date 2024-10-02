@@ -1,6 +1,10 @@
 # RouteRL
 
+
 <!-- start intro -->
+![Alt text](docs/_static/trans_bg.jpeg)
+
+
 RouteRL provides a Multi-Agent Reinforcement Environment (MARL) for optimal route choice in different city networks. 
 
 - The main class is [TrafficEnvironment](https://github.com/COeXISTENCE-PROJECT/Milestone-One/blob/env2pz/RouteRL/environment/environment.py) and is a [PettingZoo](https://pettingzoo.farama.org/index.html) AEC API environment.
