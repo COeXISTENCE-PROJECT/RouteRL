@@ -4,7 +4,7 @@ import pandas as pd
 import random
 import traci
 
-from keychain import Keychain as kc
+from ..keychain import Keychain as kc
 from ..utilities import confirm_env_variable
 
 import time
@@ -22,19 +22,20 @@ class SumoSimulator():
     """
 
     def __init__(self, params):
-        self.sumo_config_path = kc.SUMO_CONFIG_PATH
-        self.paths_csv_path = kc.PATHS_CSV_SAVE_PATH
-        self.routes_xml_path = kc.ROUTE_FILE_PATH
-        self.sumo_fcd = kc.SUMO_FCD
+        self.sumo_config_path = params[kc.SUMO_CONFIG_PATH]
+        self.paths_csv_path = params[kc.PATHS_CSV_SAVE_PATH]
+        self.routes_xml_path = params[kc.ROUTE_FILE_PATH]
+        self.sumo_fcd = params[kc.SUMO_FCD]
 
         self.sumo_type = params[kc.SUMO_TYPE]
         self.env_var = params[kc.ENV_VAR]
         self.number_of_paths = params[kc.NUMBER_OF_PATHS]
         self.simulation_length = params[kc.SIMULATION_TIMESTEPS]
         self.seed = params[kc.SEED] 
+        self.detector_save_path = params[kc.PATHS_CSV_SAVE_DETECTORS]
 
         ## Detectors
-        self.detectors_name = list(pd.read_csv(kc.PATHS_CSV_SAVE_DETECTORS).name) ###FIX THIS
+        self.detectors_name = list(pd.read_csv(self.detector_save_path).name) ###FIX THIS
         self.det_dict = {name: [] for name in self.detectors_name}
 
         self.sumo_id = f"{random.randint(0, 1000)}"
@@ -56,8 +57,8 @@ class SumoSimulator():
         """
         Checks if the required paths file for the simulation exists.
         """
-   
-        if os.path.isfile(self.paths_csv_path):# and os.path.isfile(self.routes_xml_path):
+
+        if os.path.isfile(self.paths_csv_path):
             logging.info("[CONFIRMED] Paths file is ready.")
         else:
             raise FileNotFoundError("Paths file is not ready. Please generate paths first.")

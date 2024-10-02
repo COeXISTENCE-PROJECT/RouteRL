@@ -10,18 +10,18 @@
     
     "runner_parameters":
     {
-        "num_episodes" : 10,
+        "num_episodes" : 200,
         "episode_length": 1,
-        "phases" : [0],
-        "phase_names" : ["Human learning"],
+        "phases" : [0, 100],
+        "phase_names" : ["Human learning", "Mutation"],
         "remember_every" : 1,
         "frequent_progressbar_update" : false
     },
 
     "phase_parameters":
     {
-        "number_of_phases": 1,
-        "number_episodes_each_phase": [10]
+        "number_of_phases": 2,
+        "number_episodes_each_phase": [100, 100]
     },
 
 
@@ -74,7 +74,15 @@
         "seed" : "23423",
         "sumo_type" : "sumo",
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
-        "env_var" : "SUMO_HOME"
+        "env_var" : "SUMO_HOME",
+
+        "sumo_config_path": "../../RouteRL/network_and_config/two_route_yield/SUMO.sumocfg",
+        "paths_csv_save_path": "../../RouteRL/network_and_config/two_route_yield/paths.csv",
+        "route_file_path": "../../RouteRL/network_and_config/two_route_yield/rou.rou.xml",
+        "sumo_fcd": "../../RouteRL/network_and_config/two_route_yield/fcd.xml",
+
+        "paths_csv_save_detectors": "../../RouteRL/network_and_config/two_route_yield/detectors.csv"
+
     },
 
 
@@ -90,19 +98,41 @@
         "default_height" : 6,
         "multimode_width" : 8,
         "multimode_height" : 5,
-        "default_num_columns" : 2
+        "default_num_columns" : 2,
+
+        "records_folder": "training_records",
+        "episodes_logs_folder": "episodes",
+        "simulation_length_log_file_name": "simulation_length.txt",
+        "losses_log_file_name": "losses.txt",
+        "detector_logs_folder": "detector",
+        "paths_csv_file_name": "paths.csv",
+        "free_flow_times_csv_file_name": "free_flow_times.csv",
+
+        "plots_folder": "plots",
+        "reward_plot_file_name": "rewards.png",
+        "travel_times_plot_file_name": "travel_times.png",
+        "tt_dist_plot_file_name": "tt_dist.png",
+        "ff_travel_time_plot_file_name": "ff_travel_time.png",
+        "flows_plot_file_name": "flows.png",
+        "simulation_length_plot_file_name": "simulation_length.png",
+        "losses_plot_file_name": "losses.png",
+        "actions_plot_file_name": "actions.png",
+        "actions_shifts_plot_file_name": "actions_shifts.png",
+        "machine_agents_epsilons_plot_file_name": "epsilons.png"
     },
 
 
     "agent_generation_parameters" :
     {
-        "num_agents" : 100,
-        "new_machines_after_mutation": 50,
+        "num_agents" : 20,
+        "new_machines_after_mutation": 10,
         "ratio_mutating" : 0.33,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",
         "origins" : "${path_generation_parameters.origins}",
-        "destinations" : "${path_generation_parameters.destinations}"
+        "destinations" : "${path_generation_parameters.destinations}",
+
+        "agents_data_path": "../../RouteRL/network_and_config/agents_data.csv"
     },
         
 

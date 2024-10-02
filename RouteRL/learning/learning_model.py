@@ -8,7 +8,7 @@ import torch.optim as optim
 from abc import ABC, abstractmethod
 from collections import deque
 
-from keychain import Keychain as kc
+from ..keychain import Keychain as kc
 from ..utilities import list_to_string
 
 

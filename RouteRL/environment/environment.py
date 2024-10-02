@@ -11,7 +11,7 @@ import threading
 
 from ..create_agents import create_agent_objects
 from .simulator import SumoSimulator
-from keychain import Keychain as kc
+from ..keychain import Keychain as kc
 from pettingzoo.utils.env import AECEnv
 from pettingzoo.utils import agent_selector
 from ..utilities import show_progress_bar
@@ -43,6 +43,7 @@ class TrafficEnvironment(AECEnv):
                  simulation_params: dict,
                  agent_gen_params: dict,
                  agent_params: dict,
+                 plotter_params: dict,
                  render_mode: str = None) -> None:
         
         """
@@ -53,6 +54,7 @@ class TrafficEnvironment(AECEnv):
             simulation_params (dict): Simulation parameters.
             agent_gen_params (dict): Agent generation parameters.
             agent_params (dict): Agent parameters.
+            plotter_params (dict): Plotter parameters.
             render_mode (str): The render mode.
         """
         
@@ -63,6 +65,7 @@ class TrafficEnvironment(AECEnv):
         self.training_params = training_params
         self.simulation_params = simulation_params
         self.agent_params = agent_params
+        self.plotter_params = plotter_params
         self.render_mode = render_mode
         self.travel_times_list = []
         self.day = 0
@@ -81,7 +84,7 @@ class TrafficEnvironment(AECEnv):
         self.remember_episodes = [ep for ep in range(self.remember_every, self.num_episodes+1, self.remember_every)]
         self.remember_episodes += [1, self.num_episodes] + [ep-1 for ep in self.phases] + [ep for ep in self.phases]
         self.remember_episodes = set(self.remember_episodes)
-        self.recorder = Recorder()
+        self.recorder = Recorder(self.plotter_params)
         
         self.curr_phase = -1
 
@@ -232,11 +235,11 @@ class TrafficEnvironment(AECEnv):
 
                 # The episode ends when we complete episode_length days
                 self.truncations = {
-                    agent: False
+                    agent: True for agent in self.agents
                 }
 
                 self.terminations = {
-                    agent: False
+                    agent: True for agent in self.agents
                 }
 
                 self.info = {

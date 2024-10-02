@@ -3,7 +3,7 @@ import os
 import polars as pl
 import pandas as pd
 
-from keychain import Keychain as kc
+from ..keychain import Keychain as kc
 from ..utilities import make_dir
 
 logger = logging.getLogger()
@@ -15,16 +15,18 @@ class Recorder:
     Record the training process.
     """
 
-    def __init__(self):
+    def __init__(self, params):
+        self.params = params
+        self.records_folder = self.params[kc.RECORDS_FOLDER]
 
-        self.episodes_folder = make_dir([kc.RECORDS_FOLDER, kc.EPISODES_LOGS_FOLDER])
-        self.detector_folder = make_dir([kc.RECORDS_FOLDER, kc.DETECTOR_LOGS_FOLDER])
+        self.episodes_folder = make_dir([self.records_folder, self.params[kc.EPISODES_LOGS_FOLDER]])
+        self.detector_folder = make_dir([self.records_folder, self.params[kc.DETECTOR_LOGS_FOLDER]])
 
         self._clear_records(self.episodes_folder)
         self._clear_records(self.detector_folder)
         
-        self.sim_length_file_path = self._get_txt_file_path(kc.SIMULATION_LENGTH_LOG_FILE_NAME)
-        self.loss_file_path = self._get_txt_file_path(kc.LOSSES_LOG_FILE_NAME)
+        self.sim_length_file_path = self._get_txt_file_path(self.params[kc.SIMULATION_LENGTH_LOG_FILE_NAME])
+        self.loss_file_path = self._get_txt_file_path(self.params[kc.LOSSES_LOG_FILE_NAME])
         logging.info(f"[SUCCESS] Recorder is now here to record!")
 
 #################### INIT HELPERS
@@ -36,7 +38,7 @@ class Recorder:
     
 
     def _get_txt_file_path(self, filename):
-        log_file_path = make_dir(kc.RECORDS_FOLDER, filename)
+        log_file_path = make_dir(self.records_folder, filename)
         if os.path.exists(log_file_path):
             os.remove(log_file_path)
         return log_file_path

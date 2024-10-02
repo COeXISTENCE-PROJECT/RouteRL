@@ -1,4 +1,4 @@
-from keychain import Keychain as kc
+from ..keychain import Keychain as kc
 import os
 import subprocess
 

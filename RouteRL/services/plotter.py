@@ -9,7 +9,7 @@ from collections import Counter
 from statistics import mean
 from statistics import variance
 
-from keychain import Keychain as kc
+from ..keychain import Keychain as kc
 from ..utilities import make_dir
 from ..utilities import running_average
 import warnings
@@ -25,6 +25,7 @@ class Plotter:
     """
 
     def __init__(self, params):
+        self.params = params
         self.phases = params[kc.PHASES]
         self.phase_names = params[kc.PHASE_NAMES]
         self.colors = params[kc.COLORS]
@@ -35,12 +36,13 @@ class Plotter:
         self.default_width, self.default_height = params[kc.DEFAULT_WIDTH], params[kc.DEFAULT_HEIGHT]
         self.multimode_width, self.multimode_height = params[kc.MULTIMODE_WIDTH], params[kc.MULTIMODE_HEIGHT]
         self.default_num_columns = params[kc.DEFAULT_NUM_COLUMNS]
+        self.records_folder = params[kc.RECORDS_FOLDER]
 
-        make_dir(kc.RECORDS_FOLDER)
-        self.episodes_folder = make_dir([kc.RECORDS_FOLDER, kc.EPISODES_LOGS_FOLDER])
-        self.sim_length_file_path = make_dir(kc.RECORDS_FOLDER, kc.SIMULATION_LENGTH_LOG_FILE_NAME)
-        self.loss_file_path = make_dir(kc.RECORDS_FOLDER, kc.LOSSES_LOG_FILE_NAME)
-        self.free_flow_times_file_path = os.path.join(kc.RECORDS_FOLDER, kc.FREE_FLOW_TIMES_CSV_FILE_NAME)
+        make_dir(self.records_folder)
+        self.episodes_folder = make_dir([self.records_folder, params[kc.EPISODES_LOGS_FOLDER]])
+        self.sim_length_file_path = make_dir(self.records_folder, params[kc.SIMULATION_LENGTH_LOG_FILE_NAME])
+        self.loss_file_path = make_dir(self.records_folder, params[kc.LOSSES_LOG_FILE_NAME])
+        self.free_flow_times_file_path = os.path.join(self.records_folder, params[kc.FREE_FLOW_TIMES_CSV_FILE_NAME])
 
         self.saved_episodes = list()
 
@@ -74,7 +76,7 @@ class Plotter:
 #################### REWARDS
     
     def visualize_mean_rewards(self):
-        save_to = make_dir(kc.PLOTS_FOLDER, kc.REWARDS_PLOT_FILE_NAME)
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.REWARDS_PLOT_FILE_NAME])
         all_mean_rewards = self._retrieve_data_per_kind(kc.REWARD, transform='mean')
 
         plt.figure(figsize=(self.default_width, self.default_height))
@@ -105,7 +107,7 @@ class Plotter:
 #################### TRAVEL TIMES
     
     def visualize_mean_travel_times(self):
-        save_to = make_dir(kc.PLOTS_FOLDER, kc.TRAVEL_TIMES_PLOT_FILE_NAME)
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.TRAVEL_TIMES_PLOT_FILE_NAME])
         all_mean_tt = self._retrieve_data_per_kind(kc.TRAVEL_TIME, transform='mean')
 
         plt.figure(figsize=(self.default_width, self.default_height))
@@ -136,7 +138,7 @@ class Plotter:
 #################### TRAVEL TIME DISTRIBUTIONS
     
     def visualize_tt_distributions(self):
-        save_to = make_dir(kc.PLOTS_FOLDER, kc.TT_DIST_PLOT_FILE_NAME)
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.TT_DIST_PLOT_FILE_NAME])
     
         num_rows, num_cols = 2, 2
         fig, axes = plt.subplots(num_rows, num_cols, figsize=(self.multimode_width * num_cols, self.multimode_height * num_rows))
@@ -224,7 +226,7 @@ class Plotter:
 #################### ACTIONS
 
     def visualize_actions(self):
-        save_to = make_dir(kc.PLOTS_FOLDER, kc.ACTIONS_PLOT_FILE_NAME)
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.ACTIONS_PLOT_FILE_NAME])
 
         all_actions = self._retrieve_data_per_od(kc.ACTION)
         unique_actions = {od: set([item for sublist in val.values() for item in sublist]) for od, val in all_actions.items()}
@@ -276,7 +278,7 @@ class Plotter:
 #################### ACTION SHIFTS
     
     def visualize_action_shifts(self):
-        save_to = make_dir(kc.PLOTS_FOLDER, kc.ACTIONS_SHIFTS_PLOT_FILE_NAME)
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.ACTIONS_SHIFTS_PLOT_FILE_NAME])
 
         all_od_pairs = self._retrieve_all_od_pairs()
         all_od_pairs = sorted(all_od_pairs, key=lambda x: f"{x[0]}-{x[1]}")
@@ -335,7 +337,7 @@ class Plotter:
 #################### SIM LENGTH
     
     def visualize_sim_length(self):
-        save_to = make_dir(kc.PLOTS_FOLDER, kc.SIMULATION_LENGTH_PLOT_FILE_NAME)
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.SIMULATION_LENGTH_PLOT_FILE_NAME])
 
         sim_lengths = self._retrieve_sim_length()
         sim_lengths = running_average(sim_lengths, last_n=self.smooth_by)
@@ -372,7 +374,7 @@ class Plotter:
 #################### LOSSES
 
     def visualize_losses(self):
-        save_to = make_dir(kc.PLOTS_FOLDER, kc.LOSSES_PLOT_FILE_NAME)
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.LOSSES_PLOT_FILE_NAME])
 
         losses = self._retrieve_losses()
         if not losses: return
@@ -470,6 +472,7 @@ class Plotter:
 
     def _retrieve_all_od_pairs(self):
         all_od_pairs = list()
+        print("self.episodes_folder", self.episodes_folder, "\n\n\n")
         data_path = os.path.join(self.episodes_folder, f"ep{self.saved_episodes[0]}.csv")
         episode_data = pd.read_csv(data_path)
         episode_data = episode_data[[kc.AGENT_ORIGIN, kc.AGENT_DESTINATION]]

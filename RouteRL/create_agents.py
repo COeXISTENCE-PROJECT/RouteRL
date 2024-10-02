@@ -4,7 +4,7 @@ import pandas as pd
 
 from RouteRL.environment import HumanAgent
 from RouteRL.environment import MachineAgent
-from keychain import Keychain as kc
+from .keychain import Keychain as kc
 
 logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
@@ -19,7 +19,7 @@ def create_agent_objects(params, free_flow_times):
     # Getting parameters
     action_space_size = params[kc.ACTION_SPACE_SIZE]
 
-    agents_data_path = kc.AGENTS_DATA_PATH
+    agents_data_path = params[kc.AGENTS_DATA_PATH]
     if os.path.isfile(agents_data_path):
         logging.info("[CONFIRMED] Agents data file is ready.")
     else:

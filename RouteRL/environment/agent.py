@@ -3,7 +3,7 @@ import numpy as np
 
 from abc import ABC, abstractmethod
 
-from keychain import Keychain as kc
+from ..keychain import Keychain as kc
 from ..learning import DQN
 from ..learning import Gawron
 
