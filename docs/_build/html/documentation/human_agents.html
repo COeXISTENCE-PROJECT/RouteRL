@@ -178,7 +178,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -239,7 +239,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -248,30 +248,6 @@
           <p>:orphan:</p>
 <section id="human-drivers">
 <h1>Human drivers<a class="headerlink" href="#human-drivers" title="Link to this heading">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="RouteRL.environment.agent.HumanAgent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">RouteRL.environment.agent.</span></span><span class="sig-name descname"><span class="pre">HumanAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_knowledge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutate_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RouteRL/environment/agent.html#HumanAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.agent.HumanAgent" title="Link to this definition">¶</a></dt>
-<dd><p>Class representing human drivers, responsible for modeling their learning process and decision-making in route selection.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="RouteRL.environment.agent.HumanAgent.act">
-<span class="sig-name descname"><span class="pre">act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/agent.html#HumanAgent.act"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.agent.HumanAgent.act" title="Link to this definition">¶</a></dt>
-<dd><p>Returns the agent’s action (route of choice) based on the current observation from the environment.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="RouteRL.environment.agent.HumanAgent.get_reward">
-<span class="sig-name descname"><span class="pre">get_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/agent.html#HumanAgent.get_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.agent.HumanAgent.get_reward" title="Link to this definition">¶</a></dt>
-<dd><p>This function calculated the reward of each individual agent.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="RouteRL.environment.agent.HumanAgent.learn">
-<span class="sig-name descname"><span class="pre">learn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/agent.html#HumanAgent.learn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.agent.HumanAgent.learn" title="Link to this definition">¶</a></dt>
-<dd><p>Updates the agent’s knowledge based on the action taken and the resulting observations.</p>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
         </article>
@@ -317,32 +293,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Human drivers</a><ul>
-<li><a class="reference internal" href="#RouteRL.environment.agent.HumanAgent"><code class="docutils literal notranslate"><span class="pre">HumanAgent</span></code></a><ul>
-<li><a class="reference internal" href="#RouteRL.environment.agent.HumanAgent.act"><code class="docutils literal notranslate"><span class="pre">HumanAgent.act()</span></code></a></li>
-<li><a class="reference internal" href="#RouteRL.environment.agent.HumanAgent.get_reward"><code class="docutils literal notranslate"><span class="pre">HumanAgent.get_reward()</span></code></a></li>
-<li><a class="reference internal" href="#RouteRL.environment.agent.HumanAgent.learn"><code class="docutils literal notranslate"><span class="pre">HumanAgent.learn()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

@@ -178,7 +178,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -239,7 +239,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -248,66 +248,7 @@
           <section id="observation-functions">
 <h1>Observation functions<a class="headerlink" href="#observation-functions" title="Link to this heading">¶</a></h1>
 <p>To create a new observation function, you must create a class that inherits from the Observations class:</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="RouteRL.environment.observations.Observations">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">RouteRL.environment.observations.</span></span><span class="sig-name descname"><span class="pre">Observations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">machine_agents_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">human_agents_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RouteRL/environment/observations.html#Observations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.observations.Observations" title="Link to this definition">¶</a></dt>
-<dd><p>Abstract base class for observation functions.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="RouteRL.environment.observations.Observations.observation_space">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">observation_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Box</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/observations.html#Observations.observation_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.observations.Observations.observation_space" title="Link to this definition">¶</a></dt>
-<dd><p>Define the observation space for the observation function.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>Dict[str, Box]</strong> – A dictionary where keys are agent IDs and values are Gym spaces.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 <p>The default observation function is the PreviousAgentStart class:</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="RouteRL.environment.observations.PreviousAgentStart">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">RouteRL.environment.observations.</span></span><span class="sig-name descname"><span class="pre">PreviousAgentStart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">machine_agents_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">human_agents_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulation_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RouteRL/environment/observations.html#PreviousAgentStart"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.observations.PreviousAgentStart" title="Link to this definition">¶</a></dt>
-<dd><p>Observes the number of agents with the same origin-destination and start time within a threshold.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="RouteRL.environment.observations.PreviousAgentStart.agent_observations">
-<span class="sig-name descname"><span class="pre">agent_observations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/observations.html#PreviousAgentStart.agent_observations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.observations.PreviousAgentStart.agent_observations" title="Link to this definition">¶</a></dt>
-<dd><p>Retrieve the observation for a specific agent.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>agent_id</strong> (<em>str</em>) – The ID of the agent.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>np.ndarray</strong> – The observation array for the specified agent.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="RouteRL.environment.observations.PreviousAgentStart.observation_space">
-<span class="sig-name descname"><span class="pre">observation_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Box</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/observations.html#PreviousAgentStart.observation_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.observations.PreviousAgentStart.observation_space" title="Link to this definition">¶</a></dt>
-<dd><p>Define the observation space for each machine agent.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>Dict[str, Box]</strong> – A dictionary where keys are agent IDs and values are Gym spaces.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="RouteRL.environment.observations.PreviousAgentStart.reset_observation">
-<span class="sig-name descname"><span class="pre">reset_observation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/observations.html#PreviousAgentStart.reset_observation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.observations.PreviousAgentStart.reset_observation" title="Link to this definition">¶</a></dt>
-<dd><p>Reset observations to the initial state.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>Dict[str, np.ndarray]</strong> – A dictionary of initial observations for all machine agents.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
         </article>
@@ -345,36 +286,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Observation functions</a><ul>
-<li><a class="reference internal" href="#RouteRL.environment.observations.Observations"><code class="docutils literal notranslate"><span class="pre">Observations</span></code></a><ul>
-<li><a class="reference internal" href="#RouteRL.environment.observations.Observations.observation_space"><code class="docutils literal notranslate"><span class="pre">Observations.observation_space()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#RouteRL.environment.observations.PreviousAgentStart"><code class="docutils literal notranslate"><span class="pre">PreviousAgentStart</span></code></a><ul>
-<li><a class="reference internal" href="#RouteRL.environment.observations.PreviousAgentStart.agent_observations"><code class="docutils literal notranslate"><span class="pre">PreviousAgentStart.agent_observations()</span></code></a></li>
-<li><a class="reference internal" href="#RouteRL.environment.observations.PreviousAgentStart.observation_space"><code class="docutils literal notranslate"><span class="pre">PreviousAgentStart.observation_space()</span></code></a></li>
-<li><a class="reference internal" href="#RouteRL.environment.observations.PreviousAgentStart.reset_observation"><code class="docutils literal notranslate"><span class="pre">PreviousAgentStart.reset_observation()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
