@@ -1,9 +1,9 @@
+<img src="docs/_static/trans_bg.jpeg" align="right" width="20%"/>
+
 # RouteRL
 
 
 <!-- start intro -->
-![Alt text](docs/_static/trans_bg.jpeg)
-
 
 RouteRL provides a Multi-Agent Reinforcement Environment (MARL) for optimal route choice in different city networks. 
 
