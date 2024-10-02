@@ -70,6 +70,8 @@ class BaseAgent(ABC):
 
 
 class HumanAgent(BaseAgent):
+    """ Class representing human drivers, responsible for modeling their learning process and decision-making in route selection. """
+
     def __init__(self, id, start_time, origin, destination, params, initial_knowledge, mutate_to=None):
         kind = kc.TYPE_HUMAN
         behavior = kc.SELFISH
@@ -114,9 +116,11 @@ class HumanAgent(BaseAgent):
         return getattr(self.mutate_to, 'appearance_phase', None)
 
     def act(self, observation):  
+        """ Determines the agent's action based on the current observation from the environment. """
         return self.model.act(observation)  
 
     def learn(self, action, observation):
+        """ Updates the agent's knowledge based on the action taken and the resulting observations. """
         reward = self.get_reward(observation)
         self.last_reward = reward
         if self.is_learning:
@@ -126,6 +130,7 @@ class HumanAgent(BaseAgent):
         return None
 
     def get_reward(self, observation: list[dict]):
+        """ This function calculated the reward of each individual agent. """
         own_tt = -1 * next(obs[kc.TRAVEL_TIME] for obs in observation if obs[kc.AGENT_ID] == self.id) ## Anastasia added the -1
         return own_tt
     
@@ -135,6 +140,10 @@ class HumanAgent(BaseAgent):
 
 
 class MachineAgent(BaseAgent):
+    """  
+        A class that models Autonomous Vehicles (AVs), focusing on their learning mechanisms and decision-making processes for selecting optimal routes.
+    """
+
     def __init__(self, id, start_time, origin, destination, params, action_space_size):
         kind = kc.TYPE_MACHINE
         behavior = params[kc.BEHAVIOR]
@@ -172,17 +181,20 @@ class MachineAgent(BaseAgent):
         self._last_reward = reward
 
     def act(self, observation):
+        """ Determines the agent's action based on the current observation from the environment. """
         state = self.get_state(observation)
         self.last_state = state
         return self.model.act(state)
 
     def learn(self, action, observation):
+        """ Updates the agent's knowledge based on the action taken and the resulting observations. """
         reward = self.get_reward(observation)
         self.last_reward = reward
         if self.is_learning:
             self.model.learn(self.last_state, action, reward)
 
     def get_state(self, observation: list[dict]):
+        """ Generates the current state representation based on recent observations of agents navigating from the same origin to the same destination. """
         min_start_time = self.start_time - self.observed_span
         human_prior, machine_prior = list(), list()
         for obs in observation:
@@ -212,6 +224,7 @@ class MachineAgent(BaseAgent):
         return warmth_human + warmth_machine
     
     def get_reward(self, observation: list[dict]):
+        """ This function calculated the reward of each individual agent, based on the travel time of the agent, the group of agents, the other agents, and all agents. """
         min_start_time, max_start_time = self.start_time - self.observed_span, self.start_time + self.observed_span
         
         vicinity_obs = list()
@@ -238,7 +251,13 @@ class MachineAgent(BaseAgent):
         return (a * own_tt + b * group_tt + c * others_tt + d * all_tt)
     
     def _get_reward_coefs(self):
-        ### Anastasia multiplied all the coeff with -1
+        """ This function returns the coefficients for the reward calculation, based on the behavior of the agent.
+            Coeffient:
+                - a is the weight of the agent's travel time
+                - b is the weight of the group's travel time
+                - c is the weight of the other agents' travel time
+                - d is the weight of all agents' travel time.
+        """
         a, b, c, d = 0, 0, 0, 0
         if self.behavior == kc.SELFISH:
             a, b, c, d = -1, 0, 0, 0 

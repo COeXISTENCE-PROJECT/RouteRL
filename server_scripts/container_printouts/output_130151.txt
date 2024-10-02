@@ -1,0 +1,24 @@
+--- Installing dependencies ---
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: beautifulsoup4==4.12.3 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 1)) (4.12.3)
+Requirement already satisfied: matplotlib==3.8.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 2)) (3.8.2)
+Requirement already satisfied: networkx==3.2.1 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 3)) (3.2.1)
+Requirement already satisfied: numpy in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 4)) (1.26.3)
+Requirement already satisfied: pandas==2.2.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 5)) (2.2.2)
+Requirement already satisfied: polars==0.20.31 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 6)) (0.20.31)
+Requirement already satisfied: prettytable==3.10.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 7)) (3.10.0)
+Requirement already satisfied: seaborn==0.13.2 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 8)) (0.13.2)
+Requirement already satisfied: torch in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 9)) (2.4.0)
+Requirement already satisfied: traci==1.19.0 in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 10)) (1.19.0)
+Requirement already satisfied: torchrl in /home/psarou/.local/lib/python3.12/site-packages (from -r requirements.txt (line 11)) (0.5.0)
+ERROR: Could not find a version that satisfies the requirement json (from versions: none)
+ERROR: No matching distribution found for json
+--- Running main.py ---
+<frozen importlib._bootstrap>:488: DeprecationWarning: Type google._upb._message.MessageMapContainer uses PyType_Spec with a metaclass that has custom tp_new. This is deprecated and will no longer be allowed in Python 3.14.
+<frozen importlib._bootstrap>:488: DeprecationWarning: Type google._upb._message.ScalarMapContainer uses PyType_Spec with a metaclass that has custom tp_new. This is deprecated and will no longer be allowed in Python 3.14.
+/home/psarou/.local/lib/python3.12/site-packages/wandb/analytics/sentry.py:90: SentryHubDeprecationWarning: `sentry_sdk.Hub` is deprecated and will be removed in a future major release. Please consult our 1.x to 2.x migration guide for details on how to migrate `Hub` usage to the new API: https://docs.sentry.io/platforms/python/migration/1.x-to-2.x
+  self.hub = sentry_sdk.Hub(client)
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+  0%|          | 0/100 [00:00<?, ?it/s]  1%|          | 1/100 [03:49<6:17:56, 229.06s/it]  2%|▏         | 2/100 [07:36<6:12:54, 228.31s/it]  3%|▎         | 3/100 [11:25<6:09:41, 228.67s/it]  4%|▍         | 4/100 [15:13<6:05:20, 228.34s/it]  5%|▌         | 5/100 [19:01<6:00:54, 227.94s/it]  6%|▌         | 6/100 [22:52<5:58:54, 229.09s/it]  7%|▋         | 7/100 [26:44<5:56:25, 229.95s/it]  8%|▊         | 8/100 [30:35<5:53:15, 230.39s/it]  9%|▉         | 9/100 [34:27<5:50:00, 230.78s/it] 10%|█         | 10/100 [38:18<5:46:28, 230.99s/it] 11%|█         | 11/100 [42:09<5:42:41, 231.02s/it] 12%|█▏        | 12/100 [46:01<5:39:18, 231.35s/it] 13%|█▎        | 13/100 [49:53<5:35:33, 231.42s/it] 14%|█▍        | 14/100 [53:45<5:31:53, 231.55s/it] 15%|█▌        | 15/100 [57:36<5:28:08, 231.64s/it] 16%|█▌        | 16/100 [1:01:29<5:24:35, 231.85s/it] 17%|█▋        | 17/100 [1:05:22<5:21:10, 232.17s/it] 18%|█▊        | 18/100 [1:09:14<5:17:16, 232.15s/it]
