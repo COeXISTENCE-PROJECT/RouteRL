@@ -43,7 +43,6 @@ class TrafficEnvironment(AECEnv):
                  simulation_params: dict,
                  agent_gen_params: dict,
                  agent_params: dict,
-                 phases_params: dict,
                  render_mode: str = None) -> None:
         
         """
@@ -54,7 +53,6 @@ class TrafficEnvironment(AECEnv):
             simulation_params (dict): Simulation parameters.
             agent_gen_params (dict): Agent generation parameters.
             agent_params (dict): Agent parameters.
-            phases_params (dict): Phases parameters.
             render_mode (str): The render mode.
         """
         
@@ -66,11 +64,7 @@ class TrafficEnvironment(AECEnv):
         self.simulation_params = simulation_params
         self.agent_params = agent_params
         self.render_mode = render_mode
-        self.phases_params = phases_params
-        self.travel_times_df = pd.DataFrame(columns=['id', 'travel_time'])
-        self.travel_times_dict = dict()
         self.travel_times_list = []
-        self.action_cols = [kc.AGENT_ID, kc.AGENT_KIND, kc.ACTION, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME]
         self.day = 0
         self.human_learning = True
         self.machine_same_start_time = []
@@ -238,11 +232,11 @@ class TrafficEnvironment(AECEnv):
 
                 # The episode ends when we complete episode_length days
                 self.truncations = {
-                    agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
+                    agent: False
                 }
 
                 self.terminations = {
-                    agent: not (self.day % self.training_params[kc.EPISODE_LENGTH]) for agent in self.agents
+                    agent: False
                 }
 
                 self.info = {
