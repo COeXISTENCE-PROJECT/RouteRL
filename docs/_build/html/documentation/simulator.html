@@ -178,7 +178,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -243,7 +243,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -251,6 +251,55 @@
         <article role="main" id="furo-main-content">
           <section id="sumo-simulator">
 <h1>SUMO simulator<a class="headerlink" href="#sumo-simulator" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="RouteRL.environment.simulator.SumoSimulator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">RouteRL.environment.simulator.</span></span><span class="sig-name descname"><span class="pre">SumoSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RouteRL/environment/simulator.html#SumoSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.simulator.SumoSimulator" title="Link to this definition">¶</a></dt>
+<dd><p>A class responsible for managing the communication between our learning agents and the SUMO traffic simulator.
+SUMO provides the traffic environment where vehicles travel between designated origins and destinations,
+and it returns the corresponding travel times for these vehicles.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.environment.simulator.SumoSimulator.add_vehice">
+<span class="sig-name descname"><span class="pre">add_vehice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">act_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/simulator.html#SumoSimulator.add_vehice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.simulator.SumoSimulator.add_vehice" title="Link to this definition">¶</a></dt>
+<dd><p>Adds a vehicle to the SUMO simulation environment with the specified route and parameters.</p>
+<p>Parameters:
+- act_dict (dict): A dictionary containing key vehicle attributes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.environment.simulator.SumoSimulator.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/simulator.html#SumoSimulator.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.simulator.SumoSimulator.reset" title="Link to this definition">¶</a></dt>
+<dd><p>Resets the SUMO simulation to its initial state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.environment.simulator.SumoSimulator.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/simulator.html#SumoSimulator.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.simulator.SumoSimulator.start" title="Link to this definition">¶</a></dt>
+<dd><p>Starts the SUMO simulation with the specified configuration.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.environment.simulator.SumoSimulator.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/simulator.html#SumoSimulator.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.simulator.SumoSimulator.step" title="Link to this definition">¶</a></dt>
+<dd><p>Advances the SUMO simulation by one timestep and retrieves information about vehicle arrivals and detector data.</p>
+<p>Returns:
+- tuple: A tuple containing:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>self.timestep (int): The current simulation timestep.</p></li>
+<li><p>arrivals (list): List of vehicle IDs that arrived at their destinations during the current timestep.</p></li>
+<li><p>self.det_dict (list): The current detector data (currently an empty list).</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="RouteRL.environment.simulator.SumoSimulator.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/simulator.html#SumoSimulator.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.simulator.SumoSimulator.stop" title="Link to this definition">¶</a></dt>
+<dd><p>Stops and closes the SUMO simulation.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -296,8 +345,34 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">SUMO simulator</a><ul>
+<li><a class="reference internal" href="#RouteRL.environment.simulator.SumoSimulator"><code class="docutils literal notranslate"><span class="pre">SumoSimulator</span></code></a><ul>
+<li><a class="reference internal" href="#RouteRL.environment.simulator.SumoSimulator.add_vehice"><code class="docutils literal notranslate"><span class="pre">SumoSimulator.add_vehice()</span></code></a></li>
+<li><a class="reference internal" href="#RouteRL.environment.simulator.SumoSimulator.reset"><code class="docutils literal notranslate"><span class="pre">SumoSimulator.reset()</span></code></a></li>
+<li><a class="reference internal" href="#RouteRL.environment.simulator.SumoSimulator.start"><code class="docutils literal notranslate"><span class="pre">SumoSimulator.start()</span></code></a></li>
+<li><a class="reference internal" href="#RouteRL.environment.simulator.SumoSimulator.step"><code class="docutils literal notranslate"><span class="pre">SumoSimulator.step()</span></code></a></li>
+<li><a class="reference internal" href="#RouteRL.environment.simulator.SumoSimulator.stop"><code class="docutils literal notranslate"><span class="pre">SumoSimulator.stop()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
