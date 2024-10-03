@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.9  # You can adjust this version as needed
+          python-version: 3.9  # Adjust this version as needed
 
       - name: Install dependencies
         run: |
@@ -25,6 +25,7 @@ jobs:
           python -m pip install sphinx
           python -m pip install sphinx-rtd-theme
           python -m pip install myst-parser  # To support Markdown files
+          python -m pip install furo         # Install Furo theme
 
       - name: Build Sphinx documentation
         run: |
@@ -37,5 +38,7 @@ jobs:
           touch .nojekyll      # Disable Jekyll to serve raw HTML/CSS
           git init             # Initialize a new Git repo in the build folder
           git add .
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git commit -m "Deploy documentation to GitHub Pages"
           git push --force "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" master:gh-pages
