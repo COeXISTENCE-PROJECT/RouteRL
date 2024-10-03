@@ -1,15 +1,27 @@
+---
+hide-toc: true
+firstpage:
+lastpage:
+---
+
 # RouteRL
 
-![RouteRL](_static/trans_bg.jpeg)
+```{figure} _static/budapest_two_route_botleneck.png
+   :alt: RouteRL
+```
 
-## Documentation
+```{include} ../README.md
+:start-after: <!-- start intro -->
+:end-before: <!-- end intro -->
+```
 
-- [PZ Environment](documentation/pz_env.md)
-- [Simulator](documentation/simulator.md)
-- [Machine Agents](documentation/machine_agents.md)
-- [Human Agents](documentation/human_agents.md)
-- [Observations](documentation/observations.md)
+```{toctree}
+:hidden:
+:caption: Documentation
 
-## Development
-
-Check the repository [here](https://github.com/COeXISTENCE-PROJECT/Milestone-One).
+documentation/simulator.md
+documentation/pz_env.md
+documentation/machine_agents.md
+documentation/human_agents.md
+documentation/observations.md
+```
