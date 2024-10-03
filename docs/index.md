@@ -1,34 +1,15 @@
----
-hide-toc: true
-firstpage:
-lastpage:
----
-
 # RouteRL
 
-```{figure} _static/trans_bg.jpeg
-   :alt: RouteRL
-```
+![RouteRL](./_static/trans_bg.jpeg)
 
-```{include} ../README.md
-:start-after: <!-- start intro -->
-:end-before: <!-- end intro -->
-```
+## Documentation
 
-```{toctree}
-:hidden:
-:caption: Documentation
+- [PZ Environment](documentation/pz_env.md)
+- [Simulator](documentation/simulator.md)
+- [Machine Agents](documentation/machine_agents.md)
+- [Human Agents](documentation/human_agents.md)
+- [Observations](documentation/observations.md)
 
-documentation/pz_env.md
-documentation/simulator.md
-documentation/machine_agents.md
-documentation/human_agents.md
-documentation/observations.md
-```
+## Development
 
-```{toctree}
-:hidden:
-:caption: Development
-
-Github <https://github.com/COeXISTENCE-PROJECT/Milestone-One>
-```
+Check the repository [here](https://github.com/COeXISTENCE-PROJECT/Milestone-One).
