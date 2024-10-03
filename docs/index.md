@@ -1,6 +1,6 @@
 # RouteRL
 
-![RouteRL](./_static/trans_bg.jpeg)
+![RouteRL](_static/trans_bg.jpeg)
 
 ## Documentation
 

@@ -36,9 +36,10 @@ jobs:
         run: |
           cd docs/_build/html  # Navigate to the built HTML files
           touch .nojekyll      # Disable Jekyll to serve raw HTML/CSS
+          rm -rf .git         # Clean up any existing git repo in the build directory
           git init             # Initialize a new Git repo in the build folder
           git add .
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "Deploy documentation to GitHub Pages"
-          git push --force "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" master:gh-pages
+          git push --force "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:gh-pages
