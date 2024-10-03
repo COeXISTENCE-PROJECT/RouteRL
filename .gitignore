@@ -5,3 +5,5 @@ tripinfo.xml
 fcd.xml
 testparams.json
 playground.py
+training_records/
+plots/
