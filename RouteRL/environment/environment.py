@@ -17,8 +17,6 @@ from pettingzoo.utils import agent_selector
 from ..utilities import show_progress_bar
 from .observations import PreviousAgentStart
 from .agent import MachineAgent
-from .plot_xml_files import plot_all_xmls
-
 
 from ..services.recorder import Recorder
 

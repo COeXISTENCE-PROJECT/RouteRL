@@ -76,12 +76,12 @@
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "env_var" : "SUMO_HOME",
 
-        "sumo_config_path": "../../RouteRL/network_and_config/two_route_yield/SUMO.sumocfg",
-        "paths_csv_save_path": "../../RouteRL/network_and_config/two_route_yield/paths.csv",
-        "route_file_path": "../../RouteRL/network_and_config/two_route_yield/rou.rou.xml",
-        "sumo_fcd": "../../RouteRL/network_and_config/two_route_yield/fcd.xml",
+        "sumo_config_path": "../RouteRL/network_and_config/two_route_yield/SUMO.sumocfg",
+        "paths_csv_save_path": "../RouteRL/network_and_config/two_route_yield/paths.csv",
+        "route_file_path": "../RouteRL/network_and_config/two_route_yield/rou.rou.xml",
+        "sumo_fcd": "../RouteRL/network_and_config/two_route_yield/fcd.xml",
 
-        "paths_csv_save_detectors": "../../RouteRL/network_and_config/two_route_yield/detectors.csv"
+        "paths_csv_save_detectors": "../RouteRL/network_and_config/two_route_yield/detectors.csv"
 
     },
 
@@ -132,7 +132,7 @@
         "origins" : "${path_generation_parameters.origins}",
         "destinations" : "${path_generation_parameters.destinations}",
 
-        "agents_data_path": "../../RouteRL/network_and_config/agents_data.csv"
+        "agents_data_path": "../RouteRL/network_and_config/agents_data.csv"
     },
         
 
