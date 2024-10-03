@@ -1,34 +1,55 @@
-# How to run on servers?
+<img src="docs/_static/trans_bg.jpeg" align="right" width="20%"/>
+
+# RouteRL
+
+
+<!-- start intro -->
+
+RouteRL provides a Multi-Agent Reinforcement Environment (MARL) for urban route choice in different city networks. 
+
+- The main class is [TrafficEnvironment](https://github.com/COeXISTENCE-PROJECT/Milestone-One/blob/env2pz/RouteRL/environment/environment.py) and is a [PettingZoo](https://pettingzoo.farama.org/index.html) AEC API environment.
+- There are two types of agents in the environment and are both represented by the [BaseAgent](https://github.com/COeXISTENCE-PROJECT/Milestone-One/blob/env2pz/RouteRL/environment/agent.py) class.
+  - Human drivers are simulated using human route-choice behavior from transportation research.
+  - Automated vehicles (AVs) are the RL agents that aim to optimize their routes and learn the most efficient paths.
+- It is compatible with popular RL libraries such as [stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/guide/examples.html) and [TorchRL](https://pytorch.org/rl/stable/tutorials/torchrl_demo.html).
+
+For more details, check the documentation online.
+
+<!-- end intro -->
+
+
+
+<!--# How to run on servers?
 
 See [here](server_scripts/how_to.md).
+
+# PettingZoo environment
+
+<p float="left">
+  <img src="images/multiple_humans_timesteps.png" alt="Image 1" width="480" />
+  <img src="images/multiple_machines_timesteps.png" alt="Image 2"  width="300" />
+</p>
 
 # Training setting
 
 ## Number of agents
-- 1200 agents
-- Humans: 823 | AVs: 377 
-- Humans: Gawron | AVs: DQN (Single)
+- 8 agents
+- Humans: 4 | AVs: 4 
+- Humans: Gawron | AVs: PPO / SAC
 ## AVs' objective
-- **Competitive**: Minimize own travel time, maximize other group's travel times.
+- **Selfish**: Minimize own travel time.
 ## Training episodes
 - 10000 episodes, 3 phases
-- Phase 1 (**Settle**) : Starts in episode 1
-    - Humans: 1200
+- Phase 1 (**Human Learning**) : Starts in episode 0
+    - Humans: 8
     - Only humans learn.
-- Phase 2 (**Shock**) : Starts in episode 1000
-    - Humans: 823  AVs: 377 
+- Phase 2 (**Mutation**) : Starts in episode 100
+    - Humans: 4  AVs: 4 
     - Only machines learn.
-- Phase 3 (**Adapt**) : Starts in episode 5000
-    - Humans: 823  AVs: 377
-    - Both machines and humans learn.
 ## Training duration
-- ~17 hours
-- ~7 seconds per episode in average
+- ~1.30 hours
 ## Hardware
- - gpu=gpu:1
- - mem=64G
- - cpus-per-task=4
- - partition=dgx
+- Anastasia's PC
 
 <br><br><br>
 
@@ -61,4 +82,4 @@ See [here](server_scripts/how_to.md).
 
 
 ## Action Selection Shifts After Mutation
-![](readme_plots/actions_shifts.png)
+![](readme_plots/actions_shifts.png)-->

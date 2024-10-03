@@ -1,8 +1,9 @@
 .DS_Store
 __pycache__/
-plots/
-training_records/
 summary.xml
 tripinfo.xml
+fcd.xml
 testparams.json
 playground.py
+training_records/
+plots/
