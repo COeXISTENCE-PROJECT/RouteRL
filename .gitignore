@@ -5,8 +5,6 @@ tripinfo.xml
 fcd.xml
 testparams.json
 playground.py
-training_records/
-plots/
 det.add.xml
 detectors.csv
 paths.csv

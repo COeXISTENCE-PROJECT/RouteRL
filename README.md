@@ -1,85 +1,51 @@
-<img src="docs/_static/trans_bg.jpeg" align="right" width="20%"/>
+# Two route experiment
 
-# RouteRL
+In this folder we experiment on a two route network.
+![Alt text](experiments/trials_on_two_routes/img/two_route_network.png)
 
+## Training setting
+---
 
-<!-- start intro -->
+### Number of agents
+---
+- 20 agents
+- Human: 10 | AVs: 10
+- Humans: Gawron | AVs: DQN
 
-RouteRL provides a Multi-Agent Reinforcement Environment (MARL) for urban route choice in different city networks. 
+### Behaviors of AV agents
+---
+- **Selfish**: Optimize for their own travel time (TT).
+- **Competitive**: Seek to maximize twice their own TT, minus the human agents' TT.
+- **Collaborative**: Aim to maximize a combination of half their own TT and the collective AVs' TT.
+- **Social**: Strive to optimize half their own TT in addition to the total TT of all vehicles.
+- **Altruistic**: Prioritize minimizing the overall TT for all vehicles.
+- **Malicious**: Intentionally minimize the AVs' TT.
 
-- The main class is [TrafficEnvironment](https://github.com/COeXISTENCE-PROJECT/Milestone-One/blob/env2pz/RouteRL/environment/environment.py) and is a [PettingZoo](https://pettingzoo.farama.org/index.html) AEC API environment.
-- There are two types of agents in the environment and are both represented by the [BaseAgent](https://github.com/COeXISTENCE-PROJECT/Milestone-One/blob/env2pz/RouteRL/environment/agent.py) class.
-  - Human drivers are simulated using human route-choice behavior from transportation research.
-  - Automated vehicles (AVs) are the RL agents that aim to optimize their routes and learn the most efficient paths.
-- It is compatible with popular RL libraries such as [stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/guide/examples.html) and [TorchRL](https://pytorch.org/rl/stable/tutorials/torchrl_demo.html).
+### Training episodes
+---
+1400 episodes, 3 phases
+- **Phase 1**: Starts in episode 1
+    - Humans 20 (learn)
+- **Phase 2**: Starts in episode 200
+    - Humans: 10 (don't learn) | AVs: 10 (learn)
+- **Phase 3**: Starts in episode 1200
+    - Humans: 10 (learn) | AVs: 10 (don't learn)
+ 
+### Training duration
+---
+- DQN: 6-7h (gpu)
 
-For more details, check the documentation online.
+### Hardware
+---
+- gpu=gpu1
+- mem=64GB
+- partition=dgx
 
-<!-- end intro -->
-
-
-
-<!--# How to run on servers?
-
-See [here](server_scripts/how_to.md).
-
-# PettingZoo environment
-
-<p float="left">
-  <img src="images/multiple_humans_timesteps.png" alt="Image 1" width="480" />
-  <img src="images/multiple_machines_timesteps.png" alt="Image 2"  width="300" />
-</p>
-
-# Training setting
-
-## Number of agents
-- 8 agents
-- Humans: 4 | AVs: 4 
-- Humans: Gawron | AVs: PPO / SAC
-## AVs' objective
-- **Selfish**: Minimize own travel time.
-## Training episodes
-- 10000 episodes, 3 phases
-- Phase 1 (**Human Learning**) : Starts in episode 0
-    - Humans: 8
-    - Only humans learn.
-- Phase 2 (**Mutation**) : Starts in episode 100
-    - Humans: 4  AVs: 4 
-    - Only machines learn.
-## Training duration
-- ~1.30 hours
-## Hardware
-- Anastasia's PC
-
-<br><br><br>
-
-# Results
-#### *All plots smoothed by n=50*
-
-## Travel times (in minutes)
-![](readme_plots/travel_times.png)
+### Results
+---
+![Alt text](experiments/trials_on_two_routes/img/output.png)
 
 
-## Distribution of Travel Times
-![](readme_plots/tt_dist.png)
+---
+![Alt text](experiments/trials_on_two_routes/img/mean_rewards.png)
 
-
-## Collected Mean Rewards
-![](readme_plots/rewards.png)
-
-
-## Mean Losses of DNNs of AVs 
-#### (Throughout their learning)
-![](readme_plots/losses.png)
-
-
-## Simulation Timesteps
-![](readme_plots/simulation_length.png)
-
-
-## Picked Actions for OD Pairs
-![](readme_plots/actions.png)
-
-
-## Action Selection Shifts After Mutation
-![](readme_plots/actions_shifts.png)-->
