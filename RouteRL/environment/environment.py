@@ -543,12 +543,12 @@ class TrafficEnvironment(AECEnv):
         """
 
         paths_df = pd.read_csv(self.simulator.paths_csv_path)
-        origins = paths_df[kc.ORIGIN].unique()
-        destinations = paths_df[kc.DESTINATION].unique()
+        origins = paths_df[kc.ORIGINS].unique()
+        destinations = paths_df[kc.DESTINATIONS].unique()
         ff_dict = {(o, d): list() for o in origins for d in destinations}
 
         for _, row in paths_df.iterrows():
-            ff_dict[(row[kc.ORIGIN], row[kc.DESTINATION])].append(row[kc.FREE_FLOW_TIME])
+            ff_dict[(row[kc.ORIGINS], row[kc.DESTINATIONS])].append(row[kc.FREE_FLOW_TIME])
 
         return ff_dict
     

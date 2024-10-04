@@ -472,7 +472,6 @@ class Plotter:
 
     def _retrieve_all_od_pairs(self):
         all_od_pairs = list()
-        print("self.episodes_folder", self.episodes_folder, "\n\n\n")
         data_path = os.path.join(self.episodes_folder, f"ep{self.saved_episodes[0]}.csv")
         episode_data = pd.read_csv(data_path)
         episode_data = episode_data[[kc.AGENT_ORIGIN, kc.AGENT_DESTINATION]]

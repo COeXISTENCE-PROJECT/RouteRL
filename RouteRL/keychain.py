@@ -115,8 +115,8 @@ class Keychain:
     PATH_INDEX = "path_index"
     FREE_FLOW_TIME = "free_flow_time"
     LAST_SIM_DURATION = "last_sim_duration"
-    ORIGIN = "origin"
-    DESTINATION = "destination"
+    ORIGINS = "origins"
+    DESTINATIONS = "destinations"
     PATH = "path"
 
     # Agent type encodings
@@ -149,6 +149,7 @@ class Keychain:
     PATHS_CSV_SAVE_DETECTORS = "paths_csv_save_detectors"
     NETWORK_XML = "network_xml"
     DETECTOR_XML_SAVE_PATH = "detector_xml_save_path"
+    FREE_FLOW_TIMES_CSV = "free_flow_times_csv"
     TRIP_INFO_XML = "trip_info_xml"
     SUMMARY_XML = "summary_xml"
     SUMO_FCD = "sumo_fcd"

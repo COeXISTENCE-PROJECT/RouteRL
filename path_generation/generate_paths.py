@@ -7,11 +7,13 @@ import xml.etree.ElementTree as ET
 
 from bs4 import BeautifulSoup
 
-from keychain import Keychain as kc
-from utilities import df_to_prettytable
-from utilities import get_params
-from utilities import list_to_string
-from utilities import remove_double_quotes
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '../')))
+
+from RouteRL.keychain import Keychain as kc
+from RouteRL.utilities import df_to_prettytable
+from RouteRL.utilities import get_params
+from RouteRL.utilities import list_to_string
+from RouteRL.utilities import remove_double_quotes
 
 
 ############# Network Generation ################
@@ -222,7 +224,7 @@ def lcs_consecutive(X, Y):
 
 ################## FF Times #####################
 
-def calculate_free_flow_times(od_paths_dict, network, show=False):
+def calculate_free_flow_times(od_paths_dict, network, free_flow_times_path, show=False):
     """ Get ff time for all routes """
     length = pd.DataFrame(network.edges(data = True))
     time = length[2].astype('str').str.split(':',expand=True)[1]
@@ -245,8 +247,8 @@ def calculate_free_flow_times(od_paths_dict, network, show=False):
             rows.append([origins, destinations, path_index, free_flow_time])
 
     free_flow_times = pd.DataFrame(rows, columns=['origins', 'destinations', 'path_index', 'free_flow_time'])
-    free_flow_times.to_csv('../network_and_config/free_flow_times.csv',index=False)
-    free_flow_times.to_csv('training_records/free_flow_times.csv',index=False)
+    free_flow_times.to_csv(free_flow_times_path ,index=False)
+    #free_flow_times.to_csv('training_records/free_flow_times.csv',index=False)
     if show: df_to_prettytable(pd.DataFrame(free_flows_dict), "FF Times")
     return free_flows_dict
 
@@ -311,24 +313,26 @@ def save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path, dete
 ####################### Main #######################
 
 if __name__ == "__main__":
-    params = get_params(kc.PARAMS_PATH)
-    params = params[kc.PATH_GEN]
+    params = get_params("params.json")
+    gen_params = params[kc.PATH_GEN]
 
-    number_of_paths = params[kc.NUMBER_OF_PATHS]
-    beta = params[kc.BETA]
-    weight = params[kc.WEIGHT]
-    coeffs = params[kc.ROUTE_UTILITY_COEFFS]
-    num_samples = params[kc.NUM_SAMPLES]
-    max_path_length = params[kc.MAX_PATH_LENGTH]
-    origins = params[kc.ORIGINS]
-    destinations = params[kc.DESTINATIONS]
+    number_of_paths = gen_params[kc.NUMBER_OF_PATHS]
+    beta = gen_params[kc.BETA]
+    weight = gen_params[kc.WEIGHT]
+    coeffs = gen_params[kc.ROUTE_UTILITY_COEFFS]
+    num_samples = gen_params[kc.NUM_SAMPLES]
+    max_path_length = gen_params[kc.MAX_PATH_LENGTH]
+    origins = gen_params[kc.ORIGINS]
+    destinations = gen_params[kc.DESTINATIONS]
 
-    connection_file_path = kc.CONNECTION_FILE_PATH
-    edge_file_path = kc.EDGE_FILE_PATH
-    route_file_path = kc.ROUTE_FILE_PATH
-    paths_csv_save_path = kc.PATHS_CSV_SAVE_PATH
-    paths_csv_save_detectors = kc.PATHS_CSV_SAVE_DETECTORS
-    detector_xml_save_path = kc.DETECTOR_XML_SAVE_PATH
+    sim_params = params[kc.SIMULATOR]
+    connection_file_path = sim_params[kc.CONNECTION_FILE_PATH]
+    edge_file_path = sim_params[kc.EDGE_FILE_PATH]
+    route_file_path = sim_params[kc.ROUTE_FILE_PATH]
+    paths_csv_save_path = sim_params[kc.PATHS_CSV_SAVE_PATH]
+    paths_csv_save_detectors = sim_params[kc.PATHS_CSV_SAVE_DETECTORS]
+    detector_xml_save_path = sim_params[kc.DETECTOR_XML_SAVE_PATH]
+    free_flow_times_path = sim_params[kc.FREE_FLOW_TIMES_CSV]
 
     origins = {i : origin for i, origin in enumerate(origins)}
     destinations = {i : dest for i, dest in enumerate(destinations)}
@@ -336,7 +340,7 @@ if __name__ == "__main__":
     network = generate_network(connection_file_path, edge_file_path, route_file_path)
     check_od_integrity(network, origins, destinations)
     routes = create_routes(network, number_of_paths, origins, destinations, beta, weight, coeffs, num_samples, max_path_length)
-    ff_times = calculate_free_flow_times(routes, network, show=True)
+    ff_times = calculate_free_flow_times(routes, network, free_flow_times_path, show=True)
     save_paths(routes, ff_times, paths_csv_save_path, route_file_path, detector_xml_save_path, paths_csv_save_detectors)
 
 #################################################

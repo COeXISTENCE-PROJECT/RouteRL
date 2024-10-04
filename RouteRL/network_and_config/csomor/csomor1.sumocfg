@@ -7,7 +7,7 @@
 
     <input>
         <net-file value="csomor1.net.xml"/>
-        <route-files value='route.rou.xml'/>
+        <route-files value='csomor1.rou.xml'/>
         <additional-files value="det.add.xml"/>
     </input>
 
