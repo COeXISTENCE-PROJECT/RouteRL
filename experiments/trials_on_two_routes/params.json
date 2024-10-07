@@ -72,7 +72,7 @@
     {
         "simulation_timesteps" : 40,
         "seed" : "23423",
-        "sumo_type" : "sumo-gui",
+        "sumo_type" : "sumo",
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "env_var" : "SUMO_HOME",
 
