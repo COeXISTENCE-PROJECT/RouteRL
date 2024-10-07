@@ -36,7 +36,7 @@
 
             "appearance_phase" : 1,
             "learning_phases" : [1, 2],
-            "behavior" : "collaborative",
+            "behavior" : "malicious",
             "model" : "DQN",
             "observed_span" : 300,
             "epsilon" : 0.99,
@@ -72,7 +72,7 @@
     {
         "simulation_timesteps" : 40,
         "seed" : "23423",
-        "sumo_type" : "sumo",
+        "sumo_type" : "sumo-gui",
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "env_var" : "SUMO_HOME",
 
