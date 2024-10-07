@@ -84,6 +84,7 @@ def _read_xml_file(file_path, element_name, attribute_name, attribute_name_2):
 ############## OD Integrity #################
 
 def check_od_integrity(network, origins, destinations):
+    # RK: @Onur TO DO this can be replaced with: https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.multi_source_dijkstra_path.html#networkx.algorithms.shortest_paths.weighted.multi_source_dijkstra_path
     for dest_idx, destination in destinations.items():
         if not destination in network.nodes:    raise ValueError(f"Destination {dest_idx} is not in the network")
         distances_to_destination = dict(nx.shortest_path_length(network, target=destination))
@@ -115,6 +116,7 @@ def create_routes(network, num_routes, origins, destinations, beta, weight, coef
 
 def _get_proximity_function(network, destination, weight):
     # cost for all nodes that CAN access to destination
+    # RK: This is typically called node potential
     distances_to_destination = dict(nx.shortest_path_length(network, target=destination, weight=weight))
     # dead-end nodes have infinite cost
     dead_nodes = [node for node in network.nodes if node not in distances_to_destination]
@@ -124,25 +126,30 @@ def _get_proximity_function(network, destination, weight):
 
 
 def _pick_routes_from_samples(sampled_routes, proximity, num_paths, coeffs, network):
+    # RK: this function selects _num_paths_ routes of minimal utilty from the sampled
+    # what this should do is to pick them randomly (or with some non-uniform probability)
     sampled_routes = list(sampled_routes)
     # what we base our selection on
     utility_dist = _get_route_utilities(sampled_routes, proximity, coeffs, network)
     # route indices that maximize defined utilities
-    sorted_indices = np.argsort(utility_dist)[::-1]
+    sorted_indices = np.argsort(utility_dist)[::-1] #RK: I'd say this can be sampled with prob of utility and not simply "pick n best"
     paths_idcs = sorted_indices[:num_paths]
+    
     return [sampled_routes[idx] for idx in paths_idcs]
 
 
 def _get_route_utilities(sampled_routes, proximity_func, coeffs, network):
+    # RK: I would rename it to heuristics. And stick utility to something usual, namely a linear combination of distance, cost and time.
+
     # Based on FF times
     free_flows = [_get_ff(route, network) for route in sampled_routes]
     utility1 = 1 / np.array(free_flows)
-    utility1 = utility1 / np.sum(utility1)
+    utility1 = utility1 / np.sum(utility1) # RK: what is this formula? why not simply a sum of free flows?
 
     # Based on number of edges
     route_lengths = [len(route) for route in sampled_routes]
     utility2 = 1 / np.array(route_lengths)
-    utility2 = utility2 / np.sum(utility2)
+    utility2 = utility2 / np.sum(utility2) # this is never called length in transportation. In transport we use physical length and graph-theoretical length (number of hops) is almost never used as very sensitive to modelling artifacts.
 
     # Based on proximity increase in consecutive nodes (how well & steady)
     prox_increase = [[proximity_func(route[idx-1]) - proximity_func(node) for idx, node in enumerate(route[1:])] for route in sampled_routes]
@@ -158,7 +165,7 @@ def _get_route_utilities(sampled_routes, proximity_func, coeffs, network):
     utility4 = utility4 / np.sum(utility4)
 
     # Merge all with some coefficients
-    utilities = (coeffs[0] * utility1) + (coeffs[1] * utility2) + (coeffs[2] * utility3) + (coeffs[3] * utility4)
+    utilities = (coeffs[0] * utility1) + (coeffs[1] * utility2) + (coeffs[2] * utility3) + (coeffs[3] * utility4) #RK: Did you test if that actually works and allows to distinguish various kinds of paths? or is it augmented to one dimension and all properties are lost?
     return utilities
 
 
