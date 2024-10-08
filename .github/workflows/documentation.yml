@@ -42,6 +42,6 @@ jobs:
           git add .
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git branch -M main   # Rename the branch from master to main if needed
+          git commit -m "Deploy documentation to GitHub Pages"
           git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-          git push --force origin master:gh-pages   # Push to the gh-pages branch
+          git push --force origin master:gh-pages  # Push from 'master' to 'gh-pages'
