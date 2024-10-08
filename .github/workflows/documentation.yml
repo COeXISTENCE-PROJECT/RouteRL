@@ -30,8 +30,8 @@ jobs:
       - name: Build Sphinx documentation
         run: |
           ls
-          make -C docs clean   # Clean previous builds
-          make -C docs html    # Build HTML from Sphinx
+          make clean   # Clean previous builds
+          make html    # Build HTML from Sphinx
 
       - name: Deploy to GitHub Pages
         run: |

@@ -6,7 +6,7 @@ lastpage:
 
 # RouteRL
 
-```{figure} _static/budapest_two_route_botleneck.png
+```{figure} _static/trans_bg.jpeg
    :alt: RouteRL
 ```
 

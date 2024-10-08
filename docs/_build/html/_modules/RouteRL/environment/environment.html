@@ -199,15 +199,11 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../documentation/pz_env.html">PettingZoo environment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/simulator.html">SUMO simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation/pz_env.html">PettingZoo environment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/machine_agents.html">Automated Vehicle (AV) agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/human_agents.html">Human drivers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/observations.html">Observation functions</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Development</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/COeXISTENCE-PROJECT/Milestone-One">Github</a></li>
 </ul>
 
 </div>
@@ -819,12 +815,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">paths_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">paths_csv_path</span><span class="p">)</span>
-        <span class="n">origins</span> <span class="o">=</span> <span class="n">paths_df</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ORIGIN</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
-        <span class="n">destinations</span> <span class="o">=</span> <span class="n">paths_df</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">DESTINATION</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+        <span class="n">origins</span> <span class="o">=</span> <span class="n">paths_df</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ORIGINS</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+        <span class="n">destinations</span> <span class="o">=</span> <span class="n">paths_df</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">DESTINATIONS</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
         <span class="n">ff_dict</span> <span class="o">=</span> <span class="p">{(</span><span class="n">o</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span> <span class="nb">list</span><span class="p">()</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">origins</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">destinations</span><span class="p">}</span>
 
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">paths_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-            <span class="n">ff_dict</span><span class="p">[(</span><span class="n">row</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ORIGIN</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">DESTINATION</span><span class="p">])]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">FREE_FLOW_TIME</span><span class="p">])</span>
+            <span class="n">ff_dict</span><span class="p">[(</span><span class="n">row</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ORIGINS</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">DESTINATIONS</span><span class="p">])]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">FREE_FLOW_TIME</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="n">ff_dict</span></div>
 
