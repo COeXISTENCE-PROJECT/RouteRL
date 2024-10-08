@@ -77,10 +77,10 @@
         "env_var" : "SUMO_HOME",
 
         "connection_file_path": "../../RouteRL/network_and_config/csomor/csomor1.con.xml",
-        "sumo_config_path": "RouteRL/network_and_config/csomor/csomor1.sumocfg",
+        "sumo_config_path": "../../RouteRL/network_and_config/csomor/csomor1.sumocfg",
         "paths_csv_save_path": "../../path_generation/free_flow_times.csv",
         "route_file_path": "../../RouteRL/network_and_config/csomor/csomor1.rou.xml",
-        "sumo_fcd": "RouteRL/network_and_config/csomor/fcd.xml",
+        "sumo_fcd": "../../RouteRL/network_and_config/csomor/fcd.xml",
         "free_flow_times_csv": "../../RouteRL/network_and_config/csomor/free_flow_times.csv",
 
         "paths_csv_save_detectors": "../../RouteRL/network_and_config/csomor/detectors.csv"

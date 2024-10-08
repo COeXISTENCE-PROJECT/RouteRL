@@ -20,7 +20,7 @@
 />
 <inductionLoop id="279952229#6_det" lane="279952229#6_0" pos="5" file="NUL"
 />
-<inductionLoop id="410338471_det" lane="410338471_0" pos="5" file="NUL"
+<inductionLoop id="410338471_det" lane="410338471_0" pos="0" file="NUL"
 />
 <inductionLoop id="-819269916#2_det" lane="-819269916#2_0" pos="5" file="NUL"
 />
@@ -36,15 +36,15 @@
 />
 <inductionLoop id="154551772#1_det" lane="154551772#1_0" pos="5" file="NUL"
 />
-<inductionLoop id="154551772#2_det" lane="154551772#2_0" pos="5" file="NUL"
+<inductionLoop id="154551772#2_det" lane="154551772#2_0" pos="0" file="NUL"
 />
 <inductionLoop id="154551772#3_det" lane="154551772#3_0" pos="5" file="NUL"
 />
-<inductionLoop id="154551772#4_det" lane="154551772#4_0" pos="5" file="NUL"
+<inductionLoop id="154551772#4_det" lane="154551772#4_0" pos="0" file="NUL"
 />
 <inductionLoop id="154551772#5_det" lane="154551772#5_0" pos="5" file="NUL"
 />
-<inductionLoop id="154551772#6_det" lane="154551772#6_0" pos="5" file="NUL"
+<inductionLoop id="154551772#6_det" lane="154551772#6_0" pos="0" file="NUL"
 />
 <inductionLoop id="154551772#7_det" lane="154551772#7_0" pos="5" file="NUL"
 />
@@ -58,7 +58,7 @@
 />
 <inductionLoop id="115601277_det" lane="115601277_0" pos="5" file="NUL"
 />
-<inductionLoop id="-154551772#4_det" lane="-154551772#4_0" pos="5" file="NUL"
+<inductionLoop id="-154551772#4_det" lane="-154551772#4_0" pos="0" file="NUL"
 />
 <inductionLoop id="115604043#0_det" lane="115604043#0_0" pos="5" file="NUL"
 />
@@ -76,7 +76,7 @@
 />
 <inductionLoop id="819269916#1_det" lane="819269916#1_0" pos="5" file="NUL"
 />
-<inductionLoop id="-154551772#2_det" lane="-154551772#2_0" pos="5" file="NUL"
+<inductionLoop id="-154551772#2_det" lane="-154551772#2_0" pos="0" file="NUL"
 />
 <inductionLoop id="115604051#0_det" lane="115604051#0_0" pos="5" file="NUL"
 />
