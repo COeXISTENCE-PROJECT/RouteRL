@@ -7,8 +7,8 @@ on:
 jobs:
   build_docs_job:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for authentication
+    permissions:  # Set correct permissions for actions
+      contents: write  # This allows pushing to branches
 
     steps:
       - name: Checkout repository
@@ -44,4 +44,4 @@ jobs:
           git config --local user.name "GitHub Action"
           git commit -m "Deploy documentation to GitHub Pages"
           git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-          git push --force origin master:gh-pages  # Push from 'master' to 'gh-pages'
+          git push --force origin HEAD:gh-pages  # Push from 'master' to 'gh-pages'
