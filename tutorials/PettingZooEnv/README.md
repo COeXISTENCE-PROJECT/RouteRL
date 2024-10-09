@@ -1,29 +1,13 @@
-# Implementation of Multi-agent reinforcement learning algorithms on RouteRL framework
+# Introduction to our multi-agent PettingZoo framework and its functionalities
 
 ---
 
-In these notebooks, we utilize the Csömör network in our simulator [SUMO](https://eclipse.dev/sumo/), where agents-vehicles will determine their route choices.
+In these notebooks, we use a two-route network in our simulator [SUMO](https://eclipse.dev/sumo/), where agents (vehicles) navigate from their predefined origin to their predefined destination point, aiming to determine the fastest route.
 
-<img src="../../docs/img/csomor2.png" alt="Csömör network" width="700" />
+<img src="../../docs/img/image.png" alt="two-route-network" />
 
 ---
 
-## Path Generation
-
-Before running the notebooks we need to determine the paths that exist between destination and origin points, which can be adjusted by the user. In these notebooks, we defined 2 origin-destination pairs.
-The following commands will generate the available paths:
-
-```bash
-cd path_generation
-python3 generate_paths.py
-```
-
-Example of path generation:
-
-<img src="../../docs/img/paths.png" alt="Path generation" width="700" />
-
-
---- 
 
 ## Number and type of agents
 
