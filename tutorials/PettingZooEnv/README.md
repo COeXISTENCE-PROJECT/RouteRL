@@ -4,7 +4,7 @@
 
 In these notebooks, we use a two-route network in our simulator [SUMO](https://eclipse.dev/sumo/), where agents (vehicles) navigate from their predefined origin to their predefined destination point, aiming to determine the fastest route.
 
-<img src="../../docs/img/image.png" alt="two-route-network" />
+<img src="../../docs/img/two_route_net.png" alt="two-route-network" />
 
 ---
 
