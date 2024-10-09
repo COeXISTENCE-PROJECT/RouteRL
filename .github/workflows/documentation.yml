@@ -31,6 +31,12 @@ jobs:
           make -C docs html    # Build HTML from Sphinx
           ls
 
+      - name: Verify output files
+        run: |
+          ls docs/_build/html  # List contents of the output directory
+          cat docs/_build/html/index.html  # Display the first few lines of index.html
+  
+
       - name: Deploy to GitHub Pages
         run: |
           cd docs/_build/html  # Navigate to the built HTML files
