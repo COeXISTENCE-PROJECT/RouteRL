@@ -22,10 +22,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install sphinx
-          python -m pip install sphinx-rtd-theme
-          python -m pip install myst-parser  # To support Markdown files
-          python -m pip install furo         # Install Furo theme
+          python -m pip install sphinx sphinx-rtd-theme myst-parser furo
+
 
       - name: Build Sphinx documentation
         run: |
@@ -37,7 +35,6 @@ jobs:
         run: |
           cd docs/_build/html  # Navigate to the built HTML files
           touch .nojekyll      # Disable Jekyll to serve raw HTML/CSS
-          rm -rf .git         # Clean up any existing git repo in the build directory
           git init             # Initialize a new Git repo in the build folder
           git add .
           git config --local user.email "action@github.com"
