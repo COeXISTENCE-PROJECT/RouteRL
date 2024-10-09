@@ -1,42 +1,26 @@
-import matplotlib.pyplot as plt
+import json
 import os
-import pandas as pd
+import sys
+import time
+from tqdm import tqdm
+import wandb
+
 from tensordict.nn import TensorDictModule, TensorDictSequential
 import torch
 from torchrl.collectors import SyncDataCollector
-from torch.distributions import Categorical
 from torchrl.envs.libs.pettingzoo import PettingZooWrapper
 from torchrl.envs.transforms import TransformedEnv, RewardSum
-from torchrl.envs.utils import check_env_specs
 from torchrl.data.replay_buffers import ReplayBuffer
-from torchrl.data.replay_buffers.samplers import SamplerWithoutReplacement
 from torchrl.data.replay_buffers.storages import LazyTensorStorage
-from torchrl.modules import MultiAgentMLP, ProbabilisticActor
-from torchrl.objectives.value import GAE
-from torchrl.objectives import ClipPPOLoss, ValueEstimators
-from torchrl.modules import MLP, QValueActor
-from torchrl.data import CompositeSpec
+from torchrl.modules import MultiAgentMLP
 from torchrl.modules import EGreedyModule
-from torchrl.objectives import DQNLoss, HardUpdate, SoftUpdate
+from torchrl.objectives import DQNLoss, SoftUpdate
 from torchrl.record.loggers import generate_exp_name, get_logger
-from torchrl.envs.transforms import RenameTransform
 from torchrl.modules.tensordict_module import QValueModule
-from torchrl.trainers import (
-    LogReward,
-    Recorder,
-    ReplayBufferTrainer,
-    Trainer,
-    UpdateWeights,
-)
-import wandb
-import json
-import time
-from tqdm import tqdm
-import sys
-from keychain import Keychain as kc
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
+from RouteRL.keychain import Keychain as kc
 from RouteRL.environment.environment import TrafficEnvironment
 from RouteRL.services.plotter import Plotter
 from RouteRL.utilities import get_params

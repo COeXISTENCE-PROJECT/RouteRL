@@ -313,6 +313,12 @@ class TrafficEnvironment(AECEnv):
 
         filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile_25]
 
+        every_two_humans = []
+
+        for i in range(len(self.human_agents)):
+            if i % 2 == 0: 
+                every_two_humans.append(self.human_agents[i])
+
         number_of_machines_to_be_added = self.agent_gen_params[kc.NEW_MACHINES_AFTER_MUTATION]
 
         random_humans_deleted = []
@@ -324,7 +330,20 @@ class TrafficEnvironment(AECEnv):
                 f"Decrease the number of machines to be added after the mutation.\n"
             )
 
-        for i in range(0, number_of_machines_to_be_added):
+        for human in every_two_humans:
+            self.human_agents.remove(human)
+
+            random_humans_deleted.append(human)
+            self.machine_agents.append(MachineAgent(human.id,
+                                                    human.start_time,
+                                                    human.origin, 
+                                                    human.destination, 
+                                                    self.agent_params[kc.MACHINE_PARAMETERS], 
+                                                    self.simulation_params[kc.NUMBER_OF_PATHS]))
+            self.possible_agents.append(str(human.id))
+
+
+        """for i in range(0, number_of_machines_to_be_added):
             random_human = random.choice(filtered_human_agents)
 
             self.human_agents.remove(random_human)
@@ -337,7 +356,7 @@ class TrafficEnvironment(AECEnv):
                                                     random_human.destination, 
                                                     self.agent_params[kc.MACHINE_PARAMETERS], 
                                                     self.simulation_params[kc.NUMBER_OF_PATHS]))
-            self.possible_agents.append(str(random_human.id))
+            self.possible_agents.append(str(random_human.id))"""
 
 
         self.n_agents = len(self.possible_agents)
