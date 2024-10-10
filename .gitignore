@@ -9,5 +9,4 @@ training_records/
 plots/
 det.add.xml
 detectors.csv
-paths.csv
 free_flow_times.csv
