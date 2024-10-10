@@ -13,7 +13,7 @@ RouteRL provides a Multi-Agent Reinforcement Environment (MARL) for urban route 
   - Automated vehicles (AVs) are the RL agents that aim to optimize their routes and learn the most efficient paths.
 - It is compatible with popular RL libraries such as [stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/guide/examples.html) and [TorchRL](https://pytorch.org/rl/stable/tutorials/torchrl_demo.html).
 
-For more details, check the documentation online.
+For more details, check the documentation [online](https://coexistence-project.github.io/RouteRL/).
 
 <!-- end intro -->
 
