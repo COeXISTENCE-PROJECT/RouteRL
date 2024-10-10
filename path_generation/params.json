@@ -82,6 +82,7 @@
         "sumo_config_path": "../RouteRL/network_and_config/csomor/csomor1.sumocfg",
         "paths_csv_save_path": "../RouteRL/network_and_config/csomor/paths.csv",
         "route_file_path": "../RouteRL/network_and_config/csomor/csomor1.rou.xml",
+        "route_save_file_path": "../RouteRL/network_and_config/csomor/route.rou.xml",
         "sumo_fcd": "../RouteRL/network_and_config/csomor/fcd.xml",
         "free_flow_times_csv": "../RouteRL/network_and_config/csomor/free_flow_times.csv",
 

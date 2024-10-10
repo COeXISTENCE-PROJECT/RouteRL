@@ -145,6 +145,7 @@ class Keychain:
     CONNECTION_FILE_PATH = "connection_file_path"
     EDGE_FILE_PATH = "edge_file_path"
     ROUTE_FILE_PATH = "route_file_path"
+    ROUTE_SAVE_FILE_PATH = "route_save_file_path"
     SUMO_CONFIG_PATH = "sumo_config_path"
     PATHS_CSV_SAVE_DETECTORS = "paths_csv_save_detectors"
     NETWORK_XML = "network_xml"
