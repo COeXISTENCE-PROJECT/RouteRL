@@ -38,7 +38,7 @@ extensions = [
     'sphinx.ext.viewcode',   # Adds links to the source code
     "sphinx.ext.doctest",
     "sphinx.ext.githubpages",
-    'myst_parser'
+    'myst_parser',
     'furo.sphinxext'
 ]
 
