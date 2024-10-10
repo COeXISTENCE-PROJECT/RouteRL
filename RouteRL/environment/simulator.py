@@ -57,7 +57,6 @@ class SumoSimulator():
         """
         Checks if the required paths file for the simulation exists.
         """
-
         if os.path.isfile(self.paths_csv_path):
             logging.info("[CONFIRMED] Paths file is ready.")
         else:

@@ -281,7 +281,7 @@ def _get_ff(path, network):
 def save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path, detector_xml_save_path, paths_csv_save_detectors):
     """ Save paths and ff times to disk """
     # csv file, for us
-    paths_df = pd.DataFrame(columns = [kc.ORIGIN, kc.DESTINATION, kc.PATH, kc.FREE_FLOW_TIME])
+    paths_df = pd.DataFrame(columns = [kc.ORIGINS, kc.DESTINATIONS, kc.PATH, kc.FREE_FLOW_TIME])
     for od, paths in routes.items():
         for path_idx, path in enumerate(paths):
             paths_df.loc[len(paths_df.index)] = [od[0], od[1], list_to_string(path, ","), ff_times[od][path_idx]]
