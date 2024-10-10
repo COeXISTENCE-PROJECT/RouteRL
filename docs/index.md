@@ -19,11 +19,11 @@ lastpage:
 :hidden:
 :caption: Documentation
 
-documentation/pz_env.md
-documentation/simulator.md
-documentation/machine_agents.md
-documentation/human_agents.md
-documentation/observations.md
+documentation/pz_env
+documentation/simulator
+documentation/machine_agents
+documentation/human_agents
+documentation/observations
 ```
 
 ```{toctree}

@@ -288,10 +288,11 @@ def save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path, dete
     paths_df.to_csv(paths_csv_save_path, index=False)
     # XML file, for sumo
 
+    """ Detectors 
     with open(detector_xml_save_path,'w') as det:
         consistence = []
-        print("""<additional>""",file=det)
-        print("""<!-- Detectors -->""",file=det)
+        print("<additional>",file=det)
+        print("<!-- Detectors -->",file=det)
         for od, paths in routes.items():
                 for idx, path in enumerate(paths):
                     for id, path_id in enumerate(path):
@@ -301,7 +302,7 @@ def save_paths(routes, ff_times, paths_csv_save_path, routes_xml_save_path, dete
                             print('/>',file=det)
         print("</additional>", file=det)
     df_consistence = pd.DataFrame(consistence,columns=['name'])
-    df_consistence.to_csv(paths_csv_save_detectors, index=False)
+    df_consistence.to_csv(paths_csv_save_detectors, index=False) """
 
 
     with open(routes_xml_save_path, "w") as rou:
