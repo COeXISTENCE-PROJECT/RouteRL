@@ -39,6 +39,7 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.githubpages",
     'myst_parser'
+    'furo.sphinxext'
 ]
 
 myst_enable_extensions = [
