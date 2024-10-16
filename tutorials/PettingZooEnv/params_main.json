@@ -70,7 +70,7 @@
 
     "simulator_parameters":
     {
-        "simulation_timesteps" : 500,
+        "simulation_timesteps" : 40,
         "seed" : "23423",
         "sumo_type" : "sumo",
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
