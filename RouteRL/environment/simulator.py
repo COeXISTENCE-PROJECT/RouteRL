@@ -60,8 +60,12 @@ class SumoSimulator():
         if os.path.isfile(self.paths_csv_path):
             logging.info("[CONFIRMED] Paths file is ready.")
         else:
-            raise FileNotFoundError("Paths file is not ready. Please generate paths first.")
-        
+            raise FileNotFoundError(
+                "Paths file is not ready. Please generate paths first.\n"
+                "To do this, please navigate to 'path_generation/generate_paths.py' "
+                "and execute the script to create the necessary paths for the simulation."
+            )
+
     #####################
 
     ##### SUMO CONTROL #####
