@@ -13,7 +13,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('../RouteRL'))
+sys.path.insert(0, os.path.abspath('..'))
 
 
 
@@ -83,6 +83,11 @@ myst_enable_extensions = [
 # a list of builtin themes.
 #
 html_theme = 'furo'
+html_theme_options = {
+    "source_repository": "https://github.com/COeXISTENCE-PROJECT/RouteRL",
+    "source_branch": "main",
+    "source_directory": "docs/",
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
