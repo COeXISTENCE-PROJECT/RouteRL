@@ -5,7 +5,6 @@ lastpage:
 ---
 
 RouteRL
-=======
 
 .. figure:: _static/trans_bg.jpeg
    :alt: RouteRL
@@ -14,11 +13,9 @@ RouteRL
    :start-after: <!-- start intro -->
    :end-before: <!-- end intro -->
 
-Documentation
-=============
 
 .. toctree::
-   :hidden:
+   :maxdepth: 2
    :caption: Documentation
 
    documentation/pz_env
@@ -27,8 +24,6 @@ Documentation
    documentation/human_agents
    documentation/observations
 
-Development
-===========
 
 .. toctree::
    :hidden:
