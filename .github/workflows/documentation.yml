@@ -2,7 +2,7 @@ name: docs_pages_workflow
 
 on:
   push:
-    branches: [ main ]  # Triggers the workflow when pushing to the main branch
+    branches: [ main ]  # Triggers the workflow on main branch
 
 permissions:
   contents: write
@@ -10,8 +10,8 @@ permissions:
 jobs:
   build_docs_job:
     runs-on: ubuntu-latest
-    permissions:  # Set correct permissions for actions
-      contents: write  # This allows pushing to branches
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -20,7 +20,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.9  # Adjust this version as needed
+          python-version: 3.9
 
       - name: Install dependencies
         run: |
@@ -28,28 +28,24 @@ jobs:
           python -m pip install sphinx sphinx-rtd-theme myst-parser furo
           python -m pip install torchrl
 
-
       - name: Build Sphinx documentation
         run: |
           make -C docs clean   # Clean previous builds
-          make -C docs html    # Build HTML from Sphinx
-          ls
-          sphinx-build -b dirhtml -v docs _build
+          make -C docs html    # Build HTML files
+          ls docs/_build/html  # Confirm output files in _build/html
 
       - name: Verify output files
         run: |
-          ls docs/_build/html  # List contents of the output directory
-          cat docs/_build/html/index.html  # Display the first few lines of index.html
-  
+          cat docs/_build/html/index.html  # Check the index.html file's initial lines
 
       - name: Deploy to GitHub Pages
         run: |
-          cd docs/_build/html  # Navigate to the built HTML files
-          touch .nojekyll      # Disable Jekyll to serve raw HTML/CSS
-          git init             # Initialize a new Git repo in the build folder
+          cd docs/_build/html              # Change to the built HTML directory
+          touch .nojekyll                   # Disable Jekyll
+          git init
           git add .
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "Deploy documentation to GitHub Pages"
           git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-          git push --force origin HEAD:gh-pages  # Push from 'master' to 'gh-pages'
+          git push --force origin HEAD:gh-pages
