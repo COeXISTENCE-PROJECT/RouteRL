@@ -4,6 +4,9 @@ on:
   push:
     branches: [ main ]  # Triggers the workflow when pushing to the main branch
 
+permissions:
+  contents: write
+
 jobs:
   build_docs_job:
     runs-on: ubuntu-latest
@@ -31,6 +34,7 @@ jobs:
           make -C docs clean   # Clean previous builds
           make -C docs html    # Build HTML from Sphinx
           ls
+          sphinx-build -b dirhtml -v docs _build
 
       - name: Verify output files
         run: |
