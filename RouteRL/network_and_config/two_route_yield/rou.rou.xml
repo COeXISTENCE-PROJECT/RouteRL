@@ -4,6 +4,8 @@
 -->
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
-<route id="0_0_0" edges=" E0 E1 E2" />
-<route id="0_0_1" edges=" E0 E3 E4 E5 E2" />
+    <vType id="Human" color="red" guiShape="passenger/sedan"/>
+    <vType id="AV" color="yellow"/>
+    <route id="0_0_0" edges=" E0 E1 E2" />
+    <route id="0_0_1" edges=" E0 E3 E4 E5 E2" />
 </routes>
