@@ -10,10 +10,10 @@
     
     "runner_parameters":
     {
-        "num_episodes" : 200,
+        "num_episodes" : 1600,
         "episode_length": 1,
         "phases" : [0, 100],
-        "phase_names" : ["Human learning", "Mutation"],
+        "phase_names" : ["Human learning", "Mutation - Machine learning"],
         "remember_every" : 1,
         "frequent_progressbar_update" : false
     },
@@ -21,7 +21,7 @@
     "phase_parameters":
     {
         "number_of_phases": 2,
-        "number_episodes_each_phase": [100, 100]
+        "number_episodes_each_phase": [100, 1000]
     },
 
 
@@ -52,9 +52,9 @@
             "learning_phases" : [0, 2],
             "model" : "gawron",
             "alpha" : 0.2,
-            "alpha_sigma": 0.1,
+            "alpha_sigma": 0.2,
             "alpha_zero": 0.2,
-            "beta" : 0.5,
+            "beta" : 0.01,
             "beta_randomness" : 0.3,
             "appearance_phase" : "No need for this, by default appears in 0",
             "behavior" : "No need for this, by default selfish"
@@ -85,7 +85,6 @@
 
     },
 
-
     "plotter_parameters":
     {
         "smooth_by" : 50,
@@ -106,7 +105,7 @@
         "losses_log_file_name": "losses.txt",
         "detector_logs_folder": "detector",
         "paths_csv_file_name": "paths.csv",
-        "free_flow_times_csv_file_name": "free_flow_times.csv",
+        "free_flow_times_csv_file_name": "../../path_generation/free_flow_times.csv",
 
         "plots_folder": "plots",
         "reward_plot_file_name": "rewards.png",
@@ -126,7 +125,7 @@
     {
         "num_agents" : 20,
         "new_machines_after_mutation": 10,
-        "ratio_mutating" : 0.33,
+        "ratio_mutating" : 0.5,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",
         "origins" : "${path_generation_parameters.origins}",
