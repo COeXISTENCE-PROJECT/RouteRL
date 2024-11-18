@@ -15,6 +15,7 @@ logger.setLevel(logging.WARNING)
 
 class SumoSimulator():
     """ 
+
     A class responsible for managing the communication between our learning agents and the SUMO traffic simulator.
     SUMO provides the traffic environment where vehicles travel between designated origins and destinations,
     and it returns the corresponding travel times for these vehicles.
@@ -56,6 +57,7 @@ class SumoSimulator():
     def _check_paths_ready(self) -> None:
         """
         Checks if the required paths file for the simulation exists.
+
         """
         if os.path.isfile(self.paths_csv_path):
             logging.info("[CONFIRMED] Paths file is ready.")
@@ -104,6 +106,7 @@ class SumoSimulator():
 
         Parameters:
         - act_dict (dict): A dictionary containing key vehicle attributes.
+        
         """
 
         route_id = self.route_id_cache.setdefault((act_dict[kc.AGENT_ORIGIN], act_dict[kc.AGENT_DESTINATION], act_dict[kc.ACTION]), \
