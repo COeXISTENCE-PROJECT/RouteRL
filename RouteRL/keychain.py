@@ -57,6 +57,7 @@ class Keychain:
     FREQUENT_PROGRESSBAR_UPDATE = "frequent_progressbar_update"
 
     ### Environment
+    NUMBER_OF_DAYS = "number_of_days"
 
     ### Simulator
     SUMO_TYPE = "sumo_type"

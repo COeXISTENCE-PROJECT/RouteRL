@@ -64,7 +64,8 @@
 
     "environment_parameters":
     {
-        "action_space_size" : "${path_generation_parameters.number_of_paths}"
+        "action_space_size" : "${path_generation_parameters.number_of_paths}",
+        "number_of_days" : 1
     },
 
 

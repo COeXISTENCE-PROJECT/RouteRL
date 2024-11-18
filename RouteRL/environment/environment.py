@@ -77,6 +77,8 @@ class TrafficEnvironment(AECEnv):
         self.phase_names = self.training_params[kc.PHASE_NAMES]
         self.frequent_progressbar = self.training_params[kc.FREQUENT_PROGRESSBAR_UPDATE]
         self.remember_every = self.training_params[kc.REMEMBER_EVERY]
+
+        self.number_of_days = environment_params[kc.NUMBER_OF_DAYS]
         
         """ recorder attributes """
         self.remember_episodes = [ep for ep in range(self.remember_every, self.num_episodes+1, self.remember_every)]
@@ -233,11 +235,11 @@ class TrafficEnvironment(AECEnv):
 
                 # The episode ends when we complete episode_length days
                 self.truncations = {
-                    agent: True for agent in self.agents
+                    agent: not (self.day % self.number_of_days)  for agent in self.agents
                 }
-
+                
                 self.terminations = {
-                    agent: True for agent in self.agents
+                    agent: not (self.day % self.number_of_days) for agent in self.agents
                 }
 
                 self.info = {
