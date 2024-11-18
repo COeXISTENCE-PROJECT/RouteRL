@@ -469,6 +469,7 @@ class TrafficEnvironment(AECEnv):
 
     def simulation_loop(self, machine_action: int, machine_id: str) -> None:
         """ 
+        
         This function contains the integration of the agent's actions to SUMO. 
 
         Description:
