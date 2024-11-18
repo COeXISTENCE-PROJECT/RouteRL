@@ -52,6 +52,8 @@ myst_enable_extensions = [
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
+pygments_style = 'sphinx'  
+
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.

@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
         <title>RouteRL.environment.environment - RouteRL 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
     
@@ -15,7 +15,7 @@
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
+    --color-code-background: #eeffcc;
   --color-code-foreground: black;
   
   }
@@ -324,6 +324,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">phase_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">training_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">PHASE_NAMES</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frequent_progressbar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">training_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">FREQUENT_PROGRESSBAR_UPDATE</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remember_every</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">training_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">REMEMBER_EVERY</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_days</span> <span class="o">=</span> <span class="n">environment_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">NUMBER_OF_DAYS</span><span class="p">]</span>
 <span class="w">        </span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; recorder attributes &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remember_episodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ep</span> <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remember_every</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_episodes</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">remember_every</span><span class="p">)]</span>
@@ -485,11 +487,11 @@
 
                 <span class="c1"># The episode ends when we complete episode_length days</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">truncations</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="n">agent</span><span class="p">:</span> <span class="kc">True</span> <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span>
+                    <span class="n">agent</span><span class="p">:</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">day</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_days</span><span class="p">)</span>  <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span>
                 <span class="p">}</span>
-
+                
                 <span class="bp">self</span><span class="o">.</span><span class="n">terminations</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="n">agent</span><span class="p">:</span> <span class="kc">True</span> <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span>
+                    <span class="n">agent</span><span class="p">:</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">day</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_days</span><span class="p">)</span> <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span>
                 <span class="p">}</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
@@ -739,17 +741,19 @@
 <div class="viewcode-block" id="TrafficEnvironment.simulation_loop">
 <a class="viewcode-back" href="../../../documentation/pz_env.html#RouteRL.environment.environment.TrafficEnvironment.simulation_loop">[docs]</a>
     <span class="k">def</span> <span class="nf">simulation_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machine_action</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">machine_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; This function contains the integration of the agent&#39;s actions to SUMO. </span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        This function contains the integration of the agent&#39;s actions to SUMO. </span>
+
 <span class="sd">        Description:</span>
 <span class="sd">            We iterate through all the timesteps of the simulation.</span>
 <span class="sd">            For each timestep there are None, one or more than one agents (humans, machines) that start. </span>
 <span class="sd">            If more than one machine agents have the same start time, we break from this function because we need to take the agent&#39;s action from the STEP function.</span>
+
 <span class="sd">        Data structures:</span>
-<span class="sd">            self.machine_same_start_time (list): contains the machine agents that their start time is equal to the simulator timestep</span>
-<span class="sd">                and haven&#39;t acted yet.</span>
-<span class="sd">            self.actions_timestep (list): includes the agents (machines/humans) that have acted in this timestep and</span>
-<span class="sd">                their action will be send in the simulator</span>
+<span class="sd">            self.machine_same_start_time (list): contains the machine agents that their start time is equal to the simulator timestep and haven&#39;t acted yet.</span>
+<span class="sd">            self.actions_timestep (list): includes the agents (machines/humans) that have acted in this timestep and their action will be send in the simulator.</span>
 <span class="sd">            agent_action (bool): break if the agent acting is not the last one (because the next agent should STEP first)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">agent_action</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">timestep</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">SIMULATION_TIMESTEPS</span><span class="p">]</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">travel_times_list</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_agents</span><span class="p">):</span>

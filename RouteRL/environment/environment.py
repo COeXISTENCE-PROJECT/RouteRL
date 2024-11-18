@@ -468,17 +468,19 @@ class TrafficEnvironment(AECEnv):
     ##### Simulation loop #####
 
     def simulation_loop(self, machine_action: int, machine_id: str) -> None:
-        """ This function contains the integration of the agent's actions to SUMO. 
+        """ 
+        This function contains the integration of the agent's actions to SUMO. 
+
         Description:
             We iterate through all the timesteps of the simulation.
             For each timestep there are None, one or more than one agents (humans, machines) that start. 
             If more than one machine agents have the same start time, we break from this function because we need to take the agent's action from the STEP function.
+
         Data structures:
-            self.machine_same_start_time (list): contains the machine agents that their start time is equal to the simulator timestep
-                and haven't acted yet.
-            self.actions_timestep (list): includes the agents (machines/humans) that have acted in this timestep and
-                their action will be send in the simulator
+            self.machine_same_start_time (list): contains the machine agents that their start time is equal to the simulator timestep and haven't acted yet.
+            self.actions_timestep (list): includes the agents (machines/humans) that have acted in this timestep and their action will be send in the simulator.
             agent_action (bool): break if the agent acting is not the last one (because the next agent should STEP first)
+
         """
         agent_action = False
         while self.simulator.timestep < self.simulation_params[kc.SIMULATION_TIMESTEPS] or len(self.travel_times_list) < len(self.all_agents):

@@ -20,7 +20,7 @@ lastpage:
 :caption: Documentation
 
 documentation/pz_env
-simulator
+documentation/simulator
 documentation/machine_agents
 documentation/human_agents
 documentation/observations

@@ -229,12 +229,12 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/docs/documentation/pz_env.md?plain=true" title="View this page">
+  <a class="muted-link" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/docs/documentation/pzenv.md?plain=true" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
 </div><div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/edit/main/docs/documentation/pz_env.md" title="Edit this page">
+  <a class="muted-link" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/edit/main/docs/documentation/pzenv.md" title="Edit this page">
     <svg><use href="#svg-pencil"></use></svg>
     <span class="visually-hidden">Edit this page</span>
   </a>
@@ -389,15 +389,21 @@ and <cite>‘ansi’</cite> which returns the strings printed (specific to class
 <dl class="py method">
 <dt class="sig sig-object py" id="RouteRL.environment.environment.TrafficEnvironment.simulation_loop">
 <span class="sig-name descname"><span class="pre">simulation_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">machine_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">machine_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/environment.html#TrafficEnvironment.simulation_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.environment.TrafficEnvironment.simulation_loop" title="Link to this definition">¶</a></dt>
-<dd><p>This function contains the integration of the agent’s actions to SUMO.</p>
-<dl class="simple">
-<dt>Description:</dt><dd><p>We iterate through all the timesteps of the simulation.
+<dd><p>This function contains the integration of the agent’s actions to SUMO.
+Description:</p>
+<blockquote>
+<div><p>We iterate through all the timesteps of the simulation.
 For each timestep there are None, one or more than one agents (humans, machines) that start.
 If more than one machine agents have the same start time, we break from this function because we need to take the agent’s action from the STEP function.</p>
+</div></blockquote>
+<dl>
+<dt>Data structures:</dt><dd><dl class="simple">
+<dt>self.machine_same_start_time (list): contains the machine agents that their start time is equal to the simulator timestep</dt><dd><p>and haven’t acted yet.</p>
 </dd>
-<dt>Data structures:</dt><dd><p>self.machine_same_start_time (list): contains the machine agents that their start time is equal to the simulator timestep and haven’t acted yet.
-self.actions_timestep (list): includes the agents (machines/humans) that have acted in this timestep and their action will be send in the simulator.
-agent_action (bool): break if the agent acting is not the last one (because the next agent should STEP first)</p>
+<dt>self.actions_timestep (list): includes the agents (machines/humans) that have acted in this timestep and</dt><dd><p>their action will be send in the simulator</p>
+</dd>
+</dl>
+<p>agent_action (bool): break if the agent acting is not the last one (because the next agent should STEP first)</p>
 </dd>
 </dl>
 </dd></dl>

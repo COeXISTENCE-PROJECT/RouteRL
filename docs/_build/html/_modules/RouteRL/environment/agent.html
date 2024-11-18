@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
         <title>RouteRL.environment.agent - RouteRL 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
     
@@ -15,7 +15,7 @@
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
+    --color-code-background: #eeffcc;
   --color-code-foreground: black;
   
   }
@@ -200,7 +200,7 @@
   <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/pz_env.html">PettingZoo environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../documentation/simulator.html">SUMO simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../simulator.html">SUMO simulator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/machine_agents.html">Automated Vehicle (AV) agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/human_agents.html">Human drivers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/observations.html">Observation functions</a></li>
@@ -314,8 +314,6 @@
 
 
 
-<div class="viewcode-block" id="HumanAgent">
-<a class="viewcode-back" href="../../../documentation/human_agents.html#RouteRL.environment.agent.HumanAgent">[docs]</a>
 <span class="k">class</span> <span class="nc">HumanAgent</span><span class="p">(</span><span class="n">BaseAgent</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Class representing human drivers, responsible for modeling their learning process and decision-making in route selection. &quot;&quot;&quot;</span>
 
@@ -362,37 +360,27 @@
     <span class="k">def</span> <span class="nf">mutate_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mutate_to</span><span class="p">,</span> <span class="s1">&#39;appearance_phase&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-<div class="viewcode-block" id="HumanAgent.act">
-<a class="viewcode-back" href="../../../documentation/human_agents.html#RouteRL.environment.agent.HumanAgent.act">[docs]</a>
     <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>  
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns the agent&#39;s action (route of choice) based on the current observation from the environment. &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>  </div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>  
 
-
-<div class="viewcode-block" id="HumanAgent.learn">
-<a class="viewcode-back" href="../../../documentation/human_agents.html#RouteRL.environment.agent.HumanAgent.learn">[docs]</a>
     <span class="k">def</span> <span class="nf">learn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">observation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Updates the agent&#39;s knowledge based on the action taken and the resulting observations. &quot;&quot;&quot;</span>
         <span class="n">reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_reward</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_reward</span> <span class="o">=</span> <span class="n">reward</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_learning</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span></div>
-
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="HumanAgent.get_reward">
-<a class="viewcode-back" href="../../../documentation/human_agents.html#RouteRL.environment.agent.HumanAgent.get_reward">[docs]</a>
     <span class="k">def</span> <span class="nf">get_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; This function calculated the reward of each individual agent. &quot;&quot;&quot;</span>
         <span class="n">own_tt</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="nb">next</span><span class="p">(</span><span class="n">obs</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">TRAVEL_TIME</span><span class="p">]</span> <span class="k">for</span> <span class="n">obs</span> <span class="ow">in</span> <span class="n">observation</span> <span class="k">if</span> <span class="n">obs</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ID</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="c1">## Anastasia added the -1</span>
-        <span class="k">return</span> <span class="n">own_tt</span></div>
-
+        <span class="k">return</span> <span class="n">own_tt</span>
     
     <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutate_to</span></div>
-
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutate_to</span>
     
 
 

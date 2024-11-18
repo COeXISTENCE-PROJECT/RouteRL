@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
         <title>RouteRL.environment.simulator - RouteRL 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
     
@@ -15,7 +15,7 @@
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
+    --color-code-background: #eeffcc;
   --color-code-foreground: black;
   
   }
@@ -200,7 +200,7 @@
   <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/pz_env.html">PettingZoo environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../documentation/simulator.html">SUMO simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../simulator.html">SUMO simulator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/machine_agents.html">Automated Vehicle (AV) agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/human_agents.html">Human drivers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/observations.html">Observation functions</a></li>
@@ -259,7 +259,7 @@
 <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SumoSimulator">
-<a class="viewcode-back" href="../../../documentation/simulator.html#RouteRL.environment.simulator.SumoSimulator">[docs]</a>
+<a class="viewcode-back" href="../../../simulator.html#RouteRL.environment.simulator.SumoSimulator">[docs]</a>
 <span class="k">class</span> <span class="nc">SumoSimulator</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">    A class responsible for managing the communication between our learning agents and the SUMO traffic simulator.</span>
@@ -307,14 +307,18 @@
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths_csv_path</span><span class="p">):</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[CONFIRMED] Paths file is ready.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;Paths file is not ready. Please generate paths first.&quot;</span><span class="p">)</span>
-        
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+                <span class="s2">&quot;Paths file is not ready. Please generate paths first.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;To do this, please navigate to &#39;path_generation/generate_paths.py&#39; &quot;</span>
+                <span class="s2">&quot;and execute the script to create the necessary paths for the simulation.&quot;</span>
+            <span class="p">)</span>
+
     <span class="c1">#####################</span>
 
     <span class="c1">##### SUMO CONTROL #####</span>
 
 <div class="viewcode-block" id="SumoSimulator.start">
-<a class="viewcode-back" href="../../../documentation/simulator.html#RouteRL.environment.simulator.SumoSimulator.start">[docs]</a>
+<a class="viewcode-back" href="../../../simulator.html#RouteRL.environment.simulator.SumoSimulator.start">[docs]</a>
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Starts the SUMO simulation with the specified configuration.</span>
@@ -326,7 +330,7 @@
 
 
 <div class="viewcode-block" id="SumoSimulator.stop">
-<a class="viewcode-back" href="../../../documentation/simulator.html#RouteRL.environment.simulator.SumoSimulator.stop">[docs]</a>
+<a class="viewcode-back" href="../../../simulator.html#RouteRL.environment.simulator.SumoSimulator.stop">[docs]</a>
     <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stops and closes the SUMO simulation.</span>
@@ -335,7 +339,7 @@
 
 
 <div class="viewcode-block" id="SumoSimulator.reset">
-<a class="viewcode-back" href="../../../documentation/simulator.html#RouteRL.environment.simulator.SumoSimulator.reset">[docs]</a>
+<a class="viewcode-back" href="../../../simulator.html#RouteRL.environment.simulator.SumoSimulator.reset">[docs]</a>
     <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resets the SUMO simulation to its initial state.</span>
@@ -351,7 +355,7 @@
     <span class="c1">##### SIMULATION #####</span>
     
 <div class="viewcode-block" id="SumoSimulator.add_vehice">
-<a class="viewcode-back" href="../../../documentation/simulator.html#RouteRL.environment.simulator.SumoSimulator.add_vehice">[docs]</a>
+<a class="viewcode-back" href="../../../simulator.html#RouteRL.environment.simulator.SumoSimulator.add_vehice">[docs]</a>
     <span class="k">def</span> <span class="nf">add_vehice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">act_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a vehicle to the SUMO simulation environment with the specified route and parameters.</span>
@@ -362,12 +366,12 @@
 
         <span class="n">route_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_id_cache</span><span class="o">.</span><span class="n">setdefault</span><span class="p">((</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ORIGIN</span><span class="p">],</span> <span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_DESTINATION</span><span class="p">],</span> <span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ACTION</span><span class="p">]),</span> \
                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ORIGIN</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_DESTINATION</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ACTION</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">vehID</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ID</span><span class="p">]),</span> <span class="n">routeID</span><span class="o">=</span><span class="n">route_id</span><span class="p">,</span> <span class="n">depart</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_START_TIME</span><span class="p">]))</span></div>
+        <span class="n">kind</span> <span class="o">=</span> <span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_KIND</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">vehID</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ID</span><span class="p">]),</span> <span class="n">routeID</span><span class="o">=</span><span class="n">route_id</span><span class="p">,</span> <span class="n">depart</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_START_TIME</span><span class="p">]),</span> <span class="n">typeID</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span></div>
 
     
 <div class="viewcode-block" id="SumoSimulator.step">
-<a class="viewcode-back" href="../../../documentation/simulator.html#RouteRL.environment.simulator.SumoSimulator.step">[docs]</a>
+<a class="viewcode-back" href="../../../simulator.html#RouteRL.environment.simulator.SumoSimulator.step">[docs]</a>
     <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Advances the SUMO simulation by one timestep and retrieves information about vehicle arrivals and detector data.</span>
