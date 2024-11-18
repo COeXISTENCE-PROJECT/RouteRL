@@ -13,7 +13,7 @@ To create a new observation function, you must define a class that inherits from
     :members:
 ```
 
-### Default Observation Function: `PreviousAgentStart`
+#### Default Observation Function: `PreviousAgentStart`
 
 The `PreviousAgentStart` class serves as the default implementation for observation functions in `RouteRL`. This class is designed to monitor and manage the number of agents with identical origin-destination pairs and start times, operating within a predefined threshold. It simplifies the observation process for environments where such tracking is crucial.
 
