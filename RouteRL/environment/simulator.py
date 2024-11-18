@@ -106,7 +106,7 @@ class SumoSimulator():
 
         Parameters:
         - act_dict (dict): A dictionary containing key vehicle attributes.
-        
+
         """
 
         route_id = self.route_id_cache.setdefault((act_dict[kc.AGENT_ORIGIN], act_dict[kc.AGENT_DESTINATION], act_dict[kc.ACTION]), \
@@ -119,11 +119,10 @@ class SumoSimulator():
         Advances the SUMO simulation by one timestep and retrieves information about vehicle arrivals and detector data.
 
         Returns:
-        - tuple: A tuple containing:
-            - self.timestep (int): The current simulation timestep.
-            - arrivals (list): List of vehicle IDs that arrived at their destinations during the current timestep.
-            - self.det_dict (list): The current detector data (currently an empty list).
-    
+            tuple: A tuple containing:
+                self.timestep (int): The current simulation timestep.
+                arrivals (list): List of vehicle IDs that arrived at their destinations during the current timestep.
+                self.det_dict (list): The current detector data (currently an empty list).    
         """
    
         arrivals = self.sumo_connection.simulation.getArrivedIDList()
