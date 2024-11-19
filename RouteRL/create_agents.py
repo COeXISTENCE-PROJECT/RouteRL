@@ -2,9 +2,18 @@ import logging
 import os
 import pandas as pd
 
-from RouteRL.environment import HumanAgent
+#from RouteRL.environment import HumanAgent
 from RouteRL.environment import MachineAgent
 from .keychain import Keychain as kc
+
+import sys
+from pathlib import Path
+
+# Add the path to the parent directory containing Simulator_human_behaviour
+simulator_path = str(Path.home() / "Documents/Simulator_human_behaviour")
+sys.path.append(simulator_path)
+
+from agent import HumanAgent
 
 logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
@@ -44,7 +53,7 @@ def create_agent_objects(params, free_flow_times):
         elif row_dict[kc.AGENT_KIND] == kc.TYPE_HUMAN:
             agent_params = params[kc.HUMAN_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
-            agents.append(HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge))
+            agents.append(HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, action_space_size= 2, human_noise=4))
         else:
             raise ValueError('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_KIND])
 
