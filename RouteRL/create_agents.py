@@ -6,14 +6,24 @@ import pandas as pd
 from RouteRL.environment import MachineAgent
 from .keychain import Keychain as kc
 
-import sys
 from pathlib import Path
 
-# Add the path to the parent directory containing Simulator_human_behaviour
-simulator_path = str(Path.home() / "Documents/Simulator_human_behaviour")
-sys.path.append(simulator_path)
+# Set the relative path to go up two levels and then to Simulator_human_behaviour
+simulator_path = (Path(__file__).parent.parent / "../Simulator_human_behaviour").resolve()
 
+# Convert it to a string if needed
+simulator_path_str = str(simulator_path)
+
+# Add it to sys.path
+import sys
+sys.path.append(simulator_path_str)
+
+# Debugging path
+print(f"Simulator path resolved to: {simulator_path_str}")
+
+# Now import from the module
 from agent import HumanAgent
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
