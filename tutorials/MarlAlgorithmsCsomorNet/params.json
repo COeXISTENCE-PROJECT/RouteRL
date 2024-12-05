@@ -27,7 +27,7 @@
 
     "agent_parameters" :
     {
-        "agents_data_path" : "${agent_generation_parameters.agents_data_path}",
+        "create_agents_data_path": "../../RouteRL/network_and_config/agents_data.csv",
         "action_space_size" : "${path_generation_parameters.number_of_paths}",
 
         "machine_parameters" :

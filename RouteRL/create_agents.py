@@ -19,7 +19,7 @@ def create_agent_objects(params, free_flow_times):
     # Getting parameters
     action_space_size = params[kc.ACTION_SPACE_SIZE]
 
-    agents_data_path = params[kc.AGENTS_DATA_PATH]
+    agents_data_path = params[kc.CREATE_AGENTS_DATA_PATH]
     if os.path.isfile(agents_data_path):
         logging.info("[CONFIRMED] Agents data file is ready.")
     else:

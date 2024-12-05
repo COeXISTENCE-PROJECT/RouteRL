@@ -80,6 +80,7 @@ class Keychain:
     RATIO_MUTATING = "ratio_mutating"
     AGENT_ATTRIBUTES = "agent_attributes"
     NEW_MACHINES_AFTER_MUTATION = "new_machines_after_mutation"
+    CREATE_AGENTS_DATA_PATH = "create_agents_data_path"
 
     ### Path generation
     NUMBER_OF_PATHS = "number_of_paths"
@@ -157,7 +158,7 @@ class Keychain:
     SUMO_FCD = "sumo_fcd"
     
     PATHS_CSV_SAVE_PATH = "paths_csv_save_path"
-    AGENTS_DATA_PATH = "agents_data_path"
+    AGENTS_DATA_PATH = "gen_agents_data_path"
     SAVE_TRIPINFO_XML = "save_tripinfo_xml"
     SAVE_TRAJECTORIES_XML = "save_trajectories_xml"
     SAVE_FCD_BASED_SPEEDS = "save_fcd_based_speeds"
