@@ -94,7 +94,7 @@ class SumoSimulator():
         self.sumo_connection.load(["--seed", self.seed, "--fcd-output", self.sumo_fcd, '-c', self.sumo_config_path])
 
         self.timestep = 0
-        self.det_dict = []
+        self.det_dict = {}
 
     #####################
 
