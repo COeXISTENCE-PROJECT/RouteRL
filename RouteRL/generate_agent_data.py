@@ -57,7 +57,7 @@ if __name__ == "__main__":
     num_origins = len(params[kc.ORIGINS])
     num_destinations = len(params[kc.DESTINATIONS])
 
-    agents_data_path = kc.AGENTS_DATA_PATH
+    agents_data_path = params[kc.AGENTS_DATA_PATH]
 
     agents_df = generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulation_timesteps, num_origins, num_destinations)
     save_agents(agents_df, agents_data_path)
