@@ -29,16 +29,16 @@ logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
 
 
-def create_agent_objects(params, free_flow_times):
+def create_agent_objects(params, free_flow_times, kwargs):
 
     """
     Generates agent objects
     """
 
     # Getting parameters
-    action_space_size = params[kc.ACTION_SPACE_SIZE]
 
-    agents_data_path = params[kc.AGENTS_DATA_PATH]
+    action_space_size = params[kc.ACTION_SPACE_SIZE]
+    agents_data_path = params[kc.CREATE_AGENTS_DATA_PATH]
     if os.path.isfile(agents_data_path):
         logging.info("[CONFIRMED] Agents data file is ready.")
     else:
@@ -63,7 +63,7 @@ def create_agent_objects(params, free_flow_times):
         elif row_dict[kc.AGENT_KIND] == kc.TYPE_HUMAN:
             agent_params = params[kc.HUMAN_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
-            agents.append(HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, action_space_size= 2, human_noise=4))
+            agents.append(HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge, action_space_size, **kwargs))
         else:
             raise ValueError('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_KIND])
 

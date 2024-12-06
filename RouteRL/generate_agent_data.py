@@ -47,7 +47,7 @@ def save_agents(agents_df, save_to):
 
 
 if __name__ == "__main__":
-    params = get_params(kc.PARAMS_PATH)
+    params = get_params('/Users/zoltanvarga/Documents/RouteRL/tutorials/RoutingZoo/params.json')
     params = params[kc.AGENT_GEN]
 
     num_agents = params[kc.NUM_AGENTS]
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     num_origins = len(params[kc.ORIGINS])
     num_destinations = len(params[kc.DESTINATIONS])
 
-    agents_data_path = kc.AGENTS_DATA_PATH
+    agents_data_path = params[kc.AGENTS_DATA_PATH]
 
     agents_df = generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulation_timesteps, num_origins, num_destinations)
     save_agents(agents_df, agents_data_path)

@@ -27,7 +27,7 @@
 
     "agent_parameters" :
     {
-        "agents_data_path" : "${agent_generation_parameters.agents_data_path}",
+        "create_agents_data_path": "../../RouteRL/network_and_config/agents_data.csv",
         "action_space_size" : "${path_generation_parameters.number_of_paths}",
 
         "machine_parameters" :
@@ -36,7 +36,7 @@
 
             "appearance_phase" : 1,
             "learning_phases" : [1, 2],
-            "behavior" : "selfish",
+            "behavior" : "collaborative",
             "model" : "DQN",
             "observed_span" : 300,
             "epsilon" : 0.99,
@@ -52,7 +52,7 @@
             "learning_phases" : [0, 2],
             "model" : "gawron",
             "alpha" : 0.2,
-            "alpha_j": 0.2,
+            "alpha_sigma": 0.2,
             "alpha_zero": 0.2,
             "beta" : 0.01,
             "beta_randomness" : 0.3,
@@ -71,20 +71,23 @@
 
     "simulator_parameters":
     {
-        "simulation_timesteps" : 40,
+        "simulation_timesteps" : 3600,
         "seed" : "23423",
         "sumo_type" : "sumo",
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "env_var" : "SUMO_HOME",
 
-        "sumo_config_path": "../../RouteRL/network_and_config/two_route_yield/SUMO.sumocfg",
-        "paths_csv_save_path": "../../RouteRL/network_and_config/two_route_yield/paths.csv",
-        "route_file_path": "../../RouteRL/network_and_config/two_route_yield/rou.rou.xml",
-        "sumo_fcd": "../../RouteRL/network_and_config/two_route_yield/fcd.xml",
+        "connection_file_path": "../../RouteRL/network_and_config/grid/grid.con.xml",
+        "sumo_config_path": "../../RouteRL/network_and_config/grid/grid4x4.sumocfg",
+        "paths_csv_save_path": "../../RouteRL/network_and_config/grid/paths.csv",
+        "route_file_path": "../../RouteRL/network_and_config/grid/rou.rou.xml",
+        "route_save_file_path": "../../RouteRL/network_and_config/grid/rou.rou.xml",
+        "sumo_fcd": "../../RouteRL/network_and_config/grid/fcd.xml",
+        "free_flow_times_csv": "../../RouteRL/network_and_config/grid/free_flow_times.csv",
 
-        "paths_csv_save_detectors": "../../RouteRL/network_and_config/two_route_yield/detectors.csv"
-
+        "paths_csv_save_detectors": "../../RouteRL/network_and_config/grid/detectors.csv"
     },
+
 
     "plotter_parameters":
     {
@@ -124,29 +127,29 @@
 
     "agent_generation_parameters" :
     {
-        "num_agents" : 20,
+        "num_agents" : 1000,
         "new_machines_after_mutation": 10,
-        "ratio_mutating" : 0.5,
+        "ratio_mutating" : 0,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",
         "origins" : "${path_generation_parameters.origins}",
         "destinations" : "${path_generation_parameters.destinations}",
 
-        "agents_data_path": "../../RouteRL/network_and_config/agents_data.csv"
+        "gen_agents_data_path": "RouteRL/network_and_config/agents_data.csv"
     },
         
 
     "path_generation_parameters":
     {
-        "number_of_paths" : 2,
+        "number_of_paths" : 3,
         "beta" : -1.50,
         "weight" : "time",
         "num_samples" : 100,
         "max_path_length" : 200,
         "route_utility_coeffs" : [0.2, 0.2, 0.2, 0.4],
 
-        "origins" : ["441496282#0", "154551772#1"],
-        "destinations" : ["-115604057#1", "-279952229#4"],
+        "origins" : ["B3A3", "D0C0"],
+        "destinations" : ["A0B0", "D3C3"],
 
         "COMMENT5" : "Make sure origins are not dead-ends",
         "COMMENT6" : "Make sure destinations are reachable"

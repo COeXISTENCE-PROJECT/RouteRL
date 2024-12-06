@@ -42,7 +42,8 @@ class TrafficEnvironment(AECEnv):
                  agent_gen_params: dict,
                  agent_params: dict,
                  plotter_params: dict,
-                 render_mode: str = None) -> None:
+                 render_mode: str = None,
+                 **kwargs: dict) -> None:
         
         """
         Args:
@@ -57,7 +58,6 @@ class TrafficEnvironment(AECEnv):
         """
         
         super().__init__()
-
         self.environment_params = environment_params
         self.agent_gen_params = agent_gen_params
         self.training_params = training_params
@@ -95,7 +95,8 @@ class TrafficEnvironment(AECEnv):
         self.simulator = SumoSimulator(simulation_params)
         logging.info("Simulator initiated!")
 
-        self.all_agents = create_agent_objects(self.agent_params, self.get_free_flow_times())
+
+        self.all_agents = create_agent_objects(self.agent_params, self.get_free_flow_times(),kwargs)
         
         self.machine_agents = []
         self.human_agents = []
@@ -432,7 +433,7 @@ class TrafficEnvironment(AECEnv):
         ]
 
         if (dc_episode in self.remember_episodes):
-            self.recorder.record(dc_episode, dc_ep_observations, rewards, cost_tables)#, self.det_dict)
+            self.recorder.record(dc_episode, dc_ep_observations, rewards, cost_tables, self.det_dict)
         elif not self.frequent_progressbar:
             return
         msg = f"{self.phase_names[self.curr_phase]} {self.curr_phase+1}/{len(self.phases)}"

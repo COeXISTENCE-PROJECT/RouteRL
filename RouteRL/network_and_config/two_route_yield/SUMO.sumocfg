@@ -8,6 +8,7 @@
     <input>
         <net-file value="network.net.xml"/>
         <route-files value="rou.rou.xml"/>
+        <additional-files value="det.add.xml"/>
     </input>
 
     <report>

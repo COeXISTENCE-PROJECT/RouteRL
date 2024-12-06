@@ -94,7 +94,7 @@ class SumoSimulator():
         self.sumo_connection.load(["--seed", self.seed, "--fcd-output", self.sumo_fcd, '-c', self.sumo_config_path])
 
         self.timestep = 0
-        self.det_dict = []
+        self.det_dict = {}
 
     #####################
 
@@ -130,11 +130,11 @@ class SumoSimulator():
         self.timestep += 1
 
         #### Detectors
-        """for id, name in enumerate(self.detectors_name):
+        for id, name in enumerate(self.detectors_name):
             
             link = self.sumo_connection.inductionloop.getIntervalVehicleNumber(f"{name}_det")
-            self.det_dict[name] = ((link / self.timestep) * 3600) # 1hour"""
-        self.det_dict = []
+            self.det_dict[name] = ((link / self.timestep) * 3600) # 1hour
+        #self.det_dict = []
         
         return self.timestep, arrivals, self.det_dict
     
