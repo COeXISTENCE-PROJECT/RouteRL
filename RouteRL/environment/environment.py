@@ -42,6 +42,7 @@ class TrafficEnvironment(AECEnv):
                  agent_gen_params: dict,
                  agent_params: dict,
                  plotter_params: dict,
+                 path_gen_params: dict | None = None,
                  render_mode: str = None) -> None:
         
         """
@@ -53,6 +54,7 @@ class TrafficEnvironment(AECEnv):
             agent_gen_params (dict): Agent generation parameters.
             agent_params (dict): Agent parameters.
             plotter_params (dict): Plotter parameters.
+            path_gen_params (dict): Path generation parameters.
             render_mode (str): The render mode.
         """
         
@@ -92,7 +94,7 @@ class TrafficEnvironment(AECEnv):
 
         self.action_space_size = self.environment_params[kc.ACTION_SPACE_SIZE]
 
-        self.simulator = SumoSimulator(simulation_params)
+        self.simulator = SumoSimulator(simulation_params, path_gen_params)
         logging.info("Simulator initiated!")
 
         self.all_agents = create_agent_objects(self.agent_params, self.get_free_flow_times())
