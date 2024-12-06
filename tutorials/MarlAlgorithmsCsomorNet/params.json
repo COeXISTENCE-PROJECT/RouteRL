@@ -78,11 +78,15 @@
         "env_var" : "SUMO_HOME",
 
         "connection_file_path": "../../RouteRL/network_and_config/csomor/csomor1.con.xml",
+        "edge_file_path": "../../RouteRL/network_and_config/csomor/csomor1.edg.xml",
+        "nod_file_path": "../../RouteRL/network_and_config/csomor/csomor1.nod.xml",
         "sumo_config_path": "../../RouteRL/network_and_config/csomor/csomor1.sumocfg",
         "paths_csv_save_path": "../../RouteRL/network_and_config/csomor/paths.csv",
         "route_file_path": "../../RouteRL/network_and_config/csomor/csomor1.rou.xml",
         "route_save_file_path": "../../RouteRL/network_and_config/csomor/route.rou.xml",
         "sumo_fcd": "../../RouteRL/network_and_config/csomor/fcd.xml",
+
+        "figures_save_path": "plots/",
         "free_flow_times_csv": "../../RouteRL/network_and_config/csomor/free_flow_times.csv",
 
         "paths_csv_save_detectors": "../../RouteRL/network_and_config/csomor/detectors.csv"
@@ -142,11 +146,9 @@
     "path_generation_parameters":
     {
         "number_of_paths" : 3,
-        "beta" : -1.50,
+        "beta" : -3,
         "weight" : "time",
         "num_samples" : 100,
-        "max_path_length" : 200,
-        "route_utility_coeffs" : [0.2, 0.2, 0.2, 0.4],
 
         "origins" : ["441496282#0", "154551772#1"],
         "destinations" : ["-115604057#1", "-279952229#4"],

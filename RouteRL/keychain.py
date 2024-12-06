@@ -146,6 +146,7 @@ class Keychain:
 
     CONNECTION_FILE_PATH = "connection_file_path"
     EDGE_FILE_PATH = "edge_file_path"
+    NOD_FILE_PATH = "nod_file_path"
     ROUTE_FILE_PATH = "route_file_path"
     ROUTE_SAVE_FILE_PATH = "route_save_file_path"
     SUMO_CONFIG_PATH = "sumo_config_path"
@@ -158,6 +159,7 @@ class Keychain:
     SUMO_FCD = "sumo_fcd"
     
     PATHS_CSV_SAVE_PATH = "paths_csv_save_path"
+    FIGURES_SAVE_PATH = "figures_save_path"
     AGENTS_DATA_PATH = "gen_agents_data_path"
     SAVE_TRIPINFO_XML = "save_tripinfo_xml"
     SAVE_TRAJECTORIES_XML = "save_trajectories_xml"
