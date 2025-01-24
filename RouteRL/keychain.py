@@ -29,7 +29,7 @@ class Keychain:
     LEARNING_PHASES = "learning_phases"
     BEHAVIOR = "behavior"
     ALPHA = "alpha"
-    ALPHA_SIGMA = "alpha_sigma"
+    ALPHA_J = "alpha_j"
     ALPHA_ZERO = "alpha_zero"
     # Human
     BETA = "beta"

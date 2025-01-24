@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-12-04 17:19:16 by Eclipse SUMO sumo Version v1_21_0+0879-92336f44d2b
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="../../RouteRL/network_and_config/two_route_yield/network.net.xml"/>
+        <route-files value="../../RouteRL/network_and_config/two_route_yield/rou.rou.xml"/>
+        <additional-files value="../../RouteRL/network_and_config/two_route_yield/det.add.xml"/>
+    </input>
+
+    <output>
+        <fcd-output value="../../RouteRL/network_and_config/two_route_yield/fcd.xml"/>
+        <summary-output value="../../RouteRL/network_and_config/two_route_yield/summary.xml"/>
+        <tripinfo-output value="../../RouteRL/network_and_config/two_route_yield/tripinfo.xml"/>
+    </output>
+
+    <processing>
+        <time-to-teleport value="-1"/>
+    </processing>
+
+    <report>
+        <no-step-log value="true"/>
+    </report>
+
+    <random_number>
+        <seed value="23423"/>
+    </random_number>
+
+</sumoConfiguration>

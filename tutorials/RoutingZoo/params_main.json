@@ -27,7 +27,7 @@
 
     "agent_parameters" :
     {
-        "create_agents_data_path": "../../RouteRL/network_and_config/agents_data.csv",
+        "agents_data_path" : "${agent_generation_parameters.agents_data_path}",
         "action_space_size" : "${path_generation_parameters.number_of_paths}",
 
         "machine_parameters" :
@@ -54,8 +54,8 @@
             "alpha" : 0.2,
             "alpha_j": 0.2,
             "alpha_zero": 0.2,
-            "beta" : 0.2,
-            "beta_randomness" : 0,
+            "beta" : 0.01,
+            "beta_randomness" : 0.3,
             "appearance_phase" : "No need for this, by default appears in 0",
             "behavior" : "No need for this, by default selfish"
         }
@@ -73,16 +73,16 @@
     {
         "simulation_timesteps" : 40,
         "seed" : "23423",
-        "sumo_type" : "sumo",
+        "sumo_type" : "sumo-gui",
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "env_var" : "SUMO_HOME",
 
-        "sumo_config_path": "../../RouteRL/network_and_config/two_route_yield/SUMO.sumocfg",
-        "paths_csv_save_path": "../../RouteRL/network_and_config/two_route_yield/paths.csv",
-        "route_file_path": "../../RouteRL/network_and_config/two_route_yield/rou.rou.xml",
-        "sumo_fcd": "../../RouteRL/network_and_config/two_route_yield/fcd.xml",
+        "sumo_config_path": "../../RouteRL/network_and_config/grid/SUMO.sumocfg",
+        "paths_csv_save_path": "../../RouteRL/network_and_config/grid/paths.csv",
+        "route_file_path": "../../RouteRL/network_and_config/grid/rou.rou.xml",
+        "sumo_fcd": "../../RouteRL/network_and_config/grid/fcd.xml",
 
-        "paths_csv_save_detectors": "../../RouteRL/network_and_config/two_route_yield/detectors.csv"
+        "paths_csv_save_detectors": "../../RouteRL/network_and_config/grid/detectors.csv"
 
     },
 
@@ -138,15 +138,15 @@
 
     "path_generation_parameters":
     {
-        "number_of_paths" : 2,
+        "number_of_paths" : 3,
         "beta" : -1.50,
         "weight" : "time",
         "num_samples" : 100,
         "max_path_length" : 200,
         "route_utility_coeffs" : [0.2, 0.2, 0.2, 0.4],
 
-        "origins" : ["441496282#0", "154551772#1"],
-        "destinations" : ["-115604057#1", "-279952229#4"],
+        "origins" : ["B3A3", "D0C0"],
+        "destinations" : ["A0B0", "D3C3"],
 
         "COMMENT5" : "Make sure origins are not dead-ends",
         "COMMENT6" : "Make sure destinations are reachable"

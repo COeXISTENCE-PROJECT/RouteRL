@@ -53,7 +53,7 @@ class Gawron(BaseLearningModel):
 
         # Learning rate components
         self.alpha_zero = params[kc.ALPHA_ZERO]
-        self.alpha_sigma = 1 - self.alpha_zero
+        self.alpha_J = 1 - self.alpha_zero
 
         # Initialize cost array with initial knowledge
         self.cost = np.array(initial_knowledge, dtype=float)
@@ -84,7 +84,7 @@ class Gawron(BaseLearningModel):
         reward (float): The reward received after taking the action.
 
         """
-        self.cost[action] = (self.alpha_sigma * self.cost[action]) + (self.alpha_zero * reward)
+        self.cost[action] = (self.alpha_J * self.cost[action]) + (self.alpha_zero * reward)
 
 
 class Culo(BaseLearningModel):
@@ -104,7 +104,7 @@ class Culo(BaseLearningModel):
 
         # Learning rate components
         self.alpha_zero = 1
-        self.alpha_sigma = params[kc.ALPHA_SIGMA]
+        self.alpha_J = params[kc.ALPHA_J]
 
         # Initialize cost array with initial knowledge
         self.cost = np.array(initial_knowledge, dtype=float)
@@ -132,7 +132,7 @@ class Culo(BaseLearningModel):
         action (int): The action that was taken.
         reward (float): The reward received after taking the action.
         """
-        self.cost[action] = (self.alpha_sigma * self.cost[action]) + (self.alpha_zero * reward)
+        self.cost[action] = (self.alpha_J * self.cost[action]) + (self.alpha_zero * reward)
 
 
 class WeightedAverage(BaseLearningModel):
@@ -141,7 +141,7 @@ class WeightedAverage(BaseLearningModel):
         beta_randomness = params[kc.BETA_RANDOMNESS]
         self.beta = random.uniform(params[kc.BETA] - beta_randomness, params[kc.BETA] + beta_randomness)
         self.alpha_zero = 0
-        self.alpha_sigma = params[kc.ALPHA_SIGMA]
+        self.alpha_J = params[kc.ALPHA_J]
         self.cost = np.array(initial_knowledge, dtype=float)
 
     def act(self, state):
@@ -151,7 +151,7 @@ class WeightedAverage(BaseLearningModel):
 
     #### Check with Onur to save previous reward
     def learn(self, state, action, reward):
-        self.cost[action] = (self.alpha_sigma * self.cost[action]) + (self.alpha_zero * reward)
+        self.cost[action] = (self.alpha_J * self.cost[action]) + (self.alpha_zero * reward)
 
 
 

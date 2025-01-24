@@ -42,8 +42,9 @@ class TrafficEnvironment(AECEnv):
                  agent_gen_params: dict,
                  agent_params: dict,
                  plotter_params: dict,
-                 path_gen_params: dict | None = None,
-                 render_mode: str = None) -> None:
+                 render_mode: str = None,
+                 path_gen_params: dict | None,
+                 **kwargs: dict) -> None:
         
         """
         Args:
@@ -59,7 +60,6 @@ class TrafficEnvironment(AECEnv):
         """
         
         super().__init__()
-
         self.environment_params = environment_params
         self.agent_gen_params = agent_gen_params
         self.training_params = training_params
@@ -97,7 +97,8 @@ class TrafficEnvironment(AECEnv):
         self.simulator = SumoSimulator(simulation_params, path_gen_params)
         logging.info("Simulator initiated!")
 
-        self.all_agents = create_agent_objects(self.agent_params, self.get_free_flow_times())
+
+        self.all_agents = create_agent_objects(self.agent_params, self.get_free_flow_times(),kwargs)
         
         self.machine_agents = []
         self.human_agents = []
@@ -230,7 +231,7 @@ class TrafficEnvironment(AECEnv):
 
             # Collect rewards if it is the last agent to act
             if self._agent_selector.is_last(): 
-                self.day= self.day + 1
+                self.day += 1
 
                 # Calculate the rewards
                 self._assign_rewards() 
@@ -379,7 +380,7 @@ class TrafficEnvironment(AECEnv):
                 kc.AGENT_ORIGIN: agent.origin, kc.AGENT_DESTINATION: agent.destination, kc.AGENT_START_TIME: agent.start_time}
             self.simulator.add_vehice(action_dict)
             self.episode_actions[agent.id] = action_dict
-        timestep, arrivals, self.det_dict = self.simulator.step()  
+        timestep, arrivals = self.simulator.step()  
 
         travel_times = dict()
         for veh_id in arrivals:
@@ -394,7 +395,7 @@ class TrafficEnvironment(AECEnv):
         """ Reset the environment after one day implementation."""
         #plot_all_xmls(self.day)
 
-        self.simulator.reset()
+        detectors_dict = self.simulator.reset()
 
         if self.possible_agents:
             self._agent_selector = agent_selector(self.possible_agents)
@@ -402,14 +403,14 @@ class TrafficEnvironment(AECEnv):
 
         phase_start_time = 0
 
-        recording_task = threading.Thread(target=self._record, args=(self.day, self.travel_times_list, phase_start_time, self.all_agents))
+        recording_task = threading.Thread(target=self._record, args=(self.day, self.travel_times_list, phase_start_time, self.all_agents, detectors_dict))
         recording_task.start()
 
         self.travel_times_list = []
         self.episode_actions = dict()
     
 
-    def _record(self, episode: int, ep_observations: dict, start_time: float, agents: list) -> None:
+    def _record(self, episode: int, ep_observations: dict, start_time: float, agents: list, detectors_dict: dict) -> None:
         """
         Record the episode data, including observations and rewards.
 
@@ -434,7 +435,7 @@ class TrafficEnvironment(AECEnv):
         ]
 
         if (dc_episode in self.remember_episodes):
-            self.recorder.record(dc_episode, dc_ep_observations, rewards, cost_tables)#, self.det_dict)
+            self.recorder.record(dc_episode, dc_ep_observations, rewards, cost_tables, detectors_dict)
         elif not self.frequent_progressbar:
             return
         msg = f"{self.phase_names[self.curr_phase]} {self.curr_phase+1}/{len(self.phases)}"

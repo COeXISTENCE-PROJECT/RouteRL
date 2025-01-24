@@ -36,7 +36,6 @@ class SumoSimulator():
 
         ## Detectors
         self.detectors_name = list(pd.read_csv(self.detector_save_path).name) ###FIX THIS
-        self.det_dict = {name: [] for name in self.detectors_name}
 
         self.sumo_id = f"{random.randint(0, 1000)}"
         self.sumo_connection = None
@@ -165,11 +164,17 @@ class SumoSimulator():
     def reset(self) -> None:
         """
         Resets the SUMO simulation to its initial state.
+        Reads detector data.
         """
+
+        det_dict = {name: None for name in self.detectors_name}
+        for det_name in self.detectors_name:
+            det_dict[det_name]  = self.sumo_connection.inductionloop.getIntervalVehicleNumber(f"{det_name}_det")
+
         self.sumo_connection.load(["--seed", self.seed, "--fcd-output", self.sumo_fcd, '-c', self.sumo_config_path])
 
         self.timestep = 0
-        self.det_dict = {}
+        return det_dict
 
     #####################
 
@@ -189,6 +194,7 @@ class SumoSimulator():
         kind = act_dict[kc.AGENT_KIND]
         self.sumo_connection.vehicle.add(vehID=str(act_dict[kc.AGENT_ID]), routeID=route_id, depart=str(act_dict[kc.AGENT_START_TIME]), typeID=kind)
     
+
     def step(self) -> tuple:
         """
         Advances the SUMO simulation by one timestep and retrieves information about vehicle arrivals and detector data.
@@ -196,22 +202,14 @@ class SumoSimulator():
         Returns:
             tuple: A tuple containing:
                 self.timestep (int): The current simulation timestep.
-                arrivals (list): List of vehicle IDs that arrived at their destinations during the current timestep.
-                self.det_dict (list): The current detector data (currently an empty list).    
+                arrivals (list): List of vehicle IDs that arrived at their destinations during the current timestep.   
         """
    
         arrivals = self.sumo_connection.simulation.getArrivedIDList()
         self.sumo_connection.simulationStep()
         self.timestep += 1
-
-        #### Detectors
-        """for id, name in enumerate(self.detectors_name):
-            
-            link = self.sumo_connection.inductionloop.getIntervalVehicleNumber(f"{name}_det")
-            self.det_dict[name] = ((link / self.timestep) * 3600) # 1hour"""
-        self.det_dict = []
         
-        return self.timestep, arrivals, self.det_dict
+        return self.timestep, arrivals
     
     #####################
     

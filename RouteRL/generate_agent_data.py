@@ -47,7 +47,7 @@ def save_agents(agents_df, save_to):
 
 
 if __name__ == "__main__":
-    params = get_params(kc.PARAMS_PATH)
+    params = get_params('/Users/zoltanvarga/Documents/RouteRL/tutorials/RoutingZoo/params.json')
     params = params[kc.AGENT_GEN]
 
     num_agents = params[kc.NUM_AGENTS]
