@@ -160,7 +160,7 @@ class Keychain:
     
     PATHS_CSV_SAVE_PATH = "paths_csv_save_path"
     FIGURES_SAVE_PATH = "figures_save_path"
-    AGENTS_DATA_PATH = "gen_agents_data_path"
+    AGENTS_DATA_PATH = "agents_data_path"
     SAVE_TRIPINFO_XML = "save_tripinfo_xml"
     SAVE_TRAJECTORIES_XML = "save_trajectories_xml"
     SAVE_FCD_BASED_SPEEDS = "save_fcd_based_speeds"

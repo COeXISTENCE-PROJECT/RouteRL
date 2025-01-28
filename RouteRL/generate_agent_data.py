@@ -2,16 +2,22 @@ import numpy as np
 import pandas as pd
 import random
 
-from keychain import Keychain as kc
-from utilities import get_params
+from .keychain import Keychain as kc
 
 
-def generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulation_timesteps, num_origins, num_destinations):
+def generate_agents_data(params):
 
     """
     Generates agents data
     Constructs a dataframe, where each row is an agent and columns are attributes
     """
+    
+    num_agents = params[kc.NUM_AGENTS]
+    agent_attributes = params[kc.AGENT_ATTRIBUTES]
+    simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]
+    num_origins = len(params[kc.ORIGINS])
+    num_destinations = len(params[kc.DESTINATIONS])
+    agents_data_path = params[kc.AGENTS_DATA_PATH]
 
     agents_df = pd.DataFrame(columns=agent_attributes)  # Where we store our agents
 
@@ -19,9 +25,7 @@ def generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulatio
     for id in range(num_agents):
         
         # Decide on agent type 
-        kind_token, agent_type = random.random(), kc.TYPE_HUMAN
-        if kind_token < ratio_mutating:
-            agent_type = kc.TYPE_MACHINE
+        agent_type = kc.TYPE_HUMAN
 
         # Randomly assign origin & destination
         origin, destination = random.randrange(num_origins), random.randrange(num_destinations)
@@ -36,29 +40,7 @@ def generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulatio
         agent_features = [id, origin, destination, start_time, agent_type]
         agent_dict = {attribute : feature for attribute, feature in zip(agent_attributes, agent_features)}
         agents_df.loc[id] = agent_dict
+        
+        agents_df.to_csv(agents_data_path, index = False)
 
     return agents_df
-
-
-
-def save_agents(agents_df, save_to):
-    agents_df.to_csv(save_to, index = False)
-
-
-
-if __name__ == "__main__":
-    params = get_params('/Users/zoltanvarga/Documents/RouteRL/tutorials/RoutingZoo/params.json')
-    params = params[kc.AGENT_GEN]
-
-    num_agents = params[kc.NUM_AGENTS]
-    ratio_mutating = params[kc.RATIO_MUTATING]
-    agent_attributes = params[kc.AGENT_ATTRIBUTES]
-    simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]
-    num_origins = len(params[kc.ORIGINS])
-    num_destinations = len(params[kc.DESTINATIONS])
-
-    agents_data_path = params[kc.AGENTS_DATA_PATH]
-
-    agents_df = generate_agents_data(num_agents, ratio_mutating, agent_attributes, simulation_timesteps, num_origins, num_destinations)
-    save_agents(agents_df, agents_data_path)
-    print(f'[SUCCESS] Generated agent data and saved to: {agents_data_path}')

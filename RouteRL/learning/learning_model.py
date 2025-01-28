@@ -53,7 +53,7 @@ class Gawron(BaseLearningModel):
 
         # Learning rate components
         self.alpha_zero = params[kc.ALPHA_ZERO]
-        self.alpha_J = 1 - self.alpha_zero
+        self.alpha_J = 1.0 - self.alpha_zero
 
         # Initialize cost array with initial knowledge
         self.cost = np.array(initial_knowledge, dtype=float)
@@ -71,7 +71,6 @@ class Gawron(BaseLearningModel):
 
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
         action =  utilities.index(min(utilities))
-
         return action   
 
     def learn(self, state, action, reward):

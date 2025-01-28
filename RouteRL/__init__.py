@@ -37,3 +37,7 @@ from RouteRL.utilities import (
     set_seeds,
     make_dir
 )
+
+from RouteRL.generate_agent_data import (
+    generate_agents_data
+)

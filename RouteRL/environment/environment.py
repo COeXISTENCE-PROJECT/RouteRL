@@ -10,15 +10,16 @@ import random
 import threading
 
 from ..create_agents import create_agent_objects
+from ..generate_agent_data import generate_agents_data
 from .simulator import SumoSimulator
 from ..keychain import Keychain as kc
 from pettingzoo.utils.env import AECEnv
 from pettingzoo.utils import agent_selector
-from ..utilities import show_progress_bar
 from .observations import PreviousAgentStart
 from .agent import MachineAgent
 
 from ..services.recorder import Recorder
+from ..services.plotter import plotter
 
 
 logger = logging.getLogger()
@@ -36,15 +37,9 @@ class TrafficEnvironment(AECEnv):
     See https://pettingzoo.farama.org/ for details on PettingZoo. 
     """
     def __init__(self,
-                 training_params: dict,
-                 environment_params: dict,
-                 simulation_params: dict,
-                 agent_gen_params: dict,
-                 agent_params: dict,
-                 plotter_params: dict,
-                 render_mode: str = None,
-                 path_gen_params: dict | None,
-                 **kwargs: dict) -> None:
+                 params: dict,
+                 generate_agent_data: bool = True,
+                 generate_paths: bool = False) -> None:
         
         """
         Args:
@@ -56,73 +51,66 @@ class TrafficEnvironment(AECEnv):
             agent_params (dict): Agent parameters.
             plotter_params (dict): Plotter parameters.
             path_gen_params (dict): Path generation parameters.
-            render_mode (str): The render mode.
         """
         
         super().__init__()
-        self.environment_params = environment_params
-        self.agent_gen_params = agent_gen_params
-        self.training_params = training_params
-        self.simulation_params = simulation_params
-        self.agent_params = agent_params
-        self.plotter_params = plotter_params
-        self.render_mode = render_mode
+        
+        self.agent_gen_params = params["agent_generation_parameters"]
+        self.environment_params = params["environment_parameters"]
+        self.simulation_params = params["simulator_parameters"]
+        self.agent_params = params["agent_parameters"]
+        self.plotter_params = params["plotter_parameters"]
+        self.path_gen_params = params["path_generation_parameters"] if generate_paths else None
+        
+        self.render_mode = None
         self.travel_times_list = []
         self.day = 0
         self.human_learning = True
         self.machine_same_start_time = []
         self.actions_timestep = []
 
-        """ runner attributes """
-        self.num_episodes = self.training_params[kc.NUM_EPISODES]
-        self.phases = self.training_params[kc.PHASES]
-        self.phase_names = self.training_params[kc.PHASE_NAMES]
-        self.frequent_progressbar = self.training_params[kc.FREQUENT_PROGRESSBAR_UPDATE]
-        self.remember_every = self.training_params[kc.REMEMBER_EVERY]
-
-        self.number_of_days = environment_params[kc.NUMBER_OF_DAYS]
+        self.number_of_days = self.environment_params[kc.NUMBER_OF_DAYS]
+        self.action_space_size = self.environment_params[kc.ACTION_SPACE_SIZE]
         
-        """ recorder attributes """
-        self.remember_episodes = [ep for ep in range(self.remember_every, self.num_episodes+1, self.remember_every)]
-        self.remember_episodes += [1, self.num_episodes] + [ep-1 for ep in self.phases] + [ep for ep in self.phases]
-        self.remember_episodes = set(self.remember_episodes)
+        #############################
+        
         self.recorder = Recorder(self.plotter_params)
+        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params)
+        logging.info("Simulator initiated!")
         
-        self.curr_phase = -1
-
         #############################
 
-        self.action_space_size = self.environment_params[kc.ACTION_SPACE_SIZE]
+        if generate_agent_data:
+            generate_agents_data(self.agent_gen_params)
 
-        self.simulator = SumoSimulator(simulation_params, path_gen_params)
-        logging.info("Simulator initiated!")
-
-
-        self.all_agents = create_agent_objects(self.agent_params, self.get_free_flow_times(),kwargs)
+        self.all_agents = create_agent_objects(self.agent_params, self.get_free_flow_times())
         
-        self.machine_agents = []
-        self.human_agents = []
-        self.possible_agents = []
-
-        for agent in self.all_agents:
-            if agent.kind == kc.TYPE_MACHINE:
-                self.machine_agents.append(agent)
-
-            elif agent.kind == kc.TYPE_HUMAN:
-                self.human_agents.append(agent)
-            else:
-                raise ValueError('[AGENT TYPE INVALID] Unrecognized agent type: ' + agent.kind)
+        self.machine_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_MACHINE]
+        self.human_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_HUMAN]
+        self.possible_agents = list()
+        
+        logging.info(f"There are {len(self.machine_agents)} machine agents in the environment.")
+        logging.info(f"There are {len(self.human_agents)} human agents in the environment.")
             
-        if len(self.machine_agents) != 0:
+        #############################
+            
+        if len(self.machine_agents):
             self._initialize_machine_agents()
         
         if not self.human_agents:
             self.human_learning = False
-
-        logging.info(f"There are {len(self.machine_agents)} machine agents in the environment.")
-        logging.info(f"There are {len(self.human_agents)} human agents in the environment.")
+        
+        #############################
 
         self.episode_actions = dict()
+        
+        
+    def __str__(self):
+        message = f"TrafficEnvironment with {len(self.all_agents)} agents.\
+            \n{len(self.machine_agents)} machines and {len(self.human_agents)} humans.\
+            \nMachines: {self.machine_agents}\
+            \nHumans: {self.human_agents}"
+        return message
 
 
     def _initialize_machine_agents(self)-> None:
@@ -138,7 +126,7 @@ class TrafficEnvironment(AECEnv):
         )
 
         ## Initialize the observation object
-        self.observation_obj = PreviousAgentStart(self.machine_agents, self.human_agents, self.simulation_params, self.agent_params, self.training_params)
+        self.observation_obj = PreviousAgentStart(self.machine_agents, self.human_agents, self.simulation_params, self.agent_params, None)
 
         self._observation_spaces = self.observation_obj.observation_space()
 
@@ -149,9 +137,7 @@ class TrafficEnvironment(AECEnv):
         logging.info("\nMachine's observation space is: %s ", self._observation_spaces)
         logging.info("Machine's action space is: %s", self._action_spaces)
 
-    
     #############################
-
     ##### Simulator control #####
 
     def start(self) -> None:
@@ -160,9 +146,7 @@ class TrafficEnvironment(AECEnv):
     def stop(self) -> None:
         self.simulator.stop()
 
-
     ################################
-
     ##### PettingZoo functions #####
 
     def reset(self, seed: int = None, options: dict = None) -> tuple:
@@ -292,11 +276,8 @@ class TrafficEnvironment(AECEnv):
     def render(self) -> None:
         pass
 
-
     #########################
-
     ### Mutation function ###
-
 
     def mutation(self) -> None:
         """
@@ -344,7 +325,6 @@ class TrafficEnvironment(AECEnv):
                                                     self.simulation_params[kc.NUMBER_OF_PATHS]))
             self.possible_agents.append(str(random_human.id))
 
-
         self.n_agents = len(self.possible_agents)
         self.all_agents = self.machine_agents + self.human_agents
         self.machines = True
@@ -356,7 +336,6 @@ class TrafficEnvironment(AECEnv):
 
 
     #########################
-
     ##### Help functions #####
     
     def get_observation(self) -> tuple:
@@ -393,8 +372,7 @@ class TrafficEnvironment(AECEnv):
 
     def _reset_episode(self) -> None:
         """ Reset the environment after one day implementation."""
-        #plot_all_xmls(self.day)
-
+        
         detectors_dict = self.simulator.reset()
 
         if self.possible_agents:
@@ -434,15 +412,7 @@ class TrafficEnvironment(AECEnv):
             for agent in dc_agents
         ]
 
-        if (dc_episode in self.remember_episodes):
-            self.recorder.record(dc_episode, dc_ep_observations, rewards, cost_tables, detectors_dict)
-        elif not self.frequent_progressbar:
-            return
-        msg = f"{self.phase_names[self.curr_phase]} {self.curr_phase+1}/{len(self.phases)}"
-        curr_progress = dc_episode-self.phases[self.curr_phase]+1
-        target = (self.phases[self.curr_phase+1]) if ((self.curr_phase+1) < len(self.phases)) else self.num_episodes+1
-        target -= self.phases[self.curr_phase]
-        #show_progress_bar(msg, dc_start_time, curr_progress, target)
+        self.recorder.record(dc_episode, dc_ep_observations, rewards, cost_tables, detectors_dict)
 
 
     def _assign_rewards(self) -> None:
@@ -467,7 +437,6 @@ class TrafficEnvironment(AECEnv):
                 agent.learn(agent.last_action, self.travel_times_list)
 
     ###########################
-
     ##### Simulation loop #####
 
     def simulation_loop(self, machine_action: int, machine_id: str) -> None:
@@ -537,9 +506,7 @@ class TrafficEnvironment(AECEnv):
                 agent_action = False
                 break
 
-    
     ###########################
-
     ##### Free flow times #####
 
     def get_free_flow_times(self) -> dict:
@@ -560,10 +527,15 @@ class TrafficEnvironment(AECEnv):
 
         return ff_dict
     
-   
+    ############################
+    ###  Plotting functions  ###
+    
+    def plot_results(self) -> None:
+        """ Plot the results of the simulation. """
+        plotter(self.plotter_params)
+    
     ############################
     ### PettingZoo functions ###
-
 
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent: str) -> any:
