@@ -11,3 +11,4 @@ det.add.xml
 detectors.csv
 free_flow_times.csv
 venv/
+new_params.json

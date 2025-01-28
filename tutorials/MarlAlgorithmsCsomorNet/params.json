@@ -6,24 +6,6 @@
         "COMMENT3" : "Put all you variables into categories.",
         "COMMENT4" : "You can use dependent variables (examples below), but not below level 2"
     },
-    
-    
-    "runner_parameters":
-    {
-        "num_episodes" : 1600,
-        "episode_length": 1,
-        "phases" : [0, 100],
-        "phase_names" : ["Human learning", "Mutation - Machine learning"],
-        "remember_every" : 1,
-        "frequent_progressbar_update" : false
-    },
-
-    "phase_parameters":
-    {
-        "number_of_phases": 2,
-        "number_episodes_each_phase": [100, 1000]
-    },
-
 
     "agent_parameters" :
     {
@@ -32,31 +14,19 @@
 
         "machine_parameters" :
         {
-            "batch_size" : 32,
-
-            "appearance_phase" : 1,
-            "learning_phases" : [1, 2],
             "behavior" : "collaborative",
             "model" : "DQN",
-            "observed_span" : 300,
-            "epsilon" : 0.99,
-            "epsilon_decay_rate" : 0.998,
-            "buffer_size" : 256,
-            "learning_rate" : 0.003,
-            "num_hidden" : 2,
-            "widths" : [32, 64, 32]
+            "observed_span" : 300
         },
 
         "human_parameters" :
         {
-            "learning_phases" : [0, 2],
             "model" : "gawron",
             "alpha" : 0.2,
             "alpha_sigma": 0.2,
             "alpha_zero": 0.2,
             "beta" : 0.2,
-            "beta_randomness" : 0,
-            "appearance_phase" : "No need for this, by default appears in 0",
+            "beta_randomness" : 0.01,
             "behavior" : "No need for this, by default selfish"
         }
     },
@@ -66,6 +36,13 @@
     {
         "action_space_size" : "${path_generation_parameters.number_of_paths}",
         "number_of_days" : 1
+    },
+    
+    
+    "runner_parameters":
+    {
+        "phases" : [0, 100],
+        "phase_names" : ["Human learning", "Mutation - Machine learning"]
     },
 
 
