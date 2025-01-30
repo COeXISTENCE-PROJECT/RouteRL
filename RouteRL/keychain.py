@@ -17,7 +17,6 @@ class Keychain:
     PLOTTER = "plotter_parameters"
     AGENT_GEN = "agent_generation_parameters"
     PATH_GEN = "path_generation_parameters"
-    PHASE = "phase_parameters"
 
     ### Agent parameters
     HUMAN_PARAMETERS = "human_parameters"
@@ -25,36 +24,14 @@ class Keychain:
     # Common
     ACTION_SPACE_SIZE = "action_space_size"
     MODEL = "model"
-    APPEARANCE_PHASE = "appearance_phase"
-    LEARNING_PHASES = "learning_phases"
     BEHAVIOR = "behavior"
-    ALPHA = "alpha"
-    ALPHA_J = "alpha_j"
-    ALPHA_ZERO = "alpha_zero"
     # Human
     BETA = "beta"
     BETA_RANDOMNESS = "beta_randomness"
+    ALPHA_J = "alpha_j"
+    ALPHA_ZERO = "alpha_zero"
     # Machine
     OBSERVED_SPAN = "observed_span"
-    EPSILON = "epsilon"
-    EPSILON_DECAY_RATE = "epsilon_decay_rate"
-    BUFFER_SIZE = "buffer_size"
-    BATCH_SIZE = "batch_size"
-    LEARNING_RATE = "learning_rate"
-    NUM_HIDDEN = "num_hidden"
-    WIDTHS = "widths"
-
-    ### Phase parameters
-    NUMBER_OF_PHASES = "number_of_phases"
-    NUMBER_OF_EPISODES_EACH_PHASE = "number_episodes_each_phase"
-
-    ### Runner
-    NUM_EPISODES = "num_episodes"
-    EPISODE_LENGTH = "episode_length"
-    REMEMBER_EVERY = "remember_every"
-    PHASES = "phases"
-    PHASE_NAMES = "phase_names"
-    FREQUENT_PROGRESSBAR_UPDATE = "frequent_progressbar_update"
 
     ### Environment
     NUMBER_OF_DAYS = "number_of_days"
@@ -74,10 +51,11 @@ class Keychain:
     MULTIMODE_WIDTH = "multimode_width"
     MULTIMODE_HEIGHT = "multimode_height"
     DEFAULT_NUM_COLUMNS = "default_num_columns"
+    PHASES = "phases"
+    PHASE_NAMES = "phase_names"
 
     ### Agent generation
     NUM_AGENTS = "num_agents"
-    RATIO_MUTATING = "ratio_mutating"
     AGENT_ATTRIBUTES = "agent_attributes"
     NEW_MACHINES_AFTER_MUTATION = "new_machines_after_mutation"
     CREATE_AGENTS_DATA_PATH = "create_agents_data_path"
@@ -136,8 +114,8 @@ class Keychain:
 
     # Model encodings
     GAWRON = "gawron"
-    DQN = "dqn"
-    Q_LEARNING = "q"
+    CULO = "culo"
+    W_AVG = "w_avg"
     
     ###########################################################
 

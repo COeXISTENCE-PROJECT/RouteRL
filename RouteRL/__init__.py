@@ -5,9 +5,7 @@ from RouteRL.environment.environment import (
 )
 
 from RouteRL.learning import (
-    Gawron,
-    QLearning,
-    DQN
+    Gawron
 )
 
 from RouteRL.environment.agent import(

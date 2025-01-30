@@ -1,4 +1,6 @@
 """ PettingZoo environment for optimal route choice using SUMO simulator. """
+import os
+
 from gymnasium.spaces import Discrete
 import functools
 from copy import copy
@@ -20,6 +22,7 @@ from .agent import MachineAgent
 
 from ..services.recorder import Recorder
 from ..services.plotter import plotter
+from ..utilities import get_params
 
 
 logger = logging.getLogger()
@@ -37,30 +40,25 @@ class TrafficEnvironment(AECEnv):
     See https://pettingzoo.farama.org/ for details on PettingZoo. 
     """
     def __init__(self,
-                 params: dict,
+                 user_params: dict = {},
                  generate_agent_data: bool = True,
                  generate_paths: bool = False) -> None:
         
-        """
-        Args:
-
-            training_params (dict): Training parameters.
-            environment_params (dict): Environment parameters.
-            simulation_params (dict): Simulation parameters.
-            agent_gen_params (dict): Agent generation parameters.
-            agent_params (dict): Agent parameters.
-            plotter_params (dict): Plotter parameters.
-            path_gen_params (dict): Path generation parameters.
-        """
-        
         super().__init__()
         
-        self.agent_gen_params = params["agent_generation_parameters"]
-        self.environment_params = params["environment_parameters"]
-        self.simulation_params = params["simulator_parameters"]
-        self.agent_params = params["agent_parameters"]
-        self.plotter_params = params["plotter_parameters"]
-        self.path_gen_params = params["path_generation_parameters"] if generate_paths else None
+        # Read default parameters
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        params_file_path = os.path.join(current_dir, "params.json")
+        params = get_params(params_file_path)
+        # Update parameters with user-defined parameters
+        self.update_params(params, user_params)
+        
+        self.agent_gen_params = params[kc.AGENT_GEN]
+        self.environment_params = params[kc.ENVIRONMENT]
+        self.simulation_params = params[kc.SIMULATOR]
+        self.agent_params = params[kc.AGENTS]
+        self.plotter_params = params[kc.PLOTTER]
+        self.path_gen_params = params[kc.PATH_GEN] if generate_paths else None
         
         self.render_mode = None
         self.travel_times_list = []
@@ -111,6 +109,17 @@ class TrafficEnvironment(AECEnv):
             \nMachines: {self.machine_agents}\
             \nHumans: {self.human_agents}"
         return message
+    
+    
+    def update_params(self, original, updates):
+        for key, value in updates.items():
+            if isinstance(value, dict) and isinstance(original.get(key), dict):
+                self.update_params(original[key], value)  # Recursively update nested dictionaries
+            else:
+                if key in original:
+                    original[key] = value
+                else:
+                    raise ValueError(f"Invalid parameter: {key}")
 
 
     def _initialize_machine_agents(self)-> None:
@@ -294,10 +303,11 @@ class TrafficEnvironment(AECEnv):
         logging.info("There were %s human agents.\n", len(self.human_agents))
 
         # Mutate to a human that starts after the 25% of the rest of the vehicles
-        start_times = [human.start_time for human in self.human_agents]
-        percentile_25 = np.percentile(start_times, 25)
+        #start_times = [human.start_time for human in self.human_agents]
+        #percentile_25 = np.percentile(start_times, 25)
 
-        filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile_25]
+        #filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile_25]
+        filtered_human_agents = [human for human in self.human_agents]
 
         number_of_machines_to_be_added = self.agent_gen_params[kc.NEW_MACHINES_AFTER_MUTATION]
 
@@ -322,7 +332,7 @@ class TrafficEnvironment(AECEnv):
                                                     random_human.origin, 
                                                     random_human.destination, 
                                                     self.agent_params[kc.MACHINE_PARAMETERS], 
-                                                    self.simulation_params[kc.NUMBER_OF_PATHS]))
+                                                    self.action_space_size))
             self.possible_agents.append(str(random_human.id))
 
         self.n_agents = len(self.possible_agents)
@@ -379,16 +389,14 @@ class TrafficEnvironment(AECEnv):
             self._agent_selector = agent_selector(self.possible_agents)
             self.agent_selection = self._agent_selector.next()
 
-        phase_start_time = 0
-
-        recording_task = threading.Thread(target=self._record, args=(self.day, self.travel_times_list, phase_start_time, self.all_agents, detectors_dict))
+        recording_task = threading.Thread(target=self._record, args=(self.day, self.travel_times_list, self.all_agents, detectors_dict))
         recording_task.start()
 
         self.travel_times_list = []
         self.episode_actions = dict()
     
 
-    def _record(self, episode: int, ep_observations: dict, start_time: float, agents: list, detectors_dict: dict) -> None:
+    def _record(self, episode: int, ep_observations: dict, agents: list, detectors_dict: dict) -> None:
         """
         Record the episode data, including observations and rewards.
 
@@ -401,7 +409,7 @@ class TrafficEnvironment(AECEnv):
             agents (list): List of agent objects to record rewards for.
         """
 
-        dc_episode, dc_ep_observations, dc_start_time, dc_agents = dc(episode), dc(ep_observations), dc(start_time), dc(agents)
+        dc_episode, dc_ep_observations, dc_agents = dc(episode), dc(ep_observations), dc(agents)
 
         rewards = [{kc.AGENT_ID: agent.id, kc.REWARD: agent.last_reward} for agent in dc_agents]
         cost_tables = [

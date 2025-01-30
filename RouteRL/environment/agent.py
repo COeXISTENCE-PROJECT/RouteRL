@@ -4,8 +4,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 
 from ..keychain import Keychain as kc
-from ..learning import DQN
-from ..learning import Gawron
+from ..learning import get_learning_model
 
 
 
@@ -63,7 +62,7 @@ class HumanAgent(BaseAgent):
         kind = kc.TYPE_HUMAN
         behavior = kc.SELFISH
         super().__init__(id, kind, start_time, origin, destination, behavior)
-        self.model = Gawron(params, initial_knowledge)
+        self.model = get_learning_model(params, initial_knowledge)
         self.last_reward = None
         
     def __repr__(self):

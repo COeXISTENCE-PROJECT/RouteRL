@@ -3,12 +3,10 @@ __pycache__/
 summary.xml
 tripinfo.xml
 fcd.xml
-testparams.json
-playground.py
 training_records/
 plots/
 det.add.xml
 detectors.csv
+playground.ipynb
 free_flow_times.csv
 venv/
-new_params.json

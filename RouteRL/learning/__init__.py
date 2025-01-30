@@ -1,3 +1,7 @@
-from .learning_model import DQN
-from .learning_model import Gawron
-from .learning_model import QLearning
+from .learning_model import (
+    Gawron,
+    Culo,
+    WeightedAverage
+)
+
+from .registry import get_learning_model
