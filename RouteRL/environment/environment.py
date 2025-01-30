@@ -1,29 +1,27 @@
 """ PettingZoo environment for optimal route choice using SUMO simulator. """
 import os
 
-from gymnasium.spaces import Discrete
-import functools
 from copy import copy
 from copy import deepcopy as dc
+from gymnasium.spaces import Discrete
+
+import functools
 import logging
-import numpy as np
 import pandas as pd
 import random
 import threading
 
-from ..create_agents import create_agent_objects
-from ..generate_agent_data import generate_agents_data
-from .simulator import SumoSimulator
-from ..keychain import Keychain as kc
-from pettingzoo.utils.env import AECEnv
-from pettingzoo.utils import agent_selector
-from .observations import PreviousAgentStart
 from .agent import MachineAgent
-
+from .agent_generation import create_agent_objects, generate_agents_data
+from ..keychain import Keychain as kc
+from .observations import PreviousAgentStart
+from .simulator import SumoSimulator
 from ..services.recorder import Recorder
 from ..services.plotter import plotter
 from ..utilities import get_params
 
+from pettingzoo.utils.env import AECEnv
+from pettingzoo.utils import agent_selector
 
 logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
@@ -51,7 +49,7 @@ class TrafficEnvironment(AECEnv):
         params_file_path = os.path.join(current_dir, "params.json")
         params = get_params(params_file_path)
         # Update parameters with user-defined parameters
-        self.update_params(params, user_params)
+        self._update_params(params, user_params)
         
         self.agent_gen_params = params[kc.AGENT_GEN]
         self.environment_params = params[kc.ENVIRONMENT]
@@ -111,10 +109,10 @@ class TrafficEnvironment(AECEnv):
         return message
     
     
-    def update_params(self, original, updates):
+    def _update_params(self, original, updates):
         for key, value in updates.items():
             if isinstance(value, dict) and isinstance(original.get(key), dict):
-                self.update_params(original[key], value)  # Recursively update nested dictionaries
+                self._update_params(original[key], value)
             else:
                 if key in original:
                     original[key] = value

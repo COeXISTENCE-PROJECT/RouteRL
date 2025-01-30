@@ -5,14 +5,20 @@ from RouteRL.environment.environment import (
 )
 
 from RouteRL.learning import (
-    Gawron
+    Gawron,
+    Culo,
+    WeightedAverage,
 )
 
 from RouteRL.environment.agent import(
     BaseAgent,
     HumanAgent,
     MachineAgent,
+)
 
+from RouteRL.environment.agent_generation import (
+    create_agent_objects,
+    generate_agents_data
 )
 
 from RouteRL.environment.observations import(
@@ -34,8 +40,4 @@ from RouteRL.utilities import (
     confirm_env_variable,
     set_seeds,
     make_dir
-)
-
-from RouteRL.generate_agent_data import (
-    generate_agents_data
 )
