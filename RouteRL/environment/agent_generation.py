@@ -1,5 +1,3 @@
-import os
-
 import logging
 import numpy as np
 import pandas as pd
@@ -14,22 +12,20 @@ logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
 
 
-def create_agent_objects(params, free_flow_times):
+def generate_agents(params, free_flow_times, generate_data, seed=23423):
 
     """
     Generates agent objects
     """
 
-    # Getting parameters
-
-    action_space_size = params[kc.ACTION_SPACE_SIZE]
-    agents_data_path = params[kc.CREATE_AGENTS_DATA_PATH]
-    if os.path.isfile(agents_data_path):
-        logging.info("[CONFIRMED] Agents data file is ready.")
+    set_seed(seed)
+    if generate_data:
+        agents_data_df = generate_agent_data(params, seed)
     else:
-        raise FileNotFoundError("Agents data file is not ready. Please generate agents data first.")
-    
-    agents_data_df = pd.read_csv(agents_data_path)
+        agents_data_df = pd.read_csv(params[kc.AGENTS_CSV_PATH])
+
+    # Getting parameters
+    action_space_size = params[kc.ACTION_SPACE_SIZE]
     agents = list()     # Where we will store & return agents
     
     # Generating agent objects from generated agent data
@@ -50,16 +46,14 @@ def create_agent_objects(params, free_flow_times):
             agents.append(HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge))
         else:
             raise ValueError('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_KIND])
-
-    logging.info(f'[SUCCESS] Created agent objects (%d)' % (len(agents)))
     return agents
 
 
 
-def generate_agents_data(params):
+def generate_agent_data(params, seed=23423):
 
     """
-    Generates agents data
+    Generates agent data
     Constructs a dataframe, where each row is an agent and columns are attributes
     """
     
@@ -68,9 +62,12 @@ def generate_agents_data(params):
     simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]
     num_origins = len(params[kc.ORIGINS])
     num_destinations = len(params[kc.DESTINATIONS])
-    agents_data_path = params[kc.AGENTS_DATA_PATH]
+    rng = set_seed(seed)
 
     agents_df = pd.DataFrame(columns=agent_attributes)  # Where we store our agents
+    
+    mean_timestep = simulation_timesteps / 2
+    std_dev_timestep = simulation_timesteps / 6
 
     # Generating agent data
     for id in range(num_agents):
@@ -82,9 +79,7 @@ def generate_agents_data(params):
         origin, destination = random.randrange(num_origins), random.randrange(num_destinations)
 
         # Randomly assign start time (normal dist)
-        mean_timestep = simulation_timesteps / 2
-        std_dev_timestep = simulation_timesteps / 6
-        start_time = int(np.random.normal(mean_timestep, std_dev_timestep))
+        start_time = int(rng.normal(mean_timestep, std_dev_timestep))
         start_time = max(0, min(simulation_timesteps, start_time))
 
         # Registering to the dataframe
@@ -92,6 +87,13 @@ def generate_agents_data(params):
         agent_dict = {attribute : feature for attribute, feature in zip(agent_attributes, agent_features)}
         agents_df.loc[id] = agent_dict
         
-        agents_df.to_csv(agents_data_path, index = False)
-
+    agents_df.to_csv(params[kc.AGENTS_CSV_PATH], index=False)
     return agents_df
+
+
+def set_seed(seed: int) -> None:
+    """ Set the seed for random number generation. """
+    random.seed(seed)
+    np.random.seed(seed)
+    rng = np.random.default_rng(seed)
+    return rng

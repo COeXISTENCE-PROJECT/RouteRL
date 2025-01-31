@@ -1,8 +1,14 @@
 {
     "agent_parameters" :
     {
-        "create_agents_data_path": "training_records/agents_data.csv",
+        "num_agents" : 100,
+        "new_machines_after_mutation": 25,
+        "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
+        "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",
+        "origins" : "${path_generation_parameters.origins}",
+        "destinations" : "${path_generation_parameters.destinations}",
         "action_space_size" : "${path_generation_parameters.number_of_paths}",
+        "agents_csv_path" : "training_records/agents.csv",
 
         "machine_parameters" :
         {
@@ -20,37 +26,37 @@
         }
     },
 
+    
     "environment_parameters":
     {
         "action_space_size" : "${path_generation_parameters.number_of_paths}",
-        "number_of_days" : 1,
-        "seed" : 23423
+        "number_of_days" : 1
     },
 
 
     "simulator_parameters":
     {
+        "network_name" : "csomor",
         "simulation_timesteps" : 50,
-        "seed" : "${environment_parameters.seed}",
         "sumo_type" : "sumo",
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "env_var" : "SUMO_HOME",
 
-        "connection_file_path": "../../RouteRL/network_and_config/csomor/csomor.con.xml",
-        "edge_file_path": "../../RouteRL/network_and_config/csomor/csomor.edg.xml",
-        "nod_file_path": "../../RouteRL/network_and_config/csomor/csomor.nod.xml",
-        "sumo_config_path": "../../RouteRL/network_and_config/csomor/csomor.sumocfg",
-        "route_file_path": "../../RouteRL/network_and_config/csomor/csomor.rou.xml",
-        "sumo_fcd": "../../RouteRL/network_and_config/csomor/fcd.xml",
-        "route_save_file_path": "../../RouteRL/network_and_config/csomor/route.rou.xml",
-
-        "paths_csv_save_path": "training_records/paths.csv",
-
-        "figures_save_path": "plots/",
-        "free_flow_times_csv": "../../RouteRL/network_and_config/csomor/free_flow_times.csv",
-
-        "paths_csv_save_detectors": "../../RouteRL/network_and_config/csomor/detectors.csv"
+        "plots_folder": "${plotter_parameters.plots_folder}",
+        "paths_csv_save_path": "training_records/paths.csv"
     },
+        
+
+    "path_generation_parameters":
+    {
+        "number_of_paths" : 3,
+        "beta" : -3,
+        "weight" : "time",
+        "num_samples" : 100,
+
+        "origins" : ["441496282#0", "154551772#1"],
+        "destinations" : ["-115604057#1", "-279952229#4"]
+    }, 
 
 
     "plotter_parameters":
@@ -58,8 +64,15 @@
         "smooth_by" : 50,
         
         "phases" : [0, 100],
-        "phase_names" : ["Human learning", "Mutation - Machine learning"],
-        "colors" : ["firebrick", "teal", "peru", "navy", "salmon", "slategray", "darkviolet", "goldenrod", "darkolivegreen", "dodgerblue"],
+        "phase_names" : [
+            "Human learning", 
+            "Mutation - Machine learning"
+        ],
+
+        "colors" : [
+            "firebrick", "teal", "peru", "navy", 
+            "salmon", "slategray", "darkviolet", 
+            "goldenrod", "darkolivegreen", "dodgerblue"],
         "linestyles" : ["solid", "dotted", "dashed", "dashdot"],
         "default_width" : 12,
         "default_height" : 6,
@@ -85,33 +98,5 @@
         "actions_plot_file_name": "actions.png",
         "actions_shifts_plot_file_name": "actions_shifts.png",
         "machine_agents_epsilons_plot_file_name": "epsilons.png"
-    },
-
-
-    "agent_generation_parameters" :
-    {
-        "num_agents" : 100,
-        "new_machines_after_mutation": 25,
-        "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
-        "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",
-        "origins" : "${path_generation_parameters.origins}",
-        "destinations" : "${path_generation_parameters.destinations}",
-
-        "agents_data_path": "${agent_parameters.create_agents_data_path}"
-    },
-        
-
-    "path_generation_parameters":
-    {
-        "number_of_paths" : 3,
-        "beta" : -3,
-        "weight" : "time",
-        "num_samples" : 100,
-
-        "origins" : ["441496282#0", "154551772#1"],
-        "destinations" : ["-115604057#1", "-279952229#4"],
-
-        "COMMENT5" : "Make sure origins are not dead-ends",
-        "COMMENT6" : "Make sure destinations are reachable"
-    } 
+    }
 }

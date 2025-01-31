@@ -2,20 +2,15 @@ class Keychain:
 
     """
     This is where we store our file paths, parameter access keys and other constants reliably
-    When change needed, just fix it here! Avoid hardcoding...
+    When change needed, just fix it here.
     """
-    
-    MODE = "" # empty string if not testing, test otherwise
-    # In case of test, make sure to create a test param file named "testparams.json" in the root folder
 
     ################ PARAMETER ACCESS KEYS ####################
 
     AGENTS = "agent_parameters"
-    RUNNER = "runner_parameters"
     ENVIRONMENT = "environment_parameters"
     SIMULATOR = "simulator_parameters"
     PLOTTER = "plotter_parameters"
-    AGENT_GEN = "agent_generation_parameters"
     PATH_GEN = "path_generation_parameters"
 
     ### Agent parameters
@@ -37,8 +32,8 @@ class Keychain:
     NUMBER_OF_DAYS = "number_of_days"
 
     ### Simulator
+    NETWORK_NAME = "network_name"
     SUMO_TYPE = "sumo_type"
-    SEED = 'seed'
     ENV_VAR = "env_var"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
 
@@ -58,7 +53,6 @@ class Keychain:
     NUM_AGENTS = "num_agents"
     AGENT_ATTRIBUTES = "agent_attributes"
     NEW_MACHINES_AFTER_MUTATION = "new_machines_after_mutation"
-    CREATE_AGENTS_DATA_PATH = "create_agents_data_path"
 
     ### Path generation
     NUMBER_OF_PATHS = "number_of_paths"
@@ -71,7 +65,6 @@ class Keychain:
 
     ###########################################################
     
-
     #################### CONSTANTS ############################
 
     NOT_AVAILABLE = "N/A"
@@ -119,30 +112,19 @@ class Keychain:
     
     ###########################################################
 
-
     ####################### FILE PATHS ########################
 
-    CONNECTION_FILE_PATH = "connection_file_path"
-    EDGE_FILE_PATH = "edge_file_path"
-    NOD_FILE_PATH = "nod_file_path"
-    ROUTE_FILE_PATH = "route_file_path"
-    ROUTE_SAVE_FILE_PATH = "route_save_file_path"
-    SUMO_CONFIG_PATH = "sumo_config_path"
-    PATHS_CSV_SAVE_DETECTORS = "paths_csv_save_detectors"
-    NETWORK_XML = "network_xml"
-    DETECTOR_XML_SAVE_PATH = "detector_xml_save_path"
-    FREE_FLOW_TIMES_CSV = "free_flow_times_csv"
-    TRIP_INFO_XML = "trip_info_xml"
-    SUMMARY_XML = "summary_xml"
-    SUMO_FCD = "sumo_fcd"
+    CONNECTION_FILE_PATH = "../network_and_config/$net$/$net$.con.xml"
+    EDGE_FILE_PATH = "../network_and_config/$net$/$net$.edg.xml"
+    NOD_FILE_PATH = "../network_and_config/$net$/$net$.nod.xml"
+    SUMO_CONFIG_PATH = "../network_and_config/$net$/$net$.sumocfg"
+    ROUTE_FILE_PATH = "../network_and_config/$net$/$net$.rou.xml"
+    SUMO_FCD = "../network_and_config/$net$/fcd.xml"
+    ROUTE_SAVE_FILE_PATH = "../network_and_config/$net$/route.rou.xml"
+    DETECTORS_CSV_PATH = "../network_and_config/$net$/detectors.csv"
     
     PATHS_CSV_SAVE_PATH = "paths_csv_save_path"
-    FIGURES_SAVE_PATH = "figures_save_path"
-    AGENTS_DATA_PATH = "agents_data_path"
-    SAVE_TRIPINFO_XML = "save_tripinfo_xml"
-    SAVE_TRAJECTORIES_XML = "save_trajectories_xml"
-    SAVE_FCD_BASED_SPEEDS = "save_fcd_based_speeds"
-    SAVE_SUMMARY_XML = "save_summary_xml"
+    AGENTS_CSV_PATH = "agents_csv_path"
 
     RECORDS_FOLDER = "records_folder"
     EPISODES_LOGS_FOLDER = "episodes_logs_folder"
@@ -155,12 +137,9 @@ class Keychain:
     REWARDS_PLOT_FILE_NAME = "reward_plot_file_name"
     TRAVEL_TIMES_PLOT_FILE_NAME = "travel_times_plot_file_name"
     TT_DIST_PLOT_FILE_NAME = "tt_dist_plot_file_name"
-    FF_TRAVEL_TIME_PLOT_FILE_NAME = "ff_travel_time_plot_file_name"
-    FLOWS_PLOT_FILE_NAME = "flows_plot_file_name"
     SIMULATION_LENGTH_PLOT_FILE_NAME = "simulation_length_plot_file_name"
     LOSSES_PLOT_FILE_NAME = "losses_plot_file_name"
     ACTIONS_PLOT_FILE_NAME = "actions_plot_file_name"
     ACTIONS_SHIFTS_PLOT_FILE_NAME = "actions_shifts_plot_file_name"
-    MACHINE_AGENTS_EPSILONS_PLOT_FILE_NAME = "machine_agents_epsilons_plot_file_name"
     
     ###########################################################

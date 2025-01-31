@@ -17,8 +17,8 @@ from RouteRL.environment.agent import(
 )
 
 from RouteRL.environment.agent_generation import (
-    create_agent_objects,
-    generate_agents_data
+    generate_agents,
+    generate_agent_data
 )
 
 from RouteRL.environment.observations import(
@@ -35,9 +35,8 @@ from RouteRL.services import(
 )
 
 from RouteRL.utilities import (
-    check_device,
     get_params,
     confirm_env_variable,
-    set_seeds,
-    make_dir
+    make_dir,
+    update_params
 )

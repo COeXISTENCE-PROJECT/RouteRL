@@ -13,13 +13,13 @@ import random
 import threading
 
 from .agent import MachineAgent
-from .agent_generation import create_agent_objects, generate_agents_data
+from .agent_generation import generate_agents
 from ..keychain import Keychain as kc
 from .observations import PreviousAgentStart
 from .simulator import SumoSimulator
 from ..services.recorder import Recorder
 from ..services.plotter import plotter
-from ..utilities import get_params
+from ..utilities import get_params, update_params
 
 from pettingzoo.utils.env import AECEnv
 from pettingzoo.utils import agent_selector
@@ -39,27 +39,25 @@ class TrafficEnvironment(AECEnv):
     See https://pettingzoo.farama.org/ for details on PettingZoo. 
     """
     def __init__(self,
-                 user_params: dict = {},
-                 generate_agent_data: bool = True,
-                 generate_paths: bool = False) -> None:
+                 seed: int = 23423,
+                 create_agents: bool = True,
+                 create_paths: bool = True,
+                 **kwargs) -> None:
         
         super().__init__()
+        self.render_mode = None
         
-        # Read default parameters
+        # Read default parameters, update w kwargs
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        params_file_path = os.path.join(current_dir, "params.json")
-        params = get_params(params_file_path)
-        # Update parameters with user-defined parameters
-        self._update_params(params, user_params)
+        params = get_params(os.path.join(current_dir, "params.json"))
+        update_params(params, kwargs)
         
-        self.agent_gen_params = params[kc.AGENT_GEN]
         self.environment_params = params[kc.ENVIRONMENT]
         self.simulation_params = params[kc.SIMULATOR]
         self.agent_params = params[kc.AGENTS]
         self.plotter_params = params[kc.PLOTTER]
-        self.path_gen_params = params[kc.PATH_GEN] if generate_paths else None
+        self.path_gen_params = params[kc.PATH_GEN] if create_paths else None
         
-        self.render_mode = None
         self.travel_times_list = []
         self.day = 0
         self.human_learning = True
@@ -68,36 +66,24 @@ class TrafficEnvironment(AECEnv):
 
         self.number_of_days = self.environment_params[kc.NUMBER_OF_DAYS]
         self.action_space_size = self.environment_params[kc.ACTION_SPACE_SIZE]
-        self._set_seed(self.environment_params[kc.SEED])
+        self._set_seed(seed)
         
         #############################
         
         self.recorder = Recorder(self.plotter_params)
-        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params)
-        logging.info("Simulator initiated!")
+        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed)
         
         #############################
-
-        if generate_agent_data:
-            generate_agents_data(self.agent_gen_params)
-
-        self.all_agents = create_agent_objects(self.agent_params, self.get_free_flow_times())
         
+        self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed)
         self.machine_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_MACHINE]
         self.human_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_HUMAN]
         self.possible_agents = list()
         
-        logging.info(f"There are {len(self.machine_agents)} machine agents in the environment.")
-        logging.info(f"There are {len(self.human_agents)} human agents in the environment.")
+        if len(self.machine_agents):    self._initialize_machine_agents()
+        if not self.human_agents:   self.human_learning = False
+        logging.info(f"There are {len(self.human_agents)} human and {len(self.machine_agents)} machine agents.")
             
-        #############################
-            
-        if len(self.machine_agents):
-            self._initialize_machine_agents()
-        
-        if not self.human_agents:
-            self.human_learning = False
-        
         #############################
 
         self.episode_actions = dict()
@@ -115,18 +101,8 @@ class TrafficEnvironment(AECEnv):
         """ Set the seed for random number generation. """
         random.seed(seed)
         np.random.seed(seed)
+        self.seed = seed
         logging.info(f"Seed set to {seed}.")
-        
-
-    def _update_params(self, original, updates):
-        for key, value in updates.items():
-            if isinstance(value, dict) and isinstance(original.get(key), dict):
-                self._update_params(original[key], value)
-            else:
-                if key in original:
-                    original[key] = value
-                else:
-                    raise ValueError(f"Invalid parameter: {key}")
 
 
     def _initialize_machine_agents(self)-> None:
@@ -288,14 +264,11 @@ class TrafficEnvironment(AECEnv):
             dict: The observations for the specified agent.
         """
         return self.observation_obj.agent_observations(agent)
-    
-    def render(self) -> None:
-        pass
 
     #########################
     ### Mutation function ###
 
-    def mutation(self) -> None:
+    def mutation(self, disable_human_learning: bool = True) -> None:
         """
         Perform mutation by converting selected human agents into machine agents.
 
@@ -316,7 +289,7 @@ class TrafficEnvironment(AECEnv):
         #filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile_25]
         filtered_human_agents = [human for human in self.human_agents]
 
-        number_of_machines_to_be_added = self.agent_gen_params[kc.NEW_MACHINES_AFTER_MUTATION]
+        number_of_machines_to_be_added = self.agent_params[kc.NEW_MACHINES_AFTER_MUTATION]
 
         random_humans_deleted = []
 
@@ -327,7 +300,7 @@ class TrafficEnvironment(AECEnv):
                 f"Decrease the number of machines to be added after the mutation.\n"
             )
 
-        for i in range(0, number_of_machines_to_be_added):
+        for _ in range(0, number_of_machines_to_be_added):
             random_human = random.choice(filtered_human_agents)
 
             self.human_agents.remove(random_human)
@@ -344,10 +317,10 @@ class TrafficEnvironment(AECEnv):
 
         self.n_agents = len(self.possible_agents)
         self.all_agents = self.machine_agents + self.human_agents
-        self.machines = True
-        self.human_learning = False
+        
+        if disable_human_learning:  self.human_learning = False
 
-        logging.info("Now there are %s human agents.\n", len(self.human_agents))
+        logging.info(f"Now there are {len(self.human_agents)} human agents.")
         
         self._initialize_machine_agents()
 
@@ -366,7 +339,7 @@ class TrafficEnvironment(AECEnv):
         """
         return self.simulator.timestep, self.episode_actions.values()
 
-    def help_step(self, actions: list[tuple]) -> dict:
+    def _help_step(self, actions: list[tuple]) -> dict:
         """ This function is responsible for supplying the simulator with the actions of vehicles
         that begin their journey at the current timestep. 
         Simultaneously, it records the travel times of vehicles that finished their trip this timestep."""
@@ -401,33 +374,6 @@ class TrafficEnvironment(AECEnv):
 
         self.travel_times_list = []
         self.episode_actions = dict()
-    
-
-    def _record(self, episode: int, ep_observations: dict, agents: list, detectors_dict: dict) -> None:
-        """
-        Record the episode data, including observations and rewards.
-
-        This method logs the observations and rewards for the current episode and updates the progress of the simulation.
-
-        Args:
-            episode (int): The current episode number.
-            ep_observations (dict): Observations recorded during the episode.
-            start_time (float): The start time of the episode.
-            agents (list): List of agent objects to record rewards for.
-        """
-
-        dc_episode, dc_ep_observations, dc_agents = dc(episode), dc(ep_observations), dc(agents)
-
-        rewards = [{kc.AGENT_ID: agent.id, kc.REWARD: agent.last_reward} for agent in dc_agents]
-        cost_tables = [
-            {
-                kc.AGENT_ID: agent.id,
-                kc.COST_TABLE: getattr(agent.model, 'cost', [0] * self.action_space_size) if hasattr(agent, 'model') else [0] * self.action_space_size
-            }
-            for agent in dc_agents
-        ]
-
-        self.recorder.record(dc_episode, dc_ep_observations, rewards, cost_tables, detectors_dict)
 
 
     def _assign_rewards(self) -> None:
@@ -508,7 +454,7 @@ class TrafficEnvironment(AECEnv):
 
             # If all machines that have start time as the simulator timestep acted
             if not self.machine_same_start_time: 
-                travel_times = self.help_step(self.actions_timestep)
+                travel_times = self._help_step(self.actions_timestep)
 
                 for agent_dict in travel_times:
                     self.travel_times_list.append(agent_dict)
@@ -543,8 +489,35 @@ class TrafficEnvironment(AECEnv):
         return ff_dict
     
     ############################
-    ###  Plotting functions  ###
+    ##########  W/R   ##########
     
+    def _record(self, episode: int, ep_observations: dict, agents: list, detectors_dict: dict) -> None:
+        """
+        Record the episode data, including observations and rewards.
+
+        This method logs the observations and rewards for the current episode and updates the progress of the simulation.
+
+        Args:
+            episode (int): The current episode number.
+            ep_observations (dict): Observations recorded during the episode.
+            start_time (float): The start time of the episode.
+            agents (list): List of agent objects to record rewards for.
+        """
+
+        dc_episode, dc_ep_observations, dc_agents = dc(episode), dc(ep_observations), dc(agents)
+
+        rewards = [{kc.AGENT_ID: agent.id, kc.REWARD: agent.last_reward} for agent in dc_agents]
+        cost_tables = [
+            {
+                kc.AGENT_ID: agent.id,
+                kc.COST_TABLE: getattr(agent.model, 'cost', [0] * self.action_space_size) if hasattr(agent, 'model') else [0] * self.action_space_size
+            }
+            for agent in dc_agents
+        ]
+
+        self.recorder.record(dc_episode, dc_ep_observations, rewards, cost_tables, detectors_dict)
+        
+        
     def plot_results(self) -> None:
         """ Plot the results of the simulation. """
         plotter(self.plotter_params)
@@ -552,10 +525,12 @@ class TrafficEnvironment(AECEnv):
     ############################
     ### PettingZoo functions ###
 
+    def render(self) -> None:
+        pass
+    
     @functools.lru_cache(maxsize=None)
     def observation_space(self, agent: str) -> any:
         return self._observation_spaces[agent]
-
 
     @functools.lru_cache(maxsize=None)
     def action_space(self, agent: str) -> any:
