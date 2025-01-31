@@ -42,7 +42,6 @@ class Plotter:
         self.episodes_folder = make_dir([self.records_folder, params[kc.EPISODES_LOGS_FOLDER]])
         self.sim_length_file_path = make_dir(self.records_folder, params[kc.SIMULATION_LENGTH_LOG_FILE_NAME])
         self.loss_file_path = make_dir(self.records_folder, params[kc.LOSSES_LOG_FILE_NAME])
-        self.free_flow_times_file_path = os.path.join(self.records_folder, params[kc.FREE_FLOW_TIMES_CSV_FILE_NAME])
 
         self.saved_episodes = list()
 

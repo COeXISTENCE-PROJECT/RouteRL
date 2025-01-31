@@ -150,7 +150,6 @@ class Keychain:
     LOSSES_LOG_FILE_NAME = "losses_log_file_name"
     DETECTOR_LOGS_FOLDER = 'detector_logs_folder'
     PATHS_CSV_FILE_NAME = "paths_csv_file_name"
-    FREE_FLOW_TIMES_CSV_FILE_NAME = "free_flow_times_csv_file_name"
 
     PLOTS_FOLDER = "plots_folder"
     REWARDS_PLOT_FILE_NAME = "reward_plot_file_name"

@@ -10,3 +10,5 @@ detectors.csv
 playground.ipynb
 free_flow_times.csv
 venv/
+agents_data.csv
+paths.csv

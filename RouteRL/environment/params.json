@@ -1,7 +1,7 @@
 {
     "agent_parameters" :
     {
-        "create_agents_data_path": "../../RouteRL/network_and_config/agents_data.csv",
+        "create_agents_data_path": "training_records/agents_data.csv",
         "action_space_size" : "${path_generation_parameters.number_of_paths}",
 
         "machine_parameters" :
@@ -23,14 +23,15 @@
     "environment_parameters":
     {
         "action_space_size" : "${path_generation_parameters.number_of_paths}",
-        "number_of_days" : 1
+        "number_of_days" : 1,
+        "seed" : 23423
     },
 
 
     "simulator_parameters":
     {
         "simulation_timesteps" : 50,
-        "seed" : "23423",
+        "seed" : "${environment_parameters.seed}",
         "sumo_type" : "sumo",
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "env_var" : "SUMO_HOME",
@@ -39,10 +40,11 @@
         "edge_file_path": "../../RouteRL/network_and_config/csomor/csomor.edg.xml",
         "nod_file_path": "../../RouteRL/network_and_config/csomor/csomor.nod.xml",
         "sumo_config_path": "../../RouteRL/network_and_config/csomor/csomor.sumocfg",
-        "paths_csv_save_path": "../../RouteRL/network_and_config/csomor/paths.csv",
         "route_file_path": "../../RouteRL/network_and_config/csomor/csomor.rou.xml",
-        "route_save_file_path": "../../RouteRL/network_and_config/csomor/route.rou.xml",
         "sumo_fcd": "../../RouteRL/network_and_config/csomor/fcd.xml",
+        "route_save_file_path": "../../RouteRL/network_and_config/csomor/route.rou.xml",
+
+        "paths_csv_save_path": "training_records/paths.csv",
 
         "figures_save_path": "plots/",
         "free_flow_times_csv": "../../RouteRL/network_and_config/csomor/free_flow_times.csv",
@@ -71,7 +73,6 @@
         "losses_log_file_name": "losses.txt",
         "detector_logs_folder": "detector",
         "paths_csv_file_name": "paths.csv",
-        "free_flow_times_csv_file_name": "../../path_generation/free_flow_times.csv",
 
         "plots_folder": "plots",
         "reward_plot_file_name": "rewards.png",
@@ -91,13 +92,12 @@
     {
         "num_agents" : 100,
         "new_machines_after_mutation": 25,
-        "ratio_mutating" : 0.25,
         "agent_attributes" : ["id", "origin", "destination", "start_time", "kind"],
         "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",
         "origins" : "${path_generation_parameters.origins}",
         "destinations" : "${path_generation_parameters.destinations}",
 
-        "agents_data_path": "../../RouteRL/network_and_config/agents_data.csv"
+        "agents_data_path": "${agent_parameters.create_agents_data_path}"
     },
         
 

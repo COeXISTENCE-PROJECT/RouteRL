@@ -7,6 +7,7 @@ from gymnasium.spaces import Discrete
 
 import functools
 import logging
+import numpy as np
 import pandas as pd
 import random
 import threading
@@ -67,6 +68,7 @@ class TrafficEnvironment(AECEnv):
 
         self.number_of_days = self.environment_params[kc.NUMBER_OF_DAYS]
         self.action_space_size = self.environment_params[kc.ACTION_SPACE_SIZE]
+        self._set_seed(self.environment_params[kc.SEED])
         
         #############################
         
@@ -109,6 +111,13 @@ class TrafficEnvironment(AECEnv):
         return message
     
     
+    def _set_seed(self, seed: int) -> None:
+        """ Set the seed for random number generation. """
+        random.seed(seed)
+        np.random.seed(seed)
+        logging.info(f"Seed set to {seed}.")
+        
+
     def _update_params(self, original, updates):
         for key, value in updates.items():
             if isinstance(value, dict) and isinstance(original.get(key), dict):

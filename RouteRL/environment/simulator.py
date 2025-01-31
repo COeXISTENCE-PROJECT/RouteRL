@@ -31,7 +31,7 @@ class SumoSimulator():
         self.env_var = params[kc.ENV_VAR]
         self.number_of_paths = params[kc.NUMBER_OF_PATHS]
         self.simulation_length = params[kc.SIMULATION_TIMESTEPS]
-        self.seed = params[kc.SEED] 
+        self.seed = str(params[kc.SEED])
         self.detector_save_path = params[kc.PATHS_CSV_SAVE_DETECTORS]
 
         ## Detectors
