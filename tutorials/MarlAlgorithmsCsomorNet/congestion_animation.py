@@ -13,22 +13,22 @@ if __name__ == "__main__":
 
     # File paths
     network_name = "csomor"
-    nod_file_path = f"../../RouteRL/network_and_config/{network_name}/{network_name}1.nod.xml"
-    edg_file_path = f"../../RouteRL/network_and_config/{network_name}/{network_name}1.edg.xml"
+    nod_file_path = f"../../RouteRL/network_and_config/{network_name}/{network_name}.nod.xml"
+    edg_file_path = f"../../RouteRL/network_and_config/{network_name}/{network_name}.edg.xml"
 
-    num_frames = 100
+    num_frames = 20
     interval = 5
     frame_duration = 500
     
-    read_routes_from = f"../../RouteRL/network_and_config/{network_name}/paths.csv"
+    read_routes_from = f"training_records/paths.csv"
     save_figs_path = f"plots/"
-    os.makedirs(save_figs_path, exist_ok=True)
     save_frames_path = f"plots/frames/"
     save_gif_to = f"plots/animation.gif"
 
     ########################################################
     
     ##################### Create mock edge attributes ############################
+    os.makedirs(save_figs_path, exist_ok=True)
     routes = pd.read_csv(read_routes_from)
     routes = routes["path"].values
 
