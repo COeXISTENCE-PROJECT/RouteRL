@@ -1,25 +1,29 @@
 import json
-import numpy as np
 import os
-import random
 import sys
 import time
 import torch
 
 from prettytable import PrettyTable
-
-
-
-def check_device():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"[INFO] Running on device: {device}")
     
-
-
-def get_params(file_path):      # Read params.json, resolve dependencies
+    
+def get_params(file_path):
+    # Read params.json, resolve dependencies
     params = read_json(file_path)
     params = resolve_param_dependencies(params)
     return params
+
+
+
+def update_params(old_params: dict, new_params: dict):
+    for key, value in new_params.items():
+        if isinstance(value, dict) and isinstance(old_params.get(key), dict):
+            update_params(old_params[key], value)
+        else:
+            if key in old_params:
+                old_params[key] = value
+            else:
+                raise ValueError(f"Invalid parameter: {key}")
 
 
 
@@ -57,14 +61,6 @@ def read_json(file_path):    # Read json file, return as dict
         print(f"[ERROR] Cannot locate: %s" % (file_path))
         raise
     return file_data
-
-
-
-def set_seeds(seed=42):    # Set seeds for reproducibility
-    np.random.seed(seed)
-    random.seed(seed)
-
-
 
 def make_dir(folders, filename=None):    # Make dir if not exists, make full path
     if not folders:

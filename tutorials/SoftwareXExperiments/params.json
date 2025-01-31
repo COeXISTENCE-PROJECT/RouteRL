@@ -146,7 +146,7 @@
         "max_path_length" : 200,
         "route_utility_coeffs" : [0.2, 0.2, 0.2, 0.4],
 
-        "origins" : ["441496282#0", "154551772#1"],
+        "origins" : ["0"],
         "destinations" : ["-115604057#1", "-279952229#4"],
 
         "COMMENT5" : "Make sure origins are not dead-ends",

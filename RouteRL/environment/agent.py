@@ -4,8 +4,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 
 from ..keychain import Keychain as kc
-from ..learning import DQN
-from ..learning import Gawron
+from ..learning import get_learning_model
 
 
 
@@ -13,27 +12,14 @@ class BaseAgent(ABC):
     """
     This is an abstract class for agents, to be inherited by specific type of agent classes
     """
-    def __init__(self, id, kind, start_time, origin, destination, behavior, learning_phases):
+    def __init__(self, id, kind, start_time, origin, destination, behavior):
         self.id = id
         self.kind = kind
         self.start_time = start_time
         self.origin = origin
         self.destination = destination
         self.behavior = behavior
-        self.learning_phases = learning_phases
         self.last_action = 0
-
-    @property
-    @abstractmethod
-    def is_learning(self):
-        # Return True if the agent is in a learning phase, False otherwise
-        pass
-
-    @is_learning.setter
-    @abstractmethod
-    def is_learning(self, phase):
-        # Set the learning state of the agent
-        pass
 
     @property
     @abstractmethod
@@ -72,32 +58,15 @@ class BaseAgent(ABC):
 class HumanAgent(BaseAgent):
     """ Class representing human drivers, responsible for modeling their learning process and decision-making in route selection. """
 
-    def __init__(self, id, start_time, origin, destination, params, initial_knowledge, mutate_to=None):
+    def __init__(self, id, start_time, origin, destination, params, initial_knowledge, **kwargs):
         kind = kc.TYPE_HUMAN
         behavior = kc.SELFISH
-        learning_phases = params[kc.LEARNING_PHASES]
-        super().__init__(id, kind, start_time, origin, destination, behavior, learning_phases)
-        self.mutate_to = mutate_to
-        self.model = Gawron(params, initial_knowledge) 
-        self.is_learning = True
+        super().__init__(id, kind, start_time, origin, destination, behavior)
+        self.model = get_learning_model(params, initial_knowledge)
         self.last_reward = None
         
     def __repr__(self):
         return f"Human {self.id}"
-
-    @property
-    def is_learning(self):
-        return self._is_learning
-
-    @is_learning.setter
-    def is_learning(self, phase):
-        ### In the environement is implemented the learning or not learning
-        ### Maybe it should be deleted from here ~ Anastasia
-        self._is_learning = True
-        """if phase in self.learning_phases:
-            self._is_learning = True
-        else:
-            self._is_learning = False"""
 
     @property
     def last_reward(self):
@@ -107,14 +76,6 @@ class HumanAgent(BaseAgent):
     def last_reward(self, reward):
         self._last_reward = reward
 
-    @property
-    def mutate_type(self):
-        return getattr(self.mutate_to, 'kind', None)
-    
-    @property
-    def mutate_phase(self):
-        return getattr(self.mutate_to, 'appearance_phase', None)
-
     def act(self, observation) -> int:  
         """ Returns the agent's action (route of choice) based on the current observation from the environment. """
         return self.model.act(observation)  
@@ -123,19 +84,15 @@ class HumanAgent(BaseAgent):
         """ Updates the agent's knowledge based on the action taken and the resulting observations. """
         reward = self.get_reward(observation)
         self.last_reward = reward
-        if self.is_learning:
-            self.model.learn(None, action, reward)
+        self.model.learn(None, action, reward)
 
     def get_state(self, _):
         return None
 
     def get_reward(self, observation: list[dict]) -> float:
         """ This function calculated the reward of each individual agent. """
-        own_tt = -1 * next(obs[kc.TRAVEL_TIME] for obs in observation if obs[kc.AGENT_ID] == self.id) ## Anastasia added the -1
+        own_tt = next(obs[kc.TRAVEL_TIME] for obs in observation if obs[kc.AGENT_ID] == self.id)
         return own_tt
-    
-    def mutate(self):
-        return self.mutate_to
     
 
 
@@ -147,30 +104,16 @@ class MachineAgent(BaseAgent):
     def __init__(self, id, start_time, origin, destination, params, action_space_size):
         kind = kc.TYPE_MACHINE
         behavior = params[kc.BEHAVIOR]
-        learning_phases = params[kc.LEARNING_PHASES]
-        super().__init__(id, kind, start_time, origin, destination, behavior, learning_phases)
-        self.appearance_phase = params[kc.APPEARANCE_PHASE]
+        super().__init__(id, kind, start_time, origin, destination, behavior)
         self.observed_span = params[kc.OBSERVED_SPAN]
         self.action_space_size = action_space_size
         self.state_size = action_space_size * 2
-        self.model = DQN(params, self.state_size, self.action_space_size)
-        self.is_learning = -1
+        self.model = None
         self.last_reward = None
         self.rewards_coefs = self._get_reward_coefs()
         
     def __repr__(self):
         return f"Machine {self.id}"
-
-    @property
-    def is_learning(self):
-        return self._is_learning
-
-    @is_learning.setter
-    def is_learning(self, phase):
-        if phase in self.learning_phases:
-            self._is_learning = True
-        else:
-            self._is_learning = False
 
     @property
     def last_reward(self):
@@ -180,18 +123,11 @@ class MachineAgent(BaseAgent):
     def last_reward(self, reward):
         self._last_reward = reward
 
-    def act(self, observation) -> int:
-        """ Returns the agent's action (route of choice) based on the current observation from the environment. """
-        state = self.get_state(observation)
-        self.last_state = state
-        return self.model.act(state)
+    def act(self, _) -> None:
+        return None
 
-    def learn(self, action, observation) -> None:
-        """ Updates the agent's knowledge based on the action taken and the resulting observations. """
-        reward = self.get_reward(observation)
-        self.last_reward = reward
-        if self.is_learning:
-            self.model.learn(self.last_state, action, reward)
+    def learn(self, _) -> None:
+        return None
 
     def get_state(self, observation: list[dict]) -> list[int]:
         """ Generates the current state representation based on recent observations of agents navigating from the same origin to the same destination. """

@@ -21,32 +21,49 @@ class SumoSimulator():
 
     """
 
-    def __init__(self, params:dict, path_gen_params: dict|None = None) -> None:
-        self.sumo_config_path = params[kc.SUMO_CONFIG_PATH]
-        self.routes_xml_path = params[kc.ROUTE_FILE_PATH]
-        self.paths_csv_path = params[kc.PATHS_CSV_SAVE_PATH]
-        self.sumo_fcd = params[kc.SUMO_FCD]
-
-        self.sumo_type = params[kc.SUMO_TYPE]
-        self.env_var = params[kc.ENV_VAR]
-        self.number_of_paths = params[kc.NUMBER_OF_PATHS]
-        self.simulation_length = params[kc.SIMULATION_TIMESTEPS]
-        self.seed = params[kc.SEED] 
-        self.detector_save_path = params[kc.PATHS_CSV_SAVE_DETECTORS]
-
-        ## Detectors
-        self.detectors_name = list(pd.read_csv(self.detector_save_path).name) ###FIX THIS
+    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423) -> None:
+        
+        self.network_name       = params[kc.NETWORK_NAME]
+        self.sumo_type          = params[kc.SUMO_TYPE]
+        self.env_var            = params[kc.ENV_VAR]
+        self.number_of_paths    = params[kc.NUMBER_OF_PATHS]
+        self.simulation_length  = params[kc.SIMULATION_TIMESTEPS]
+        self.paths_csv_path     = params[kc.PATHS_CSV_SAVE_PATH]
+        
+        #############################
+        
+        curr_dir = os.path.dirname(os.path.abspath(__file__))
+        self.sumo_config_path   = os.path.join(curr_dir, kc.SUMO_CONFIG_PATH).replace("$net$", self.network_name)
+        self.routes_xml_path    = os.path.join(curr_dir, kc.ROUTE_FILE_PATH).replace("$net$", self.network_name)
+        self.sumo_fcd           = os.path.join(curr_dir, kc.SUMO_FCD).replace("$net$", self.network_name)
+        self.detector_save_path = os.path.join(curr_dir, kc.DETECTORS_CSV_PATH).replace("$net$", self.network_name)
+        self.conn_file_path     = os.path.join(curr_dir, kc.CONNECTION_FILE_PATH).replace("$net$", self.network_name)
+        self.edge_file_path     = os.path.join(curr_dir, kc.EDGE_FILE_PATH).replace("$net$", self.network_name)
+        self.nod_file_path      = os.path.join(curr_dir, kc.NOD_FILE_PATH).replace("$net$", self.network_name)
+        self.rou_xml_save_path  = os.path.join(curr_dir, kc.ROUTE_SAVE_FILE_PATH).replace("$net$", self.network_name)
+        
+        #############################
+    
+        random.seed(seed)
+        self.seed = seed
+        
+        #############################
 
         self.sumo_id = f"{random.randint(0, 1000)}"
         self.sumo_connection = None
+        confirm_env_variable(self.env_var, append="tools")
+        
+        #############################
 
+        # TODO: This is a temporary solution. Change it to be dynamic.
+        self.detectors_name = list(pd.read_csv(self.detector_save_path).name)
+        
         if path_gen_params is not None:
             self._get_paths(params, path_gen_params)
             logging.info("[SUCCESS] Path generation completed.")
-
-            
         self._check_paths_ready()
-        confirm_env_variable(self.env_var, append="tools")
+        
+        #############################
         
         self.timestep = 0
         self.route_id_cache = dict()
@@ -72,24 +89,24 @@ class SumoSimulator():
             
     def _get_paths(self, params: dict, path_gen_params: dict) -> pd.DataFrame:
         # Build the network
-        network = jx.build_digraph(params[kc.CONNECTION_FILE_PATH], params[kc.EDGE_FILE_PATH], self.routes_xml_path)
+        network = jx.build_digraph(self.conn_file_path, self.edge_file_path, self.routes_xml_path)
         
         # Generate paths
         origins = path_gen_params[kc.ORIGINS]
         destinations = path_gen_params[kc.DESTINATIONS]
         path_gen_kwargs = {
             "number_of_paths": path_gen_params[kc.NUMBER_OF_PATHS],
-            "random_seed": int(self.seed),
+            "random_seed": self.seed,
             "num_samples": path_gen_params[kc.NUM_SAMPLES],
             "beta": path_gen_params[kc.BETA],
             "weight": path_gen_params[kc.WEIGHT],
             "verbose": False
         }
         routes = jx.basic_generator(network, origins, destinations, as_df=True, calc_free_flow=True, **path_gen_kwargs)
-        self._save_paths_to_disk(routes, origins, destinations, params[kc.ROUTE_SAVE_FILE_PATH])
+        self._save_paths_to_disk(routes, origins, destinations)
         
         # Save paths visualizations
-        path_visuals_path = params[kc.FIGURES_SAVE_PATH]
+        path_visuals_path = params[kc.PLOTS_FOLDER]
         os.makedirs(path_visuals_path, exist_ok=True)
         # Visualize paths and save figures
         for origin_idx, origin in enumerate(origins):
@@ -101,12 +118,12 @@ class SumoSimulator():
                 fig_save_path = os.path.join(path_visuals_path, f"{origin_idx}_{dest_idx}.png")
                 title=f"Origin: {origin_idx} ({origin}), Destination: {dest_idx} ({destination})"
                 # Show the routes
-                jx.show_multi_routes(params[kc.NOD_FILE_PATH], params[kc.EDGE_FILE_PATH],
+                jx.show_multi_routes(self.nod_file_path, self.edge_file_path,
                                      routes_to_show, origin, destination, 
                                      show=False, save_file_path=fig_save_path, title=title)
         
             
-    def _save_paths_to_disk(self, routes_df: pd.DataFrame, origins: list, destinations: list, save_path: str) -> None:
+    def _save_paths_to_disk(self, routes_df: pd.DataFrame, origins: list, destinations: list) -> None:
         origins = {node_name: idx for idx, node_name in enumerate(origins)}
         destinations = {node_name: idx for idx, node_name in enumerate(destinations)}
         
@@ -128,7 +145,7 @@ class SumoSimulator():
                 paths_dict[(origin_idx, destination_idx)] = paths
                 
         # Save paths to xml
-        with open(save_path, "w") as rou:
+        with open(self.rou_xml_save_path, "w") as rou:
             print("""<routes>""", file=rou)
             # TODO: Following two lines are hardcoded. Change them to be dynamic.
             print("<vType id=\"Human\" color=\"red\" guiShape=\"passenger/sedan\"/>", file=rou)
@@ -141,7 +158,7 @@ class SumoSimulator():
                         print(path, file=rou)
                         print('" />',file=rou)
             print("</routes>", file=rou)
-
+            
     #####################
 
     ##### SUMO CONTROL #####
@@ -151,7 +168,7 @@ class SumoSimulator():
         Starts the SUMO simulation with the specified configuration.
         """
 
-        sumo_cmd = [self.sumo_type,"--seed", self.seed, "--fcd-output", self.sumo_fcd, "-c", self.sumo_config_path] 
+        sumo_cmd = [self.sumo_type,"--seed", str(self.seed), "--fcd-output", self.sumo_fcd, "-c", self.sumo_config_path] 
         traci.start(sumo_cmd, label=self.sumo_id)
         self.sumo_connection = traci.getConnection(self.sumo_id)
 
@@ -171,7 +188,7 @@ class SumoSimulator():
         for det_name in self.detectors_name:
             det_dict[det_name]  = self.sumo_connection.inductionloop.getIntervalVehicleNumber(f"{det_name}_det")
 
-        self.sumo_connection.load(["--seed", self.seed, "--fcd-output", self.sumo_fcd, '-c', self.sumo_config_path])
+        self.sumo_connection.load(["--seed", str(self.seed), "--fcd-output", self.sumo_fcd, '-c', self.sumo_config_path])
 
         self.timestep = 0
         return det_dict
@@ -210,6 +227,3 @@ class SumoSimulator():
         self.timestep += 1
         
         return self.timestep, arrivals
-    
-    #####################
-    
