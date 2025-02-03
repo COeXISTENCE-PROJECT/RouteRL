@@ -6,16 +6,22 @@ from .learning_model import (
 
 from ..keychain import Keychain as kc
 
+
 def get_learning_model(params, initial_knowledge):
     """
     Returns a learning model based on the provided parameters.
 
-    Parameters:
-    params (dict): A dictionary containing model parameters.
+    Args:
+        params (dict): A dictionary containing model parameters.
+        initial_knowledge ([list, array.pyi]): A dictionary containing initial knowledge.
 
     Returns:
-    BaseLearningModel: A learning model object.
+        BaseLearningModel: A learning model object.
+
+    Raises:
+        ValueError: If model is unknown.
     """
+
     model = params[kc.MODEL]
     if model == kc.GAWRON:
         return Gawron(params, initial_knowledge)

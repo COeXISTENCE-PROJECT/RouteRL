@@ -11,13 +11,19 @@ class BaseLearningModel(ABC):
     """
     This is an abstract base class for the learning models used to train the human and machine agents.
 
+    Methods:
+        act: selects an action based on the current state and cost.
+        learn: trains the model on a batch of states and actions.
     """
+
     def __init__(self):
         pass
+
 
     @abstractmethod
     def act(self, state):
         pass
+
 
     @abstractmethod
     def learn(self, state, action, reward):
@@ -26,16 +32,25 @@ class BaseLearningModel(ABC):
 
 
 class Gawron(BaseLearningModel):
-    def __init__(self, params, initial_knowledge):
-        """
-        Initializes the Gawron learning model.
+    """
+    The Gawron learning model.
 
-        Parameters:
+    Args:
         params (dict): A dictionary containing model parameters.
         initial_knowledge (list or array): Initial knowledge or costs for actions.
 
-        """
+    Attributes:
+        beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
+        alpha_zero (float): ALPHA_ZERO.
+        alpha_j (float): ALPHA_J = 1 - ALPHA_ZERO.
+        cost (np.ndarray): cost array.
 
+    Methods:
+        act: selects an action based on the current state and cost.
+        learn: trains the model on a batch of states and actions.
+    """
+
+    def __init__(self, params, initial_knowledge):
         super().__init__()
 
         # Extract beta with added randomness
@@ -49,43 +64,58 @@ class Gawron(BaseLearningModel):
         # Initialize cost array with initial knowledge
         self.cost = np.array(initial_knowledge, dtype=float)
 
+
     def act(self, state):
         """
         Selects an action based on the current state and cost.
 
-        Parameters:
-        state: The current state of the environment.
+        Args:
+            state (string): The current state of the environment.
 
         Returns:
-        int: The index of the selected action.
+            action (int): The index of the selected action.
         """
 
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
+        # fixme rename action
         action =  utilities.index(min(utilities))
         return action   
+
 
     def learn(self, state, action, reward):
         """
         Updates the cost associated with the taken action based on the received reward.
 
-        Parameters:
-        state: The current state of the environment.
-        action (int): The action that was taken.
-        reward (float): The reward received after taking the action.
-
+        Args:
+            state (string): The current state of the environment.
+            action (int): The action that was taken.
+            reward (float): The reward received after taking the action.
         """
+
         self.cost[action] = (self.alpha_j * self.cost[action]) + (self.alpha_zero * reward)
 
 
-class Culo(BaseLearningModel):
-    def __init__(self, params, initial_knowledge):
-        """
-        Initializes the Culo learning model.
 
-        Parameters:
+class Culo(BaseLearningModel):
+    """
+    The Culo learning model.
+
+    Args:
         params (dict): A dictionary containing model parameters.
         initial_knowledge (list or array): Initial knowledge or costs for actions.
-        """
+
+    Attributes:
+        beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
+        alpha_zero (float): ALPHA_ZERO.
+        alpha_j (float): ALPHA_J = 1 - ALPHA_ZERO.
+        cost (np.ndarray): cost array.
+
+    Methods:
+        act: selects an action based on the current state and cost.
+        learn: trains the model on a batch of states and actions.
+    """
+
+    def __init__(self, params, initial_knowledge):
         super().__init__()
 
         # Extract beta with randomness
@@ -99,33 +129,59 @@ class Culo(BaseLearningModel):
         # Initialize cost array with initial knowledge
         self.cost = np.array(initial_knowledge, dtype=float)
 
+
     def act(self, state) -> int:
         """
         Selects an action based on the current state and cost.
 
-        Parameters:
-        state: The current state of the environment.
+        Args:
+            state (string): The current state of the environment.
 
         Returns:
-        int: The index of the selected action.
+            action (int): The index of the selected action.
         """
+
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
         action =  utilities.index(min(utilities))
         return action   
+
 
     def learn(self, state, action, reward):
         """
         Updates the cost associated with the taken action based on the received reward.
 
-        Parameters:
-        state: The current state of the environment.
-        action (int): The action that was taken.
-        reward (float): The reward received after taking the action.
+        Args:
+            state (string): The current state of the environment.
+            action (int): The action that was taken.
+            reward (float): The reward received after taking the action.
         """
+
         self.cost[action] = (self.alpha_j * self.cost[action]) + (self.alpha_zero * reward)
 
 
+
 class WeightedAverage(BaseLearningModel):
+    """
+    WeightedAverage model.
+
+    Args:
+        params (dict): A dictionary containing model parameters.
+        initial_knowledge (list or array): Initial knowledge or costs for actions.
+
+    Attributes:
+        beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
+        alpha_zero (float): ALPHA_ZERO.
+        alpha_j (float): ALPHA_J = 1 - ALPHA_ZERO.
+        remember (string): REMEMBER
+        cost (np.ndarray): cost array.
+        memory (list(list)): A list of lists containing the memory of each state.
+
+    Methods:
+        act: selects an action based on the current state and cost.
+        learn: trains the model on a batch of states and actions.
+        create_memory: creates 2 dim memory table.
+    """
+
     def __init__(self, params, initial_knowledge):
         super().__init__()
         beta_randomness = params[kc.BETA_RANDOMNESS]
@@ -137,12 +193,33 @@ class WeightedAverage(BaseLearningModel):
         self.memory = [list() for _ in range(len(initial_knowledge))]
         self.create_memory()
 
+
     def act(self, state):
+        """
+        Selects an action based on the current state and cost.
+
+        Args:
+            state (string): The current state of the environment.
+
+        Returns:
+            action (int): The index of the selected action.
+        """
+
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
         action =  utilities.index(min(utilities))
         return action
 
-    def learn(self, state, action, reward):    
+
+    def learn(self, state, action, reward):
+        """
+        Updates the cost associated with the taken action based on the received reward.
+
+        Args:
+            state (string): The current state of the environment.
+            action (int): The action that was taken.
+            reward (float): The reward received after taking the action.
+        """
+
         # Drop the least relevant memory (end of list)
         del(self.memory[action][-1])
         # Insert the most recent expected cost at index 0
@@ -162,7 +239,12 @@ class WeightedAverage(BaseLearningModel):
         # Update the cost expectation of the action
         self.cost[action] = c_hat + (self.alpha_zero * reward)
         
+
     def create_memory(self):
+        """
+        Creates 2 dim memory table.
+        """
+
         for i in range(len(self.cost)):
             for _ in range(self.remember):
                 self.memory[i].append(self.cost[i])

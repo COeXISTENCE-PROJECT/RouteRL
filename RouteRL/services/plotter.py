@@ -18,10 +18,47 @@ warnings.filterwarnings("ignore")
 logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
 
-class Plotter:
 
+
+class Plotter:
     """
     Plot the results of the training
+
+    Args:
+        params (list): list of the parameters
+
+    Attributes:
+        phases (list): list of the phases
+        phase_names (list): list of the phase names
+        colors (list): list of the colors
+        phase_colors (list): list of the phase colors
+        linestyles (list): list of the linestyles
+        smooth_by:
+        default_width (float): the width of the plot
+        default_height (float): the height of the plot
+        multimode_width (float): the width of the multimode
+        multimode_height (float): the height of the multimode
+        default_num_columns (int): the number of columns
+        records_folder (str): the folder where the records should be stored
+        episodes_folder (str): the folder where the episodes should be stored
+        loss_file_path (str): the path of the loss file
+        saved_episodes (list): list of the saved episodes
+
+    Methods:
+        plot: plot the results
+        _get_episodes: episodes getter
+        visualise_mean_reward: visualise the mean reward
+        visualise_mean_travel_times: visualise the mean travel times
+        travel_tt_distributions: visualise the travel time distributions
+        visualise_actions: visualise the actions
+        visualise_action_shifts: visualise the action shifts
+        visualise_sim_length: visualise the simulation length
+        _retrive_sim_length: retrive the simulation length
+        visualise_losses: visualise the losses
+        _retrive_data_per_kind: retrive the data per kind
+        _retrive_data_per_od: retrive the data per od
+        _retrieve_selected_actions: retrive the selected actions
+        _retrieve_all_od_pairs: retrive the all od pairs
     """
 
     def __init__(self, params):
@@ -48,9 +85,13 @@ class Plotter:
 
 #################### VISUALIZE ALL
 
-    def plot(self):
-        self.saved_episodes = self._get_episodes()
 
+    def plot(self):
+        """
+        Plot the results of the training
+        """
+
+        self.saved_episodes = self._get_episodes()
         self.visualize_mean_rewards()
         self.visualize_mean_travel_times()
         self.visualize_tt_distributions()
@@ -61,6 +102,13 @@ class Plotter:
 
 
     def _get_episodes(self):
+        """
+        Get the episodes data
+
+        Returns:
+            sorted_episodes (list): the sorted episodes data
+        """
+
         eps = list()
         if os.path.exists(self.episodes_folder):
             for file in os.listdir(self.episodes_folder):
@@ -70,11 +118,16 @@ class Plotter:
             raise FileNotFoundError(f"Episodes folder does not exist!")
         return sorted(eps)
 
-####################
 
+####################
 #################### REWARDS
-    
+
+
     def visualize_mean_rewards(self):
+        """
+        Visualise the mean rewards
+        """
+
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.REWARDS_PLOT_FILE_NAME])
         all_mean_rewards = self._retrieve_data_per_kind(kc.REWARD, transform='mean')
 
@@ -99,13 +152,17 @@ class Plotter:
         plt.savefig(save_to)
         plt.close()
         logging.info(f"[SUCCESS] Rewards are saved to {save_to}")
-        
-####################   
 
 
+####################
 #################### TRAVEL TIMES
-    
+
+
     def visualize_mean_travel_times(self):
+        """
+        Visualise the mean travel times
+        """
+
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.TRAVEL_TIMES_PLOT_FILE_NAME])
         all_mean_tt = self._retrieve_data_per_kind(kc.TRAVEL_TIME, transform='mean')
 
@@ -131,12 +188,16 @@ class Plotter:
         plt.close()
         logging.info(f"[SUCCESS] Travel times are saved to {save_to}")
 
-####################
-    
 
+####################
 #################### TRAVEL TIME DISTRIBUTIONS
-    
+
+
     def visualize_tt_distributions(self):
+        """
+        Visualise the travel time distributions
+        """
+
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.TT_DIST_PLOT_FILE_NAME])
     
         num_rows, num_cols = 2, 2
@@ -180,7 +241,7 @@ class Plotter:
         axes[1].set_title('Variance Travel Times Over Episodes')
         axes[1].legend()
 
-        # Plot boxplot and violinplot for rewards
+        # Plot boxplot and violin plot for rewards
         all_travel_times = self._retrieve_data_per_kind(kc.TRAVEL_TIME)
         eps_to_plot = [ep-1 for ep in self.phases[1:]] + [self.saved_episodes[-1]]
         data_to_plot = [all_travel_times[kc.TYPE_HUMAN][ep] for ep in eps_to_plot]
@@ -225,6 +286,10 @@ class Plotter:
 #################### ACTIONS
 
     def visualize_actions(self):
+        """
+        Visualize the actions taken by the agent.
+        """
+
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.ACTIONS_PLOT_FILE_NAME])
 
         all_actions = self._retrieve_data_per_od(kc.ACTION)
@@ -270,13 +335,17 @@ class Plotter:
         plt.savefig(save_to)
         plt.close()
         logging.info(f"[SUCCESS] Actions are saved to {save_to}")
-            
-####################
-    
 
+
+####################
 #################### ACTION SHIFTS
-    
+
+
     def visualize_action_shifts(self):
+        """
+        Visualize the action shifts taken by the agent.
+        """
+
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.ACTIONS_SHIFTS_PLOT_FILE_NAME])
 
         all_od_pairs = self._retrieve_all_od_pairs()
@@ -329,20 +398,24 @@ class Plotter:
         plt.savefig(save_to)
         plt.close()
         logging.info(f"[SUCCESS] Actions shifts are saved to {save_to}")
-    
-####################
-    
 
+
+####################
 #################### SIM LENGTH
-    
+
+
     def visualize_sim_length(self):
+        """
+        Visualize the simulation length.
+        """
+
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.SIMULATION_LENGTH_PLOT_FILE_NAME])
 
         sim_lengths = self._retrieve_sim_length()
         sim_lengths = running_average(sim_lengths, last_n=self.smooth_by)
 
         plt.figure(figsize=(self.default_width, self.default_height))
-        plt.plot(self.saved_episodes, sim_lengths, color=self.colors[0], label="Simulation timesteps")
+        plt.plot(self.saved_episodes, sim_lengths, color=self.colors[0], label="Simulation time steps")
         for phase_idx, phase in enumerate(self.phases):
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
             plt.axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color)
@@ -358,6 +431,10 @@ class Plotter:
 
 
     def _retrieve_sim_length(self):
+        """
+        Retrieve the simulation length.
+        """
+
         latest_arrivals = list()
         for episode in self.saved_episodes:
             data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
@@ -373,6 +450,10 @@ class Plotter:
 #################### LOSSES
 
     def visualize_losses(self):
+        """
+        Visualize the losses.
+        """
+
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.LOSSES_PLOT_FILE_NAME])
 
         losses = self._retrieve_losses()
@@ -394,6 +475,10 @@ class Plotter:
 
 
     def _retrieve_losses(self):
+        """
+        Retrieve the losses.
+        """
+
         losses = list()
         if not os.path.isfile(self.loss_file_path): return None
         with open(self.loss_file_path, "r") as file:
@@ -401,13 +486,24 @@ class Plotter:
             for line in lines:
                 losses.append(float(line.strip()))
         return losses
-    
+
+
 ####################
-
-
 #################### HELPERS
 
+
     def _retrieve_data_per_kind(self, data_key, transform=None):
+        """
+        Retrieve data per kind.
+
+        Args:
+            data_key (str): The key of the data you want to retrieve.
+            transform (callable, optional): Optional transform to be applied
+
+        Returns:
+            all_values_dict (dict): Dictionary of all data values per kind.
+        """
+
         all_values_dict = {kc.ALL : dict()}
         for episode in self.saved_episodes:
             data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
@@ -430,6 +526,17 @@ class Plotter:
     
 
     def _retrieve_data_per_od(self, data_key, transform=None):
+        """
+        Retrieve data per od.
+
+        Args:
+            data_key (str): The key of the data you want to retrieve.
+            transform (callable, optional): Optional transform to be applied
+
+        Returns:
+            all_values_dict (dict): Dictionary of all data values per kind.
+        """
+
         all_od_pairs = self._retrieve_all_od_pairs()
         od_to_key = lambda o, d: f"{o} - {d}"
         all_values_dict = {od_to_key(od[0], od[1]) : dict() for od in all_od_pairs}
@@ -448,9 +555,21 @@ class Plotter:
                 else:
                     all_values_dict[od][episode] = values_per_od[od]
         return all_values_dict
-        
-    
+
+
     def _retrieve_selected_actions(self, origin, destination):
+        """
+        Retrieve selected actions.
+
+        Args:
+            origin (str): The origin of the action.
+            destination (str): The destination of the action.
+
+        Returns:
+            all_actions (dict): Dictionary of all selected actions.
+            unique_actions (dict): Dictionary of all unique actions.
+        """
+
         all_actions = dict()
         unique_actions = set()
         for episode in self.saved_episodes:
@@ -470,6 +589,13 @@ class Plotter:
 
 
     def _retrieve_all_od_pairs(self):
+        """
+        Retrieve all OD pairs.
+
+        Returns:
+            all_od_pairs (dict): Dictionary of all OD pairs.
+        """
+
         all_od_pairs = list()
         data_path = os.path.join(self.episodes_folder, f"ep{self.saved_episodes[0]}.csv")
         episode_data = pd.read_csv(data_path)
@@ -479,13 +605,17 @@ class Plotter:
             all_od_pairs.append((origin, destination))
         all_od_pairs = list(set(all_od_pairs))
         return all_od_pairs
-    
+
+
+####################
 ####################
 
 
-
-
 def plotter(params):
+    """
+    Plotter
+    """
+
     plotter = Plotter(params)
     plotter.plot()
     return plotter

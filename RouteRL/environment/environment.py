@@ -418,6 +418,11 @@ class TrafficEnvironment(AECEnv):
         This function is responsible for supplying the simulator with the actions of vehicles
         that begin their journey at the current timestep. 
         Simultaneously, it records the travel times of vehicles that finished their trip this timestep.
+
+        Args:
+            actions (list[tuple]): A list of tuples containing the current timestep and the actions of vehicles
+        Returns:
+            travel_times.values() : A dictionary containing the current timestep and the actions of vehicles
         """
 
         for agent, action in actions:
@@ -477,7 +482,7 @@ class TrafficEnvironment(AECEnv):
                     self.travel_times_list.append(agent_entry)
 
             # Save machine's rewards based on PettingZoo standards
-            if(agent.kind == 'AV'):
+            if agent.kind == 'AV':
                 self.rewards[str(agent.id)] = reward
 
             # Human learning
@@ -487,21 +492,27 @@ class TrafficEnvironment(AECEnv):
     ###########################
     ##### Simulation loop #####
 
-    def simulation_loop(self, machine_action: int, machine_id: str) -> None:
+    def simulation_loop(self, machine_action: int, machine_id: int) -> None:
         """
         This function contains the integration of the agent's actions to SUMO. 
 
-        Description:
-            We iterate through all the timesteps of the simulation.
-            For each timestep there are None, one or more than one agents (humans, machines) that start. 
-            If more than one machine agents have the same start time, we break from this function because
-            we need to take the agent's action from the STEP function.
+        We iterate through all the time steps of the simulation.
+        For each timestep there are None, one or more than one agents type (humans, machines) that start.
+        If more than one machine agents have the same start time, we break from this function because
+        we need to take the agent's action from the STEP function.
+
+        Args:
+            machine_action (int): The id of the machine agent whose action is to be performed.
+            machine_id (int): The id of the machine agent whose action is to be performed.
+
+        Returns:
+            None
 
         Data structures:
             self.machine_same_start_time (list): contains the machine agents that their start time is equal to
                                                  the simulator timestep and haven't acted yet.
             self.actions_timestep (list): includes the agents (machines/humans) that have acted in this timestep
-                                          and their action will be send in the simulator.
+                                          and their action will be sent in the simulator.
             agent_action (bool): break if the agent acting is not the last one (the next agent should STEP first)
         """
 
@@ -520,10 +531,10 @@ class TrafficEnvironment(AECEnv):
             for machine in self.machine_agents:
                 if machine.start_time == self.simulator.timestep:
 
-                    # In case there are machine agents that have the same start time but it's not their turn
-                    if (str(machine.id) != machine_id):
+                    # In case there are machine agents that have the same start time, but it's not their turn
+                    if str(machine.id) != machine_id:
 
-                        # If some machines have the same start time and they haven't acted yet
+                        # If some machines have the same start time, and they haven't acted yet
                         if (machine not in self.machine_same_start_time) and not any(machine == item[0] for item in self.actions_timestep):
                             self.machine_same_start_time.append(machine)
                         continue

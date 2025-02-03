@@ -13,6 +13,24 @@ class Recorder:
 
     """
     Record the training process.
+
+    Args:
+        params (list): A list of parameters.
+
+    Attributes:
+        records_folder: RECORDS_FOLDER
+        episodes_folder: EPISODES_LOGS_FOLDER
+        detector_folder: DETECTORS_LOGS_FOLDER
+        sim_length_file_path: SIMULATION_LENGTH_LOG_FILE_NAME
+        loss_file_path: LOSSES_LOG_FILE_NAME
+
+    Methods:
+        _clear_records: removes records from records_folder
+        _get_txt_file_path: gets text file from records_folder
+        record: remembers episodes and detectors
+        remember_episode: remembers episode
+        remember_detector: remembers detector
+        save_losses: saves losses
     """
 
     def __init__(self, params):
@@ -29,32 +47,75 @@ class Recorder:
         self.loss_file_path = self._get_txt_file_path(self.params[kc.LOSSES_LOG_FILE_NAME])
         logging.info(f"[SUCCESS] Recorder is now here to record!")
 
+
 #################### INIT HELPERS
 
+
     def _clear_records(self, folder):
+        """
+        Clears records from records_folder.
+
+        Args:
+            folder: folder to clear records from.
+
+        Returns:
+            log_file_path: list of log file path.
+        """
+
         if os.path.exists(folder):
             for file in os.listdir(folder):
                 os.remove(os.path.join(folder, file))
     
 
     def _get_txt_file_path(self, filename):
+        """
+        Gets text file from records_folder.
+
+        Args:
+            filename: filename.
+
+        Returns:
+            log_file_path: list of log file path.
+        """
+
         log_file_path = make_dir(self.records_folder, filename)
         if os.path.exists(log_file_path):
             os.remove(log_file_path)
         return log_file_path
-    
-####################
-        
 
+
+####################
 #################### REMEMBER FUNCTIONS
-    
+
+
     def record(self, episode, ep_observations, rewards, cost_tables, det_dict):
+        """
+        records the episode.
+
+        Args:
+            episode: episode.
+            ep_observations: episode observations.
+            rewards: rewards.
+            cost_tables: cost_tables.
+            det_dict: det_dict.
+        """
+
         self.remember_episode(episode, ep_observations, rewards, cost_tables)
         self.remember_detector(episode, det_dict) ## pass self.det_dict
         # more to add
 
 
     def remember_episode(self, episode, ep_observations, rewards, cost_tables):
+        """
+        remember episode.
+
+        Args:
+            episode: episode.
+            ep_observations: episode observations.
+            rewards: rewards.
+            cost_tables: cost_tables.
+        """
+
         ep_observations_df = pl.from_dicts(ep_observations)
         rewards_df = pl.from_dicts(rewards)
 
@@ -69,11 +130,26 @@ class Recorder:
 
 
     def remember_detector(self,episode, det_dict):
+        """
+        remember detector.
+
+        Args:
+            episode: episode.
+            det_dict: det_dict.
+        """
+
         df = pd.DataFrame(list(det_dict.items()), columns=['detid', 'flow'])
         df.to_csv(make_dir(self.detector_folder, f'detector_ep{episode}.csv'),index=False)
 
 
     def save_losses(self, agents):
+        """
+        save losses.
+
+        Args:
+            agents: agents.
+        """
+
         losses = list()
         for a in agents:
             loss = getattr(a.model, 'loss', None)
@@ -88,8 +164,3 @@ class Recorder:
             with open(self.loss_file_path, "w") as file:
                 for m_l in mean_losses:
                     file.write(f"{m_l}\n")
-
-####################
-            
-    
-        
