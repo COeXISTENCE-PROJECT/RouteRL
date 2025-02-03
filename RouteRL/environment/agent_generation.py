@@ -77,8 +77,10 @@ def generate_agent_data(params, seed=23423):
     num_agents = params[kc.NUM_AGENTS]
     agent_attributes = params[kc.AGENT_ATTRIBUTES]
     simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]
+    
     num_origins = len(params[kc.ORIGINS])
     num_destinations = len(params[kc.DESTINATIONS])
+    
     rng = set_seed(seed)
 
     agents_df = pd.DataFrame(columns=agent_attributes)  # Where we store our agents

@@ -105,16 +105,28 @@ class Keychain:
     SOCIAL = "social"
     ALTRUISTIC = "altruistic"
     MALICIOUS = "malicious"
+    BEHAVIORS = [SELFISH, COMPETITIVE, COLLABORATIVE, SOCIAL, ALTRUISTIC, MALICIOUS]
 
     # Model encodings
     GAWRON = "gawron"
     CULO = "culo"
     W_AVG = "w_avg"
+    MODELS = [GAWRON, CULO, W_AVG]
+    
+    # Network names
+    ARTERIAL = "arterial"
+    COLOGNE = "cologne"
+    CSOMOR = "csomor"
+    GRID = "grid"
+    INGOLSTADT = "ingolstadt"
+    TWO_ROUTE_YIELD = "two_route_yield"
+    NETWORKS = [ARTERIAL, COLOGNE, CSOMOR, GRID, INGOLSTADT, TWO_ROUTE_YIELD]
     
     ###########################################################
 
     ####################### FILE PATHS ########################
 
+    NETWORK_FOLDER = "../network_and_config/$net$/"
     CONNECTION_FILE_PATH = "../network_and_config/$net$/$net$.con.xml"
     EDGE_FILE_PATH = "../network_and_config/$net$/$net$.edg.xml"
     NOD_FILE_PATH = "../network_and_config/$net$/$net$.nod.xml"
@@ -122,10 +134,13 @@ class Keychain:
     ROUTE_FILE_PATH = "../network_and_config/$net$/$net$.rou.xml"
     SUMO_FCD = "../network_and_config/$net$/fcd.xml"
     ROUTE_SAVE_FILE_PATH = "../network_and_config/$net$/route.rou.xml"
+    DETECTORS_SAVE_PATH = "../network_and_config/$net$/det.add.xml"
     DETECTORS_CSV_PATH = "../network_and_config/$net$/detectors.csv"
     
     PATHS_CSV_SAVE_PATH = "paths_csv_save_path"
     AGENTS_CSV_PATH = "agents_csv_path"
+    
+    DEFAULT_ODS_PATH = "../network_and_config/default_ods.json"
 
     RECORDS_FOLDER = "records_folder"
     EPISODES_LOGS_FOLDER = "episodes_logs_folder"

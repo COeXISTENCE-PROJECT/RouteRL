@@ -11,13 +11,14 @@ if __name__ == "__main__":
     
     ##################### PARAMS ############################
 
-    # File paths
     network_name = "csomor"
+    
+    # File paths
     nod_file_path = f"../../RouteRL/network_and_config/{network_name}/{network_name}.nod.xml"
     edg_file_path = f"../../RouteRL/network_and_config/{network_name}/{network_name}.edg.xml"
 
     num_frames = 20
-    interval = 5
+    interval = 10
     frame_duration = 500
     
     read_routes_from = f"training_records/paths.csv"
@@ -32,7 +33,7 @@ if __name__ == "__main__":
     routes = pd.read_csv(read_routes_from)
     routes = routes["path"].values
 
-    # Put axll edges in a single list
+    # Put all edges in a single list
     all_edges = list()
     for route in routes:
         all_edges += route.split(" ")
@@ -48,7 +49,6 @@ if __name__ == "__main__":
         min_flow = min(min_flow, min(flows))
         i += interval
     
-    
     congestion_dicts = list()
     i=1
     while i<=num_frames*interval:
@@ -59,6 +59,8 @@ if __name__ == "__main__":
         congestion_dict = {edge: congestions.get(edge, 0) for edge in all_edges}
         congestion_dicts.append(congestion_dict)
         i += interval
+        
+    print(congestion_dicts)
         
     #################### Animate ############################ 
     

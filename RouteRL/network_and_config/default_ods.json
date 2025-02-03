@@ -1,0 +1,32 @@
+{
+    "csomor": {
+        "origins" : ["441496282#0", "154551772#1"],
+        "destinations" : ["-115604057#1", "-279952229#4"]
+    },
+
+    "arterial": {
+        "origins" : ["np13_nt13", "np10_nt15"],
+        "destinations" : ["nt3_np3", "nt5_np15"]
+    },
+
+    "cologne": {
+        "origins" : ["-25166682#0", "-4936412"],
+        "destinations" : ["23840971", "-186623965#14"]
+    },
+
+    "grid": {
+        "origins" : ["left3A3", "right0D0"],
+        "destinations" : ["C3top2", "A0bottom0"]
+    },
+
+    "ingolstadt": {
+        "origins" : ["-41203916#3", "26677416#1"],
+        "destinations" : ["32395288#0", "-83304175#2"]
+    },
+
+    "two_route_yield": {
+        "origins" : ["E0"],
+        "destinations" : ["E2"]
+    }
+
+}

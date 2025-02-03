@@ -19,9 +19,9 @@
         "human_parameters" :
         {
             "model" : "culo",
-            "alpha_j": 0.2,
-            "alpha_zero": 0.2,
-            "beta" : 0.5,
+            "alpha_j": 0.5,
+            "alpha_zero": 0.5,
+            "beta" : 1.5,
             "beta_randomness" : 0.1,
             "remember" : 3
         }
@@ -38,7 +38,7 @@
     "simulator_parameters":
     {
         "network_name" : "csomor",
-        "simulation_timesteps" : 50,
+        "simulation_timesteps" : 180,
         "sumo_type" : "sumo",
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "env_var" : "SUMO_HOME",
@@ -55,8 +55,8 @@
         "weight" : "time",
         "num_samples" : 100,
 
-        "origins" : ["441496282#0", "154551772#1"],
-        "destinations" : ["-115604057#1", "-279952229#4"]
+        "origins" : "default",
+        "destinations" : "default"
     }, 
 
 

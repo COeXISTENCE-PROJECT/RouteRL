@@ -1,0 +1,3 @@
+origins,destinations,path,free_flow_time
+E0,E2,"E0,E1,E2",0
+E0,E2,"E0,E3,E4,E5,E2",0

@@ -1,7 +1,7 @@
 <configuration>
   <input>
     <net-file value="ingolstadt.net.xml"/>
-	  <route-files value="rou.rou.xml"/>
+	  <route-files value="route.rou.xml"/>
     <additional-files value="det.add.xml"/>
   </input>
     <report>

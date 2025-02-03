@@ -1,7 +1,8 @@
 <configuration>
   <input>
     <net-file value="cologne.net.xml"/>
-	<route-files value="rou.rou.xml"/>
+	  <route-files value="route.rou.xml"/>
+    <additional-files value="det.add.xml"/>
   </input>
     <report>
         <no-step-log value="true"/>

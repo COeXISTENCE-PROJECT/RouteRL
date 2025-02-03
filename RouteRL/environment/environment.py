@@ -19,7 +19,7 @@ from .observations import PreviousAgentStart
 from .simulator import SumoSimulator
 from ..services.recorder import Recorder
 from ..services.plotter import plotter
-from ..utilities import get_params, update_params
+from ..utilities import get_params
 
 from pettingzoo.utils.env import AECEnv
 from pettingzoo.utils import agent_selector
@@ -103,9 +103,8 @@ class TrafficEnvironment(AECEnv):
         self.render_mode = None
         
         # Read default parameters, update w kwargs
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        params = get_params(os.path.join(current_dir, "params.json"))
-        update_params(params, kwargs)
+        params_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "params.json")
+        params = get_params(params_path, resolve=True, update=kwargs)
         
         self.environment_params = params[kc.ENVIRONMENT]
         self.simulation_params = params[kc.SIMULATOR]

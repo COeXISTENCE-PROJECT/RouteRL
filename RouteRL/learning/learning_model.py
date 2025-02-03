@@ -229,7 +229,7 @@ class WeightedAverage(BaseLearningModel):
         # The weights are proportional to item recency
         alpha_j_weights = [self.alpha_j / (memory_idx + 1) for memory_idx in range(self.remember)]
         # If remember=3 alpha_j=.5, then alpha_j_weights = [.5/1, .5/2, .5/3]. Now normalize alpha_j_weights.
-        alpha_j_normalized = [a_j / sum(a_j) for a_j in alpha_j_weights]
+        alpha_j_normalized = [a_j / sum(alpha_j_weights) for a_j in alpha_j_weights]
         
         # Calculate the weighted average of the memory
         c_hat = 0

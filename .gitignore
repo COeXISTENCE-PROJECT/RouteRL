@@ -4,8 +4,9 @@ __pycache__/
 summary.xml
 tripinfo.xml
 fcd.xml
-route.rou.xml
 det.add.xml
+detectors.csv
+route.rou.xml
 
 training_records/
 plots/

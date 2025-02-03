@@ -38,5 +38,6 @@ from RouteRL.utilities import (
     get_params,
     confirm_env_variable,
     make_dir,
-    update_params
+    update_params,
+    resolve_param_dependencies
 )

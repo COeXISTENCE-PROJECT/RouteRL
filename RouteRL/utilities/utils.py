@@ -5,12 +5,18 @@ import time
 import torch
 
 from prettytable import PrettyTable
+
+from ..keychain import Keychain as kc
     
     
-def get_params(file_path):
+def get_params(file_path, resolve=True, update=None):
     # Read params.json, resolve dependencies
     params = read_json(file_path)
-    params = resolve_param_dependencies(params)
+    if (update is not None) and isinstance(update, dict):
+        update_params(params, update)
+    params = resolve_ods(params)
+    if resolve:
+        params = resolve_param_dependencies(params)
     return params
 
 
@@ -24,18 +30,20 @@ def update_params(old_params: dict, new_params: dict):
                 old_params[key] = value
             else:
                 raise ValueError(f"Invalid parameter: {key}")
-
-
-
-def confirm_env_variable(env_var, append=None):
-    if env_var in os.environ:
-        print("[CONFIRMED] Environment variable exists: %s" % env_var)
-        if append:
-            path = os.path.join(os.environ[env_var], append)
-            sys.path.append(path)
-            print("[SUCCESS] Added module directory: %s" % path)
-    else:
-        raise ImportError("Please declare the environment variable '%s'" % env_var)
+            
+        
+            
+def resolve_ods(params):
+    curr_dir = os.path.dirname(os.path.abspath(__file__))
+    default_od_path = os.path.join(curr_dir, kc.DEFAULT_ODS_PATH)
+    default_ods = read_json(default_od_path)[params[kc.SIMULATOR][kc.NETWORK_NAME]]
+    if params[kc.PATH_GEN][kc.ORIGINS] == "default":
+        params[kc.PATH_GEN][kc.ORIGINS] = default_ods[kc.ORIGINS]
+    if params[kc.PATH_GEN][kc.DESTINATIONS] == "default":
+        params[kc.PATH_GEN][kc.DESTINATIONS] = default_ods[kc.DESTINATIONS]
+    if params[kc.SIMULATOR][kc.NETWORK_NAME] == "two_route_yield":
+        params[kc.PATH_GEN][kc.NUMBER_OF_PATHS] = 2
+    return params
 
 
 
@@ -50,6 +58,18 @@ def resolve_param_dependencies(params):    # Resolving dependent parameters in p
                 if not isinstance(ref_value, dict):     # Ensure it's not a nested structure
                     params[category][key] = ref_value
     return params
+
+
+
+def confirm_env_variable(env_var, append=None):
+    if env_var in os.environ:
+        print("[CONFIRMED] Environment variable exists: %s" % env_var)
+        if append:
+            path = os.path.join(os.environ[env_var], append)
+            sys.path.append(path)
+            print("[SUCCESS] Added module directory: %s" % path)
+    else:
+        raise ImportError("Please declare the environment variable '%s'" % env_var)
 
 
 
