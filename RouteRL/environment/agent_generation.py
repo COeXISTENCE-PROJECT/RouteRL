@@ -16,6 +16,15 @@ def generate_agents(params, free_flow_times, generate_data, seed=23423):
 
     """
     Generates agent objects
+
+    Args:
+        params (dict): Parameters dictionary
+        free_flow_times (list): Free flow times
+        generate_data (bool): Generate data
+        seed (int): Random seed
+
+    Returns:
+        agents (list): List of agent objects
     """
 
     set_seed(seed)
@@ -54,7 +63,15 @@ def generate_agent_data(params, seed=23423):
 
     """
     Generates agent data
+
     Constructs a dataframe, where each row is an agent and columns are attributes
+
+    Args:
+        params (dict): Parameters dictionary
+        seed (int): Random seed
+
+    Returns:
+        agents (list): List of agent objects
     """
     
     num_agents = params[kc.NUM_AGENTS]
@@ -91,8 +108,17 @@ def generate_agent_data(params, seed=23423):
     return agents_df
 
 
-def set_seed(seed: int) -> None:
-    """ Set the seed for random number generation. """
+def set_seed(seed):
+    """
+    Set the seed for random number generation.
+
+    Arguments:
+        seed (int): Random seed
+
+    Returns:
+        rng (int): Random default rng for random number generation
+    """
+
     random.seed(seed)
     np.random.seed(seed)
     rng = np.random.default_rng(seed)

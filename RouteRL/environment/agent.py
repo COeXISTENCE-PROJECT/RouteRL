@@ -10,7 +10,30 @@ from ..learning import get_learning_model
 
 class BaseAgent(ABC):
     """
-    This is an abstract class for agents, to be inherited by specific type of agent classes
+    This is the abstract base class for the human and machine agent classes.
+
+    Args:
+        id (int): The id of the agent.
+        kind (str): The kind of the agent.
+        start_time (float): The start time of the simulation.
+        origin (float): The origin of the simulation.
+        destination (float): The destination value of the simulation.
+        behavior (float): The behavior of the simulation.
+
+    Attributes:
+        id (int): The id of the agent.
+        kind (str): The kind of the agent.
+        start_time (float): The start time of the simulation.
+        origin (float): The origin of the simulation.
+        destination (float): The destination value of the simulation.
+        behavior (float): The behavior of the simulation.
+
+    Methods:
+        last_reward (float):
+        act (float):
+        learn (float):
+        get_state (float):
+        get_reward (float):
     """
     def __init__(self, id, kind, start_time, origin, destination, behavior):
         self.id = id
@@ -56,7 +79,30 @@ class BaseAgent(ABC):
 
 
 class HumanAgent(BaseAgent):
-    """ Class representing human drivers, responsible for modeling their learning process and decision-making in route selection. """
+    """
+    Class representing human drivers, responsible for modeling their learning process
+    and decision-making in route selection.
+
+    Args:
+        id (int): The id of the agent.
+        start_time (float): The start time of the simulation.
+        origin (float): The origin of the simulation.
+        destination (float): The destination value of the simulation.
+        params (dict): The parameters of the agent.
+        initial_knowledge (float): The initial knowledge of the agent.
+        **kwargs: The keyword arguments of the agent.
+
+    Attributes:
+        model (dict): The model of the agent.
+        last_reward (float): The last reward of the agent.
+
+    Methods:
+        last_reward (float): The last reward of the agent.
+        act (float): The action of the agent.
+        learn (float): The action of the agent.
+        get_state (float): The current state of the agent.
+        get_reward (float): The current reward of the agent.
+    """
 
     def __init__(self, id, start_time, origin, destination, params, initial_knowledge, **kwargs):
         kind = kc.TYPE_HUMAN
@@ -64,21 +110,26 @@ class HumanAgent(BaseAgent):
         super().__init__(id, kind, start_time, origin, destination, behavior)
         self.model = get_learning_model(params, initial_knowledge)
         self.last_reward = None
-        
+
+
     def __repr__(self):
         return f"Human {self.id}"
+
 
     @property
     def last_reward(self):
         return self._last_reward
-    
+
+
     @last_reward.setter
     def last_reward(self, reward):
         self._last_reward = reward
 
+
     def act(self, observation) -> int:  
         """ Returns the agent's action (route of choice) based on the current observation from the environment. """
         return self.model.act(observation)  
+
 
     def learn(self, action, observation) -> None:
         """ Updates the agent's knowledge based on the action taken and the resulting observations. """
@@ -86,8 +137,10 @@ class HumanAgent(BaseAgent):
         self.last_reward = reward
         self.model.learn(None, action, reward)
 
+
     def get_state(self, _):
         return None
+
 
     def get_reward(self, observation: list[dict]) -> float:
         """ This function calculated the reward of each individual agent. """
@@ -99,6 +152,30 @@ class HumanAgent(BaseAgent):
 class MachineAgent(BaseAgent):
     """  
         A class that models Autonomous Vehicles (AVs), focusing on their learning mechanisms and decision-making processes for selecting optimal routes.
+
+        Args:
+            id (int): The id of the agent.
+            start_time (float): The start time of the simulation.
+            origin (float): The origin of the simulation.
+            destination (float): The destination value of the simulation.
+            params (dict): The parameters of the agent.
+            action_space_size (int): The size of the action space of the agent.
+
+        Attributes:
+            observed_span (dict): The observed span of the agent.
+            action_space_size (int): The size of the action space of the agent.
+            state_size (int): The state size of the agent.
+            model : The model of the agent. # TO DO
+            last_reward (float): The last reward of the agent.
+            rewards_coefs (dict): The reward coefficients of the agent.
+
+        Methods:
+            act (float): The action of the agent.
+            learn (float): The action of the agent.
+            get_state (float): The current state of the agent.
+            get_reward (float): The current reward of the agent.
+            _get_reward_coefs (float): The coefficient of the reward of the agent.
+
     """
 
     def __init__(self, id, start_time, origin, destination, params, action_space_size):
@@ -111,26 +188,41 @@ class MachineAgent(BaseAgent):
         self.model = None
         self.last_reward = None
         self.rewards_coefs = self._get_reward_coefs()
-        
+
+
     def __repr__(self):
         return f"Machine {self.id}"
+
 
     @property
     def last_reward(self):
         return self._last_reward
-    
+
+
     @last_reward.setter
     def last_reward(self, reward):
         self._last_reward = reward
 
+
     def act(self, _) -> None:
         return None
+
 
     def learn(self, _) -> None:
         return None
 
+
     def get_state(self, observation: list[dict]) -> list[int]:
-        """ Generates the current state representation based on recent observations of agents navigating from the same origin to the same destination. """
+        """
+        Generates the current state representation based on recent observations of agents navigating
+        from the same origin to the same destination.
+
+        Args:
+            observation (list[dict]): The recent observations of the agent.
+
+        Returns:
+            list[int]: The current state representation.
+        """
         min_start_time = self.start_time - self.observed_span
         human_prior, machine_prior = list(), list()
         for obs in observation:
@@ -158,15 +250,26 @@ class MachineAgent(BaseAgent):
                 warmth_machine[action] += warmth
 
         return warmth_human + warmth_machine
-    
+
+
     def get_reward(self, observation: list[dict]) -> float:
-        """ This function calculated the reward of each individual agent, based on the travel time of the agent, the group of agents, the other agents, and all agents. """
+        """
+        This function calculated the reward of each individual agent, based on the travel time of the agent,
+        the group of agents, the other agents, and all agents.
+
+        Args:
+            observation (list[dict]): The current observation of the agent.
+
+        Returns:
+            float: The reward of the agent.
+        """
+
         min_start_time, max_start_time = self.start_time - self.observed_span, self.start_time + self.observed_span
         
         vicinity_obs = list()
         for obs in observation:
-            if ((obs[kc.AGENT_ORIGIN], obs[kc.AGENT_DESTINATION]) == (self.origin, self.destination)):
-                if ((obs[kc.AGENT_START_TIME] >= min_start_time) and (obs[kc.AGENT_START_TIME] <= max_start_time)):
+            if (obs[kc.AGENT_ORIGIN], obs[kc.AGENT_DESTINATION]) == (self.origin, self.destination):
+                if min_start_time <= obs[kc.AGENT_START_TIME] <= max_start_time:
                     vicinity_obs.append(obs)
 
         group_obs, others_obs, all_obs, own_tt = list(), list(), list(), None
@@ -184,16 +287,23 @@ class MachineAgent(BaseAgent):
         all_tt = np.mean(all_obs) if all_obs else 0
         
         a, b, c, d = self.rewards_coefs
-        return (a * own_tt + b * group_tt + c * others_tt + d * all_tt)
-    
+        return a * own_tt + b * group_tt + c * others_tt + d * all_tt
+
+
     def _get_reward_coefs(self) -> tuple:
-        """ This function returns the coefficients for the reward calculation, based on the behavior of the agent.
-            Coeffient:
-                - a is the weight of the agent's travel time
-                - b is the weight of the group's travel time
-                - c is the weight of the other agents' travel time
-                - d is the weight of all agents' travel time.
         """
+        This function returns the coefficients for the reward calculation, based on the behavior of the agent.
+
+        Args:
+            # TO DO
+
+        Returns:
+            a (float): the weight of the agent's travel time.
+            b (float): the weight of the group's travel time.'
+            c (float): the weight of the other agents' travel time.'
+            d (float): the weight of the all agents' travel time.'
+        """
+
         a, b, c, d = 0, 0, 0, 0
         if self.behavior == kc.SELFISH:
             a, b, c, d = -1, 0, 0, 0 
