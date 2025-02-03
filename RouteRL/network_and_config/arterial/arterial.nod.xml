@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-06-13 07:54:07 by Eclipse SUMO netedit Version 1.19.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/neteditConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="/Users/zoltanvarga/Documents/Milestone-One/Network_and_config/arterial.net.xml"/>
+    </input>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="0"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="5"/>
+        <junctions.limit-turn-speed value="5.50"/>
+        <rectangular-lane-cut value="0"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="0"/>
+    </pedestrian>
+
+</configuration>
+-->
+
+<nodes version="1.16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/nodes_file.xsd">
+    <location netOffset="75.00,75.00" convBoundary="0.00,0.00,750.00,750.00" origBoundary="-75.00,-75.00,875.00,875.00" projParameter="!"/>
+
+    <node id="np1" x="75.00" y="0.00" type="priority"/>
+    <node id="np10" x="475.00" y="750.00" type="priority"/>
+    <node id="np11" x="275.00" y="750.00" type="priority"/>
+    <node id="np12" x="75.00" y="750.00" type="priority"/>
+    <node id="np13" x="0.00" y="675.00" type="priority"/>
+    <node id="np14" x="0.00" y="475.00" type="priority"/>
+    <node id="np15" x="0.00" y="275.00" type="priority"/>
+    <node id="np16" x="0.00" y="75.00" type="priority"/>
+    <node id="np2" x="275.00" y="0.00" type="priority"/>
+    <node id="np3" x="475.00" y="0.00" type="priority"/>
+    <node id="np4" x="675.00" y="0.00" type="priority"/>
+    <node id="np5" x="750.00" y="75.00" type="priority"/>
+    <node id="np6" x="750.00" y="275.00" type="priority"/>
+    <node id="np7" x="750.00" y="475.00" type="priority"/>
+    <node id="np8" x="750.00" y="675.00" type="priority"/>
+    <node id="np9" x="675.00" y="750.00" type="priority"/>
+    <node id="nt1" x="75.00" y="75.00" type="traffic_light" tl="nt1"/>
+    <node id="nt10" x="275.00" y="475.00" type="traffic_light" tl="nt10"/>
+    <node id="nt11" x="475.00" y="475.00" type="traffic_light" tl="nt11"/>
+    <node id="nt12" x="675.00" y="475.00" type="traffic_light" tl="nt12"/>
+    <node id="nt13" x="75.00" y="675.00" type="traffic_light" tl="nt13"/>
+    <node id="nt14" x="275.00" y="675.00" type="traffic_light" tl="nt14"/>
+    <node id="nt15" x="475.00" y="675.00" type="traffic_light" tl="nt15"/>
+    <node id="nt16" x="675.00" y="675.00" type="traffic_light" tl="nt16"/>
+    <node id="nt2" x="275.00" y="75.00" type="traffic_light" tl="nt2"/>
+    <node id="nt3" x="475.00" y="75.00" type="traffic_light" tl="nt3"/>
+    <node id="nt4" x="675.00" y="75.00" type="traffic_light" tl="nt4"/>
+    <node id="nt5" x="75.00" y="275.00" type="traffic_light" tl="nt5"/>
+    <node id="nt6" x="275.00" y="275.00" type="traffic_light" tl="nt6"/>
+    <node id="nt7" x="475.00" y="275.00" type="traffic_light" tl="nt7"/>
+    <node id="nt8" x="675.00" y="275.00" type="traffic_light" tl="nt8"/>
+    <node id="nt9" x="75.00" y="475.00" type="traffic_light" tl="nt9"/>
+</nodes>

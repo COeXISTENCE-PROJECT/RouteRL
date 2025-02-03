@@ -127,18 +127,34 @@ class Culo(BaseLearningModel):
 
 class WeightedAverage(BaseLearningModel):
     def __init__(self, params, initial_knowledge):
-        raise NotImplementedError("WeightedAverage learning model is not implemented yet.")
         super().__init__()
         beta_randomness = params[kc.BETA_RANDOMNESS]
         self.beta = random.uniform(params[kc.BETA] - beta_randomness, params[kc.BETA] + beta_randomness)
-        self.alpha_zero = 0
-        self.alpha_j = params[kc.ALPHA_J]
+        self.alpha_zero = params[kc.ALPHA_ZERO]
+        self.alpha_j = 1.0 - self.alpha_zero
+        self.remember = params[kc.REMEMBER]
         self.cost = np.array(initial_knowledge, dtype=float)
+        self.days = [list() for _ in range(len(initial_knowledge))]
+        self.create_memory()
 
     def act(self, state):
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
         action =  utilities.index(min(utilities))
-        return action   
+        return action
 
     def learn(self, state, action, reward):
-        self.cost[action] = (self.alpha_j * self.cost[action]) + (self.alpha_zero * reward)
+        c_hat = 0
+        #if self.cost[action] != reward: # For next two lines
+        del(self.days[action][len(self.days[action])-1])
+        self.days[action].insert(0, self.cost[action])
+            
+        coeffs = [(self.remember - memory_idx) for memory_idx in range(self.remember)]
+        coeffs_normalized = [coeff / sum(coeffs) for coeff in coeffs]
+        for memory_idx, coeff in enumerate(coeffs_normalized):
+            c_hat += coeff * self.days[action][memory_idx]
+        self.cost[action] = (self.alpha_j * c_hat) + (self.alpha_zero * reward)
+        
+    def create_memory(self):
+        for i in range(len(self.cost)):
+            for _ in range(self.remember):
+                self.days[i].append(self.cost[i])

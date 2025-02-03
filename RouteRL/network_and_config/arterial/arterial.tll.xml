@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-06-13 07:54:07 by Eclipse SUMO netedit Version 1.19.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/neteditConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="/Users/zoltanvarga/Documents/Milestone-One/Network_and_config/arterial.net.xml"/>
+    </input>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="0"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="5"/>
+        <junctions.limit-turn-speed value="5.50"/>
+        <rectangular-lane-cut value="0"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="0"/>
+    </pedestrian>
+
+</configuration>
+-->
+
+<tlLogics version="1.16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tllogic_file.xsd">
+    <tlLogic id="nt1" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt10" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt11" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt12" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt13" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt14" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt15" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt16" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt2" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt3" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt4" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt5" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt6" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt7" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt8" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+    <tlLogic id="nt9" type="static" programID="0" offset="0">
+        <phase duration="10" state="GGgsrrGGgsrr"/>
+        <phase duration="3"  state="yyysrryyysrr"/>
+        <phase duration="10" state="srrsrGsrrsrG"/>
+        <phase duration="3"  state="srrsryrrrsry"/>
+        <phase duration="10" state="srrGGrsrrGGr"/>
+        <phase duration="3"  state="srrGGrrrryyr"/>
+        <phase duration="10" state="srrGGGsrrsrr"/>
+        <phase duration="3"  state="srryyyrrrsrr"/>
+        <phase duration="10" state="srrsrrsrrGGG"/>
+        <phase duration="3"  state="srrsrrrrryyy"/>
+    </tlLogic>
+
+    <connection from="np10_nt15" to="nt15_nt14" fromLane="0" toLane="0" tl="nt15" linkIndex="0"/>
+    <connection from="np10_nt15" to="nt15_nt11" fromLane="0" toLane="0" tl="nt15" linkIndex="1"/>
+    <connection from="np10_nt15" to="nt15_nt16" fromLane="0" toLane="1" tl="nt15" linkIndex="2"/>
+    <connection from="np11_nt14" to="nt14_nt13" fromLane="0" toLane="0" tl="nt14" linkIndex="0"/>
+    <connection from="np11_nt14" to="nt14_nt10" fromLane="0" toLane="0" tl="nt14" linkIndex="1"/>
+    <connection from="np11_nt14" to="nt14_nt15" fromLane="0" toLane="1" tl="nt14" linkIndex="2"/>
+    <connection from="np12_nt13" to="nt13_np13" fromLane="0" toLane="0" tl="nt13" linkIndex="0"/>
+    <connection from="np12_nt13" to="nt13_nt9" fromLane="0" toLane="0" tl="nt13" linkIndex="1"/>
+    <connection from="np12_nt13" to="nt13_nt14" fromLane="0" toLane="1" tl="nt13" linkIndex="2"/>
+    <connection from="np13_nt13" to="nt13_nt9" fromLane="0" toLane="0" tl="nt13" linkIndex="9"/>
+    <connection from="np13_nt13" to="nt13_nt14" fromLane="0" toLane="0" tl="nt13" linkIndex="10"/>
+    <connection from="np13_nt13" to="nt13_np12" fromLane="1" toLane="0" tl="nt13" linkIndex="11"/>
+    <connection from="np14_nt9" to="nt9_nt5" fromLane="0" toLane="0" tl="nt9" linkIndex="9"/>
+    <connection from="np14_nt9" to="nt9_nt10" fromLane="0" toLane="0" tl="nt9" linkIndex="10"/>
+    <connection from="np14_nt9" to="nt9_nt13" fromLane="1" toLane="0" tl="nt9" linkIndex="11"/>
+    <connection from="np15_nt5" to="nt5_nt1" fromLane="0" toLane="0" tl="nt5" linkIndex="9"/>
+    <connection from="np15_nt5" to="nt5_nt6" fromLane="0" toLane="0" tl="nt5" linkIndex="10"/>
+    <connection from="np15_nt5" to="nt5_nt9" fromLane="1" toLane="0" tl="nt5" linkIndex="11"/>
+    <connection from="np16_nt1" to="nt1_np1" fromLane="0" toLane="0" tl="nt1" linkIndex="9"/>
+    <connection from="np16_nt1" to="nt1_nt2" fromLane="0" toLane="0" tl="nt1" linkIndex="10"/>
+    <connection from="np16_nt1" to="nt1_nt5" fromLane="1" toLane="0" tl="nt1" linkIndex="11"/>
+    <connection from="np1_nt1" to="nt1_nt2" fromLane="0" toLane="0" tl="nt1" linkIndex="6"/>
+    <connection from="np1_nt1" to="nt1_nt5" fromLane="0" toLane="0" tl="nt1" linkIndex="7"/>
+    <connection from="np1_nt1" to="nt1_np16" fromLane="0" toLane="1" tl="nt1" linkIndex="8"/>
+    <connection from="np2_nt2" to="nt2_nt3" fromLane="0" toLane="0" tl="nt2" linkIndex="6"/>
+    <connection from="np2_nt2" to="nt2_nt6" fromLane="0" toLane="0" tl="nt2" linkIndex="7"/>
+    <connection from="np2_nt2" to="nt2_nt1" fromLane="0" toLane="1" tl="nt2" linkIndex="8"/>
+    <connection from="np3_nt3" to="nt3_nt4" fromLane="0" toLane="0" tl="nt3" linkIndex="6"/>
+    <connection from="np3_nt3" to="nt3_nt7" fromLane="0" toLane="0" tl="nt3" linkIndex="7"/>
+    <connection from="np3_nt3" to="nt3_nt2" fromLane="0" toLane="1" tl="nt3" linkIndex="8"/>
+    <connection from="np4_nt4" to="nt4_np5" fromLane="0" toLane="0" tl="nt4" linkIndex="6"/>
+    <connection from="np4_nt4" to="nt4_nt8" fromLane="0" toLane="0" tl="nt4" linkIndex="7"/>
+    <connection from="np4_nt4" to="nt4_nt3" fromLane="0" toLane="1" tl="nt4" linkIndex="8"/>
+    <connection from="np5_nt4" to="nt4_nt8" fromLane="0" toLane="0" tl="nt4" linkIndex="3"/>
+    <connection from="np5_nt4" to="nt4_nt3" fromLane="0" toLane="0" tl="nt4" linkIndex="4"/>
+    <connection from="np5_nt4" to="nt4_np4" fromLane="1" toLane="0" tl="nt4" linkIndex="5"/>
+    <connection from="np6_nt8" to="nt8_nt12" fromLane="0" toLane="0" tl="nt8" linkIndex="3"/>
+    <connection from="np6_nt8" to="nt8_nt7" fromLane="0" toLane="0" tl="nt8" linkIndex="4"/>
+    <connection from="np6_nt8" to="nt8_nt4" fromLane="1" toLane="0" tl="nt8" linkIndex="5"/>
+    <connection from="np7_nt12" to="nt12_nt16" fromLane="0" toLane="0" tl="nt12" linkIndex="3"/>
+    <connection from="np7_nt12" to="nt12_nt11" fromLane="0" toLane="0" tl="nt12" linkIndex="4"/>
+    <connection from="np7_nt12" to="nt12_nt8" fromLane="1" toLane="0" tl="nt12" linkIndex="5"/>
+    <connection from="np8_nt16" to="nt16_np9" fromLane="0" toLane="0" tl="nt16" linkIndex="3"/>
+    <connection from="np8_nt16" to="nt16_nt15" fromLane="0" toLane="0" tl="nt16" linkIndex="4"/>
+    <connection from="np8_nt16" to="nt16_nt12" fromLane="1" toLane="0" tl="nt16" linkIndex="5"/>
+    <connection from="np9_nt16" to="nt16_nt15" fromLane="0" toLane="0" tl="nt16" linkIndex="0"/>
+    <connection from="np9_nt16" to="nt16_nt12" fromLane="0" toLane="0" tl="nt16" linkIndex="1"/>
+    <connection from="np9_nt16" to="nt16_np8" fromLane="0" toLane="1" tl="nt16" linkIndex="2"/>
+    <connection from="nt10_nt11" to="nt11_nt7" fromLane="0" toLane="0" tl="nt11" linkIndex="9"/>
+    <connection from="nt10_nt11" to="nt11_nt12" fromLane="0" toLane="0" tl="nt11" linkIndex="10"/>
+    <connection from="nt10_nt11" to="nt11_nt15" fromLane="1" toLane="0" tl="nt11" linkIndex="11"/>
+    <connection from="nt10_nt14" to="nt14_nt15" fromLane="0" toLane="0" tl="nt14" linkIndex="6"/>
+    <connection from="nt10_nt14" to="nt14_np11" fromLane="0" toLane="0" tl="nt14" linkIndex="7"/>
+    <connection from="nt10_nt14" to="nt14_nt13" fromLane="0" toLane="1" tl="nt14" linkIndex="8"/>
+    <connection from="nt10_nt6" to="nt6_nt5" fromLane="0" toLane="0" tl="nt6" linkIndex="0"/>
+    <connection from="nt10_nt6" to="nt6_nt2" fromLane="0" toLane="0" tl="nt6" linkIndex="1"/>
+    <connection from="nt10_nt6" to="nt6_nt7" fromLane="0" toLane="1" tl="nt6" linkIndex="2"/>
+    <connection from="nt10_nt9" to="nt9_nt13" fromLane="0" toLane="0" tl="nt9" linkIndex="3"/>
+    <connection from="nt10_nt9" to="nt9_np14" fromLane="0" toLane="0" tl="nt9" linkIndex="4"/>
+    <connection from="nt10_nt9" to="nt9_nt5" fromLane="1" toLane="0" tl="nt9" linkIndex="5"/>
+    <connection from="nt11_nt10" to="nt10_nt14" fromLane="0" toLane="0" tl="nt10" linkIndex="3"/>
+    <connection from="nt11_nt10" to="nt10_nt9" fromLane="0" toLane="0" tl="nt10" linkIndex="4"/>
+    <connection from="nt11_nt10" to="nt10_nt6" fromLane="1" toLane="0" tl="nt10" linkIndex="5"/>
+    <connection from="nt11_nt12" to="nt12_nt8" fromLane="0" toLane="0" tl="nt12" linkIndex="9"/>
+    <connection from="nt11_nt12" to="nt12_np7" fromLane="0" toLane="0" tl="nt12" linkIndex="10"/>
+    <connection from="nt11_nt12" to="nt12_nt16" fromLane="1" toLane="0" tl="nt12" linkIndex="11"/>
+    <connection from="nt11_nt15" to="nt15_nt16" fromLane="0" toLane="0" tl="nt15" linkIndex="6"/>
+    <connection from="nt11_nt15" to="nt15_np10" fromLane="0" toLane="0" tl="nt15" linkIndex="7"/>
+    <connection from="nt11_nt15" to="nt15_nt14" fromLane="0" toLane="1" tl="nt15" linkIndex="8"/>
+    <connection from="nt11_nt7" to="nt7_nt6" fromLane="0" toLane="0" tl="nt7" linkIndex="0"/>
+    <connection from="nt11_nt7" to="nt7_nt3" fromLane="0" toLane="0" tl="nt7" linkIndex="1"/>
+    <connection from="nt11_nt7" to="nt7_nt8" fromLane="0" toLane="1" tl="nt7" linkIndex="2"/>
+    <connection from="nt12_nt11" to="nt11_nt15" fromLane="0" toLane="0" tl="nt11" linkIndex="3"/>
+    <connection from="nt12_nt11" to="nt11_nt10" fromLane="0" toLane="0" tl="nt11" linkIndex="4"/>
+    <connection from="nt12_nt11" to="nt11_nt7" fromLane="1" toLane="0" tl="nt11" linkIndex="5"/>
+    <connection from="nt12_nt16" to="nt16_np8" fromLane="0" toLane="0" tl="nt16" linkIndex="6"/>
+    <connection from="nt12_nt16" to="nt16_np9" fromLane="0" toLane="0" tl="nt16" linkIndex="7"/>
+    <connection from="nt12_nt16" to="nt16_nt15" fromLane="0" toLane="1" tl="nt16" linkIndex="8"/>
+    <connection from="nt12_nt8" to="nt8_nt7" fromLane="0" toLane="0" tl="nt8" linkIndex="0"/>
+    <connection from="nt12_nt8" to="nt8_nt4" fromLane="0" toLane="0" tl="nt8" linkIndex="1"/>
+    <connection from="nt12_nt8" to="nt8_np6" fromLane="0" toLane="1" tl="nt8" linkIndex="2"/>
+    <connection from="nt13_nt14" to="nt14_nt10" fromLane="0" toLane="0" tl="nt14" linkIndex="9"/>
+    <connection from="nt13_nt14" to="nt14_nt15" fromLane="0" toLane="0" tl="nt14" linkIndex="10"/>
+    <connection from="nt13_nt14" to="nt14_np11" fromLane="1" toLane="0" tl="nt14" linkIndex="11"/>
+    <connection from="nt13_nt9" to="nt9_np14" fromLane="0" toLane="0" tl="nt9" linkIndex="0"/>
+    <connection from="nt13_nt9" to="nt9_nt5" fromLane="0" toLane="0" tl="nt9" linkIndex="1"/>
+    <connection from="nt13_nt9" to="nt9_nt10" fromLane="0" toLane="1" tl="nt9" linkIndex="2"/>
+    <connection from="nt14_nt10" to="nt10_nt9" fromLane="0" toLane="0" tl="nt10" linkIndex="0"/>
+    <connection from="nt14_nt10" to="nt10_nt6" fromLane="0" toLane="0" tl="nt10" linkIndex="1"/>
+    <connection from="nt14_nt10" to="nt10_nt11" fromLane="0" toLane="1" tl="nt10" linkIndex="2"/>
+    <connection from="nt14_nt13" to="nt13_np12" fromLane="0" toLane="0" tl="nt13" linkIndex="3"/>
+    <connection from="nt14_nt13" to="nt13_np13" fromLane="0" toLane="0" tl="nt13" linkIndex="4"/>
+    <connection from="nt14_nt13" to="nt13_nt9" fromLane="1" toLane="0" tl="nt13" linkIndex="5"/>
+    <connection from="nt14_nt15" to="nt15_nt11" fromLane="0" toLane="0" tl="nt15" linkIndex="9"/>
+    <connection from="nt14_nt15" to="nt15_nt16" fromLane="0" toLane="0" tl="nt15" linkIndex="10"/>
+    <connection from="nt14_nt15" to="nt15_np10" fromLane="1" toLane="0" tl="nt15" linkIndex="11"/>
+    <connection from="nt15_nt11" to="nt11_nt10" fromLane="0" toLane="0" tl="nt11" linkIndex="0"/>
+    <connection from="nt15_nt11" to="nt11_nt7" fromLane="0" toLane="0" tl="nt11" linkIndex="1"/>
+    <connection from="nt15_nt11" to="nt11_nt12" fromLane="0" toLane="1" tl="nt11" linkIndex="2"/>
+    <connection from="nt15_nt14" to="nt14_np11" fromLane="0" toLane="0" tl="nt14" linkIndex="3"/>
+    <connection from="nt15_nt14" to="nt14_nt13" fromLane="0" toLane="0" tl="nt14" linkIndex="4"/>
+    <connection from="nt15_nt14" to="nt14_nt10" fromLane="1" toLane="0" tl="nt14" linkIndex="5"/>
+    <connection from="nt15_nt16" to="nt16_nt12" fromLane="0" toLane="0" tl="nt16" linkIndex="9"/>
+    <connection from="nt15_nt16" to="nt16_np8" fromLane="0" toLane="0" tl="nt16" linkIndex="10"/>
+    <connection from="nt15_nt16" to="nt16_np9" fromLane="1" toLane="0" tl="nt16" linkIndex="11"/>
+    <connection from="nt16_nt12" to="nt12_nt11" fromLane="0" toLane="0" tl="nt12" linkIndex="0"/>
+    <connection from="nt16_nt12" to="nt12_nt8" fromLane="0" toLane="0" tl="nt12" linkIndex="1"/>
+    <connection from="nt16_nt12" to="nt12_np7" fromLane="0" toLane="1" tl="nt12" linkIndex="2"/>
+    <connection from="nt16_nt15" to="nt15_np10" fromLane="0" toLane="0" tl="nt15" linkIndex="3"/>
+    <connection from="nt16_nt15" to="nt15_nt14" fromLane="0" toLane="0" tl="nt15" linkIndex="4"/>
+    <connection from="nt16_nt15" to="nt15_nt11" fromLane="1" toLane="0" tl="nt15" linkIndex="5"/>
+    <connection from="nt1_nt2" to="nt2_np2" fromLane="0" toLane="0" tl="nt2" linkIndex="9"/>
+    <connection from="nt1_nt2" to="nt2_nt3" fromLane="0" toLane="0" tl="nt2" linkIndex="10"/>
+    <connection from="nt1_nt2" to="nt2_nt6" fromLane="1" toLane="0" tl="nt2" linkIndex="11"/>
+    <connection from="nt1_nt5" to="nt5_nt6" fromLane="0" toLane="0" tl="nt5" linkIndex="6"/>
+    <connection from="nt1_nt5" to="nt5_nt9" fromLane="0" toLane="0" tl="nt5" linkIndex="7"/>
+    <connection from="nt1_nt5" to="nt5_np15" fromLane="0" toLane="1" tl="nt5" linkIndex="8"/>
+    <connection from="nt2_nt1" to="nt1_nt5" fromLane="0" toLane="0" tl="nt1" linkIndex="3"/>
+    <connection from="nt2_nt1" to="nt1_np16" fromLane="0" toLane="0" tl="nt1" linkIndex="4"/>
+    <connection from="nt2_nt1" to="nt1_np1" fromLane="1" toLane="0" tl="nt1" linkIndex="5"/>
+    <connection from="nt2_nt3" to="nt3_np3" fromLane="0" toLane="0" tl="nt3" linkIndex="9"/>
+    <connection from="nt2_nt3" to="nt3_nt4" fromLane="0" toLane="0" tl="nt3" linkIndex="10"/>
+    <connection from="nt2_nt3" to="nt3_nt7" fromLane="1" toLane="0" tl="nt3" linkIndex="11"/>
+    <connection from="nt2_nt6" to="nt6_nt7" fromLane="0" toLane="0" tl="nt6" linkIndex="6"/>
+    <connection from="nt2_nt6" to="nt6_nt10" fromLane="0" toLane="0" tl="nt6" linkIndex="7"/>
+    <connection from="nt2_nt6" to="nt6_nt5" fromLane="0" toLane="1" tl="nt6" linkIndex="8"/>
+    <connection from="nt3_nt2" to="nt2_nt6" fromLane="0" toLane="0" tl="nt2" linkIndex="3"/>
+    <connection from="nt3_nt2" to="nt2_nt1" fromLane="0" toLane="0" tl="nt2" linkIndex="4"/>
+    <connection from="nt3_nt2" to="nt2_np2" fromLane="1" toLane="0" tl="nt2" linkIndex="5"/>
+    <connection from="nt3_nt4" to="nt4_np4" fromLane="0" toLane="0" tl="nt4" linkIndex="9"/>
+    <connection from="nt3_nt4" to="nt4_np5" fromLane="0" toLane="0" tl="nt4" linkIndex="10"/>
+    <connection from="nt3_nt4" to="nt4_nt8" fromLane="1" toLane="0" tl="nt4" linkIndex="11"/>
+    <connection from="nt3_nt7" to="nt7_nt8" fromLane="0" toLane="0" tl="nt7" linkIndex="6"/>
+    <connection from="nt3_nt7" to="nt7_nt11" fromLane="0" toLane="0" tl="nt7" linkIndex="7"/>
+    <connection from="nt3_nt7" to="nt7_nt6" fromLane="0" toLane="1" tl="nt7" linkIndex="8"/>
+    <connection from="nt4_nt3" to="nt3_nt7" fromLane="0" toLane="0" tl="nt3" linkIndex="3"/>
+    <connection from="nt4_nt3" to="nt3_nt2" fromLane="0" toLane="0" tl="nt3" linkIndex="4"/>
+    <connection from="nt4_nt3" to="nt3_np3" fromLane="1" toLane="0" tl="nt3" linkIndex="5"/>
+    <connection from="nt4_nt8" to="nt8_np6" fromLane="0" toLane="0" tl="nt8" linkIndex="6"/>
+    <connection from="nt4_nt8" to="nt8_nt12" fromLane="0" toLane="0" tl="nt8" linkIndex="7"/>
+    <connection from="nt4_nt8" to="nt8_nt7" fromLane="0" toLane="1" tl="nt8" linkIndex="8"/>
+    <connection from="nt5_nt1" to="nt1_np16" fromLane="0" toLane="0" tl="nt1" linkIndex="0"/>
+    <connection from="nt5_nt1" to="nt1_np1" fromLane="0" toLane="0" tl="nt1" linkIndex="1"/>
+    <connection from="nt5_nt1" to="nt1_nt2" fromLane="0" toLane="1" tl="nt1" linkIndex="2"/>
+    <connection from="nt5_nt6" to="nt6_nt2" fromLane="0" toLane="0" tl="nt6" linkIndex="9"/>
+    <connection from="nt5_nt6" to="nt6_nt7" fromLane="0" toLane="0" tl="nt6" linkIndex="10"/>
+    <connection from="nt5_nt6" to="nt6_nt10" fromLane="1" toLane="0" tl="nt6" linkIndex="11"/>
+    <connection from="nt5_nt9" to="nt9_nt10" fromLane="0" toLane="0" tl="nt9" linkIndex="6"/>
+    <connection from="nt5_nt9" to="nt9_nt13" fromLane="0" toLane="0" tl="nt9" linkIndex="7"/>
+    <connection from="nt5_nt9" to="nt9_np14" fromLane="0" toLane="1" tl="nt9" linkIndex="8"/>
+    <connection from="nt6_nt10" to="nt10_nt11" fromLane="0" toLane="0" tl="nt10" linkIndex="6"/>
+    <connection from="nt6_nt10" to="nt10_nt14" fromLane="0" toLane="0" tl="nt10" linkIndex="7"/>
+    <connection from="nt6_nt10" to="nt10_nt9" fromLane="0" toLane="1" tl="nt10" linkIndex="8"/>
+    <connection from="nt6_nt2" to="nt2_nt1" fromLane="0" toLane="0" tl="nt2" linkIndex="0"/>
+    <connection from="nt6_nt2" to="nt2_np2" fromLane="0" toLane="0" tl="nt2" linkIndex="1"/>
+    <connection from="nt6_nt2" to="nt2_nt3" fromLane="0" toLane="1" tl="nt2" linkIndex="2"/>
+    <connection from="nt6_nt5" to="nt5_nt9" fromLane="0" toLane="0" tl="nt5" linkIndex="3"/>
+    <connection from="nt6_nt5" to="nt5_np15" fromLane="0" toLane="0" tl="nt5" linkIndex="4"/>
+    <connection from="nt6_nt5" to="nt5_nt1" fromLane="1" toLane="0" tl="nt5" linkIndex="5"/>
+    <connection from="nt6_nt7" to="nt7_nt3" fromLane="0" toLane="0" tl="nt7" linkIndex="9"/>
+    <connection from="nt6_nt7" to="nt7_nt8" fromLane="0" toLane="0" tl="nt7" linkIndex="10"/>
+    <connection from="nt6_nt7" to="nt7_nt11" fromLane="1" toLane="0" tl="nt7" linkIndex="11"/>
+    <connection from="nt7_nt11" to="nt11_nt12" fromLane="0" toLane="0" tl="nt11" linkIndex="6"/>
+    <connection from="nt7_nt11" to="nt11_nt15" fromLane="0" toLane="0" tl="nt11" linkIndex="7"/>
+    <connection from="nt7_nt11" to="nt11_nt10" fromLane="0" toLane="1" tl="nt11" linkIndex="8"/>
+    <connection from="nt7_nt3" to="nt3_nt2" fromLane="0" toLane="0" tl="nt3" linkIndex="0"/>
+    <connection from="nt7_nt3" to="nt3_np3" fromLane="0" toLane="0" tl="nt3" linkIndex="1"/>
+    <connection from="nt7_nt3" to="nt3_nt4" fromLane="0" toLane="1" tl="nt3" linkIndex="2"/>
+    <connection from="nt7_nt6" to="nt6_nt10" fromLane="0" toLane="0" tl="nt6" linkIndex="3"/>
+    <connection from="nt7_nt6" to="nt6_nt5" fromLane="0" toLane="0" tl="nt6" linkIndex="4"/>
+    <connection from="nt7_nt6" to="nt6_nt2" fromLane="1" toLane="0" tl="nt6" linkIndex="5"/>
+    <connection from="nt7_nt8" to="nt8_nt4" fromLane="0" toLane="0" tl="nt8" linkIndex="9"/>
+    <connection from="nt7_nt8" to="nt8_np6" fromLane="0" toLane="0" tl="nt8" linkIndex="10"/>
+    <connection from="nt7_nt8" to="nt8_nt12" fromLane="1" toLane="0" tl="nt8" linkIndex="11"/>
+    <connection from="nt8_nt12" to="nt12_np7" fromLane="0" toLane="0" tl="nt12" linkIndex="6"/>
+    <connection from="nt8_nt12" to="nt12_nt16" fromLane="0" toLane="0" tl="nt12" linkIndex="7"/>
+    <connection from="nt8_nt12" to="nt12_nt11" fromLane="0" toLane="1" tl="nt12" linkIndex="8"/>
+    <connection from="nt8_nt4" to="nt4_nt3" fromLane="0" toLane="0" tl="nt4" linkIndex="0"/>
+    <connection from="nt8_nt4" to="nt4_np4" fromLane="0" toLane="0" tl="nt4" linkIndex="1"/>
+    <connection from="nt8_nt4" to="nt4_np5" fromLane="0" toLane="1" tl="nt4" linkIndex="2"/>
+    <connection from="nt8_nt7" to="nt7_nt11" fromLane="0" toLane="0" tl="nt7" linkIndex="3"/>
+    <connection from="nt8_nt7" to="nt7_nt6" fromLane="0" toLane="0" tl="nt7" linkIndex="4"/>
+    <connection from="nt8_nt7" to="nt7_nt3" fromLane="1" toLane="0" tl="nt7" linkIndex="5"/>
+    <connection from="nt9_nt10" to="nt10_nt6" fromLane="0" toLane="0" tl="nt10" linkIndex="9"/>
+    <connection from="nt9_nt10" to="nt10_nt11" fromLane="0" toLane="0" tl="nt10" linkIndex="10"/>
+    <connection from="nt9_nt10" to="nt10_nt14" fromLane="1" toLane="0" tl="nt10" linkIndex="11"/>
+    <connection from="nt9_nt13" to="nt13_nt14" fromLane="0" toLane="0" tl="nt13" linkIndex="6"/>
+    <connection from="nt9_nt13" to="nt13_np12" fromLane="0" toLane="0" tl="nt13" linkIndex="7"/>
+    <connection from="nt9_nt13" to="nt13_np13" fromLane="0" toLane="1" tl="nt13" linkIndex="8"/>
+    <connection from="nt9_nt5" to="nt5_np15" fromLane="0" toLane="0" tl="nt5" linkIndex="0"/>
+    <connection from="nt9_nt5" to="nt5_nt1" fromLane="0" toLane="0" tl="nt5" linkIndex="1"/>
+    <connection from="nt9_nt5" to="nt5_nt6" fromLane="0" toLane="1" tl="nt5" linkIndex="2"/>
+</tlLogics>

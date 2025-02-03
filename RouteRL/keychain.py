@@ -25,6 +25,7 @@ class Keychain:
     BETA_RANDOMNESS = "beta_randomness"
     ALPHA_J = "alpha_j"
     ALPHA_ZERO = "alpha_zero"
+    REMEMBER = "remember"
     # Machine
     OBSERVED_SPAN = "observed_span"
 

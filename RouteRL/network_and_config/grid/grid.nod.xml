@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-06-13 08:38:47 by Eclipse SUMO netedit Version 1.19.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/neteditConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="/Users/zoltanvarga/Documents/Milestone-One/Network_and_config/grid.net.xml"/>
+    </input>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="0"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="5"/>
+        <junctions.limit-turn-speed value="5.50"/>
+        <rectangular-lane-cut value="0"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="0"/>
+    </pedestrian>
+
+</configuration>
+-->
+
+<nodes version="1.16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/nodes_file.xsd">
+    <location netOffset="0.00,0.00" convBoundary="0.00,0.00,1500.00,1500.00" origBoundary="0.00,0.00,1500.00,1500.00" projParameter="!"/>
+
+    <node id="A0" x="300.00" y="300.00" type="traffic_light_right_on_red" tl="A0"/>
+    <node id="A1" x="300.00" y="600.00" type="traffic_light_right_on_red" tl="A1"/>
+    <node id="A2" x="300.00" y="900.00" type="traffic_light_right_on_red" tl="A2"/>
+    <node id="A3" x="300.00" y="1200.00" type="traffic_light_right_on_red" tl="A3"/>
+    <node id="B0" x="600.00" y="300.00" type="traffic_light_right_on_red" tl="B0"/>
+    <node id="B1" x="600.00" y="600.00" type="traffic_light_right_on_red" tl="B1"/>
+    <node id="B2" x="600.00" y="900.00" type="traffic_light_right_on_red" tl="B2"/>
+    <node id="B3" x="600.00" y="1200.00" type="traffic_light_right_on_red" tl="B3"/>
+    <node id="C0" x="900.00" y="300.00" type="traffic_light_right_on_red" tl="C0"/>
+    <node id="C1" x="900.00" y="600.00" type="traffic_light_right_on_red" tl="C1"/>
+    <node id="C2" x="900.00" y="900.00" type="traffic_light_right_on_red" tl="C2"/>
+    <node id="C3" x="900.00" y="1200.00" type="traffic_light_right_on_red" tl="C3"/>
+    <node id="D0" x="1200.00" y="300.00" type="traffic_light_right_on_red" tl="D0"/>
+    <node id="D1" x="1200.00" y="600.00" type="traffic_light_right_on_red" tl="D1"/>
+    <node id="D2" x="1200.00" y="900.00" type="traffic_light_right_on_red" tl="D2"/>
+    <node id="D3" x="1200.00" y="1200.00" type="traffic_light_right_on_red" tl="D3"/>
+    <node id="bottom0" x="300.00" y="0.00" type="dead_end" fringe="outer"/>
+    <node id="bottom1" x="600.00" y="0.00" type="dead_end" fringe="outer"/>
+    <node id="bottom2" x="900.00" y="0.00" type="dead_end" fringe="outer"/>
+    <node id="bottom3" x="1200.00" y="0.00" type="dead_end" fringe="outer"/>
+    <node id="left0" x="0.00" y="300.00" type="dead_end" fringe="outer"/>
+    <node id="left1" x="0.00" y="600.00" type="dead_end" fringe="outer"/>
+    <node id="left2" x="0.00" y="900.00" type="dead_end" fringe="outer"/>
+    <node id="left3" x="0.00" y="1200.00" type="dead_end" fringe="outer"/>
+    <node id="right0" x="1500.00" y="300.00" type="dead_end" fringe="outer"/>
+    <node id="right1" x="1500.00" y="600.00" type="dead_end" fringe="outer"/>
+    <node id="right2" x="1500.00" y="900.00" type="dead_end" fringe="outer"/>
+    <node id="right3" x="1500.00" y="1200.00" type="dead_end" fringe="outer"/>
+    <node id="top0" x="300.00" y="1500.00" type="dead_end" fringe="outer"/>
+    <node id="top1" x="600.00" y="1500.00" type="dead_end" fringe="outer"/>
+    <node id="top2" x="900.00" y="1500.00" type="dead_end" fringe="outer"/>
+    <node id="top3" x="1200.00" y="1500.00" type="dead_end" fringe="outer"/>
+</nodes>

@@ -129,17 +129,12 @@ class TrafficEnvironment(AECEnv):
         logging.info("\nMachine's observation space is: %s ", self._observation_spaces)
         logging.info("Machine's action space is: %s", self._action_spaces)
 
-    #############################
-    ##### Simulator control #####
+    ################################
+    ##### PettingZoo functions #####
 
     def start(self) -> None:
         self.simulator.start()
 
-    def stop(self) -> None:
-        self.simulator.stop()
-
-    ################################
-    ##### PettingZoo functions #####
 
     def reset(self, seed: int = None, options: dict = None) -> tuple:
         """
@@ -250,7 +245,7 @@ class TrafficEnvironment(AECEnv):
 
     def close(self) -> None:
         """Close the environment and stop the SUMO simulation."""
-        self.human_learning = True
+        self.simulator.stop()
 
 
     def observe(self, agent: str) -> dict:

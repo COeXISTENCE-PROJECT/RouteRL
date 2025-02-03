@@ -4,7 +4,7 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/neteditConfiguration.xsd">
 
     <input>
-        <sumo-net-file value="/Users/zoltanvarga/Documents/Milestone-One/Network_and_config/cologne8/cologne8.net.xml"/>
+        <sumo-net-file value="/Users/zoltanvarga/Documents/Milestone-One/Network_and_config/cologne/cologne.net.xml"/>
     </input>
 
     <processing>

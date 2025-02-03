@@ -21,8 +21,9 @@
             "model" : "culo",
             "alpha_j": 0.2,
             "alpha_zero": 0.2,
-            "beta" : 0.2,
-            "beta_randomness" : 0.01
+            "beta" : 0.5,
+            "beta_randomness" : 0.1,
+            "remember" : 3
         }
     },
 
