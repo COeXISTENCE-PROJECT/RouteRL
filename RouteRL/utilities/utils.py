@@ -43,6 +43,7 @@ def resolve_ods(params):
         params[kc.PATH_GEN][kc.DESTINATIONS] = default_ods[kc.DESTINATIONS]
     if params[kc.SIMULATOR][kc.NETWORK_NAME] == "two_route_yield":
         params[kc.PATH_GEN][kc.NUMBER_OF_PATHS] = 2
+        params[kc.PLOTTER][kc.DEFAULT_NUM_COLUMNS] = 1
     return params
 
 

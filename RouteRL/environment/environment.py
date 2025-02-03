@@ -146,8 +146,8 @@ class TrafficEnvironment(AECEnv):
     def __str__(self):
         message = f"TrafficEnvironment with {len(self.all_agents)} agents.\
             \n{len(self.machine_agents)} machines and {len(self.human_agents)} humans.\
-            \nMachines: {self.machine_agents}\
-            \nHumans: {self.human_agents}"
+            \nMachines: {sorted(self.machine_agents, key=lambda agent: agent.id)}\
+            \nHumans: {sorted(self.human_agents, key=lambda agent: agent.id)}"
         return message
     
     

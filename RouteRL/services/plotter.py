@@ -205,6 +205,7 @@ class Plotter:
         fig.tight_layout(pad=5.0)
 
         if num_rows > 1:   axes = axes.flatten()   # Flatten axes
+        if not hasattr(axes, '__getitem__'):    axes = np.array([axes])  # If only one subplot
 
         # Plot mean travel times for each OD
         mean_tt_od = self._retrieve_data_per_od(kc.TRAVEL_TIME, transform='mean')
@@ -306,6 +307,7 @@ class Plotter:
         fig.tight_layout(pad=5.0)
         
         if num_rows > 1:   axes = axes.flatten()   # Flatten axes
+        if not hasattr(axes, '__getitem__'):    axes = np.array([axes])  # If only one subplot
 
         for idx, (od, actions) in enumerate(all_actions.items()):
             ax = axes[idx]
@@ -329,7 +331,7 @@ class Plotter:
 
         for ax in axes.flat:    ax.legend().set_visible(False)
         handles, labels = axes[0].get_legend_handles_labels()
-        fig.legend(handles, labels, loc='upper center', ncol=num_columns)
+        fig.legend(handles, labels, loc='upper center', ncol=2)
         fig.subplots_adjust(top=0.90)
 
         plt.savefig(save_to)
@@ -360,6 +362,7 @@ class Plotter:
         fig.tight_layout(pad=5.0)
         
         if num_rows > 1:   axes = axes.flatten()   # Flatten axes
+        if not hasattr(axes, '__getitem__'):    axes = np.array([axes])  # If only one subplot
 
         for idx, od in enumerate(all_od_pairs):
             ax = axes[idx]
@@ -392,7 +395,7 @@ class Plotter:
 
         for ax in axes.flat:    ax.legend().set_visible(False)
         handles, labels = axes[0].get_legend_handles_labels()
-        fig.legend(handles, labels, loc='upper center', ncol=num_columns)
+        fig.legend(handles, labels, loc='upper center', ncol=3)
         fig.subplots_adjust(top=0.85)
 
         plt.savefig(save_to)

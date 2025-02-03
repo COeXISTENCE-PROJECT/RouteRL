@@ -1,12 +1,12 @@
 .DS_Store
 __pycache__/
 
-xsummary.xml
-xtripinfo.xml
-xfcd.xml
-xdet.add.xml
-xdetectors.csv
-xroute.rou.xml
+summary.xml
+tripinfo.xml
+fcd.xml
+det.add.xml
+detectors.csv
+route.rou.xml
 
 training_records/
 plots/
