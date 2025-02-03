@@ -33,7 +33,7 @@ class Plotter:
         colors (list): list of the colors
         phase_colors (list): list of the phase colors
         linestyles (list): list of the linestyles
-        smooth_by:
+        smooth_by (int): smoothing factor
         default_width (float): the width of the plot
         default_height (float): the height of the plot
         multimode_width (float): the width of the multimode
@@ -76,9 +76,8 @@ class Plotter:
         self.records_folder = params[kc.RECORDS_FOLDER]
 
         make_dir(self.records_folder)
-        self.episodes_folder = make_dir([self.records_folder, params[kc.EPISODES_LOGS_FOLDER]])
-        self.sim_length_file_path = make_dir(self.records_folder, params[kc.SIMULATION_LENGTH_LOG_FILE_NAME])
-        self.loss_file_path = make_dir(self.records_folder, params[kc.LOSSES_LOG_FILE_NAME])
+        self.episodes_folder = make_dir([self.records_folder, kc.EPISODES_LOGS_FOLDER])
+        self.loss_file_path = make_dir(self.records_folder, kc.LOSSES_LOG_FILE_NAME)
 
         self.saved_episodes = list()
 
@@ -128,7 +127,7 @@ class Plotter:
         Visualise the mean rewards
         """
 
-        save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.REWARDS_PLOT_FILE_NAME])
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.REWARDS_PLOT_FILE_NAME)
         all_mean_rewards = self._retrieve_data_per_kind(kc.REWARD, transform='mean')
 
         plt.figure(figsize=(self.default_width, self.default_height))
@@ -163,7 +162,7 @@ class Plotter:
         Visualise the mean travel times
         """
 
-        save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.TRAVEL_TIMES_PLOT_FILE_NAME])
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.TRAVEL_TIMES_PLOT_FILE_NAME)
         all_mean_tt = self._retrieve_data_per_kind(kc.TRAVEL_TIME, transform='mean')
 
         plt.figure(figsize=(self.default_width, self.default_height))
@@ -198,7 +197,7 @@ class Plotter:
         Visualise the travel time distributions
         """
 
-        save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.TT_DIST_PLOT_FILE_NAME])
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.TT_DIST_PLOT_FILE_NAME)
     
         num_rows, num_cols = 2, 2
         fig, axes = plt.subplots(num_rows, num_cols, figsize=(self.multimode_width * num_cols, self.multimode_height * num_rows))
@@ -291,7 +290,7 @@ class Plotter:
         Visualize the actions taken by the agent.
         """
 
-        save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.ACTIONS_PLOT_FILE_NAME])
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.ACTIONS_PLOT_FILE_NAME)
 
         all_actions = self._retrieve_data_per_od(kc.ACTION)
         unique_actions = {od: set([item for sublist in val.values() for item in sublist]) for od, val in all_actions.items()}
@@ -348,7 +347,7 @@ class Plotter:
         Visualize the action shifts taken by the agent.
         """
 
-        save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.ACTIONS_SHIFTS_PLOT_FILE_NAME])
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.ACTIONS_SHIFTS_PLOT_FILE_NAME)
 
         all_od_pairs = self._retrieve_all_od_pairs()
         all_od_pairs = sorted(all_od_pairs, key=lambda x: f"{x[0]}-{x[1]}")
@@ -412,7 +411,7 @@ class Plotter:
         Visualize the simulation length.
         """
 
-        save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.SIMULATION_LENGTH_PLOT_FILE_NAME])
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.SIM_LENGTH_PLOT_FILE_NAME)
 
         sim_lengths = self._retrieve_sim_length()
         sim_lengths = running_average(sim_lengths, last_n=self.smooth_by)
@@ -457,7 +456,7 @@ class Plotter:
         Visualize the losses.
         """
 
-        save_to = make_dir(self.params[kc.PLOTS_FOLDER], self.params[kc.LOSSES_PLOT_FILE_NAME])
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.LOSSES_PLOT_FILE_NAME)
 
         losses = self._retrieve_losses()
         if not losses: return

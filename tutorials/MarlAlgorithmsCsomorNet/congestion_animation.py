@@ -40,9 +40,9 @@ if __name__ == "__main__":
         
     all_edges = list(set(all_edges))
     
-    i=1
+    i=100
     max_flow, min_flow = -1, 1000000
-    while i<=num_frames*interval:
+    while i<=2000:
         detector_df = pd.read_csv(f"training_records/detector/detector_ep{i}.csv")
         flows = detector_df["flow"].values
         max_flow = max(max_flow, max(flows))
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     
     congestion_dicts = list()
     i=1
-    while i<=num_frames*interval:
+    while i<=2000:
         detector_df = pd.read_csv(f"training_records/detector/detector_ep{i}.csv")
         flows = detector_df["flow"].values
         normalized_flows = (flows - min_flow) / (max_flow - min_flow)
@@ -59,8 +59,6 @@ if __name__ == "__main__":
         congestion_dict = {edge: congestions.get(edge, 0) for edge in all_edges}
         congestion_dicts.append(congestion_dict)
         i += interval
-        
-    print(congestion_dicts)
         
     #################### Animate ############################ 
     

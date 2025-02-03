@@ -1,3 +1,5 @@
+import os
+
 import logging
 import numpy as np
 import pandas as pd
@@ -29,9 +31,12 @@ def generate_agents(params, free_flow_times, generate_data, seed=23423):
 
     set_seed(seed)
     if generate_data:
+        # Generate agent data
         agents_data_df = generate_agent_data(params, seed)
     else:
-        agents_data_df = pd.read_csv(params[kc.AGENTS_CSV_PATH])
+        # Load agent data
+        agents_csv_path = os.path.join(params[kc.RECORDS_FOLDER], kc.AGENTS_CSV_FILE_NAME)
+        agents_data_df = pd.read_csv(agents_csv_path)
 
     # Getting parameters
     action_space_size = params[kc.ACTION_SPACE_SIZE]
@@ -75,8 +80,8 @@ def generate_agent_data(params, seed=23423):
     """
     
     num_agents = params[kc.NUM_AGENTS]
-    agent_attributes = params[kc.AGENT_ATTRIBUTES]
     simulation_timesteps = params[kc.SIMULATION_TIMESTEPS]
+    agent_attributes = [kc.AGENT_ID, kc.AGENT_ORIGIN, kc.AGENT_DESTINATION, kc.AGENT_START_TIME, kc.AGENT_KIND]
     
     num_origins = len(params[kc.ORIGINS])
     num_destinations = len(params[kc.DESTINATIONS])
@@ -106,7 +111,10 @@ def generate_agent_data(params, seed=23423):
         agent_dict = {attribute : feature for attribute, feature in zip(agent_attributes, agent_features)}
         agents_df.loc[id] = agent_dict
         
-    agents_df.to_csv(params[kc.AGENTS_CSV_PATH], index=False)
+    # Saving the generated agents to a csv file
+    agents_csv_path = os.path.join(params[kc.RECORDS_FOLDER], kc.AGENTS_CSV_FILE_NAME)
+    agents_df.to_csv(agents_csv_path, index=False)
+    
     return agents_df
 
 

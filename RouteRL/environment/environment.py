@@ -577,7 +577,7 @@ class TrafficEnvironment(AECEnv):
             dict: A dictionary where keys are tuples of origin and destination, and values are lists of free flow times.
         """
 
-        paths_df = pd.read_csv(self.simulator.paths_csv_path)
+        paths_df = pd.read_csv(self.simulator.paths_csv_file_path)
         origins = paths_df[kc.ORIGINS].unique()
         destinations = paths_df[kc.DESTINATIONS].unique()
         ff_dict = {(o, d): list() for o in origins for d in destinations}

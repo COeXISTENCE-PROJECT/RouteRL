@@ -21,7 +21,6 @@ class Recorder:
         records_folder: RECORDS_FOLDER
         episodes_folder: EPISODES_LOGS_FOLDER
         detector_folder: DETECTORS_LOGS_FOLDER
-        sim_length_file_path: SIMULATION_LENGTH_LOG_FILE_NAME
         loss_file_path: LOSSES_LOG_FILE_NAME
 
     Methods:
@@ -37,14 +36,13 @@ class Recorder:
         self.params = params
         self.records_folder = self.params[kc.RECORDS_FOLDER]
 
-        self.episodes_folder = make_dir([self.records_folder, self.params[kc.EPISODES_LOGS_FOLDER]])
-        self.detector_folder = make_dir([self.records_folder, self.params[kc.DETECTOR_LOGS_FOLDER]])
+        self.episodes_folder = make_dir([self.records_folder, kc.EPISODES_LOGS_FOLDER])
+        self.detector_folder = make_dir([self.records_folder, kc.DETECTOR_LOGS_FOLDER])
 
         self._clear_records(self.episodes_folder)
         self._clear_records(self.detector_folder)
         
-        self.sim_length_file_path = self._get_txt_file_path(self.params[kc.SIMULATION_LENGTH_LOG_FILE_NAME])
-        self.loss_file_path = self._get_txt_file_path(self.params[kc.LOSSES_LOG_FILE_NAME])
+        self.loss_file_path = self._get_txt_file_path(kc.LOSSES_LOG_FILE_NAME)
         logging.info(f"[SUCCESS] Recorder is now here to record!")
 
 

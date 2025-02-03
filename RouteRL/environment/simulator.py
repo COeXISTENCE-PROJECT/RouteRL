@@ -31,7 +31,6 @@ class SumoSimulator():
     Attributes:
         network_name: network name.
         sumo_type: type of sumo
-        env_var: enviroment variable
         number_of_paths: number of paths
         simulation_length: simulation length
         paths_csv_path: paths to csv files
@@ -61,27 +60,27 @@ class SumoSimulator():
 
     def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423) -> None:
         
-        self.network_name       = params[kc.NETWORK_NAME]
-        self.sumo_type          = params[kc.SUMO_TYPE]
-        self.env_var            = params[kc.ENV_VAR]
-        self.number_of_paths    = params[kc.NUMBER_OF_PATHS]
-        self.simulation_length  = params[kc.SIMULATION_TIMESTEPS]
-        self.paths_csv_path     = params[kc.PATHS_CSV_SAVE_PATH]
+        self.network_name        = params[kc.NETWORK_NAME]
+        self.sumo_type           = params[kc.SUMO_TYPE]
+        self.number_of_paths     = params[kc.NUMBER_OF_PATHS]
+        self.simulation_length   = params[kc.SIMULATION_TIMESTEPS]
         
         #############################
         
         curr_dir = os.path.dirname(os.path.abspath(__file__))
-        self.network_folder     = os.path.join(curr_dir, kc.NETWORK_FOLDER).replace("$net$", self.network_name)
-        self.sumo_config_path   = os.path.join(curr_dir, kc.SUMO_CONFIG_PATH).replace("$net$", self.network_name)
-        self.routes_xml_path    = os.path.join(curr_dir, kc.ROUTE_FILE_PATH).replace("$net$", self.network_name)
-        self.sumo_fcd           = os.path.join(curr_dir, kc.SUMO_FCD).replace("$net$", self.network_name)
-        self.detector_save_path = os.path.join(curr_dir, kc.DETECTORS_CSV_PATH).replace("$net$", self.network_name)
-        self.conn_file_path     = os.path.join(curr_dir, kc.CONNECTION_FILE_PATH).replace("$net$", self.network_name)
-        self.edge_file_path     = os.path.join(curr_dir, kc.EDGE_FILE_PATH).replace("$net$", self.network_name)
-        self.nod_file_path      = os.path.join(curr_dir, kc.NOD_FILE_PATH).replace("$net$", self.network_name)
-        self.rou_xml_save_path  = os.path.join(curr_dir, kc.ROUTE_SAVE_FILE_PATH).replace("$net$", self.network_name)
-        self.det_xml_save_path  = os.path.join(curr_dir, kc.DETECTORS_SAVE_PATH).replace("$net$", self.network_name)
-        self.default_od_path    = os.path.join(curr_dir, kc.DEFAULT_ODS_PATH)
+        self.network_folder      = os.path.join(curr_dir, kc.NETWORK_FOLDER).replace("$net$", self.network_name)
+        self.sumo_config_path    = os.path.join(curr_dir, kc.SUMO_CONFIG_PATH).replace("$net$", self.network_name)
+        self.routes_xml_path     = os.path.join(curr_dir, kc.ROU_FILE_PATH).replace("$net$", self.network_name)
+        self.sumo_fcd            = os.path.join(curr_dir, kc.SUMO_FCD).replace("$net$", self.network_name)
+        self.detector_save_path  = os.path.join(curr_dir, kc.DETECTORS_CSV_PATH).replace("$net$", self.network_name)
+        self.conn_file_path      = os.path.join(curr_dir, kc.CONNECTION_FILE_PATH).replace("$net$", self.network_name)
+        self.edge_file_path      = os.path.join(curr_dir, kc.EDGE_FILE_PATH).replace("$net$", self.network_name)
+        self.nod_file_path       = os.path.join(curr_dir, kc.NOD_FILE_PATH).replace("$net$", self.network_name)
+        self.rou_xml_save_path   = os.path.join(curr_dir, kc.ROUTE_XML_PATH).replace("$net$", self.network_name)
+        self.det_xml_save_path   = os.path.join(curr_dir, kc.DETECTORS_XML_PATH).replace("$net$", self.network_name)
+        self.default_od_path     = os.path.join(curr_dir, kc.DEFAULT_ODS_PATH)
+        
+        self.paths_csv_file_path = os.path.join(params[kc.RECORDS_FOLDER], kc.PATHS_CSV_FILE_NAME)
         
         #############################
     
@@ -92,7 +91,7 @@ class SumoSimulator():
 
         self.sumo_id = f"{random.randint(0, 1000)}"
         self.sumo_connection = None
-        confirm_env_variable(self.env_var, append="tools")
+        confirm_env_variable(kc.ENV_VAR, append="tools")
         
         #############################
         
@@ -182,7 +181,7 @@ class SumoSimulator():
         routes_df.sort_values(by=["origins", "destinations"], inplace=True)
         
         # Save paths to csv
-        routes_df.to_csv(self.paths_csv_path, index=False)
+        routes_df.to_csv(self.paths_csv_file_path, index=False)
         
         # Convert routes dataframe to a dictionary with od indices
         paths_dict = dict()
@@ -209,7 +208,7 @@ class SumoSimulator():
             
             
     def _get_detectors(self) -> None:
-        paths_df = pd.read_csv(self.paths_csv_path)
+        paths_df = pd.read_csv(self.paths_csv_file_path)
         paths_list = [path.split(" ") for path in paths_df["path"].values]
         detectors_name = sorted(list(set([node for path in paths_list for node in path])))
         
