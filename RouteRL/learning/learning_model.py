@@ -134,7 +134,7 @@ class WeightedAverage(BaseLearningModel):
         self.alpha_j = 1.0 - self.alpha_zero
         self.remember = params[kc.REMEMBER]
         self.cost = np.array(initial_knowledge, dtype=float)
-        self.days = [list() for _ in range(len(initial_knowledge))]
+        self.memory = [list() for _ in range(len(initial_knowledge))]
         self.create_memory()
 
     def act(self, state):
@@ -145,16 +145,23 @@ class WeightedAverage(BaseLearningModel):
     def learn(self, state, action, reward):
         c_hat = 0
         #if self.cost[action] != reward: # For next two lines
-        del(self.days[action][len(self.days[action])-1])
-        self.days[action].insert(0, self.cost[action])
+        # Drop the least relevant memory (end of list)
+        del(self.memory[action][-1])
+        # Insert the most recent expected cost at index 0
+        self.memory[action].insert(0, self.cost[action])
             
+        # Calculate the weights of the memory
+        # The weights are proportional to its recency
         coeffs = [(self.remember - memory_idx) for memory_idx in range(self.remember)]
+        # If remember=3, then coeffs = [3, 2, 1]. Now normalize the coeffs
         coeffs_normalized = [coeff / sum(coeffs) for coeff in coeffs]
+        # Calculate the weighted average of the memory
         for memory_idx, coeff in enumerate(coeffs_normalized):
-            c_hat += coeff * self.days[action][memory_idx]
+            c_hat += coeff * self.memory[action][memory_idx]
+        # Update the cost expectation of the action
         self.cost[action] = (self.alpha_j * c_hat) + (self.alpha_zero * reward)
         
     def create_memory(self):
         for i in range(len(self.cost)):
             for _ in range(self.remember):
-                self.days[i].append(self.cost[i])
+                self.memory[i].append(self.cost[i])
