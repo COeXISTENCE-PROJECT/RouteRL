@@ -104,7 +104,7 @@ class TrafficEnvironment(AECEnv):
         self.render_mode = None
         
         # Read default parameters, update w #TODO kwargs
-        params_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "params.json")
+        params_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), kc.PARAMS_FILE)
         params = get_params(params_path, resolve=True, update=kwargs)
         
         self.environment_params = params[kc.ENVIRONMENT]

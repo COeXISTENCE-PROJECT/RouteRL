@@ -4,13 +4,6 @@
         "num_agents" : 100,
         "new_machines_after_mutation": 25,
 
-        "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",
-        "origins" : "${path_generation_parameters.origins}",
-        "destinations" : "${path_generation_parameters.destinations}",
-        "action_space_size" : "${path_generation_parameters.number_of_paths}",
-
-        "records_folder" : "${plotter_parameters.records_folder}",
-
         "machine_parameters" :
         {
             "behavior" : "selfish",
@@ -23,25 +16,32 @@
             "model" : "culo",
             "alpha_j": 0.5,
             "alpha_zero": 0.5,
-            "beta" : 1.5,
+            "beta" : -1.5,
             "beta_randomness" : 0.1,
             "remember" : 3
-        }
+        },
+
+        "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",
+        "origins" : "${path_generation_parameters.origins}",
+        "destinations" : "${path_generation_parameters.destinations}",
+        "action_space_size" : "${path_generation_parameters.number_of_paths}",
+        "records_folder" : "${plotter_parameters.records_folder}"
     },
 
     "environment_parameters":
     {
-        "action_space_size" : "${path_generation_parameters.number_of_paths}",
-        "number_of_days" : 1
+        "number_of_days" : 1,
+
+        "action_space_size" : "${path_generation_parameters.number_of_paths}"
     },
 
     "simulator_parameters":
     {
         "network_name" : "csomor",
         "simulation_timesteps" : 180,
-        "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "sumo_type" : "sumo",
 
+        "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "plots_folder": "${plotter_parameters.plots_folder}",
         "records_folder" : "${plotter_parameters.records_folder}"
     },
@@ -67,17 +67,6 @@
         "phase_names" : [
             "Human learning", 
             "Mutation - Machine learning"
-        ],
-
-        "colors" : [
-            "firebrick", "teal", "peru", "navy", 
-            "salmon", "slategray", "darkviolet", 
-            "goldenrod", "darkolivegreen", "dodgerblue"],
-        "linestyles" : ["solid", "dotted", "dashed", "dashdot"],
-        "default_width" : 12,
-        "default_height" : 6,
-        "multimode_width" : 8,
-        "multimode_height" : 5,
-        "default_num_columns" : 2
+        ]
     }
 }

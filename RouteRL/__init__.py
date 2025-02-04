@@ -31,7 +31,8 @@ from RouteRL.environment.simulator import(
 
 from RouteRL.services import(
     Plotter,
-    Recorder
+    Recorder, 
+    plotter
 )
 
 from RouteRL.utilities import (

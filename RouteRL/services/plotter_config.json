@@ -1,0 +1,17 @@
+{
+    "colors" : [
+        "firebrick", "teal", "peru", "navy", 
+        "salmon", "slategray", "darkviolet", 
+        "goldenrod", "darkolivegreen", "black"],
+    "linestyles" : ["solid", "dashed", "dotted", "dashdot"],
+    "default_width" : 12,
+    "default_height" : 6,
+    "multimode_width" : 8,
+    "multimode_height" : 5,
+    "default_num_columns" : 2,
+    "line_width" : 3,
+    "title_size" : 18,
+    "label_size" : 14,
+    "tick_label_size" : 12,
+    "legend_font_size" : 12
+}

@@ -10,7 +10,6 @@ route.rou.xml
 
 training_records/
 plots/
-free_flow_times.csv
 
 agents_data.csv
 paths.csv

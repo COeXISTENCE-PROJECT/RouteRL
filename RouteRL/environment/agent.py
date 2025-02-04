@@ -195,7 +195,7 @@ class HumanAgent(BaseAgent):
 
         """
 
-        own_tt = next(obs[kc.TRAVEL_TIME] for obs in observation if obs[kc.AGENT_ID] == self.id)
+        own_tt = -1 * next(obs[kc.TRAVEL_TIME] for obs in observation if obs[kc.AGENT_ID] == self.id)
         return own_tt
     
 

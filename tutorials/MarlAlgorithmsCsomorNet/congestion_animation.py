@@ -18,7 +18,7 @@ if __name__ == "__main__":
     edg_file_path = f"../../RouteRL/network_and_config/{network_name}/{network_name}.edg.xml"
 
     num_frames = 20
-    interval = 10
+    interval = 5
     frame_duration = 500
     
     read_routes_from = f"training_records/paths.csv"
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     
     i=100
     max_flow, min_flow = -1, 1000000
-    while i<=2000:
+    while i<=num_frames*interval:
         detector_df = pd.read_csv(f"training_records/detector/detector_ep{i}.csv")
         flows = detector_df["flow"].values
         max_flow = max(max_flow, max(flows))
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     
     congestion_dicts = list()
     i=1
-    while i<=2000:
+    while i<=num_frames*interval:
         detector_df = pd.read_csv(f"training_records/detector/detector_ep{i}.csv")
         flows = detector_df["flow"].values
         normalized_flows = (flows - min_flow) / (max_flow - min_flow)

@@ -6,6 +6,9 @@ class Keychain:
     """
 
     ################ PARAMETER ACCESS KEYS ####################
+    
+    PARAMS_FILE = "params.json"
+    PLOTTER_CONFIG_FILE = "plotter_config.json"
 
     AGENTS = "agent_parameters"
     ENVIRONMENT = "environment_parameters"
@@ -45,14 +48,7 @@ class Keychain:
     PLOTS_FOLDER = "plots_folder"
     PHASES = "phases"
     PHASE_NAMES = "phase_names"
-    COLORS = "colors"
-    LINESTYLES = "linestyles"
     SMOOTH_BY = "smooth_by"
-    DEFAULT_WIDTH = "default_width"
-    DEFAULT_HEIGHT = "default_height"
-    MULTIMODE_WIDTH = "multimode_width"
-    MULTIMODE_HEIGHT = "multimode_height"
-    DEFAULT_NUM_COLUMNS = "default_num_columns"
 
     ### Agent generation
     NUM_AGENTS = "num_agents"
