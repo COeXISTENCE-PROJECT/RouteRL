@@ -16,7 +16,6 @@ logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
 
 
-
 class SumoSimulator():
     """Sumo simulator class
 
@@ -63,9 +62,7 @@ class SumoSimulator():
         self.sumo_type           = params[kc.SUMO_TYPE]
         self.number_of_paths     = params[kc.NUMBER_OF_PATHS]
         self.simulation_length   = params[kc.SIMULATION_TIMESTEPS]
-        
-        #############################
-        
+
         curr_dir = os.path.dirname(os.path.abspath(__file__))
         self.network_folder      = os.path.join(curr_dir,
                                                 kc.NETWORK_FOLDER).replace("$net$", self.network_name)
@@ -109,11 +106,9 @@ class SumoSimulator():
 
         logging.info("[SUCCESS] Simulator is ready to simulate!")
 
-
     ################################
     ######## CONFIG CHECKS #########
     ################################
-
 
     def _check_paths_ready(self) -> None:
         """Checks if the required paths file for the simulation exists.
@@ -134,7 +129,15 @@ class SumoSimulator():
             )
             
     def _get_paths(self, params: dict, path_gen_params: dict) -> None:
-        
+        """Method that generates paths for simulation.
+
+        Args:
+            params (dict): Dictionary of parameters.
+            path_gen_params (dict): Dictionary of path generation parameters.
+        Returns:
+            None
+        """
+
         if self.network_name == kc.TWO_ROUTE_YIELD:
             paths_df = pd.read_csv(os.path.join(self.network_folder, "default_paths.csv"))
             self._save_paths_to_disk(paths_df, path_gen_params[kc.ORIGINS], path_gen_params[kc.DESTINATIONS])
@@ -259,7 +262,6 @@ class SumoSimulator():
         traci.start(sumo_cmd, label=self.sumo_id)
         self.sumo_connection = traci.getConnection(self.sumo_id)
 
-
     def stop(self) -> None:
         """Stops and closes the SUMO simulation.
 
@@ -268,7 +270,6 @@ class SumoSimulator():
         """
 
         self.sumo_connection.close()
-
 
     def reset(self) -> dict:
         """ Resets the SUMO simulation to its initial state.
@@ -297,7 +298,6 @@ class SumoSimulator():
     ######### SIMULATION ###########
     ################################
 
-
     def add_vehice(self, act_dict: dict) -> None:
         """Adds a vehicle to the SUMO simulation environment with the specified route and parameters.
 
@@ -316,7 +316,6 @@ class SumoSimulator():
                                          routeID=route_id,
                                          depart=str(act_dict[kc.AGENT_START_TIME]),
                                          typeID=kind)
-    
 
     def step(self) -> tuple:
         """Advances the SUMO simulation by one timestep and retrieves information

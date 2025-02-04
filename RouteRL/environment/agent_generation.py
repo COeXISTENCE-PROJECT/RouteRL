@@ -61,7 +61,6 @@ def generate_agents(params, free_flow_times, generate_data, seed=23423) -> list:
             raise ValueError('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_KIND])
     return agents
 
-
 def generate_agent_data(params, seed=23423) -> pd.DataFrame:
     """Generates agent data
 
@@ -110,7 +109,6 @@ def generate_agent_data(params, seed=23423) -> pd.DataFrame:
     agents_df.to_csv(agents_csv_path, index=False)
     
     return agents_df
-
 
 def set_seed(seed) -> int:
     """Set the seed for random number generation.

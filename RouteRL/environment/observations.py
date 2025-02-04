@@ -8,8 +8,7 @@ from ..keychain import Keychain as kc
 
 
 class Observations(ABC):
-    """
-    Abstract base class for observation functions.
+    """Abstract base class for observation functions.
 
     Args:
         machine_agents_list (List[Any]): List of machine agents.
@@ -40,8 +39,7 @@ class Observations(ABC):
 
 
 class PreviousAgentStart(Observations):
-    """
-    Observes the number of agents with the same origin-destination and start time within a threshold.
+    """Observes the number of agents with the same origin-destination and start time within a threshold.
 
     Args:
         machine_agents_list (List[Any]): List of machine agents.
@@ -49,10 +47,8 @@ class PreviousAgentStart(Observations):
         simulation_params (Dict[str, Any]): Simulation parameters.
         agent_params (Dict[str, Any]): Agent parameters.
         training_params (Dict[str, Any]): Training parameters.
-
     Attributes:
         observations (List[Any]): List of observations.
-
     Methods:
         reset_observations (List[Any]): Reset observations.
         observation_space (List[Any]): List of observation spaces.

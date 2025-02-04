@@ -1,11 +1,14 @@
-"""This module contains the human and machine agent classes, which represent vehicles driving from an origin to a destination in the simulation."""
+"""
+This module contains the human and machine agent classes, which represent vehicles driving
+from an origin to a destination in the simulation.
+"""
+
 import numpy as np
 
 from abc import ABC, abstractmethod
 
 from ..keychain import Keychain as kc
 from ..learning import get_learning_model
-
 
 
 class BaseAgent(ABC):
@@ -105,10 +108,8 @@ class BaseAgent(ABC):
         pass
 
 
-
 class HumanAgent(BaseAgent):
-    """
-    Class representing human drivers, responsible for modeling their learning process
+    """Class representing human drivers, responsible for modeling their learning process
     and decision-making in route selection.
 
     Args:
@@ -139,20 +140,16 @@ class HumanAgent(BaseAgent):
         self.model = get_learning_model(params, initial_knowledge)
         self.last_reward = None
 
-
     def __repr__(self):
         return f"Human {self.id}"
-
 
     @property
     def last_reward(self):
         return self._last_reward
 
-
     @last_reward.setter
     def last_reward(self, reward):
         self._last_reward = reward
-
 
     def act(self, observation) -> int:  
         """Returns the agent's action (route of choice) based on the current observation from the environment.
@@ -161,8 +158,7 @@ class HumanAgent(BaseAgent):
             self.model.act(observation) [int]: The action of the agent.
         """
 
-        return self.model.act(observation)  
-
+        return self.model.act(observation)
 
     def learn(self, action, observation) -> None:
         """Updates the agent's knowledge based on the action taken and the resulting observations.
@@ -189,7 +185,6 @@ class HumanAgent(BaseAgent):
 
         return None
 
-
     def get_reward(self, observation: list[dict]) -> float:
         """This function calculated the reward of each individual agent.
 
@@ -203,7 +198,6 @@ class HumanAgent(BaseAgent):
         own_tt = next(obs[kc.TRAVEL_TIME] for obs in observation if obs[kc.AGENT_ID] == self.id)
         return own_tt
     
-
 
 class MachineAgent(BaseAgent):
     """A class that models Autonomous Vehicles (AVs), focusing on their learning mechanisms
@@ -242,15 +236,12 @@ class MachineAgent(BaseAgent):
         self.last_reward = None
         self.rewards_coefs = self._get_reward_coefs()
 
-
     def __repr__(self):
         return f"Machine {self.id}"
-
 
     @property
     def last_reward(self):
         return self._last_reward
-
 
     @last_reward.setter
     def last_reward(self, reward) -> None:
@@ -262,7 +253,6 @@ class MachineAgent(BaseAgent):
 
         self._last_reward = reward
 
-
     def act(self, _) -> None:
         """Acting method
 
@@ -272,7 +262,6 @@ class MachineAgent(BaseAgent):
 
         return None
 
-
     def learn(self, _) -> None:
         """Learning method
 
@@ -281,7 +270,6 @@ class MachineAgent(BaseAgent):
         """
 
         return None
-
 
     def get_state(self, observation: list[dict]) -> list[int]:
         """Generates the current state representation based on recent observations of agents navigating
@@ -323,7 +311,6 @@ class MachineAgent(BaseAgent):
 
         return warmth_human + warmth_machine
 
-
     def get_reward(self, observation: list[dict]) -> float:
         """This method calculated the reward of each individual agent, based on the travel time of the agent,
         the group of agents, the other agents, and all agents.
@@ -358,7 +345,6 @@ class MachineAgent(BaseAgent):
         
         a, b, c, d = self.rewards_coefs
         return a * own_tt + b * group_tt + c * others_tt + d * all_tt
-
 
     def _get_reward_coefs(self) -> tuple:
         """This function returns the coefficients for the reward calculation, based on the behavior of the agent.
