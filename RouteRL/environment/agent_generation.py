@@ -27,6 +27,9 @@ def generate_agents(params, free_flow_times, generate_data, seed=23423):
 
     Returns:
         agents (list): List of agent objects
+
+    Raises:
+        ValueError: If it is unrecognized agent type.
     """
 
     set_seed(seed)
@@ -41,7 +44,7 @@ def generate_agents(params, free_flow_times, generate_data, seed=23423):
     # Getting parameters
     action_space_size = params[kc.ACTION_SPACE_SIZE]
     agents = list()     # Where we will store & return agents
-    
+
     # Generating agent objects from generated agent data
     for _, row in agents_data_df.iterrows():
         row_dict = row.to_dict()

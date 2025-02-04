@@ -53,12 +53,12 @@ class Plotter:
         visualise_actions: visualise the actions
         visualise_action_shifts: visualise the action shifts
         visualise_sim_length: visualise the simulation length
-        _retrive_sim_length: retrive the simulation length
+        _retrieve_sim_length: retrieve the simulation length
         visualise_losses: visualise the losses
-        _retrive_data_per_kind: retrive the data per kind
-        _retrive_data_per_od: retrive the data per od
-        _retrieve_selected_actions: retrive the selected actions
-        _retrieve_all_od_pairs: retrive the all od pairs
+        _retrieve_data_per_kind: retrieve the data per kind
+        _retrieve_data_per_od: retrieve the data per od
+        _retrieve_selected_actions: retrieve the selected actions
+        _retrieve_all_od_pairs: retrieve the all od pairs
     """
 
     def __init__(self, params):
