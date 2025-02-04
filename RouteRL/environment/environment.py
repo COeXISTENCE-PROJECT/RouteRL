@@ -19,7 +19,7 @@ import threading
 from .agent import MachineAgent
 from .agent_generation import generate_agents
 from ..keychain import Keychain as kc
-from .observations import PreviousAgentStart
+from .observations import PreviousAgentStart, PreviousAgentStartPlus
 from .simulator import SumoSimulator
 from ..services.recorder import Recorder
 from ..services.plotter import plotter
@@ -177,7 +177,7 @@ class TrafficEnvironment(AECEnv):
         )
 
         ## Initialize the observation object
-        self.observation_obj = PreviousAgentStart(self.machine_agents,
+        self.observation_obj = PreviousAgentStartPlus(self.machine_agents,
                                                   self.human_agents,
                                                   self.simulation_params,
                                                   self.agent_params,
