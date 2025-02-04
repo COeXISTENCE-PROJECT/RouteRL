@@ -24,8 +24,7 @@ Example of path generation:
 
 
 --- 
-
 ## Number and type of agents
 
-The number and type of agents in our experiments can be adjusted as needed. Agent information is provided in the `RouteRL/network_and_config/agents_data.csv` file.
+The number and type of agents in our experiments can be adjusted as needed. Agent information is provided in the `training_records/agents.csv` file.
 

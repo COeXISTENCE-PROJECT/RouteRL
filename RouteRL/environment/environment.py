@@ -19,7 +19,7 @@ import threading
 from .agent import MachineAgent
 from .agent_generation import generate_agents
 from ..keychain import Keychain as kc
-from .observations import PreviousAgentStart, PreviousAgentStartPlusStartTime
+from .observations import PreviousAgentStart, PreviousAgentStartPlusStartTime, Observations
 from .simulator import SumoSimulator
 from ..services.recorder import Recorder
 from ..services.plotter import plotter
@@ -648,14 +648,11 @@ class TrafficEnvironment(AECEnv):
     ### Decide on the observation function to be used ###
     #####################################################
     
-    def get_observation(self):
-        """Returns a learning model based on the provided parameters.
+    def get_observation(self) -> Observations:
+        """Returns an observation object based on the provided parameters.
 
-        Args:
-            params (dict): A dictionary containing model parameters.
-            initial_knowledge ([list, array.pyi]): A dictionary containing initial knowledge.
         Returns:
-            BaseLearningModel: A learning model object.
+            Observations: An observation object.
         Raises:
             ValueError: If model is unknown.
         """
