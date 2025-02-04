@@ -1,15 +1,20 @@
-import os
+"""
+#TODO what simulator.py is?
 
-import json
+"""
+
+import os
 import logging
 import random
-
 import janux as jx
 import pandas as pd
 import traci
 
 from ..keychain import Keychain as kc
 from ..utilities import confirm_env_variable
+
+#TODO unused packages
+import json
 from ..utilities import get_params
 
 logger = logging.getLogger()
@@ -28,42 +33,42 @@ class SumoSimulator():
         path_gen_params (dict): Dictionary of parameters for the SUMO environment.
         seed: Random number generator seed.
     Attributes:
-        network_name: network name.
-        sumo_type: type of sumo
-        number_of_paths: number of paths
-        simulation_length: simulation length
-        paths_csv_file_path: paths to csv files
-        sumo_config_path: # TO DO
-        routes_xml_path: # TO DO
-        sumo_fcd: # TO DO
-        detector_save_path: # TO DO
-        conn_file_path: # TO DO
-        edge_file_path: # TO DO
-        nod_file_path: # TO DO
-        rou_xml_save_path: # TO DO
-        sumo_id: # TO DO
-        sumo_connection: # TO DO
-        timestep: # TO DO
-        route_id_cache: # TO DO
+        network_name: Network name.
+        sumo_type: Type of sumo.
+        number_of_paths: Number of paths.
+        simulation_length: Simulation length.
+        paths_csv_file_path (str): Paths to csv files.
+        sumo_config_path (str): Path to sumo configuration file.
+        routes_xml_path (str): Path to routes defined as xml files.
+        sumo_fcd: Sumo floating car data.
+        detector_save_path (str): Path to save the detected vehicles.
+        conn_file_path (str): Path to connections file.
+        edge_file_path (str): Path to edges file.
+        nod_file_path (str): Path to nodes file.
+        rou_xml_save_path (str): Path to save routes xml file.
+        sumo_id: Sumo id.
+        sumo_connection: Sumo connection.
+        timestep: Time step.
+        route_id_cache: Routes id cache.
     Methods:
-        _check_paths_ready: check paths ready.
-        _get_paths: get paths.
-        _save_paths_to_disk: save paths to disk.
-        start: start simulation.
-        stop: stop simulation.
-        reset: reset simulation.
-        add_vehicle: add vehicle.
-        step: step simulation.
+        _check_paths_ready: Check paths ready.
+        _get_paths: Get paths.
+        _save_paths_to_disk: Save paths to disc.
+        start: Start simulation.
+        stop: Stop simulation.
+        reset: Reset simulation.
+        add_vehicle: Add vehicle.
+        step: Step simulation.
     """
 
-    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423) -> None:
-        
+    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423):
         self.network_name        = params[kc.NETWORK_NAME]
         self.sumo_type           = params[kc.SUMO_TYPE]
         self.number_of_paths     = params[kc.NUMBER_OF_PATHS]
         self.simulation_length   = params[kc.SIMULATION_TIMESTEPS]
 
         curr_dir = os.path.dirname(os.path.abspath(__file__))
+
         self.network_folder      = os.path.join(curr_dir,
                                                 kc.NETWORK_FOLDER).replace("$net$", self.network_name)
         self.sumo_config_path    = os.path.join(curr_dir,
@@ -90,9 +95,11 @@ class SumoSimulator():
         self.paths_csv_file_path = os.path.join(params[kc.RECORDS_FOLDER], kc.PATHS_CSV_FILE_NAME)
 
         random.seed(seed)
+
         self.seed = seed
         self.sumo_id = f"{random.randint(0, 1000)}"
         self.sumo_connection = None
+
         confirm_env_variable(kc.ENV_VAR, append="tools")
 
         if path_gen_params is not None:
@@ -100,7 +107,6 @@ class SumoSimulator():
             logging.info("[SUCCESS] Path generation completed.")
         self._check_paths_ready()
         self.detectors_name = self._get_detectors()
-
         self.timestep = 0
         self.route_id_cache = dict()
 
@@ -181,10 +187,10 @@ class SumoSimulator():
                                     show=False, save_file_path=fig_save_path, title=title)
 
     def _save_paths_to_disk(self, routes_df: pd.DataFrame, origins: list, destinations: list) -> None:
-        """Method that saves paths to disk.
+        """Method that saves paths to disc.
 
         Args:
-            routes_df (DataFrame): routes dataframe.
+            routes_df (pd.DataFrame): routes dataframe.
             origins (list): list of origin ids.
             destinations (list): list of destination ids.
         Returns:
@@ -244,8 +250,8 @@ class SumoSimulator():
         with open(self.det_xml_save_path, "w") as det:
             print("""<additional>""", file=det)
             for det_id in detectors_name:
-                    print(f"<inductionLoop id=\"{det_id}_det\" lane=\"{det_id}_0\" pos=\"-5\" file=\"NUL\" friendlyPos=\"True\"/>",
-                          file=det)
+                print(f"<inductionLoop id=\"{det_id}_det\" lane=\"{det_id}_0\" pos=\"-5\" file=\"NUL\" friendlyPos=\"True\"/>",
+                      file=det)
             print("</additional>", file=det)
             
         return detectors_name
@@ -261,7 +267,11 @@ class SumoSimulator():
             None
         """
 
-        sumo_cmd = [self.sumo_type,"--seed", str(self.seed), "--fcd-output", self.sumo_fcd, "-c", self.sumo_config_path] 
+        sumo_cmd = [self.sumo_type,"--seed",
+                    str(self.seed),
+                    "--fcd-output",
+                    self.sumo_fcd,
+                    "-c", self.sumo_config_path]
         traci.start(sumo_cmd, label=self.sumo_id)
         self.sumo_connection = traci.getConnection(self.sumo_id)
 
@@ -310,10 +320,12 @@ class SumoSimulator():
             None
         """
 
-        route_id = self.route_id_cache.setdefault((act_dict[kc.AGENT_ORIGIN],
-                                                   act_dict[kc.AGENT_DESTINATION],
-                                                   act_dict[kc.ACTION]),
-                                                  f'{act_dict[kc.AGENT_ORIGIN]}_{act_dict[kc.AGENT_DESTINATION]}_{act_dict[kc.ACTION]}')
+        route_id = (
+            self.route_id_cache.setdefault((
+                act_dict[kc.AGENT_ORIGIN],
+                act_dict[kc.AGENT_DESTINATION],
+                act_dict[kc.ACTION]),
+                f'{act_dict[kc.AGENT_ORIGIN]}_{act_dict[kc.AGENT_DESTINATION]}_{act_dict[kc.ACTION]}'))
         kind = act_dict[kc.AGENT_KIND]
         self.sumo_connection.vehicle.add(vehID=str(act_dict[kc.AGENT_ID]),
                                          routeID=route_id,

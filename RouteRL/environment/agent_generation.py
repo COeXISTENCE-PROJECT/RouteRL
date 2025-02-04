@@ -51,26 +51,36 @@ def generate_agents(params, free_flow_times, generate_data, seed=23423) -> list:
         if row_dict[kc.AGENT_KIND] == kc.TYPE_MACHINE:
             agent_params = params[kc.HUMAN_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
-            mutate_to = MachineAgent(id, start_time, origin, destination, params[kc.MACHINE_PARAMETERS], action_space_size)
+            mutate_to = MachineAgent(id,
+                                     start_time,
+                                     origin,
+                                     destination,
+                                     params[kc.MACHINE_PARAMETERS],
+                                     action_space_size)
             agents.append(mutate_to)
         elif row_dict[kc.AGENT_KIND] == kc.TYPE_HUMAN:
             agent_params = params[kc.HUMAN_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
-            agents.append(HumanAgent(id, start_time, origin, destination, agent_params, initial_knowledge))
+            agents.append(HumanAgent(id,
+                                     start_time,
+                                     origin,
+                                     destination,
+                                     agent_params,
+                                     initial_knowledge))
         else:
             raise ValueError('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_KIND])
     return agents
 
 def generate_agent_data(params, seed=23423) -> pd.DataFrame:
-    """Generates agent data
+    """Generates agent data.
 
-    Constructs a dataframe, where each row is an agent and columns are attributes
+    Constructs a dataframe, where each row is an agent and columns are attributes.
 
     Args:
-        params (dict): Parameters dictionary
-        seed (int): Random seed
+        params (dict): Parameters dictionary.
+        seed (int): Random seed.
     Returns:
-        agents (list): List of agent objects
+        agents_df (pd.DataFrame): dataframe with agents attributes.
     """
     
     num_agents = params[kc.NUM_AGENTS]

@@ -33,7 +33,7 @@ release = '0.0.1'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',    # Enables the automodule directive
+    'sphinx.ext.autodoc',    # Enables the auto module directive
     'sphinx.ext.napoleon',   # Supports Google-style or NumPy-style docstrings
     'sphinx.ext.viewcode',   # Adds links to the source code
     "sphinx.ext.doctest",

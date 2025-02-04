@@ -48,7 +48,7 @@ class BaseAgent(ABC):
     @property
     @abstractmethod
     def last_reward(self) -> None:
-        """Return the last reward of the agent
+        """Return the last reward of the agent.
 
         Returns:
             None
@@ -59,8 +59,10 @@ class BaseAgent(ABC):
     @last_reward.setter
     @abstractmethod
     def last_reward(self, reward) -> None:
-        """Set the last reward of the agent
+        """Set the last reward of the agent.
 
+        Args:
+            reward (float): The reward of the agent.
         Returns:
             None
         """
@@ -69,8 +71,10 @@ class BaseAgent(ABC):
 
     @abstractmethod
     def act(self, observation) -> None:
-        """Pick action according to your knowledge, or randomly
+        """Pick action according to your knowledge, or randomly.
 
+        Args:
+            observation (float): The observation of the agent.
         Returns:
             None
         """
@@ -79,8 +83,11 @@ class BaseAgent(ABC):
 
     @abstractmethod
     def learn(self, action, observation) -> None:
-        """Pass the applied action and reward once the episode ends, and it will remember the consequences
+        """Pass the applied action and reward once the episode ends, and it will remember the consequences.
 
+        Args:
+            action (int): The action taken by the agent.
+            observation (float): The observation of the agent.
         Returns:
             None
         """
@@ -88,9 +95,11 @@ class BaseAgent(ABC):
         pass
 
     @abstractmethod
-    def get_state(self, observation):
+    def get_state(self, observation) -> None:
         """Return the state of the agent, given the observation
 
+        Args:
+            observation (float): The observation of the agent.
         Returns:
             None
         """
@@ -98,9 +107,11 @@ class BaseAgent(ABC):
         pass
 
     @abstractmethod
-    def get_reward(self, observation):
+    def get_reward(self, observation) -> None:
         """Derive the reward of the agent, given the observation
 
+        Args:
+            observation (float): The observation of the agent.
         Returns:
             None
         """
@@ -126,11 +137,11 @@ class HumanAgent(BaseAgent):
         last_reward (float): The last reward of the agent.
 
     Methods:
-        last_reward (float): The last reward of the agent.
-        act (float): The action of the agent.
-        learn (float): The action of the agent.
-        get_state (float): The current state of the agent.
-        get_reward (float): The current reward of the agent.
+        last_reward: The last reward of the agent.
+        act: The action of the agent.
+        learn: The action of the agent.
+        get_state: The current state of the agent.
+        get_reward: The current reward of the agent.
     """
 
     def __init__(self, id, start_time, origin, destination, params, initial_knowledge, **kwargs):
@@ -144,16 +155,32 @@ class HumanAgent(BaseAgent):
         return f"Human {self.id}"
 
     @property
-    def last_reward(self):
+    def last_reward(self) -> float:
+        """Set the last reward of the agent.
+
+        Returns:
+            self._last_reward: The last reward of the agent.
+        """
+
         return self._last_reward
 
     @last_reward.setter
-    def last_reward(self, reward):
+    def last_reward(self, reward) -> None:
+        """Set the last reward of the agent.
+
+        Args:
+            reward (float): The reward of the agent.
+        Returns:
+            None
+        """
+
         self._last_reward = reward
 
     def act(self, observation) -> int:  
         """Returns the agent's action (route of choice) based on the current observation from the environment.
 
+        Args:
+            observation (float): The observation of the agent.
         Returns:
             self.model.act(observation) [int]: The action of the agent.
         """
@@ -192,7 +219,6 @@ class HumanAgent(BaseAgent):
             observation (list[dict]): The observation of the agent.
         Returns:
             own_tt (float): Own travel time of the agent.
-
         """
 
         own_tt = -1 * next(obs[kc.TRAVEL_TIME] for obs in observation if obs[kc.AGENT_ID] == self.id)
@@ -214,7 +240,7 @@ class MachineAgent(BaseAgent):
         observed_span (dict): The observed span of the agent.
         action_space_size (int): The size of the action space of the agent.
         state_size (int): The state size of the agent.
-        model : The model of the agent. # TO DO
+        model : The model of the agent behavior.
         last_reward (float): The last reward of the agent.
         rewards_coefs (dict): The reward coefficients of the agent.
     Methods:
@@ -240,13 +266,20 @@ class MachineAgent(BaseAgent):
         return f"Machine {self.id}"
 
     @property
-    def last_reward(self):
+    def last_reward(self) -> float:
+        """Set the last reward of the agent.
+
+        Returns:
+            self._last_reward (float): The last reward of the agent.
+        """
         return self._last_reward
 
     @last_reward.setter
     def last_reward(self, reward) -> None:
         """Sets the last reward of the agent.
 
+        Args:
+            reward (float): The reward of the agent.
         Returns:
             None
         """
@@ -256,6 +289,8 @@ class MachineAgent(BaseAgent):
     def act(self, _) -> None:
         """Acting method
 
+        Args:
+            _ (Any): The current state of the agent.
         Returns:
             None
         """
@@ -265,6 +300,8 @@ class MachineAgent(BaseAgent):
     def learn(self, _) -> None:
         """Learning method
 
+        Args:
+            _ (Any): The current state of the agent.
         Returns:
             None
         """

@@ -12,7 +12,7 @@ def get_learning_model(params, initial_knowledge):
 
     Args:
         params (dict): A dictionary containing model parameters.
-        initial_knowledge ([list, array.pyi]): A dictionary containing initial knowledge.
+        initial_knowledge (Any): A dictionary containing initial knowledge.
     Returns:
         BaseLearningModel: A learning model object.
     Raises:

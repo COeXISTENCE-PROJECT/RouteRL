@@ -8,8 +8,8 @@ import seaborn as sns
 import warnings
 
 from collections import Counter
-from statistics import mean
-from statistics import variance
+from statistics import mean, variance
+from typing import Union
 
 from ..keychain import Keychain as kc
 from ..utilities import make_dir
@@ -204,11 +204,13 @@ class Plotter:
         fig, axes = plt.subplots(num_rows,
                                  num_cols,
                                  figsize=(self.multimode_width * num_cols,
-                                                              self.multimode_height * num_rows))
+                                          self.multimode_height * num_rows))
         fig.tight_layout(pad=5.0)
 
-        if num_rows > 1:   axes = axes.flatten()   # Flatten axes
-        if not hasattr(axes, '__getitem__'):    axes = np.array([axes])  # If only one subplot
+        if num_rows > 1:
+            axes = axes.flatten()   # Flatten axes
+        if not hasattr(axes, '__getitem__'):
+            axes = np.array([axes])  # If only one subplot
 
         # Plot mean travel times for each OD
         mean_tt_od = self._retrieve_data_per_od(kc.TRAVEL_TIME, transform='mean')
@@ -472,11 +474,11 @@ class Plotter:
         plt.close()
         logging.info(f"[SUCCESS] Simulation lengths are saved to {save_to}")
 
-    def _retrieve_sim_length(self) -> None:
+    def _retrieve_sim_length(self) -> list:
         """Retrieve the simulation length.
 
         Returns:
-            None
+            latest arrivals (list): List of the latest arrivals in the simulation.
         """
 
         latest_arrivals = list()
@@ -519,15 +521,16 @@ class Plotter:
         plt.close()
         logging.info(f"[SUCCESS] Losses are saved to {save_to}")
 
-    def _retrieve_losses(self) -> None:
+    def _retrieve_losses(self) -> Union[list[float], None]:
         """Retrieve the losses.
 
         Returns:
-            None
+            losses list[float]: List of the losses.
         """
 
         losses = list()
-        if not os.path.isfile(self.loss_file_path): return None
+        if not os.path.isfile(self.loss_file_path):
+            return None
         with open(self.loss_file_path, "r") as file:
             lines = file.readlines()
             for line in lines:

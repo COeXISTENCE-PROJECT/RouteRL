@@ -160,7 +160,7 @@ class TrafficEnvironment(AECEnv):
         self.seed = seed
         logging.info(f"Seed set to {seed}.")
 
-    def _initialize_machine_agents(self)-> None:
+    def _initialize_machine_agents(self) -> None:
         """Initialize the machine agents.
 
         Returns:
@@ -301,13 +301,13 @@ class TrafficEnvironment(AECEnv):
 
         self.simulator.stop()
 
-    def observe(self, agent: str) -> dict:
+    def observe(self, agent: str) -> np.ndarray:
         """Retrieve the observations for a specific agent.
 
         Args:
             agent (str): The identifier for the agent whose observations are to be retrieved.
         Returns:
-            dict: The observations for the specified agent.
+            self.observation_obj.agent_observations(agent) (np.ndarray): The observations for the specified agent.
         """
 
         return self.observation_obj.agent_observations(agent)
@@ -323,7 +323,7 @@ class TrafficEnvironment(AECEnv):
         other vehicles, removes a specified number of these agents, and replaces them with machine agents.
 
         Args:
-            disable_human_learning (bool, True): Boolean flag to disable human agents.
+            disable_human_learning (bool, optional): Boolean flag to disable human agents.
         Returns:
             None
         Raises:
@@ -414,8 +414,9 @@ class TrafficEnvironment(AECEnv):
         travel_times = dict()
         for veh_id in arrivals:
             agent_id = int(veh_id)
-            travel_times[agent_id] = {kc.TRAVEL_TIME : ((timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME])
-                                                        / 60.0)}
+            travel_times[agent_id] = {kc.TRAVEL_TIME :
+                                          (timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0
+                                      }
             travel_times[agent_id].update(self.episode_actions[agent_id])
 
         return travel_times.values()
@@ -620,25 +621,25 @@ class TrafficEnvironment(AECEnv):
         pass
 
     @functools.lru_cache(maxsize=None)
-    def observation_space(self, agent: str) -> any:
+    def observation_space(self, agent: str):
         """Method that returns the observation space of the agent.
 
         Args:
             agent (str): The agent name.
         Returns:
-            self._observation_spaces[agent] (any): The observation space of the agent.
+            self._observation_spaces[agent] (Any): The observation space of the agent.
         """
 
         return self._observation_spaces[agent]
 
     @functools.lru_cache(maxsize=None)
-    def action_space(self, agent: str) -> any:
+    def action_space(self, agent: str):
         """Method that returns the action space of the agent.
 
         Args:
             agent (str): The agent name.
         Returns:
-            self._action_spaces[agent] (any): The action space of the agent.
+            self._action_spaces[agent] (Any): The action space of the agent.
         """
 
         return self._action_spaces[agent]
