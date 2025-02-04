@@ -1,5 +1,3 @@
-from django.db.models import Model
-
 from .learning_model import (
     Gawron,
     Culo,

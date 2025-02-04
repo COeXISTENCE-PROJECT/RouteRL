@@ -14,7 +14,8 @@
         "machine_parameters" :
         {
             "behavior" : "selfish",
-            "observed_span" : 300
+            "observed_span" : 300,
+            "observation_type" : "previous_agents_plus_start_time"
         },
 
         "human_parameters" :

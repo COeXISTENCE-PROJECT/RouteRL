@@ -28,6 +28,9 @@ class Keychain:
     REMEMBER = "remember"
     # Machine
     OBSERVED_SPAN = "observed_span"
+    OBSERVATION_TYPE = "observation_type"
+    PREVIOUS_AGENTS = "previous_agents"
+    PREVIOUS_AGENTS_PLUS_START_TIME = "previous_agents_plus_start_time"
 
     ### Environment
     NUMBER_OF_DAYS = "number_of_days"

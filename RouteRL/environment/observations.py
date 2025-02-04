@@ -127,7 +127,7 @@ class PreviousAgentStart(Observations):
         return self.observations.get(agent_id, np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.float32))
 
 
-class PreviousAgentStartPlus(Observations):
+class PreviousAgentStartPlusStartTime(Observations):
     """Observes the number of agents with the same origin-destination and start time within a threshold."""
 
     def __init__(

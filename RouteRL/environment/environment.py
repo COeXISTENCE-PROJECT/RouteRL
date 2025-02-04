@@ -19,7 +19,7 @@ import threading
 from .agent import MachineAgent
 from .agent_generation import generate_agents
 from ..keychain import Keychain as kc
-from .observations import PreviousAgentStart, PreviousAgentStartPlus
+from .observations import PreviousAgentStart, PreviousAgentStartPlusStartTime
 from .simulator import SumoSimulator
 from ..services.recorder import Recorder
 from ..services.plotter import plotter
@@ -177,11 +177,7 @@ class TrafficEnvironment(AECEnv):
         )
 
         ## Initialize the observation object
-        self.observation_obj = PreviousAgentStartPlus(self.machine_agents,
-                                                  self.human_agents,
-                                                  self.simulation_params,
-                                                  self.agent_params,
-                                                  None)
+        self.observation_obj = self.get_observation()
 
         self._observation_spaces = self.observation_obj.observation_space()
 
@@ -646,3 +642,36 @@ class TrafficEnvironment(AECEnv):
         """
 
         return self._action_spaces[agent]
+    
+
+    #####################################################
+    ### Decide on the observation function to be used ###
+    #####################################################
+    
+    def get_observation(self):
+        """Returns a learning model based on the provided parameters.
+
+        Args:
+            params (dict): A dictionary containing model parameters.
+            initial_knowledge ([list, array.pyi]): A dictionary containing initial knowledge.
+        Returns:
+            BaseLearningModel: A learning model object.
+        Raises:
+            ValueError: If model is unknown.
+        """
+        params = self.agent_params[kc.MACHINE_PARAMETERS]
+        observation_type = params[kc.OBSERVATION_TYPE]
+        if observation_type == kc.PREVIOUS_AGENTS_PLUS_START_TIME:
+            return PreviousAgentStartPlusStartTime(self.machine_agents,
+                                                  self.human_agents,
+                                                  self.simulation_params,
+                                                  self.agent_params,
+                                                  None)
+        elif observation_type == kc.PREVIOUS_AGENTS:
+            return PreviousAgentStart(self.machine_agents,
+                                                  self.human_agents,
+                                                  self.simulation_params,
+                                                  self.agent_params,
+                                                  None)
+        else:
+            raise ValueError('[MODEL INVALID] Unrecognized model: ' + observation_type)
