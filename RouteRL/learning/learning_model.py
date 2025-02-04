@@ -6,10 +6,8 @@ from abc import ABC, abstractmethod
 from ..keychain import Keychain as kc
 
 
-
 class BaseLearningModel(ABC):
-    """
-    This is an abstract base class for the learning models used to train the human and machine agents.
+    """This is an abstract base class for the learning models used to train the human and machine agents.
 
     Methods:
         act: selects an action based on the current state and cost.
@@ -19,32 +17,29 @@ class BaseLearningModel(ABC):
     def __init__(self):
         pass
 
-
     @abstractmethod
     def act(self, state):
-        pass
+        """Method to select an action based on the current state and cost.
 
+        """
+        pass
 
     @abstractmethod
     def learn(self, state, action, reward):
         pass
 
 
-
 class Gawron(BaseLearningModel):
-    """
-    The Gawron learning model.
+    """The Gawron learning model.
 
     Args:
         params (dict): A dictionary containing model parameters.
         initial_knowledge (list or array): Initial knowledge or costs for actions.
-
     Attributes:
         beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
         alpha_zero (float): ALPHA_ZERO.
         alpha_j (float): ALPHA_J = 1 - ALPHA_ZERO.
         cost (np.ndarray): cost array.
-
     Methods:
         act: selects an action based on the current state and cost.
         learn: trains the model on a batch of states and actions.
@@ -64,14 +59,11 @@ class Gawron(BaseLearningModel):
         # Initialize cost array with initial knowledge
         self.cost = np.array(initial_knowledge, dtype=float)
 
-
-    def act(self, state):
-        """
-        Selects an action based on the current state and cost.
+    def act(self, state) -> int:
+        """Selects an action based on the current state and cost.
 
         Args:
             state (string): The current state of the environment.
-
         Returns:
             action (int): The index of the selected action.
         """
@@ -81,35 +73,31 @@ class Gawron(BaseLearningModel):
         action =  utilities.index(min(utilities))
         return action   
 
-
-    def learn(self, state, action, reward):
-        """
-        Updates the cost associated with the taken action based on the received reward.
+    def learn(self, state, action, reward) -> None:
+        """Updates the cost associated with the taken action based on the received reward.
 
         Args:
             state (string): The current state of the environment.
             action (int): The action that was taken.
             reward (float): The reward received after taking the action.
+        Returns:
+            None
         """
 
         self.cost[action] = (self.alpha_j * self.cost[action]) + (self.alpha_zero * reward)
 
 
-
 class Culo(BaseLearningModel):
-    """
-    The Culo learning model.
+    """The Culo learning model.
 
     Args:
         params (dict): A dictionary containing model parameters.
         initial_knowledge (list or array): Initial knowledge or costs for actions.
-
     Attributes:
         beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
         alpha_zero (float): ALPHA_ZERO.
         alpha_j (float): ALPHA_J = 1 - ALPHA_ZERO.
         cost (np.ndarray): cost array.
-
     Methods:
         act: selects an action based on the current state and cost.
         learn: trains the model on a batch of states and actions.
@@ -129,14 +117,11 @@ class Culo(BaseLearningModel):
         # Initialize cost array with initial knowledge
         self.cost = np.array(initial_knowledge, dtype=float)
 
-
     def act(self, state) -> int:
-        """
-        Selects an action based on the current state and cost.
+        """Selects an action based on the current state and cost.
 
         Args:
             state (string): The current state of the environment.
-
         Returns:
             action (int): The index of the selected action.
         """
@@ -145,29 +130,26 @@ class Culo(BaseLearningModel):
         action =  utilities.index(min(utilities))
         return action   
 
-
-    def learn(self, state, action, reward):
-        """
-        Updates the cost associated with the taken action based on the received reward.
+    def learn(self, state, action, reward) -> None:
+        """Updates the cost associated with the taken action based on the received reward.
 
         Args:
             state (string): The current state of the environment.
             action (int): The action that was taken.
             reward (float): The reward received after taking the action.
+        Returns:
+            None
         """
 
         self.cost[action] = (self.alpha_j * self.cost[action]) + (self.alpha_zero * reward)
 
 
-
 class WeightedAverage(BaseLearningModel):
-    """
-    WeightedAverage model.
+    """Weighted Average model.
 
     Args:
         params (dict): A dictionary containing model parameters.
         initial_knowledge (list or array): Initial knowledge or costs for actions.
-
     Attributes:
         beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
         alpha_zero (float): ALPHA_ZERO.
@@ -175,7 +157,6 @@ class WeightedAverage(BaseLearningModel):
         remember (string): REMEMBER
         cost (np.ndarray): cost array.
         memory (list(list)): A list of lists containing the memory of each state.
-
     Methods:
         act: selects an action based on the current state and cost.
         learn: trains the model on a batch of states and actions.
@@ -193,14 +174,11 @@ class WeightedAverage(BaseLearningModel):
         self.memory = [list() for _ in range(len(initial_knowledge))]
         self.create_memory()
 
-
-    def act(self, state):
-        """
-        Selects an action based on the current state and cost.
+    def act(self, state) -> int:
+        """Selects an action based on the current state and cost.
 
         Args:
             state (string): The current state of the environment.
-
         Returns:
             action (int): The index of the selected action.
         """
@@ -209,15 +187,15 @@ class WeightedAverage(BaseLearningModel):
         action =  utilities.index(min(utilities))
         return action
 
-
-    def learn(self, state, action, reward):
-        """
-        Updates the cost associated with the taken action based on the received reward.
+    def learn(self, state, action, reward) -> None:
+        """Updates the cost associated with the taken action based on the received reward.
 
         Args:
             state (string): The current state of the environment.
             action (int): The action that was taken.
             reward (float): The reward received after taking the action.
+        Returns:
+            None
         """
 
         # Drop the least relevant memory (end of list)
@@ -240,9 +218,11 @@ class WeightedAverage(BaseLearningModel):
         self.cost[action] = c_hat + (self.alpha_zero * reward)
         
 
-    def create_memory(self):
-        """
-        Creates 2 dim memory table.
+    def create_memory(self) -> None:
+        """Creates 2 dim memory table.
+
+        Returns:
+            None
         """
 
         for i in range(len(self.cost)):

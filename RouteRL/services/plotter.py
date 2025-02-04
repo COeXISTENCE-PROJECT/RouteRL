@@ -19,7 +19,6 @@ logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
 
 
-
 class Plotter:
     """Plot the results of the training
 
@@ -80,11 +79,9 @@ class Plotter:
 
         self.saved_episodes = list()
 
-
     ################################
     ######## VISUALIZE ALL #########
     ################################
-
 
     def plot(self) -> None:
         """Plot the results of the training
@@ -101,7 +98,6 @@ class Plotter:
         self.visualize_action_shifts()
         self.visualize_sim_length()
         self.visualize_losses()
-
 
     def _get_episodes(self) -> list[int]:
         """Get the episodes data
@@ -124,7 +120,6 @@ class Plotter:
     ################################
     ########### REWARDS ############
     ################################
-
 
     def visualize_mean_rewards(self) -> None:
         """Visualise the mean rewards
@@ -162,7 +157,6 @@ class Plotter:
     ######### TRAVEL TIMES #########
     ################################
 
-
     def visualize_mean_travel_times(self) -> None:
         """Visualise the mean travel times
 
@@ -195,11 +189,9 @@ class Plotter:
         plt.close()
         logging.info(f"[SUCCESS] Travel times are saved to {save_to}")
 
-
     ################################
     ### TRAVEL TIME DISTRIBUTIONS ##
     ################################
-
 
     def visualize_tt_distributions(self) -> None:
         """Visualise the travel time distributions
@@ -207,7 +199,6 @@ class Plotter:
         Returns:
             None
         """
-
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.TT_DIST_PLOT_FILE_NAME)
     
         num_rows, num_cols = 2, 2
@@ -233,7 +224,6 @@ class Plotter:
         axes[0].grid(True, axis='y')
         axes[0].set_title('Mean Human Travel Times Per OD Over Episodes')
         axes[0].legend()
-
 
         # Plot variance travel times for all, humans and machines
         variance_travel_times = self._retrieve_data_per_kind(kc.TRAVEL_TIME, transform='variance')
@@ -268,7 +258,6 @@ class Plotter:
         axes[2].set_ylabel('Travel Times')
         axes[2].set_title(f'Human Travel Time Distributions (End of Each Phase)')
 
-
         dark_gray = '#333333'
         axes[3].set_facecolor(dark_gray)
         for idx, (label, data) in enumerate(zip(labels, data_to_plot)):
@@ -278,9 +267,21 @@ class Plotter:
             sns.kdeplot(data, ax=axes[3], label=label, alpha=0.8, fill=True, linewidth=3, color=self.colors[idx], clip=(0, None))
             median_val, mean_val = np.nanmedian(data), np.nanmean(data)
             # Plot a vertical line from top to mid-plot for median
-            axes[3].axvline(median_val, color=self.colors[idx], linestyle='-', linewidth=2, ymin=0.5, ymax=1, label=f'Median {label}')
+            axes[3].axvline(median_val,
+                            color=self.colors[idx],
+                            linestyle='-',
+                            linewidth=2,
+                            ymin=0.5,
+                            ymax=1,
+                            label=f'Median {label}')
             # Plot a vertical line from bottom to mid-plot for mean
-            axes[3].axvline(mean_val, color=self.colors[idx], linestyle='--', linewidth=2, ymin=0, ymax=0.5, label=f'Mean {label}')
+            axes[3].axvline(mean_val,
+                            color=self.colors[idx],
+                            linestyle='--',
+                            linewidth=2,
+                            ymin=0,
+                            ymax=0.5,
+                            label=f'Mean {label}')
         axes[3].set_xlim(0, None)
         axes[3].set_xlabel('Travel Times')
         axes[3].set_ylabel('Probability Density')
@@ -291,11 +292,9 @@ class Plotter:
         plt.close()
         logging.info(f"[SUCCESS] Travel time distributions are saved to {save_to}")
 
-
     ################################
     ########### ACTIONS ############
     ################################
-
 
     def visualize_actions(self) -> None:
         """Visualize the actions taken by the agent.
@@ -319,8 +318,10 @@ class Plotter:
         fig, axes = plt.subplots(num_rows, num_columns, figsize=figure_size)
         fig.tight_layout(pad=5.0)
         
-        if num_rows > 1:   axes = axes.flatten()   # Flatten axes
-        if not hasattr(axes, '__getitem__'):    axes = np.array([axes])  # If only one subplot
+        if num_rows > 1:
+            axes = axes.flatten()   # Flatten axes
+        if not hasattr(axes, '__getitem__'):
+            axes = np.array([axes])  # If only one subplot
 
         for idx, (od, actions) in enumerate(all_actions.items()):
             ax = axes[idx]
@@ -353,11 +354,9 @@ class Plotter:
         plt.close()
         logging.info(f"[SUCCESS] Actions are saved to {save_to}")
 
-
     ################################
     ######## ACTION SHIFTS #########
     ################################
-
 
     def visualize_action_shifts(self) -> None:
         """Visualize the action shifts taken by the agent.
@@ -393,7 +392,7 @@ class Plotter:
                 episodes = list(ep_to_actions.keys())
 
                 for idx3, action in enumerate(unique_actions):
-                    action_data = [ep_counter[action] / sum(ep_counter.values()) for ep_counter in all_actions[kind].values()]
+                    action_data = [ep_ctr[action] / sum(ep_ctr.values()) for ep_ctr in all_actions[kind].values()]
                     action_data = running_average(action_data, last_n=self.smooth_by)
                     color = self.colors[idx3]
                     linestyle = self.linestyles[idx2 % len(self.linestyles)]
@@ -409,9 +408,10 @@ class Plotter:
             ax.set_title(f'Actions for {od}')
             ax.legend()
 
-        for ax in axes[idx+1:]:   ax.axis('off')    # Hide unused subplots if any
-
-        for ax in axes.flat:    ax.legend().set_visible(False)
+        for ax in axes[idx+1:]:
+            ax.axis('off')    # Hide unused subplots if any
+        for ax in axes.flat:
+            ax.legend().set_visible(False)
         handles, labels = axes[0].get_legend_handles_labels()
         fig.legend(handles, labels, loc='upper center', ncol=3)
         fig.subplots_adjust(top=0.85)
@@ -420,11 +420,9 @@ class Plotter:
         plt.close()
         logging.info(f"[SUCCESS] Actions shifts are saved to {save_to}")
 
-
     ################################
     ########## SIM LENGTH ##########
     ################################
-
 
     def visualize_sim_length(self) -> None:
         """Visualize the simulation length.
@@ -451,7 +449,6 @@ class Plotter:
         plt.close()
         logging.info(f"[SUCCESS] Simulation lengths are saved to {save_to}")
 
-
     def _retrieve_sim_length(self) -> None:
         """Retrieve the simulation length.
 
@@ -468,11 +465,9 @@ class Plotter:
             latest_arrivals.append(latest_arrival)
         return latest_arrivals
 
-
     ################################
     ############ LOSES #############
     ################################
-
 
     def visualize_losses(self) -> None:
         """Visualize the losses.
@@ -499,7 +494,6 @@ class Plotter:
         plt.close()
         logging.info(f"[SUCCESS] Losses are saved to {save_to}")
 
-
     def _retrieve_losses(self) -> None:
         """Retrieve the losses.
 
@@ -515,11 +509,9 @@ class Plotter:
                 losses.append(float(line.strip()))
         return losses
 
-
     ################################
     ########### HELPERS ############
     ################################
-
 
     def _retrieve_data_per_kind(self, data_key, transform=None) -> dict[str, dict]:
         """Retrieve data per kind.
@@ -551,7 +543,6 @@ class Plotter:
                     all_values_dict[kind][episode] = values_per_kind[kind]
         return all_values_dict
     
-
     def _retrieve_data_per_od(self, data_key, transform=None) -> dict[str, dict]:
         """Retrieve data per od.
 
@@ -568,7 +559,8 @@ class Plotter:
         for episode in self.saved_episodes:
             data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
             episode_data = pd.read_csv(data_path)
-            episode_origins, episode_destinations, values = episode_data[kc.AGENT_ORIGIN], episode_data[kc.AGENT_DESTINATION], episode_data[data_key]
+            episode_origins, episode_destinations = episode_data[kc.AGENT_ORIGIN], episode_data[kc.AGENT_DESTINATION]
+            values = episode_data[data_key]
             values_per_od = {od_to_key(od[0], od[1]): list() for od in all_od_pairs}
             for idx, value in enumerate(values):
                 values_per_od[od_to_key(episode_origins[idx], episode_destinations[idx])].append(value)
@@ -580,7 +572,6 @@ class Plotter:
                 else:
                     all_values_dict[od][episode] = values_per_od[od]
         return all_values_dict
-
 
     def _retrieve_selected_actions(self, origin, destination) -> [dict, dict]:
         """Retrieve selected actions.
@@ -611,7 +602,6 @@ class Plotter:
                 all_actions[kind][episode] = actions_counters[kind]
         return all_actions, unique_actions
 
-
     def _retrieve_all_od_pairs(self):
         """Retrieve all OD pairs.
 
@@ -628,7 +618,6 @@ class Plotter:
             all_od_pairs.append((origin, destination))
         all_od_pairs = list(set(all_od_pairs))
         return all_od_pairs
-
 
 
 def plotter(params):
