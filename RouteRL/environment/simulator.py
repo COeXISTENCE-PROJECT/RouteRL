@@ -169,7 +169,8 @@ class SumoSimulator():
         for origin_idx, origin in enumerate(origins):
             for dest_idx, destination in enumerate(destinations):
                 # Filter routes for the current origin-destination pair
-                routes_to_show = routes[(routes["origins"] == origin_idx) & (routes["destinations"] == dest_idx)]['path']
+                routes_to_show = (routes[(routes["origins"] == origin_idx)
+                                         & (routes["destinations"] == dest_idx)]['path'])
                 routes_to_show = [route.split(" ") for route in routes_to_show]
                 # Specify the save path and title for the figure
                 fig_save_path = os.path.join(path_visuals_path, f"{origin_idx}_{dest_idx}.png")
@@ -218,18 +219,19 @@ class SumoSimulator():
             print("<vType id=\"AV\" color=\"yellow\"/>", file=rou)
             for origin_idx in origins.values():
                 for destination_idx in destinations.values():
-                    paths = routes_df[(routes_df["origins"] == origin_idx) & (routes_df["destinations"] == destination_idx)]["path"].values
+                    paths = (routes_df[(routes_df["origins"] == origin_idx)
+                                       & (routes_df["destinations"] == destination_idx)]["path"].values)
                     for idx, path in enumerate(paths):
                         print(f'<route id="{origin_idx}_{destination_idx}_{idx}" edges="', file=rou)
                         print(path, file=rou)
                         print('" />',file=rou)
             print("</routes>", file=rou)
 
-    def _get_detectors(self) -> None:
+    def _get_detectors(self):
         """Method that gets detectors.
 
         Returns:
-            None
+            detectors_name: name of the detectors.
         """
 
         paths_df = pd.read_csv(self.paths_csv_file_path)
@@ -242,7 +244,8 @@ class SumoSimulator():
         with open(self.det_xml_save_path, "w") as det:
             print("""<additional>""", file=det)
             for det_id in detectors_name:
-                    print(f"<inductionLoop id=\"{det_id}_det\" lane=\"{det_id}_0\" pos=\"-5\" file=\"NUL\" friendlyPos=\"True\"/>", file=det)
+                    print(f"<inductionLoop id=\"{det_id}_det\" lane=\"{det_id}_0\" pos=\"-5\" file=\"NUL\" friendlyPos=\"True\"/>",
+                          file=det)
             print("</additional>", file=det)
             
         return detectors_name

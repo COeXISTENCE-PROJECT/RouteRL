@@ -202,7 +202,10 @@ class Plotter:
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.TT_DIST_PLOT_FILE_NAME)
     
         num_rows, num_cols = 2, 2
-        fig, axes = plt.subplots(num_rows, num_cols, figsize=(self.multimode_width * num_cols, self.multimode_height * num_rows))
+        fig, axes = plt.subplots(num_rows,
+                                 num_cols,
+                                 figsize=(self.multimode_width * num_cols,
+                                                              self.multimode_height * num_rows))
         fig.tight_layout(pad=5.0)
 
         if num_rows > 1:   axes = axes.flatten()   # Flatten axes
@@ -264,7 +267,14 @@ class Plotter:
             data = np.array(data)
             data[np.isinf(data)] = np.nan  # Convert inf to NaN
 
-            sns.kdeplot(data, ax=axes[3], label=label, alpha=0.8, fill=True, linewidth=3, color=self.colors[idx], clip=(0, None))
+            sns.kdeplot(data,
+                        ax=axes[3],
+                        label=label,
+                        alpha=0.8,
+                        fill=True,
+                        linewidth=3,
+                        color=self.colors[idx],
+                        clip=(0, None))
             median_val, mean_val = np.nanmedian(data), np.nanmean(data)
             # Plot a vertical line from top to mid-plot for median
             axes[3].axvline(median_val,
@@ -306,7 +316,12 @@ class Plotter:
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.ACTIONS_PLOT_FILE_NAME)
 
         all_actions = self._retrieve_data_per_od(kc.ACTION)
-        unique_actions = {od: set([item for sublist in val.values() for item in sublist]) for od, val in all_actions.items()}
+        unique_actions = {
+            od: {
+                item for sublist in val.values() for item in sublist
+            }
+            for od, val in all_actions.items()
+        }
         all_actions = {od : [Counter(a) for a in val.values()] for od, val in all_actions.items()}
         num_od_pairs = len(all_actions)
         

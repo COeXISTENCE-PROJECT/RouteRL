@@ -18,14 +18,26 @@ class BaseLearningModel(ABC):
         pass
 
     @abstractmethod
-    def act(self, state):
+    def act(self, state) -> None:
         """Method to select an action based on the current state and cost.
 
+        Returns:
+            None
         """
         pass
 
     @abstractmethod
-    def learn(self, state, action, reward):
+    def learn(self, state, action, reward) -> None:
+        """Method to learn the model based on the current state and cost.
+
+        Arguments:
+            state (Any): The current state of the environment.
+            action (Any): The action to take.
+            reward (Any): The reward received from the environment.
+        Returns:
+            None
+        """
+
         pass
 
 

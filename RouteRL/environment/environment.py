@@ -323,8 +323,8 @@ class TrafficEnvironment(AECEnv):
     def mutation(self, disable_human_learning: bool = True) -> None:
         """Perform mutation by converting selected human agents into machine agents.
 
-        This method identifies a subset of human agents that start after the 25th percentile of
-        start times of other vehicles, removes a specified number of these agents, and replaces them with machine agents.
+        This method identifies a subset of human agents that start after the 25th percentile of start times of
+        other vehicles, removes a specified number of these agents, and replaces them with machine agents.
 
         Args:
             disable_human_learning (bool, True): Boolean flag to disable human agents.
@@ -418,7 +418,8 @@ class TrafficEnvironment(AECEnv):
         travel_times = dict()
         for veh_id in arrivals:
             agent_id = int(veh_id)
-            travel_times[agent_id] = {kc.TRAVEL_TIME : ((timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0)}
+            travel_times[agent_id] = {kc.TRAVEL_TIME : ((timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME])
+                                                        / 60.0)}
             travel_times[agent_id].update(self.episode_actions[agent_id])
 
         return travel_times.values()

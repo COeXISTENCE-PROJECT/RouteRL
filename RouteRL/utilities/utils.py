@@ -20,7 +20,6 @@ def get_params(file_path, resolve=True, update=None):
     return params
 
 
-
 def update_params(old_params: dict, new_params: dict):
     for key, value in new_params.items():
         if isinstance(value, dict) and isinstance(old_params.get(key), dict):
@@ -31,7 +30,6 @@ def update_params(old_params: dict, new_params: dict):
                 old_params[key] = value
             else:
                 raise ValueError(f"Invalid parameter: {key}")
-            
         
             
 def resolve_ods(params):
@@ -48,7 +46,6 @@ def resolve_ods(params):
     return params
 
 
-
 def resolve_param_dependencies(params):    # Resolving dependent parameters in params.json
     for category, settings in params.items():
         for key, value in settings.items():
@@ -62,7 +59,6 @@ def resolve_param_dependencies(params):    # Resolving dependent parameters in p
     return params
 
 
-
 def confirm_env_variable(env_var, append=None):
     if env_var in os.environ:
         print("[CONFIRMED] Environment variable exists: %s" % env_var)
@@ -74,7 +70,6 @@ def confirm_env_variable(env_var, append=None):
         raise ImportError("Please declare the environment variable '%s'" % env_var)
 
 
-
 def read_json(file_path):    # Read json file, return as dict
     try:
         with open(file_path, 'r') as file:
@@ -83,6 +78,7 @@ def read_json(file_path):    # Read json file, return as dict
         print(f"[ERROR] Cannot locate: %s" % (file_path))
         raise
     return file_data
+
 
 def make_dir(folders, filename=None):    # Make dir if not exists, make full path
     if not folders:
@@ -99,8 +95,7 @@ def make_dir(folders, filename=None):    # Make dir if not exists, make full pat
     return path
 
 
-
-def show_progress_bar(message, start_time, progress, target, end_line=''):    # Just printing progress bar with ETA
+def show_progress_bar(message, start_time, progress, target, end_line=''): # Just printing progress bar with ETA
     bar_length = 50
     progress_fraction = progress / target
     filled_length = int(bar_length * progress_fraction)
@@ -108,17 +103,22 @@ def show_progress_bar(message, start_time, progress, target, end_line=''):    # 
     elapsed_time = time.time() - start_time
     remaining_time = ((elapsed_time / progress_fraction) - elapsed_time) if progress_fraction else 0
     remaining_time = time.strftime("%H:%M:%S", time.gmtime(remaining_time))
-    print(f'\r[%s]: |%s| %.2f%%, ETA: %s' % (message.upper(), bar, progress_fraction * 100, remaining_time), end=end_line)
+    print(f'\r[%s]: |%s| %.2f%%, ETA: %s' % (message.upper(),
+                                             bar,
+                                             progress_fraction * 100,
+                                             remaining_time),
+          end=end_line)
 
 
-
-def show_progress(name_of_operation, start_time, progress, target, end_line=''):    # Just printing progress bar with ETA
+def show_progress(name_of_operation, start_time, progress, target, end_line=''): # Just printing progress bar with ETA
     progress_fraction = progress / target
     elapsed_time = time.time() - start_time
     remaining_time = ((elapsed_time / progress_fraction) - elapsed_time) if progress_fraction else 0
     remaining_time = time.strftime("%H:%M:%S", time.gmtime(remaining_time))
-    print(f'\r[%s PROGRESS]: %.2f%%, ETA: %s' % (name_of_operation.upper(), progress_fraction * 100, remaining_time), end=end_line)
-
+    print(f'\r[%s PROGRESS]: %.2f%%, ETA: %s' % (name_of_operation.upper(),
+                                                 progress_fraction * 100,
+                                                 remaining_time),
+          end=end_line)
 
 
 def remove_double_quotes(text):
@@ -146,7 +146,6 @@ def string_to_list(text, seperator, brackets=False):
     return elements
 
 
-
 def df_to_prettytable(df, header_message=None, print_every=1):
     table = PrettyTable()
     table.field_names = df.columns.tolist()
@@ -158,8 +157,7 @@ def df_to_prettytable(df, header_message=None, print_every=1):
     print(table)
 
 
-
-def running_average(values, last_n = 0): 
+def running_average(values, last_n = 0):
     # last_n -> -1 disables the averaging, 0 averages all, n averages the last n
     if last_n < 0: return values
     if last_n == 0: start_from = 0
@@ -171,4 +169,3 @@ def running_average(values, last_n = 0):
         running_sum = sum(values[start_from:idx+1])
         running_averages.append(running_sum / divide_by)
     return running_averages
-    

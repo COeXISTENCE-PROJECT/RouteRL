@@ -110,13 +110,13 @@ def generate_agent_data(params, seed=23423) -> pd.DataFrame:
     
     return agents_df
 
-def set_seed(seed) -> int:
+def set_seed(seed):
     """Set the seed for random number generation.
 
     Arguments:
         seed (int): Random seed
     Returns:
-        rng (int): Random default rng for random number generation
+        rng: Random default rng for random number generation
     """
 
     random.seed(seed)
