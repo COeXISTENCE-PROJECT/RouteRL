@@ -26,7 +26,8 @@ def update_params(old_params: dict, new_params: dict):
         if isinstance(value, dict) and isinstance(old_params.get(key), dict):
             update_params(old_params[key], value)
         else:
-            if key in old_params:
+            # if key exists and not a dependent parameter, update it
+            if (key in old_params) and (not (isinstance(old_params[key], str) and old_params[key].startswith("${"))):
                 old_params[key] = value
             else:
                 raise ValueError(f"Invalid parameter: {key}")
