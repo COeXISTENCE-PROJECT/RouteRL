@@ -14,20 +14,16 @@ logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
 
 
-def generate_agents(params, free_flow_times, generate_data, seed=23423):
-
-    """
-    Generates agent objects
+def generate_agents(params, free_flow_times, generate_data, seed=23423) -> list:
+    """Generates agent objects
 
     Args:
         params (dict): Parameters dictionary
         free_flow_times (list): Free flow times
         generate_data (bool): Generate data
         seed (int): Random seed
-
     Returns:
         agents (list): List of agent objects
-
     Raises:
         ValueError: If it is unrecognized agent type.
     """
@@ -66,18 +62,14 @@ def generate_agents(params, free_flow_times, generate_data, seed=23423):
     return agents
 
 
-
-def generate_agent_data(params, seed=23423):
-
-    """
-    Generates agent data
+def generate_agent_data(params, seed=23423) -> pd.DataFrame:
+    """Generates agent data
 
     Constructs a dataframe, where each row is an agent and columns are attributes
 
     Args:
         params (dict): Parameters dictionary
         seed (int): Random seed
-
     Returns:
         agents (list): List of agent objects
     """
@@ -90,7 +82,6 @@ def generate_agent_data(params, seed=23423):
     num_destinations = len(params[kc.DESTINATIONS])
     
     rng = set_seed(seed)
-
     agents_df = pd.DataFrame(columns=agent_attributes)  # Where we store our agents
     
     mean_timestep = simulation_timesteps / 2
@@ -121,13 +112,11 @@ def generate_agent_data(params, seed=23423):
     return agents_df
 
 
-def set_seed(seed):
-    """
-    Set the seed for random number generation.
+def set_seed(seed) -> int:
+    """Set the seed for random number generation.
 
     Arguments:
         seed (int): Random seed
-
     Returns:
         rng (int): Random default rng for random number generation
     """
@@ -135,4 +124,5 @@ def set_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
     rng = np.random.default_rng(seed)
+
     return rng

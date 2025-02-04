@@ -206,7 +206,7 @@ class TrafficEnvironment(AECEnv):
 
 
     ################################
-    ##### PettingZoo functions #####
+    ###### Control functions #######
     ################################
 
 
@@ -254,8 +254,8 @@ class TrafficEnvironment(AECEnv):
 
 
     def step(self, machine_action: int = None) -> None:
+        """Step method.
 
-        """
         Takes an action for the current agent (specified by agent_selection) and updates
         various parameters including rewards, cumulative rewards, terminations, truncations,
         infos, and agent_selection. Also updates any internal state used by observe() or render().

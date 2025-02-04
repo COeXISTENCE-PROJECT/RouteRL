@@ -21,8 +21,7 @@ logger.setLevel(logging.WARNING)
 
 
 class Plotter:
-    """
-    Plot the results of the training
+    """Plot the results of the training
 
     Args:
         params (list): list of the parameters
@@ -82,12 +81,16 @@ class Plotter:
         self.saved_episodes = list()
 
 
-#################### VISUALIZE ALL
+    ################################
+    ######## VISUALIZE ALL #########
+    ################################
 
 
-    def plot(self):
-        """
-        Plot the results of the training
+    def plot(self) -> None:
+        """Plot the results of the training
+
+        Returns:
+            None
         """
 
         self.saved_episodes = self._get_episodes()
@@ -100,12 +103,13 @@ class Plotter:
         self.visualize_losses()
 
 
-    def _get_episodes(self):
-        """
-        Get the episodes data
+    def _get_episodes(self) -> list[int]:
+        """Get the episodes data
 
         Returns:
-            sorted_episodes (list): the sorted episodes data
+            sorted_episodes (list[int]): the sorted episodes data
+        Raises:
+            FileNotFoundError: If the episodes folder does not exist
         """
 
         eps = list()
@@ -117,14 +121,16 @@ class Plotter:
             raise FileNotFoundError(f"Episodes folder does not exist!")
         return sorted(eps)
 
+    ################################
+    ########### REWARDS ############
+    ################################
 
-####################
-#################### REWARDS
 
+    def visualize_mean_rewards(self) -> None:
+        """Visualise the mean rewards
 
-    def visualize_mean_rewards(self):
-        """
-        Visualise the mean rewards
+        Returns:
+            None
         """
 
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.REWARDS_PLOT_FILE_NAME)
@@ -152,14 +158,16 @@ class Plotter:
         plt.close()
         logging.info(f"[SUCCESS] Rewards are saved to {save_to}")
 
+    ################################
+    ######### TRAVEL TIMES #########
+    ################################
 
-####################
-#################### TRAVEL TIMES
 
+    def visualize_mean_travel_times(self) -> None:
+        """Visualise the mean travel times
 
-    def visualize_mean_travel_times(self):
-        """
-        Visualise the mean travel times
+        Returns:
+            None
         """
 
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.TRAVEL_TIMES_PLOT_FILE_NAME)
@@ -188,13 +196,16 @@ class Plotter:
         logging.info(f"[SUCCESS] Travel times are saved to {save_to}")
 
 
-####################
-#################### TRAVEL TIME DISTRIBUTIONS
+    ################################
+    ### TRAVEL TIME DISTRIBUTIONS ##
+    ################################
 
 
-    def visualize_tt_distributions(self):
-        """
-        Visualise the travel time distributions
+    def visualize_tt_distributions(self) -> None:
+        """Visualise the travel time distributions
+
+        Returns:
+            None
         """
 
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.TT_DIST_PLOT_FILE_NAME)
@@ -280,14 +291,17 @@ class Plotter:
         plt.close()
         logging.info(f"[SUCCESS] Travel time distributions are saved to {save_to}")
 
-####################
-    
 
-#################### ACTIONS
+    ################################
+    ########### ACTIONS ############
+    ################################
 
-    def visualize_actions(self):
-        """
-        Visualize the actions taken by the agent.
+
+    def visualize_actions(self) -> None:
+        """Visualize the actions taken by the agent.
+
+        Returns:
+            None
         """
 
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.ACTIONS_PLOT_FILE_NAME)
@@ -326,9 +340,11 @@ class Plotter:
             ax.legend()
 
         # Hide unused subplots if any
-        for ax in axes[idx+1:]:   ax.axis('off')    # Hide unused subplots if any
+        for ax in axes[idx+1:]:
+            ax.axis('off')    # Hide unused subplots if any
 
-        for ax in axes.flat:    ax.legend().set_visible(False)
+        for ax in axes.flat:
+            ax.legend().set_visible(False)
         handles, labels = axes[0].get_legend_handles_labels()
         fig.legend(handles, labels, loc='upper center', ncol=2)
         fig.subplots_adjust(top=0.90)
@@ -338,13 +354,16 @@ class Plotter:
         logging.info(f"[SUCCESS] Actions are saved to {save_to}")
 
 
-####################
-#################### ACTION SHIFTS
+    ################################
+    ######## ACTION SHIFTS #########
+    ################################
 
 
-    def visualize_action_shifts(self):
-        """
-        Visualize the action shifts taken by the agent.
+    def visualize_action_shifts(self) -> None:
+        """Visualize the action shifts taken by the agent.
+
+        Returns:
+            None
         """
 
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.ACTIONS_SHIFTS_PLOT_FILE_NAME)
@@ -402,17 +421,19 @@ class Plotter:
         logging.info(f"[SUCCESS] Actions shifts are saved to {save_to}")
 
 
-####################
-#################### SIM LENGTH
+    ################################
+    ########## SIM LENGTH ##########
+    ################################
 
 
-    def visualize_sim_length(self):
-        """
-        Visualize the simulation length.
+    def visualize_sim_length(self) -> None:
+        """Visualize the simulation length.
+
+        Returns:
+            None
         """
 
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.SIM_LENGTH_PLOT_FILE_NAME)
-
         sim_lengths = self._retrieve_sim_length()
         sim_lengths = running_average(sim_lengths, last_n=self.smooth_by)
 
@@ -431,10 +452,11 @@ class Plotter:
         logging.info(f"[SUCCESS] Simulation lengths are saved to {save_to}")
 
 
+    def _retrieve_sim_length(self) -> None:
+        """Retrieve the simulation length.
 
-    def _retrieve_sim_length(self):
-        """
-        Retrieve the simulation length.
+        Returns:
+            None
         """
 
         latest_arrivals = list()
@@ -445,15 +467,18 @@ class Plotter:
             latest_arrival = max(arrival_times)
             latest_arrivals.append(latest_arrival)
         return latest_arrivals
-    
-####################
 
 
-#################### LOSSES
+    ################################
+    ############ LOSES #############
+    ################################
 
-    def visualize_losses(self):
-        """
-        Visualize the losses.
+
+    def visualize_losses(self) -> None:
+        """Visualize the losses.
+
+        Returns:
+            None
         """
 
         save_to = make_dir(self.params[kc.PLOTS_FOLDER], kc.LOSSES_PLOT_FILE_NAME)
@@ -475,10 +500,11 @@ class Plotter:
         logging.info(f"[SUCCESS] Losses are saved to {save_to}")
 
 
+    def _retrieve_losses(self) -> None:
+        """Retrieve the losses.
 
-    def _retrieve_losses(self):
-        """
-        Retrieve the losses.
+        Returns:
+            None
         """
 
         losses = list()
@@ -490,20 +516,19 @@ class Plotter:
         return losses
 
 
-####################
-#################### HELPERS
+    ################################
+    ########### HELPERS ############
+    ################################
 
 
-    def _retrieve_data_per_kind(self, data_key, transform=None):
-        """
-        Retrieve data per kind.
+    def _retrieve_data_per_kind(self, data_key, transform=None) -> dict[str, dict]:
+        """Retrieve data per kind.
 
         Args:
             data_key (str): The key of the data you want to retrieve.
             transform (callable, optional): Optional transform to be applied
-
         Returns:
-            all_values_dict (dict): Dictionary of all data values per kind.
+            all_values_dict (dict[Any, dict]): Dictionary of all data values per kind.
         """
 
         all_values_dict = {kc.ALL : dict()}
@@ -527,16 +552,14 @@ class Plotter:
         return all_values_dict
     
 
-    def _retrieve_data_per_od(self, data_key, transform=None):
-        """
-        Retrieve data per od.
+    def _retrieve_data_per_od(self, data_key, transform=None) -> dict[str, dict]:
+        """Retrieve data per od.
 
         Args:
             data_key (str): The key of the data you want to retrieve.
             transform (callable, optional): Optional transform to be applied
-
         Returns:
-            all_values_dict (dict): Dictionary of all data values per kind.
+            all_values_dict (dict[str, dict]): Dictionary of all data values per kind.
         """
 
         all_od_pairs = self._retrieve_all_od_pairs()
@@ -559,9 +582,8 @@ class Plotter:
         return all_values_dict
 
 
-    def _retrieve_selected_actions(self, origin, destination):
-        """
-        Retrieve selected actions.
+    def _retrieve_selected_actions(self, origin, destination) -> [dict, dict]:
+        """Retrieve selected actions.
 
         Args:
             origin (str): The origin of the action.
@@ -591,8 +613,7 @@ class Plotter:
 
 
     def _retrieve_all_od_pairs(self):
-        """
-        Retrieve all OD pairs.
+        """Retrieve all OD pairs.
 
         Returns:
             all_od_pairs (dict): Dictionary of all OD pairs.
@@ -609,13 +630,12 @@ class Plotter:
         return all_od_pairs
 
 
-####################
-####################
-
 
 def plotter(params):
-    """
-    Plotter
+    """Plotter
+
+    Returns:
+        plotter: plotter
     """
 
     plotter = Plotter(params)

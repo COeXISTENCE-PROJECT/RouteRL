@@ -9,8 +9,7 @@ from ..learning import get_learning_model
 
 
 class BaseAgent(ABC):
-    """
-    This is the abstract base class for the human and machine agent classes.
+    """This is the abstract base class for the human and machine agent classes.
 
     Args:
         id (int): The id of the agent.
@@ -19,7 +18,6 @@ class BaseAgent(ABC):
         origin (float): The origin of the simulation.
         destination (float): The destination value of the simulation.
         behavior (float): The behavior of the simulation.
-
     Attributes:
         id (int): The id of the agent.
         kind (str): The kind of the agent.
@@ -27,7 +25,6 @@ class BaseAgent(ABC):
         origin (float): The origin of the simulation.
         destination (float): The destination value of the simulation.
         behavior (float): The behavior of the simulation.
-
     Methods:
         last_reward (float):
         act (float):
@@ -35,6 +32,7 @@ class BaseAgent(ABC):
         get_state (float):
         get_reward (float):
     """
+
     def __init__(self, id, kind, start_time, origin, destination, behavior):
         self.id = id
         self.kind = kind
@@ -46,34 +44,64 @@ class BaseAgent(ABC):
 
     @property
     @abstractmethod
-    def last_reward(self):
-        # Return the last reward of the agent
+    def last_reward(self) -> None:
+        """Return the last reward of the agent
+
+        Returns:
+            None
+        """
+
         pass
     
     @last_reward.setter
     @abstractmethod
-    def last_reward(self, reward):
-        # Set the last reward of the agent
+    def last_reward(self, reward) -> None:
+        """Set the last reward of the agent
+
+        Returns:
+            None
+        """
+
         pass
 
     @abstractmethod
-    def act(self, observation):  
-        # Pick action according to your knowledge, or randomly
+    def act(self, observation) -> None:
+        """Pick action according to your knowledge, or randomly
+
+        Returns:
+            None
+        """
+
         pass
 
     @abstractmethod
-    def learn(self, action, observation):
-        # Pass the applied action and reward once the episode ends, and it will remember the consequences
+    def learn(self, action, observation) -> None:
+        """Pass the applied action and reward once the episode ends, and it will remember the consequences
+
+        Returns:
+            None
+        """
+
         pass
 
     @abstractmethod
     def get_state(self, observation):
-        # Return the state of the agent, given the observation
+        """Return the state of the agent, given the observation
+
+        Returns:
+            None
+        """
+
         pass
 
     @abstractmethod
     def get_reward(self, observation):
-        # Derive the reward of the agent, given the observation
+        """Derive the reward of the agent, given the observation
+
+        Returns:
+            None
+        """
+
         pass
 
 
@@ -127,55 +155,80 @@ class HumanAgent(BaseAgent):
 
 
     def act(self, observation) -> int:  
-        """ Returns the agent's action (route of choice) based on the current observation from the environment. """
+        """Returns the agent's action (route of choice) based on the current observation from the environment.
+
+        Returns:
+            self.model.act(observation) [int]: The action of the agent.
+        """
+
         return self.model.act(observation)  
 
 
     def learn(self, action, observation) -> None:
-        """ Updates the agent's knowledge based on the action taken and the resulting observations. """
+        """Updates the agent's knowledge based on the action taken and the resulting observations.
+
+        Args:
+            action (int): The action of the agent.
+            observation (list[dict]): The observation of the agent.
+        Returns:
+            None
+        """
+
         reward = self.get_reward(observation)
         self.last_reward = reward
         self.model.learn(None, action, reward)
 
+    def get_state(self, _) -> None:
+        """Returns the current state of the agent.
 
-    def get_state(self, _):
+        Args:
+            _ (Any): The current state of the agent.
+        Returns:
+            None
+        """
+
         return None
 
 
     def get_reward(self, observation: list[dict]) -> float:
-        """ This function calculated the reward of each individual agent. """
+        """This function calculated the reward of each individual agent.
+
+        Args:
+            observation (list[dict]): The observation of the agent.
+        Returns:
+            own_tt (float): Own travel time of the agent.
+
+        """
+
         own_tt = next(obs[kc.TRAVEL_TIME] for obs in observation if obs[kc.AGENT_ID] == self.id)
         return own_tt
     
 
 
 class MachineAgent(BaseAgent):
-    """  
-        A class that models Autonomous Vehicles (AVs), focusing on their learning mechanisms and decision-making processes for selecting optimal routes.
+    """A class that models Autonomous Vehicles (AVs), focusing on their learning mechanisms
+    and decision-making processes for selecting optimal routes.
 
-        Args:
-            id (int): The id of the agent.
-            start_time (float): The start time of the simulation.
-            origin (float): The origin of the simulation.
-            destination (float): The destination value of the simulation.
-            params (dict): The parameters of the agent.
-            action_space_size (int): The size of the action space of the agent.
-
-        Attributes:
-            observed_span (dict): The observed span of the agent.
-            action_space_size (int): The size of the action space of the agent.
-            state_size (int): The state size of the agent.
-            model : The model of the agent. # TO DO
-            last_reward (float): The last reward of the agent.
-            rewards_coefs (dict): The reward coefficients of the agent.
-
-        Methods:
-            act (float): The action of the agent.
-            learn (float): The action of the agent.
-            get_state (float): The current state of the agent.
-            get_reward (float): The current reward of the agent.
-            _get_reward_coefs (float): The coefficient of the reward of the agent.
-
+    Args:
+        id (int): The id of the agent.
+        start_time (float): The start time of the simulation.
+        origin (float): The origin of the simulation.
+        destination (float): The destination value of the simulation.
+        params (dict): The parameters of the agent.
+        action_space_size (int): The size of the action space of the agent.
+    Attributes:
+        observed_span (dict): The observed span of the agent.
+        action_space_size (int): The size of the action space of the agent.
+        state_size (int): The state size of the agent.
+        model : The model of the agent. # TO DO
+        last_reward (float): The last reward of the agent.
+        rewards_coefs (dict): The reward coefficients of the agent.
+    Methods:
+        act (float): The action of the agent.
+        learn (float): The action of the agent.
+        get_state (float): The current state of the agent.
+        get_reward (float): The current reward of the agent.
+        _get_reward_coefs (float): The coefficient of the reward of the agent.
     """
 
     def __init__(self, id, start_time, origin, destination, params, action_space_size):
@@ -200,33 +253,52 @@ class MachineAgent(BaseAgent):
 
 
     @last_reward.setter
-    def last_reward(self, reward):
+    def last_reward(self, reward) -> None:
+        """Sets the last reward of the agent.
+
+        Returns:
+            None
+        """
+
         self._last_reward = reward
 
 
     def act(self, _) -> None:
+        """Acting method
+
+        Returns:
+            None
+        """
+
         return None
 
 
     def learn(self, _) -> None:
+        """Learning method
+
+        Returns:
+            None
+        """
+
         return None
 
 
     def get_state(self, observation: list[dict]) -> list[int]:
-        """
-        Generates the current state representation based on recent observations of agents navigating
+        """Generates the current state representation based on recent observations of agents navigating
         from the same origin to the same destination.
 
         Args:
             observation (list[dict]): The recent observations of the agent.
-
         Returns:
             list[int]: The current state representation.
         """
+
         min_start_time = self.start_time - self.observed_span
         human_prior, machine_prior = list(), list()
         for obs in observation:
-            if ((obs[kc.AGENT_ORIGIN], obs[kc.AGENT_DESTINATION]) == (self.origin, self.destination)) and (obs[kc.AGENT_START_TIME] > min_start_time):
+            if ((obs[kc.AGENT_ORIGIN], obs[kc.AGENT_DESTINATION]) == (self.origin, self.destination)
+                    and (obs[kc.AGENT_START_TIME] > min_start_time)
+            ):
                 if obs[kc.AGENT_KIND] == kc.TYPE_HUMAN:
                     human_prior.append(obs)
                 elif obs[kc.AGENT_KIND] == kc.TYPE_MACHINE:
@@ -253,13 +325,11 @@ class MachineAgent(BaseAgent):
 
 
     def get_reward(self, observation: list[dict]) -> float:
-        """
-        This function calculated the reward of each individual agent, based on the travel time of the agent,
+        """This method calculated the reward of each individual agent, based on the travel time of the agent,
         the group of agents, the other agents, and all agents.
 
         Args:
             observation (list[dict]): The current observation of the agent.
-
         Returns:
             float: The reward of the agent.
         """
@@ -291,11 +361,7 @@ class MachineAgent(BaseAgent):
 
 
     def _get_reward_coefs(self) -> tuple:
-        """
-        This function returns the coefficients for the reward calculation, based on the behavior of the agent.
-
-        Args:
-            # TO DO
+        """This function returns the coefficients for the reward calculation, based on the behavior of the agent.
 
         Returns:
             a (float): the weight of the agent's travel time.

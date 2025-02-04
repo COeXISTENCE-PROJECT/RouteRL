@@ -91,8 +91,7 @@ class PreviousAgentStart(Observations):
         return self.observations
 
     def reset_observation(self) -> Dict[str, np.ndarray]:
-        """
-        Reset observations to the initial state.
+        """Reset observations to the initial state.
 
         Returns:
             Dict[str, np.ndarray]: A dictionary of initial observations for all machine agents.
@@ -104,8 +103,7 @@ class PreviousAgentStart(Observations):
         }
 
     def observation_space(self) -> Dict[str, Box]:
-        """
-        Define the observation space for each machine agent.
+        """Define the observation space for each machine agent.
 
         Returns:
             Dict[str, Box]: A dictionary where keys are agent IDs and values are Gym spaces.
@@ -122,12 +120,10 @@ class PreviousAgentStart(Observations):
         }
 
     def agent_observations(self, agent_id: str) -> np.ndarray:
-        """
-        Retrieve the observation for a specific agent.
+        """Retrieve the observation for a specific agent.
 
         Args:
             agent_id (str): The ID of the agent.
-
         Returns:
             np.ndarray: The observation array for the specified agent.
         """

@@ -18,7 +18,8 @@ logger.setLevel(logging.WARNING)
 
 
 class SumoSimulator():
-    """
+    """Sumo simulator class
+
     A class responsible for managing the communication between our learning agents and the SUMO traffic simulator.
     SUMO provides the traffic environment where vehicles travel between designated origins and destinations,
     and it returns the corresponding travel times for these vehicles.
@@ -27,18 +28,17 @@ class SumoSimulator():
         params (dict): Dictionary of parameters for the SUMO environment.
         path_gen_params (dict): Dictionary of parameters for the SUMO environment.
         seed: Random number generator seed.
-
     Attributes:
         network_name: network name.
         sumo_type: type of sumo
         number_of_paths: number of paths
         simulation_length: simulation length
-        paths_csv_path: paths to csv files
+        paths_csv_file_path: paths to csv files
         sumo_config_path: # TO DO
         routes_xml_path: # TO DO
         sumo_fcd: # TO DO
         detector_save_path: # TO DO
-        conn_fille_path: # TO DO
+        conn_file_path: # TO DO
         edge_file_path: # TO DO
         nod_file_path: # TO DO
         rou_xml_save_path: # TO DO
@@ -46,7 +46,6 @@ class SumoSimulator():
         sumo_connection: # TO DO
         timestep: # TO DO
         route_id_cache: # TO DO
-
     Methods:
         _check_paths_ready: check paths ready.
         _get_paths: get paths.
@@ -68,62 +67,70 @@ class SumoSimulator():
         #############################
         
         curr_dir = os.path.dirname(os.path.abspath(__file__))
-        self.network_folder      = os.path.join(curr_dir, kc.NETWORK_FOLDER).replace("$net$", self.network_name)
-        self.sumo_config_path    = os.path.join(curr_dir, kc.SUMO_CONFIG_PATH).replace("$net$", self.network_name)
-        self.routes_xml_path     = os.path.join(curr_dir, kc.ROU_FILE_PATH).replace("$net$", self.network_name)
-        self.sumo_fcd            = os.path.join(curr_dir, kc.SUMO_FCD).replace("$net$", self.network_name)
-        self.detector_save_path  = os.path.join(curr_dir, kc.DETECTORS_CSV_PATH).replace("$net$", self.network_name)
-        self.conn_file_path      = os.path.join(curr_dir, kc.CONNECTION_FILE_PATH).replace("$net$", self.network_name)
-        self.edge_file_path      = os.path.join(curr_dir, kc.EDGE_FILE_PATH).replace("$net$", self.network_name)
-        self.nod_file_path       = os.path.join(curr_dir, kc.NOD_FILE_PATH).replace("$net$", self.network_name)
-        self.rou_xml_save_path   = os.path.join(curr_dir, kc.ROUTE_XML_PATH).replace("$net$", self.network_name)
-        self.det_xml_save_path   = os.path.join(curr_dir, kc.DETECTORS_XML_PATH).replace("$net$", self.network_name)
-        self.default_od_path     = os.path.join(curr_dir, kc.DEFAULT_ODS_PATH)
+        self.network_folder      = os.path.join(curr_dir,
+                                                kc.NETWORK_FOLDER).replace("$net$", self.network_name)
+        self.sumo_config_path    = os.path.join(curr_dir,
+                                                kc.SUMO_CONFIG_PATH).replace("$net$", self.network_name)
+        self.routes_xml_path     = os.path.join(curr_dir,
+                                                kc.ROU_FILE_PATH).replace("$net$", self.network_name)
+        self.sumo_fcd            = os.path.join(curr_dir,
+                                                kc.SUMO_FCD).replace("$net$", self.network_name)
+        self.detector_save_path  = os.path.join(curr_dir,
+                                                kc.DETECTORS_CSV_PATH).replace("$net$", self.network_name)
+        self.conn_file_path      = os.path.join(curr_dir,
+                                                kc.CONNECTION_FILE_PATH).replace("$net$", self.network_name)
+        self.edge_file_path      = os.path.join(curr_dir,
+                                                kc.EDGE_FILE_PATH).replace("$net$", self.network_name)
+        self.nod_file_path       = os.path.join(curr_dir,
+                                                kc.NOD_FILE_PATH).replace("$net$", self.network_name)
+        self.rou_xml_save_path   = os.path.join(curr_dir,
+                                                kc.ROUTE_XML_PATH).replace("$net$", self.network_name)
+        self.det_xml_save_path   = os.path.join(curr_dir,
+                                                kc.DETECTORS_XML_PATH).replace("$net$", self.network_name)
+        self.default_od_path     = os.path.join(curr_dir,
+                                                kc.DEFAULT_ODS_PATH)
         
         self.paths_csv_file_path = os.path.join(params[kc.RECORDS_FOLDER], kc.PATHS_CSV_FILE_NAME)
-        
-        #############################
-    
+
         random.seed(seed)
         self.seed = seed
-        
-        #############################
-
         self.sumo_id = f"{random.randint(0, 1000)}"
         self.sumo_connection = None
         confirm_env_variable(kc.ENV_VAR, append="tools")
-        
-        #############################
-        
+
         if path_gen_params is not None:
             self._get_paths(params, path_gen_params)
             logging.info("[SUCCESS] Path generation completed.")
         self._check_paths_ready()
         self.detectors_name = self._get_detectors()
 
-        #############################
-        
         self.timestep = 0
         self.route_id_cache = dict()
 
         logging.info("[SUCCESS] Simulator is ready to simulate!")
 
 
-    #####################
-    ##### CONFIG CHECK #####
+    ################################
+    ######## CONFIG CHECKS #########
+    ################################
 
 
     def _check_paths_ready(self) -> None:
-        """
-        Checks if the required paths file for the simulation exists.
+        """Checks if the required paths file for the simulation exists.
 
+        Returns:
+            None
+        Raises:
+            FileNotFoundError: If required paths file does not exist.
         """
+
         if os.path.isfile(self.rou_xml_save_path):
             logging.info("[CONFIRMED] Paths file is ready.")
         else:
             raise FileNotFoundError(
                 "Paths file is not ready. Please generate paths first.\n"
-                "To do this, define arguments in params.json and pass it to the environment under path_generation_parameters"
+                "To do this, define arguments in params.json and pass it "
+                "to the environment under path_generation_parameters"
             )
             
     def _get_paths(self, params: dict, path_gen_params: dict) -> None:
@@ -131,7 +138,7 @@ class SumoSimulator():
         if self.network_name == kc.TWO_ROUTE_YIELD:
             paths_df = pd.read_csv(os.path.join(self.network_folder, "default_paths.csv"))
             self._save_paths_to_disk(paths_df, path_gen_params[kc.ORIGINS], path_gen_params[kc.DESTINATIONS])
-            return
+            return #TODO break instead???
         
         # Build the network
         network = jx.build_digraph(self.conn_file_path, self.edge_file_path, self.routes_xml_path)
@@ -168,9 +175,18 @@ class SumoSimulator():
                 jx.show_multi_routes(self.nod_file_path, self.edge_file_path,
                                     routes_to_show, origin, destination, 
                                     show=False, save_file_path=fig_save_path, title=title)
-        
-            
+
     def _save_paths_to_disk(self, routes_df: pd.DataFrame, origins: list, destinations: list) -> None:
+        """Method that saves paths to disk.
+
+        Args:
+            routes_df (DataFrame): routes dataframe.
+            origins (list): list of origin ids.
+            destinations (list): list of destination ids.
+        Returns:
+            None
+        """
+
         origins = {node_name: idx for idx, node_name in enumerate(origins)}
         destinations = {node_name: idx for idx, node_name in enumerate(destinations)}
         
@@ -179,10 +195,10 @@ class SumoSimulator():
         routes_df["destinations"] = routes_df["destinations"].apply(lambda x: destinations[x])
         routes_df["path"] = routes_df["path"].apply(lambda x: x.replace(",", " "))
         routes_df.sort_values(by=["origins", "destinations"], inplace=True)
-        
+
         # Save paths to csv
         routes_df.to_csv(self.paths_csv_file_path, index=False)
-        
+
         # Convert routes dataframe to a dictionary with od indices
         paths_dict = dict()
         for origin_idx in origins.values():
@@ -190,7 +206,7 @@ class SumoSimulator():
                 rows = routes_df[(routes_df["origins"] == origin_idx) & (routes_df["destinations"] == destination_idx)]
                 paths = list(rows["path"].values)
                 paths_dict[(origin_idx, destination_idx)] = paths
-                
+
         # Save paths to xml
         with open(self.rou_xml_save_path, "w") as rou:
             print("""<routes>""", file=rou)
@@ -205,9 +221,14 @@ class SumoSimulator():
                         print(path, file=rou)
                         print('" />',file=rou)
             print("</routes>", file=rou)
-            
-            
+
     def _get_detectors(self) -> None:
+        """Method that gets detectors.
+
+        Returns:
+            None
+        """
+
         paths_df = pd.read_csv(self.paths_csv_file_path)
         paths_list = [path.split(" ") for path in paths_df["path"].values]
         detectors_name = sorted(list(set([node for path in paths_list for node in path])))
@@ -222,14 +243,16 @@ class SumoSimulator():
             print("</additional>", file=det)
             
         return detectors_name
-            
-    #####################
-    ##### SUMO CONTROL #####
 
+    ################################
+    ######## SUMO CONTROL ##########
+    ################################
 
     def start(self) -> None:
-        """
-        Starts the SUMO simulation with the specified configuration.
+        """Starts the SUMO simulation with the specified configuration.
+
+        Returns:
+            None
         """
 
         sumo_cmd = [self.sumo_type,"--seed", str(self.seed), "--fcd-output", self.sumo_fcd, "-c", self.sumo_config_path] 
@@ -238,20 +261,22 @@ class SumoSimulator():
 
 
     def stop(self) -> None:
-        """
-        Stops and closes the SUMO simulation.
+        """Stops and closes the SUMO simulation.
+
+        Returns:
+            None
         """
 
         self.sumo_connection.close()
 
 
-    def reset(self):
-        """
-        Resets the SUMO simulation to its initial state.
+    def reset(self) -> dict:
+        """ Resets the SUMO simulation to its initial state.
+
         Reads detector data.
 
         Returns:
-            det_dict: # TO DO
+            det_dict (dict[Any, None]): dictionary with detector data.
         """
 
         det_dict = {name: None for name in self.detectors_name}
@@ -268,18 +293,18 @@ class SumoSimulator():
         self.timestep = 0
         return det_dict
 
-
-    #####################
-    ##### SIMULATION #####
+    ################################
+    ######### SIMULATION ###########
+    ################################
 
 
     def add_vehice(self, act_dict: dict) -> None:
-        """
-        Adds a vehicle to the SUMO simulation environment with the specified route and parameters.
+        """Adds a vehicle to the SUMO simulation environment with the specified route and parameters.
 
         Args:
             act_dict (dict): A dictionary containing key vehicle attributes.
-
+        Returns:
+            None
         """
 
         route_id = self.route_id_cache.setdefault((act_dict[kc.AGENT_ORIGIN],
@@ -294,8 +319,8 @@ class SumoSimulator():
     
 
     def step(self) -> tuple:
-        """
-        Advances the SUMO simulation by one timestep and retrieves information about vehicle arrivals and detector data.
+        """Advances the SUMO simulation by one timestep and retrieves information
+        about vehicle arrivals and detector data.
 
         Returns:
             self.timestep (int): The current simulation timestep.
