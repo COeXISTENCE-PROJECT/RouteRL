@@ -1,5 +1,5 @@
 gymnasium==1.0.0
-janux==0.1.3
+janux==1.0.0
 matplotlib==3.9.3
 numpy==2.0.2
 pandas==2.2.3

@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "routerl"
+version = "1.0.0"
+description = "RouteRL is a multi-agent reinforcement learning framework for urban route choice in different city networks."
+authors = [
+    { name = "COeXISTENCE", email = "coexistence@uj.edu.pl" }
+]
+readme = "README.md"
+license = { text = "MIT License" }
+keywords = ["routing", "marl", "transportation", "rl", "autonomous", "vehicles", "traffic"]
+requires-python = ">=3.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "gymnasium",
+    "janux",
+    "matplotlib",
+    "numpy",
+    "pandas",
+    "pettingzoo",
+    "polars",
+    "prettytable",
+    "seaborn",
+    "tensordict",
+    "torch",
+    "torchrl",
+    "tqdm",
+    "traci"
+]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.xml"]
+
+[project.urls]
+repository = "https://github.com/COeXISTENCE-PROJECT/RouteRL"
+"Bug Report" = "https://github.com/COeXISTENCE-PROJECT/RouteRL/issues"
+
+[tool.setuptools.packages.find]
+include = ["routerl", "routerl.*"]
