@@ -27,6 +27,16 @@
     "two_route_yield": {
         "origins" : ["E0"],
         "destinations" : ["E2"]
+    },
+
+    "ortuzar": {
+        "origins" : ["AB", "BE"],
+        "destinations" : ["JL", "JM"]
+    },
+
+    "nguyen": {
+        "origins" : ["2to7", "1to5"],
+        "destinations" : ["17to4", "15to3"]
     }
 
 }

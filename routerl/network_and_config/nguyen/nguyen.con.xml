@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-02-05 21:20:21 by Eclipse SUMO netconvert Version 1.19.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="nguyen.net.xml"/>
+    </input>
+
+    <output>
+        <plain-output-prefix value="nguyen"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="0"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="0"/>
+        <junctions.limit-turn-speed value="-1.00"/>
+        <rectangular-lane-cut value="0"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="0"/>
+    </pedestrian>
+
+</configuration>
+-->
+
+<connections version="1.16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/connections_file.xsd">
+    <connection from="10to11" to="11to15" fromLane="0" toLane="0"/>
+    <connection from="10to11" to="11to15" fromLane="1" toLane="1"/>
+
+    <connection from="10to14" to="14to17" fromLane="0" toLane="0"/>
+    <connection from="10to14" to="14to17" fromLane="1" toLane="1"/>
+    <connection from="10to14" to="14to15" fromLane="1" toLane="1"/>
+
+    <connection from="11to15" to="15to3" fromLane="0" toLane="0"/>
+    <connection from="11to15" to="15to3" fromLane="1" toLane="1"/>
+
+    <connection from="12to13" to="13to14" fromLane="0" toLane="0"/>
+    <connection from="12to13" to="13to14" fromLane="1" toLane="1"/>
+
+    <connection from="12to16" to="16to17" fromLane="0" toLane="0"/>
+    <connection from="12to16" to="16to17" fromLane="1" toLane="1"/>
+
+    <connection from="13to14" to="14to17" fromLane="0" toLane="0"/>
+    <connection from="13to14" to="14to15" fromLane="0" toLane="0"/>
+    <connection from="13to14" to="14to15" fromLane="1" toLane="1"/>
+
+    <connection from="14to15" to="15to3" fromLane="0" toLane="0"/>
+    <connection from="14to15" to="15to3" fromLane="1" toLane="1"/>
+
+    <connection from="14to17" to="17to4" fromLane="0" toLane="0"/>
+    <connection from="14to17" to="17to4" fromLane="1" toLane="1"/>
+
+    <connection from="16to17" to="17to4" fromLane="0" toLane="0"/>
+    <connection from="16to17" to="17to4" fromLane="1" toLane="1"/>
+
+    <connection from="1to5" to="5to8" fromLane="0" toLane="0"/>
+    <connection from="1to5" to="5to8" fromLane="1" toLane="1"/>
+    <connection from="1to5" to="5to6" fromLane="1" toLane="0"/>
+    <connection from="1to5" to="5to6" fromLane="1" toLane="1"/>
+
+    <connection from="2to7" to="7to12" fromLane="0" toLane="0"/>
+    <connection from="2to7" to="7to12" fromLane="0" toLane="1"/>
+    <connection from="2to7" to="7to8" fromLane="0" toLane="0"/>
+    <connection from="2to7" to="7to8" fromLane="1" toLane="1"/>
+
+    <connection from="5to6" to="6to9" fromLane="0" toLane="0"/>
+    <connection from="5to6" to="6to9" fromLane="0" toLane="1"/>
+    <connection from="5to6" to="6to11" fromLane="0" toLane="0"/>
+    <connection from="5to6" to="6to11" fromLane="1" toLane="1"/>
+
+    <connection from="5to8" to="8to12" fromLane="0" toLane="0"/>
+    <connection from="5to8" to="8to12" fromLane="1" toLane="1"/>
+    <connection from="5to8" to="8to9" fromLane="1" toLane="1"/>
+
+    <connection from="6to11" to="11to15" fromLane="0" toLane="0"/>
+    <connection from="6to11" to="11to15" fromLane="1" toLane="1"/>
+
+    <connection from="6to9" to="9to13" fromLane="0" toLane="0"/>
+    <connection from="6to9" to="9to13" fromLane="1" toLane="1"/>
+    <connection from="6to9" to="9to10" fromLane="1" toLane="1"/>
+
+    <connection from="7to12" to="12to16" fromLane="0" toLane="0"/>
+    <connection from="7to12" to="12to16" fromLane="1" toLane="1"/>
+    <connection from="7to12" to="12to13" fromLane="1" toLane="0"/>
+
+    <connection from="7to8" to="8to12" fromLane="0" toLane="0"/>
+    <connection from="7to8" to="8to9" fromLane="0" toLane="0"/>
+    <connection from="7to8" to="8to9" fromLane="1" toLane="1"/>
+
+    <connection from="8to12" to="12to16" fromLane="0" toLane="1"/>
+    <connection from="8to12" to="12to13" fromLane="1" toLane="1"/>
+
+    <connection from="8to9" to="9to13" fromLane="0" toLane="0"/>
+    <connection from="8to9" to="9to10" fromLane="0" toLane="0"/>
+    <connection from="8to9" to="9to10" fromLane="1" toLane="1"/>
+
+    <connection from="9to10" to="10to14" fromLane="0" toLane="0"/>
+    <connection from="9to10" to="10to14" fromLane="0" toLane="1"/>
+    <connection from="9to10" to="10to11" fromLane="0" toLane="0"/>
+    <connection from="9to10" to="10to11" fromLane="1" toLane="1"/>
+
+    <connection from="9to13" to="13to14" fromLane="0" toLane="0"/>
+    <connection from="9to13" to="13to14" fromLane="1" toLane="1"/>
+
+</connections>

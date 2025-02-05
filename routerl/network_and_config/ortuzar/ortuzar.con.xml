@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-02-05 21:23:49 by Eclipse SUMO netconvert Version 1.19.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="ortuzar.net.xml"/>
+    </input>
+
+    <output>
+        <plain-output-prefix value="ortuzar"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="0"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="0"/>
+        <junctions.limit-turn-speed value="-1.00"/>
+        <rectangular-lane-cut value="0"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="0"/>
+    </pedestrian>
+
+</configuration>
+-->
+
+<connections version="1.16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/connections_file.xsd">
+    <connection from="A1A" to="AB" fromLane="0" toLane="0"/>
+    <connection from="A1A" to="AD" fromLane="0" toLane="0"/>
+    <connection from="A1A" to="AC" fromLane="0" toLane="0"/>
+
+    <connection from="AB" to="BE" fromLane="0" toLane="0"/>
+    <connection from="AB" to="BD" fromLane="0" toLane="0"/>
+
+    <connection from="AC" to="CD" fromLane="0" toLane="0"/>
+    <connection from="AC" to="CG" fromLane="0" toLane="0"/>
+    <connection from="AC" to="CF" fromLane="0" toLane="0"/>
+
+    <connection from="AD" to="DB" fromLane="0" toLane="0"/>
+    <connection from="AD" to="DE" fromLane="0" toLane="0"/>
+    <connection from="AD" to="DH" fromLane="0" toLane="0"/>
+    <connection from="AD" to="DG" fromLane="0" toLane="0"/>
+    <connection from="AD" to="DC" fromLane="0" toLane="0"/>
+
+    <connection from="B1B" to="BE" fromLane="0" toLane="0"/>
+    <connection from="B1B" to="BD" fromLane="0" toLane="0"/>
+    <connection from="B1B" to="BA" fromLane="0" toLane="0"/>
+
+    <connection from="BA" to="AD" fromLane="0" toLane="0"/>
+    <connection from="BA" to="AC" fromLane="0" toLane="0"/>
+
+    <connection from="BD" to="DE" fromLane="0" toLane="0"/>
+    <connection from="BD" to="DH" fromLane="0" toLane="0"/>
+    <connection from="BD" to="DG" fromLane="0" toLane="0"/>
+    <connection from="BD" to="DC" fromLane="0" toLane="0"/>
+    <connection from="BD" to="DA" fromLane="0" toLane="0"/>
+
+    <connection from="BE" to="EH" fromLane="0" toLane="0"/>
+    <connection from="BE" to="ED" fromLane="0" toLane="0"/>
+
+    <connection from="CA" to="AB" fromLane="0" toLane="0"/>
+    <connection from="CA" to="AD" fromLane="0" toLane="0"/>
+
+    <connection from="CD" to="DA" fromLane="0" toLane="0"/>
+    <connection from="CD" to="DB" fromLane="0" toLane="0"/>
+    <connection from="CD" to="DE" fromLane="0" toLane="0"/>
+    <connection from="CD" to="DH" fromLane="0" toLane="0"/>
+    <connection from="CD" to="DG" fromLane="0" toLane="0"/>
+
+    <connection from="CF" to="FG" fromLane="0" toLane="0"/>
+    <connection from="CF" to="FI" fromLane="0" toLane="0"/>
+
+    <connection from="CG" to="GD" fromLane="0" toLane="0"/>
+    <connection from="CG" to="GH" fromLane="0" toLane="0"/>
+    <connection from="CG" to="GK" fromLane="0" toLane="0"/>
+    <connection from="CG" to="GJ" fromLane="0" toLane="0"/>
+    <connection from="CG" to="GF" fromLane="0" toLane="0"/>
+
+    <connection from="DA" to="AC" fromLane="0" toLane="0"/>
+    <connection from="DA" to="AB" fromLane="0" toLane="0"/>
+
+    <connection from="DB" to="BA" fromLane="0" toLane="0"/>
+    <connection from="DB" to="BE" fromLane="0" toLane="0"/>
+
+    <connection from="DC" to="CG" fromLane="0" toLane="0"/>
+    <connection from="DC" to="CF" fromLane="0" toLane="0"/>
+    <connection from="DC" to="CA" fromLane="0" toLane="0"/>
+
+    <connection from="DE" to="EB" fromLane="0" toLane="0"/>
+    <connection from="DE" to="EH" fromLane="0" toLane="0"/>
+
+    <connection from="DG" to="GH" fromLane="0" toLane="0"/>
+    <connection from="DG" to="GK" fromLane="0" toLane="0"/>
+    <connection from="DG" to="GJ" fromLane="0" toLane="0"/>
+    <connection from="DG" to="GF" fromLane="0" toLane="0"/>
+    <connection from="DG" to="GC" fromLane="0" toLane="0"/>
+
+    <connection from="DH" to="HE" fromLane="0" toLane="0"/>
+    <connection from="DH" to="HK" fromLane="0" toLane="0"/>
+    <connection from="DH" to="HG" fromLane="0" toLane="0"/>
+
+    <connection from="EB" to="BD" fromLane="0" toLane="0"/>
+    <connection from="EB" to="BA" fromLane="0" toLane="0"/>
+
+    <connection from="ED" to="DH" fromLane="0" toLane="0"/>
+    <connection from="ED" to="DG" fromLane="0" toLane="0"/>
+    <connection from="ED" to="DC" fromLane="0" toLane="0"/>
+    <connection from="ED" to="DA" fromLane="0" toLane="0"/>
+    <connection from="ED" to="DB" fromLane="0" toLane="0"/>
+
+    <connection from="EH" to="HK" fromLane="0" toLane="0"/>
+    <connection from="EH" to="HG" fromLane="0" toLane="0"/>
+    <connection from="EH" to="HD" fromLane="0" toLane="0"/>
+
+    <connection from="FC" to="CA" fromLane="0" toLane="0"/>
+    <connection from="FC" to="CD" fromLane="0" toLane="0"/>
+    <connection from="FC" to="CG" fromLane="0" toLane="0"/>
+
+    <connection from="FG" to="GC" fromLane="0" toLane="0"/>
+    <connection from="FG" to="GD" fromLane="0" toLane="0"/>
+    <connection from="FG" to="GH" fromLane="0" toLane="0"/>
+    <connection from="FG" to="GK" fromLane="0" toLane="0"/>
+    <connection from="FG" to="GJ" fromLane="0" toLane="0"/>
+
+    <connection from="FI" to="IJ" fromLane="0" toLane="0"/>
+    <connection from="FI" to="IL" fromLane="0" toLane="0"/>
+
+    <connection from="GC" to="CF" fromLane="0" toLane="0"/>
+    <connection from="GC" to="CA" fromLane="0" toLane="0"/>
+    <connection from="GC" to="CD" fromLane="0" toLane="0"/>
+
+    <connection from="GD" to="DC" fromLane="0" toLane="0"/>
+    <connection from="GD" to="DA" fromLane="0" toLane="0"/>
+    <connection from="GD" to="DB" fromLane="0" toLane="0"/>
+    <connection from="GD" to="DE" fromLane="0" toLane="0"/>
+    <connection from="GD" to="DH" fromLane="0" toLane="0"/>
+
+    <connection from="GF" to="FI" fromLane="0" toLane="0"/>
+    <connection from="GF" to="FC" fromLane="0" toLane="0"/>
+
+    <connection from="GH" to="HD" fromLane="0" toLane="0"/>
+    <connection from="GH" to="HE" fromLane="0" toLane="0"/>
+    <connection from="GH" to="HK" fromLane="0" toLane="0"/>
+
+    <connection from="GJ" to="JK" fromLane="0" toLane="0"/>
+    <connection from="GJ" to="JM" fromLane="0" toLane="0"/>
+    <connection from="GJ" to="JL" fromLane="0" toLane="0"/>
+    <connection from="GJ" to="JI" fromLane="0" toLane="0"/>
+
+    <connection from="GK" to="KH" fromLane="0" toLane="0"/>
+    <connection from="GK" to="KM" fromLane="0" toLane="0"/>
+    <connection from="GK" to="KJ" fromLane="0" toLane="0"/>
+
+    <connection from="HD" to="DG" fromLane="0" toLane="0"/>
+    <connection from="HD" to="DC" fromLane="0" toLane="0"/>
+    <connection from="HD" to="DA" fromLane="0" toLane="0"/>
+    <connection from="HD" to="DB" fromLane="0" toLane="0"/>
+    <connection from="HD" to="DE" fromLane="0" toLane="0"/>
+
+    <connection from="HE" to="ED" fromLane="0" toLane="0"/>
+    <connection from="HE" to="EB" fromLane="0" toLane="0"/>
+
+    <connection from="HG" to="GK" fromLane="0" toLane="0"/>
+    <connection from="HG" to="GJ" fromLane="0" toLane="0"/>
+    <connection from="HG" to="GF" fromLane="0" toLane="0"/>
+    <connection from="HG" to="GC" fromLane="0" toLane="0"/>
+    <connection from="HG" to="GD" fromLane="0" toLane="0"/>
+
+    <connection from="HK" to="KM" fromLane="0" toLane="0"/>
+    <connection from="HK" to="KJ" fromLane="0" toLane="0"/>
+    <connection from="HK" to="KG" fromLane="0" toLane="0"/>
+
+    <connection from="IF" to="FC" fromLane="0" toLane="0"/>
+    <connection from="IF" to="FG" fromLane="0" toLane="0"/>
+
+    <connection from="IJ" to="JG" fromLane="0" toLane="0"/>
+    <connection from="IJ" to="JK" fromLane="0" toLane="0"/>
+    <connection from="IJ" to="JM" fromLane="0" toLane="0"/>
+    <connection from="IJ" to="JL" fromLane="0" toLane="0"/>
+
+    <connection from="IL" to="LJ" fromLane="0" toLane="0"/>
+    <connection from="IL" to="LL1" fromLane="0" toLane="0"/>
+
+    <connection from="JG" to="GF" fromLane="0" toLane="0"/>
+    <connection from="JG" to="GC" fromLane="0" toLane="0"/>
+    <connection from="JG" to="GD" fromLane="0" toLane="0"/>
+    <connection from="JG" to="GH" fromLane="0" toLane="0"/>
+    <connection from="JG" to="GK" fromLane="0" toLane="0"/>
+
+    <connection from="JI" to="IL" fromLane="0" toLane="0"/>
+    <connection from="JI" to="IF" fromLane="0" toLane="0"/>
+
+    <connection from="JK" to="KG" fromLane="0" toLane="0"/>
+    <connection from="JK" to="KH" fromLane="0" toLane="0"/>
+    <connection from="JK" to="KM" fromLane="0" toLane="0"/>
+
+    <connection from="JL" to="LL1" fromLane="0" toLane="0"/>
+    <connection from="JL" to="LI" fromLane="0" toLane="0"/>
+
+    <connection from="JM" to="MK" fromLane="0" toLane="0"/>
+    <connection from="JM" to="MM1" fromLane="0" toLane="0"/>
+
+    <connection from="KG" to="GJ" fromLane="0" toLane="0"/>
+    <connection from="KG" to="GF" fromLane="0" toLane="0"/>
+    <connection from="KG" to="GC" fromLane="0" toLane="0"/>
+    <connection from="KG" to="GD" fromLane="0" toLane="0"/>
+    <connection from="KG" to="GH" fromLane="0" toLane="0"/>
+
+    <connection from="KH" to="HG" fromLane="0" toLane="0"/>
+    <connection from="KH" to="HD" fromLane="0" toLane="0"/>
+    <connection from="KH" to="HE" fromLane="0" toLane="0"/>
+
+    <connection from="KJ" to="JM" fromLane="0" toLane="0"/>
+    <connection from="KJ" to="JL" fromLane="0" toLane="0"/>
+    <connection from="KJ" to="JI" fromLane="0" toLane="0"/>
+    <connection from="KJ" to="JG" fromLane="0" toLane="0"/>
+
+    <connection from="KM" to="MM1" fromLane="0" toLane="0"/>
+    <connection from="KM" to="MJ" fromLane="0" toLane="0"/>
+
+    <connection from="LI" to="IF" fromLane="0" toLane="0"/>
+    <connection from="LI" to="IJ" fromLane="0" toLane="0"/>
+
+    <connection from="LJ" to="JI" fromLane="0" toLane="0"/>
+    <connection from="LJ" to="JG" fromLane="0" toLane="0"/>
+    <connection from="LJ" to="JK" fromLane="0" toLane="0"/>
+    <connection from="LJ" to="JM" fromLane="0" toLane="0"/>
+
+    <connection from="MJ" to="JL" fromLane="0" toLane="0"/>
+    <connection from="MJ" to="JI" fromLane="0" toLane="0"/>
+    <connection from="MJ" to="JG" fromLane="0" toLane="0"/>
+    <connection from="MJ" to="JK" fromLane="0" toLane="0"/>
+
+    <connection from="MK" to="KJ" fromLane="0" toLane="0"/>
+    <connection from="MK" to="KG" fromLane="0" toLane="0"/>
+    <connection from="MK" to="KH" fromLane="0" toLane="0"/>
+
+</connections>

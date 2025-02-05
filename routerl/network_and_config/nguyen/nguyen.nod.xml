@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-02-05 21:20:21 by Eclipse SUMO netconvert Version 1.19.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="nguyen.net.xml"/>
+    </input>
+
+    <output>
+        <plain-output-prefix value="nguyen"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="0"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="0"/>
+        <junctions.limit-turn-speed value="-1.00"/>
+        <rectangular-lane-cut value="0"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="0"/>
+    </pedestrian>
+
+</configuration>
+-->
+
+<nodes version="1.16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/nodes_file.xsd">
+    <location netOffset="-2000.00,0.00" convBoundary="0.00,0.00,8000.00,7000.00" origBoundary="2000.00,0.00,10000.00,7000.00" projParameter="!"/>
+
+    <node id="1" x="3000.00" y="7000.00" type="dead_end"/>
+    <node id="10" x="5000.00" y="4000.00" type="priority"/>
+    <node id="11" x="6000.00" y="4000.00" type="traffic_light" tl="11"/>
+    <node id="12" x="3000.00" y="3000.00" type="traffic_light" tl="12"/>
+    <node id="13" x="4000.00" y="3000.00" type="traffic_light" tl="13"/>
+    <node id="14" x="5000.00" y="3000.00" type="traffic_light" tl="14"/>
+    <node id="15" x="6000.00" y="3000.00" type="traffic_light" tl="15"/>
+    <node id="16" x="4000.00" y="2000.00" type="priority"/>
+    <node id="17" x="5000.00" y="2000.00" type="traffic_light" tl="17"/>
+    <node id="2" x="0.00" y="4000.00" type="dead_end"/>
+    <node id="3" x="8000.00" y="3000.00" type="dead_end"/>
+    <node id="4" x="5000.00" y="0.00" type="dead_end"/>
+    <node id="5" x="3000.00" y="5000.00" type="priority"/>
+    <node id="6" x="4000.00" y="5000.00" type="priority"/>
+    <node id="7" x="2000.00" y="4000.00" type="priority"/>
+    <node id="8" x="3000.00" y="4000.00" type="traffic_light" tl="8"/>
+    <node id="9" x="4000.00" y="4000.00" type="traffic_light" tl="9"/>
+</nodes>

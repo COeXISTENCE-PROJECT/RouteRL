@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-02-05 21:23:49 by Eclipse SUMO netconvert Version 1.19.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="ortuzar.net.xml"/>
+    </input>
+
+    <output>
+        <plain-output-prefix value="ortuzar"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="0"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="0"/>
+        <junctions.limit-turn-speed value="-1.00"/>
+        <rectangular-lane-cut value="0"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="0"/>
+    </pedestrian>
+
+</configuration>
+-->
+
+<edges version="1.16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/edges_file.xsd">
+    <edge id="A1A" from="A1" to="A" priority="3" type="AB" numLanes="1" speed="11.90"/>
+    <edge id="AB" from="A" to="B" priority="3" type="AB" numLanes="1" speed="11.90"/>
+    <edge id="AC" from="A" to="C" priority="3" type="AC" numLanes="1" speed="16.67"/>
+    <edge id="AD" from="A" to="D" priority="3" type="AD" numLanes="1" speed="7.86"/>
+    <edge id="B1B" from="B1" to="B" priority="3" type="AB" numLanes="1" speed="11.90"/>
+    <edge id="BA" from="B" to="A" priority="3" type="AB" numLanes="1" speed="11.90"/>
+    <edge id="BD" from="B" to="D" priority="3" type="BD" numLanes="1" speed="7.57"/>
+    <edge id="BE" from="B" to="E" priority="3" type="BE" numLanes="1" speed="10.71"/>
+    <edge id="CA" from="C" to="A" priority="3" type="AC" numLanes="1" speed="16.67"/>
+    <edge id="CD" from="C" to="D" priority="3" type="CD" numLanes="1" speed="11.90"/>
+    <edge id="CF" from="C" to="F" priority="3" type="CF" numLanes="1" speed="7.57"/>
+    <edge id="CG" from="C" to="G" priority="3" type="CG" numLanes="1" speed="13.09"/>
+    <edge id="DA" from="D" to="A" priority="3" type="AD" numLanes="1" speed="7.86"/>
+    <edge id="DB" from="D" to="B" priority="3" type="BD" numLanes="1" speed="7.57"/>
+    <edge id="DC" from="D" to="C" priority="3" type="CD" numLanes="1" speed="11.90"/>
+    <edge id="DE" from="D" to="E" priority="3" type="DE" numLanes="1" speed="11.90"/>
+    <edge id="DG" from="D" to="G" priority="3" type="DG" numLanes="1" speed="11.90"/>
+    <edge id="DH" from="D" to="H" priority="3" type="DH" numLanes="1" speed="13.09"/>
+    <edge id="EB" from="E" to="B" priority="3" type="BE" numLanes="1" speed="10.71"/>
+    <edge id="ED" from="E" to="D" priority="3" type="DE" numLanes="1" speed="11.90"/>
+    <edge id="EH" from="E" to="H" priority="3" type="EH" numLanes="1" speed="11.90"/>
+    <edge id="FC" from="F" to="C" priority="3" type="CF" numLanes="1" speed="7.57"/>
+    <edge id="FG" from="F" to="G" priority="3" type="FG" numLanes="1" speed="9.26"/>
+    <edge id="FI" from="F" to="I" priority="3" type="FI" numLanes="1" speed="6.41"/>
+    <edge id="GC" from="G" to="C" priority="3" type="CG" numLanes="1" speed="13.09"/>
+    <edge id="GD" from="G" to="D" priority="3" type="DG" numLanes="1" speed="11.90"/>
+    <edge id="GF" from="G" to="F" priority="3" type="FG" numLanes="1" speed="9.26"/>
+    <edge id="GH" from="G" to="H" priority="3" type="GH" numLanes="1" speed="9.26"/>
+    <edge id="GJ" from="G" to="J" priority="3" type="GJ" numLanes="1" speed="27.78"/>
+    <edge id="GK" from="G" to="K" priority="3" type="GK" numLanes="1" speed="9.06"/>
+    <edge id="HD" from="H" to="D" priority="3" type="DH" numLanes="1" speed="13.09"/>
+    <edge id="HE" from="H" to="E" priority="3" type="EH" numLanes="1" speed="11.90"/>
+    <edge id="HG" from="H" to="G" priority="3" type="GH" numLanes="1" speed="9.26"/>
+    <edge id="HK" from="H" to="K" priority="3" type="HK" numLanes="1" speed="27.78"/>
+    <edge id="IF" from="I" to="F" priority="3" type="FI" numLanes="1" speed="6.41"/>
+    <edge id="IJ" from="I" to="J" priority="3" type="IJ" numLanes="1" speed="9.26"/>
+    <edge id="IL" from="I" to="L" priority="3" type="IL" numLanes="1" speed="25.00"/>
+    <edge id="JG" from="J" to="G" priority="3" type="GJ" numLanes="1" speed="27.78"/>
+    <edge id="JI" from="J" to="I" priority="3" type="IJ" numLanes="1" speed="9.26"/>
+    <edge id="JK" from="J" to="K" priority="3" type="JK" numLanes="1" speed="9.26"/>
+    <edge id="JL" from="J" to="L" priority="3" type="LJ" numLanes="1" speed="8.10"/>
+    <edge id="JM" from="J" to="M" priority="3" type="JM" numLanes="1" speed="8.10"/>
+    <edge id="KG" from="K" to="G" priority="3" type="GK" numLanes="1" speed="9.06"/>
+    <edge id="KH" from="K" to="H" priority="3" type="HK" numLanes="1" speed="27.78"/>
+    <edge id="KJ" from="K" to="J" priority="3" type="JK" numLanes="1" speed="9.26"/>
+    <edge id="KM" from="K" to="M" priority="3" type="KM" numLanes="1" speed="25.00"/>
+    <edge id="LI" from="L" to="I" priority="3" type="IL" numLanes="1" speed="25.00"/>
+    <edge id="LJ" from="L" to="J" priority="3" type="LJ" numLanes="1" speed="8.10"/>
+    <edge id="LL1" from="L" to="L1" priority="3" type="AC" numLanes="1" speed="16.67"/>
+    <edge id="MJ" from="M" to="J" priority="3" type="JM" numLanes="1" speed="8.10"/>
+    <edge id="MK" from="M" to="K" priority="3" type="KM" numLanes="1" speed="25.00"/>
+    <edge id="MM1" from="M" to="M1" priority="3" type="AC" numLanes="1" speed="16.67"/>
+</edges>

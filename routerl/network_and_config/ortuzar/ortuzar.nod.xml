@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-02-05 21:23:49 by Eclipse SUMO netconvert Version 1.19.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="ortuzar.net.xml"/>
+    </input>
+
+    <output>
+        <plain-output-prefix value="ortuzar"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="0"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="0"/>
+        <junctions.limit-turn-speed value="-1.00"/>
+        <rectangular-lane-cut value="0"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="0"/>
+    </pedestrian>
+
+</configuration>
+-->
+
+<nodes version="1.16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/nodes_file.xsd">
+    <location netOffset="1.00,0.00" convBoundary="0.00,0.00,18002.00,10000.00" origBoundary="-1.00,0.00,18001.00,10000.00" projParameter="!"/>
+
+    <node id="A" x="1.00" y="10000.00" type="allway_stop"/>
+    <node id="A1" x="0.00" y="10000.00" type="dead_end"/>
+    <node id="B" x="1.00" y="5000.00" type="allway_stop"/>
+    <node id="B1" x="0.00" y="5000.00" type="dead_end"/>
+    <node id="C" x="5001.00" y="10000.00" type="allway_stop"/>
+    <node id="D" x="5001.00" y="5000.00" type="allway_stop"/>
+    <node id="E" x="5001.00" y="0.00" type="allway_stop"/>
+    <node id="F" x="10001.00" y="10000.00" type="allway_stop"/>
+    <node id="G" x="10001.00" y="5000.00" type="allway_stop"/>
+    <node id="H" x="10001.00" y="0.00" type="allway_stop"/>
+    <node id="I" x="15001.00" y="10000.00" type="allway_stop"/>
+    <node id="J" x="15001.00" y="5000.00" type="allway_stop"/>
+    <node id="K" x="15001.00" y="0.00" type="allway_stop"/>
+    <node id="L" x="18001.00" y="10000.00" type="allway_stop"/>
+    <node id="L1" x="18002.00" y="10000.00" type="dead_end"/>
+    <node id="M" x="18001.00" y="0.00" type="allway_stop"/>
+    <node id="M1" x="18002.00" y="0.00" type="dead_end"/>
+</nodes>

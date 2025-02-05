@@ -112,8 +112,10 @@ class Keychain:
     CSOMOR = "csomor"
     GRID = "grid"
     INGOLSTADT = "ingolstadt"
+    NGUYEN = "nguyen"
+    ORTUZAR = "ortuzar"
     TWO_ROUTE_YIELD = "two_route_yield"
-    NETWORKS = [ARTERIAL, COLOGNE, CSOMOR, GRID, INGOLSTADT, TWO_ROUTE_YIELD]
+    NETWORKS = [ARTERIAL, COLOGNE, CSOMOR, GRID, INGOLSTADT, NGUYEN, ORTUZAR, TWO_ROUTE_YIELD]
     
     ###########################################################
 

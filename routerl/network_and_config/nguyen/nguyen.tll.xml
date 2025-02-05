@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-02-05 21:20:21 by Eclipse SUMO netconvert Version 1.19.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="nguyen.net.xml"/>
+    </input>
+
+    <output>
+        <plain-output-prefix value="nguyen"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="0"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="0"/>
+        <junctions.limit-turn-speed value="-1.00"/>
+        <rectangular-lane-cut value="0"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="0"/>
+    </pedestrian>
+
+</configuration>
+-->
+
+<tlLogics version="1.16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tllogic_file.xsd">
+    <tlLogic id="11" type="static" programID="0" offset="0">
+        <phase duration="30" state="GGrr"/>
+        <phase duration="2"  state="yyrr"/>
+        <phase duration="1"  state="rrrr"/>
+        <phase duration="30" state="rrGG"/>
+        <phase duration="2"  state="rryy"/>
+        <phase duration="1"  state="rrrr"/>
+    </tlLogic>
+    <tlLogic id="12" type="static" programID="0" offset="0">
+        <phase duration="30" state="GGrrr"/>
+        <phase duration="2"  state="yyrrr"/>
+        <phase duration="1"  state="rrrrr"/>
+        <phase duration="30" state="rGGGG"/>
+        <phase duration="2"  state="ryyyy"/>
+        <phase duration="1"  state="rrrrr"/>
+    </tlLogic>
+    <tlLogic id="13" type="static" programID="0" offset="0">
+        <phase duration="30" state="GGrr"/>
+        <phase duration="2"  state="yyrr"/>
+        <phase duration="1"  state="rrrr"/>
+        <phase duration="30" state="rrGG"/>
+        <phase duration="2"  state="rryy"/>
+        <phase duration="1"  state="rrrr"/>
+    </tlLogic>
+    <tlLogic id="14" type="static" programID="0" offset="0">
+        <phase duration="30" state="GGGrrr"/>
+        <phase duration="2"  state="yyyrrr"/>
+        <phase duration="1"  state="rrrrrr"/>
+        <phase duration="30" state="rrrGGG"/>
+        <phase duration="2"  state="rrryyy"/>
+        <phase duration="1"  state="rrrrrr"/>
+    </tlLogic>
+    <tlLogic id="15" type="static" programID="0" offset="0">
+        <phase duration="30" state="GGrr"/>
+        <phase duration="2"  state="yyrr"/>
+        <phase duration="1"  state="rrrr"/>
+        <phase duration="30" state="rrGG"/>
+        <phase duration="2"  state="rryy"/>
+        <phase duration="1"  state="rrrr"/>
+    </tlLogic>
+    <tlLogic id="17" type="static" programID="0" offset="0">
+        <phase duration="30" state="GGrr"/>
+        <phase duration="2"  state="yyrr"/>
+        <phase duration="1"  state="rrrr"/>
+        <phase duration="30" state="rrGG"/>
+        <phase duration="2"  state="rryy"/>
+        <phase duration="1"  state="rrrr"/>
+    </tlLogic>
+    <tlLogic id="8" type="static" programID="0" offset="0">
+        <phase duration="30" state="GGGrrr"/>
+        <phase duration="2"  state="yyyrrr"/>
+        <phase duration="1"  state="rrrrrr"/>
+        <phase duration="30" state="rrrGGG"/>
+        <phase duration="2"  state="rrryyy"/>
+        <phase duration="1"  state="rrrrrr"/>
+    </tlLogic>
+    <tlLogic id="9" type="static" programID="0" offset="0">
+        <phase duration="30" state="GGGrrr"/>
+        <phase duration="2"  state="yyyrrr"/>
+        <phase duration="1"  state="rrrrrr"/>
+        <phase duration="30" state="rrrGGG"/>
+        <phase duration="2"  state="rrryyy"/>
+        <phase duration="1"  state="rrrrrr"/>
+    </tlLogic>
+
+    <connection from="10to11" to="11to15" fromLane="0" toLane="0" tl="11" linkIndex="0"/>
+    <connection from="10to11" to="11to15" fromLane="1" toLane="1" tl="11" linkIndex="1"/>
+    <connection from="10to14" to="14to17" fromLane="0" toLane="0" tl="14" linkIndex="0"/>
+    <connection from="10to14" to="14to17" fromLane="1" toLane="1" tl="14" linkIndex="1"/>
+    <connection from="10to14" to="14to15" fromLane="1" toLane="1" tl="14" linkIndex="2"/>
+    <connection from="11to15" to="15to3" fromLane="0" toLane="0" tl="15" linkIndex="0"/>
+    <connection from="11to15" to="15to3" fromLane="1" toLane="1" tl="15" linkIndex="1"/>
+    <connection from="12to13" to="13to14" fromLane="0" toLane="0" tl="13" linkIndex="2"/>
+    <connection from="12to13" to="13to14" fromLane="1" toLane="1" tl="13" linkIndex="3"/>
+    <connection from="13to14" to="14to17" fromLane="0" toLane="0" tl="14" linkIndex="3"/>
+    <connection from="13to14" to="14to15" fromLane="0" toLane="0" tl="14" linkIndex="4"/>
+    <connection from="13to14" to="14to15" fromLane="1" toLane="1" tl="14" linkIndex="5"/>
+    <connection from="14to15" to="15to3" fromLane="0" toLane="0" tl="15" linkIndex="2"/>
+    <connection from="14to15" to="15to3" fromLane="1" toLane="1" tl="15" linkIndex="3"/>
+    <connection from="14to17" to="17to4" fromLane="0" toLane="0" tl="17" linkIndex="0"/>
+    <connection from="14to17" to="17to4" fromLane="1" toLane="1" tl="17" linkIndex="1"/>
+    <connection from="16to17" to="17to4" fromLane="0" toLane="0" tl="17" linkIndex="2"/>
+    <connection from="16to17" to="17to4" fromLane="1" toLane="1" tl="17" linkIndex="3"/>
+    <connection from="5to8" to="8to12" fromLane="0" toLane="0" tl="8" linkIndex="0"/>
+    <connection from="5to8" to="8to12" fromLane="1" toLane="1" tl="8" linkIndex="1"/>
+    <connection from="5to8" to="8to9" fromLane="1" toLane="1" tl="8" linkIndex="2"/>
+    <connection from="6to11" to="11to15" fromLane="0" toLane="0" tl="11" linkIndex="2"/>
+    <connection from="6to11" to="11to15" fromLane="1" toLane="1" tl="11" linkIndex="3"/>
+    <connection from="6to9" to="9to13" fromLane="0" toLane="0" tl="9" linkIndex="0"/>
+    <connection from="6to9" to="9to13" fromLane="1" toLane="1" tl="9" linkIndex="1"/>
+    <connection from="6to9" to="9to10" fromLane="1" toLane="1" tl="9" linkIndex="2"/>
+    <connection from="7to12" to="12to16" fromLane="0" toLane="0" tl="12" linkIndex="2"/>
+    <connection from="7to12" to="12to16" fromLane="1" toLane="1" tl="12" linkIndex="3"/>
+    <connection from="7to12" to="12to13" fromLane="1" toLane="0" tl="12" linkIndex="4"/>
+    <connection from="7to8" to="8to12" fromLane="0" toLane="0" tl="8" linkIndex="3"/>
+    <connection from="7to8" to="8to9" fromLane="0" toLane="0" tl="8" linkIndex="4"/>
+    <connection from="7to8" to="8to9" fromLane="1" toLane="1" tl="8" linkIndex="5"/>
+    <connection from="8to12" to="12to16" fromLane="0" toLane="1" tl="12" linkIndex="0"/>
+    <connection from="8to12" to="12to13" fromLane="1" toLane="1" tl="12" linkIndex="1"/>
+    <connection from="8to9" to="9to13" fromLane="0" toLane="0" tl="9" linkIndex="3"/>
+    <connection from="8to9" to="9to10" fromLane="0" toLane="0" tl="9" linkIndex="4"/>
+    <connection from="8to9" to="9to10" fromLane="1" toLane="1" tl="9" linkIndex="5"/>
+    <connection from="9to13" to="13to14" fromLane="0" toLane="0" tl="13" linkIndex="0"/>
+    <connection from="9to13" to="13to14" fromLane="1" toLane="1" tl="13" linkIndex="1"/>
+</tlLogics>
