@@ -11,6 +11,7 @@ To create a new observation function, you must define a class that inherits from
 ```{eval-rst}
 .. autoclass:: RouteRL.environment.observations.Observations
     :members:
+    :no-index:
 ```
 
 ### Default Observation Function: `PreviousAgentStart`
@@ -22,4 +23,5 @@ Details of the `PreviousAgentStart` class are provided below:
 ```{eval-rst}
 .. autoclass:: RouteRL.environment.observations.PreviousAgentStart
     :members:
+    :no-index:
 ```

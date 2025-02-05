@@ -49,6 +49,13 @@ myst_enable_extensions = [
     "html_image",
 ]
 
+autodoc_default_options = {
+    "members": True,
+    #"undoc-members": False,  # Exclude undocumented methods
+    "private-members": False,  # Exclude private methods (starting with _)
+    #"special-members": False,  # Exclude special methods (__init__, __str__, etc.)
+}
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
