@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-02-05 23:48:49 by Eclipse SUMO netconvert Version 1.19.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="grid6.net.xml"/>
+    </input>
+
+    <output>
+        <plain-output-prefix value="grid6"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="0"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="5"/>
+        <junctions.limit-turn-speed value="5.50"/>
+        <rectangular-lane-cut value="0"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="0"/>
+    </pedestrian>
+
+</configuration>
+-->
+
+<nodes version="1.16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/nodes_file.xsd">
+    <location netOffset="150.00,150.00" convBoundary="0.00,0.00,660.00,570.00" origBoundary="0.00,0.00,360.00,280.00" projParameter="!"/>
+
+    <node id="0/0" x="250.00" y="250.00" type="traffic_light" tl="0/0"/>
+    <node id="0/1" x="250.00" y="330.00" type="traffic_light" tl="0/1"/>
+    <node id="1/0" x="330.00" y="250.00" type="traffic_light" tl="1/0"/>
+    <node id="1/1" x="330.00" y="330.00" type="traffic_light" tl="1/1"/>
+    <node id="2/0" x="410.00" y="250.00" type="traffic_light" tl="2/0"/>
+    <node id="2/1" x="410.00" y="330.00" type="traffic_light" tl="2/1"/>
+    <node id="bottom0" x="250.00" y="150.00" type="priority"/>
+    <node id="bottom1" x="330.00" y="150.00" type="priority"/>
+    <node id="bottom2" x="410.00" y="150.00" type="priority"/>
+    <node id="gneJ10" x="50.00" y="290.00" type="unregulated"/>
+    <node id="gneJ12" x="610.00" y="290.00" type="unregulated"/>
+    <node id="gneJ13" x="660.00" y="290.00" type="dead_end"/>
+    <node id="gneJ14" x="330.00" y="50.00" type="unregulated"/>
+    <node id="gneJ16" x="330.00" y="0.00" type="dead_end"/>
+    <node id="gneJ17" x="330.00" y="530.00" type="unregulated"/>
+    <node id="gneJ18" x="330.00" y="570.00" type="dead_end"/>
+    <node id="gneJ9" x="0.00" y="290.00" type="dead_end"/>
+    <node id="left0" x="150.00" y="250.00" type="priority"/>
+    <node id="left1" x="150.00" y="330.00" type="priority"/>
+    <node id="right0" x="510.00" y="250.00" type="priority"/>
+    <node id="right1" x="510.00" y="330.00" type="priority"/>
+    <node id="top0" x="250.00" y="430.00" type="priority"/>
+    <node id="top1" x="330.00" y="430.00" type="priority"/>
+    <node id="top2" x="410.00" y="430.00" type="priority"/>
+</nodes>

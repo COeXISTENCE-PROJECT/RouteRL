@@ -114,8 +114,10 @@ class Keychain:
     INGOLSTADT = "ingolstadt"
     NGUYEN = "nguyen"
     ORTUZAR = "ortuzar"
+    SOURDUN = "sourdun"
+    SOURDUN_SMALL = "sourdun_small"
     TWO_ROUTE_YIELD = "two_route_yield"
-    NETWORK_NAMES = [ARTERIAL, COLOGNE, CSOMOR, GRID, INGOLSTADT, NGUYEN, ORTUZAR, TWO_ROUTE_YIELD]
+    NETWORK_NAMES = [ARTERIAL, COLOGNE, CSOMOR, GRID, INGOLSTADT, NGUYEN, ORTUZAR, SOURDUN, SOURDUN_SMALL, TWO_ROUTE_YIELD]
     
     ###########################################################
 

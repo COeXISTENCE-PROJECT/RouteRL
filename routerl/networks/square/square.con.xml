@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-02-05 23:52:37 by Eclipse SUMO netconvert Version 1.19.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="square.net.xml"/>
+    </input>
+
+    <output>
+        <plain-output-prefix value="square"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="0"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="5"/>
+        <junctions.limit-turn-speed value="5.50"/>
+        <rectangular-lane-cut value="0"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="0"/>
+    </pedestrian>
+
+</configuration>
+-->
+
+<connections version="1.16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/connections_file.xsd">
+    <connection from="A0A1" to="A1B1" fromLane="0" toLane="0"/>
+    <connection from="A0A1" to="A1top0" fromLane="0" toLane="0"/>
+    <connection from="A0A1" to="A1left1" fromLane="0" toLane="0"/>
+    <connection from="A0A1" to="A1A0" fromLane="0" toLane="0"/>
+
+    <connection from="A0B0" to="B0bottom1" fromLane="0" toLane="0"/>
+    <connection from="A0B0" to="B0right0" fromLane="0" toLane="0"/>
+    <connection from="A0B0" to="B0B1" fromLane="0" toLane="0"/>
+    <connection from="A0B0" to="B0A0" fromLane="0" toLane="0"/>
+
+    <connection from="A0bottom0" to="bottom0A0" fromLane="0" toLane="0"/>
+
+    <connection from="A0left0" to="left0A0" fromLane="0" toLane="0"/>
+
+    <connection from="A1A0" to="A0left0" fromLane="0" toLane="0"/>
+    <connection from="A1A0" to="A0bottom0" fromLane="0" toLane="0"/>
+    <connection from="A1A0" to="A0B0" fromLane="0" toLane="0"/>
+    <connection from="A1A0" to="A0A1" fromLane="0" toLane="0"/>
+
+    <connection from="A1B1" to="B1B0" fromLane="0" toLane="0"/>
+    <connection from="A1B1" to="B1right1" fromLane="0" toLane="0"/>
+    <connection from="A1B1" to="B1top1" fromLane="0" toLane="0"/>
+    <connection from="A1B1" to="B1A1" fromLane="0" toLane="0"/>
+
+    <connection from="A1left1" to="left1A1" fromLane="0" toLane="0"/>
+
+    <connection from="A1top0" to="top0A1" fromLane="0" toLane="0"/>
+
+    <connection from="B0A0" to="A0A1" fromLane="0" toLane="0"/>
+    <connection from="B0A0" to="A0left0" fromLane="0" toLane="0"/>
+    <connection from="B0A0" to="A0bottom0" fromLane="0" toLane="0"/>
+    <connection from="B0A0" to="A0B0" fromLane="0" toLane="0"/>
+
+    <connection from="B0B1" to="B1right1" fromLane="0" toLane="0"/>
+    <connection from="B0B1" to="B1top1" fromLane="0" toLane="0"/>
+    <connection from="B0B1" to="B1A1" fromLane="0" toLane="0"/>
+    <connection from="B0B1" to="B1B0" fromLane="0" toLane="0"/>
+
+    <connection from="B0bottom1" to="bottom1B0" fromLane="0" toLane="0"/>
+
+    <connection from="B0right0" to="right0B0" fromLane="0" toLane="0"/>
+
+    <connection from="B1A1" to="A1top0" fromLane="0" toLane="0"/>
+    <connection from="B1A1" to="A1left1" fromLane="0" toLane="0"/>
+    <connection from="B1A1" to="A1A0" fromLane="0" toLane="0"/>
+    <connection from="B1A1" to="A1B1" fromLane="0" toLane="0"/>
+
+    <connection from="B1B0" to="B0A0" fromLane="0" toLane="0"/>
+    <connection from="B1B0" to="B0bottom1" fromLane="0" toLane="0"/>
+    <connection from="B1B0" to="B0right0" fromLane="0" toLane="0"/>
+    <connection from="B1B0" to="B0B1" fromLane="0" toLane="0"/>
+
+    <connection from="B1right1" to="right1B1" fromLane="0" toLane="0"/>
+
+    <connection from="B1top1" to="top1B1" fromLane="0" toLane="0"/>
+
+    <connection from="bottom0A0" to="A0B0" fromLane="0" toLane="0"/>
+    <connection from="bottom0A0" to="A0A1" fromLane="0" toLane="0"/>
+    <connection from="bottom0A0" to="A0left0" fromLane="0" toLane="0"/>
+    <connection from="bottom0A0" to="A0bottom0" fromLane="0" toLane="0"/>
+
+    <connection from="bottom1B0" to="B0right0" fromLane="0" toLane="0"/>
+    <connection from="bottom1B0" to="B0B1" fromLane="0" toLane="0"/>
+    <connection from="bottom1B0" to="B0A0" fromLane="0" toLane="0"/>
+    <connection from="bottom1B0" to="B0bottom1" fromLane="0" toLane="0"/>
+
+    <connection from="left0A0" to="A0bottom0" fromLane="0" toLane="0"/>
+    <connection from="left0A0" to="A0B0" fromLane="0" toLane="0"/>
+    <connection from="left0A0" to="A0A1" fromLane="0" toLane="0"/>
+    <connection from="left0A0" to="A0left0" fromLane="0" toLane="0"/>
+
+    <connection from="left1A1" to="A1A0" fromLane="0" toLane="0"/>
+    <connection from="left1A1" to="A1B1" fromLane="0" toLane="0"/>
+    <connection from="left1A1" to="A1top0" fromLane="0" toLane="0"/>
+    <connection from="left1A1" to="A1left1" fromLane="0" toLane="0"/>
+
+    <connection from="right0B0" to="B0B1" fromLane="0" toLane="0"/>
+    <connection from="right0B0" to="B0A0" fromLane="0" toLane="0"/>
+    <connection from="right0B0" to="B0bottom1" fromLane="0" toLane="0"/>
+    <connection from="right0B0" to="B0right0" fromLane="0" toLane="0"/>
+
+    <connection from="right1B1" to="B1top1" fromLane="0" toLane="0"/>
+    <connection from="right1B1" to="B1A1" fromLane="0" toLane="0"/>
+    <connection from="right1B1" to="B1B0" fromLane="0" toLane="0"/>
+    <connection from="right1B1" to="B1right1" fromLane="0" toLane="0"/>
+
+    <connection from="top0A1" to="A1left1" fromLane="0" toLane="0"/>
+    <connection from="top0A1" to="A1A0" fromLane="0" toLane="0"/>
+    <connection from="top0A1" to="A1B1" fromLane="0" toLane="0"/>
+    <connection from="top0A1" to="A1top0" fromLane="0" toLane="0"/>
+
+    <connection from="top1B1" to="B1A1" fromLane="0" toLane="0"/>
+    <connection from="top1B1" to="B1B0" fromLane="0" toLane="0"/>
+    <connection from="top1B1" to="B1right1" fromLane="0" toLane="0"/>
+    <connection from="top1B1" to="B1top1" fromLane="0" toLane="0"/>
+
+</connections>
