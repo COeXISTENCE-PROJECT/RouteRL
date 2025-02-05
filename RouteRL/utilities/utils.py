@@ -21,14 +21,16 @@ def get_params(file_path, resolve=True, update=None):
 
 def update_params(old_params: dict, new_params: dict):
     for key, value in new_params.items():
-        if isinstance(value, dict) and isinstance(old_params.get(key), dict):
+        if not (key in old_params):
+            raise ValueError(f"Invalid parameter: {key}")
+        elif isinstance(old_params.get(key), str) and old_params.get(key).startswith("${"):
+            raise ValueError(f"Invalid parameter: {key}")
+        elif (not isinstance(value, dict)) and isinstance(old_params.get(key), dict):
+            raise ValueError(f"Can't update group parameter {key} with value: {value}")
+        elif isinstance(value, dict) and isinstance(old_params.get(key), dict):
             update_params(old_params[key], value)
         else:
-            # if key exists and not a dependent parameter, update it
-            if (key in old_params) and (not (isinstance(old_params[key], str) and old_params[key].startswith("${"))):
-                old_params[key] = value
-            else:
-                raise ValueError(f"Invalid parameter: {key}")
+            old_params[key] = value
         
             
 def resolve_ods(params):
