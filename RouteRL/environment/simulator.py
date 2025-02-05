@@ -296,7 +296,7 @@ class SumoSimulator():
     ######### SIMULATION ###########
     ################################
 
-    def add_vehice(self, act_dict: dict) -> None:
+    def add_vehicle(self, act_dict: dict) -> None:
         """Adds a vehicle to the SUMO simulation environment with the specified route and parameters.
 
         Args:

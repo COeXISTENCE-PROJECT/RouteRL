@@ -371,7 +371,7 @@ class TrafficEnvironment(AECEnv):
 
     def _help_step(self, actions: list[tuple]) -> dict:
         """This function is responsible for supplying the simulator with the actions of vehicles
-        that begin their journey at the current timestep. 
+        that begin their journey at the current timestep.
         Simultaneously, it records the travel times of vehicles that finished their trip this timestep.
 
         Args:
@@ -387,7 +387,7 @@ class TrafficEnvironment(AECEnv):
                            kc.AGENT_ORIGIN: agent.origin,
                            kc.AGENT_DESTINATION: agent.destination,
                            kc.AGENT_START_TIME: agent.start_time}
-            self.simulator.add_vehice(action_dict)
+            self.simulator.add_vehicle(action_dict)
             self.episode_actions[agent.id] = action_dict
         timestep, arrivals = self.simulator.step()  
 
