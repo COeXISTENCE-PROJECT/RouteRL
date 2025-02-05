@@ -28,7 +28,7 @@ Details of the `PreviousAgentStart` class are provided below:
     :no-index:
 ```
 
-### Second Observation Function: `PreviousAgentStartPlusStartTime`
+### `PreviousAgentStartPlusStartTime`
 
 The `PreviousAgentStartPlusStartTime` class is another observation functions in `RouteRL`. This class is designed to monitor and manage the number of agents with identical origin-destination pairs and start times, operating within a predefined threshold as well as the start time of the specific agent. 
 
