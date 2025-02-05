@@ -104,7 +104,7 @@ class Keychain:
     GAWRON = "gawron"
     CULO = "culo"
     W_AVG = "w_avg"
-    MODELS = [GAWRON, CULO, W_AVG]
+    HUMAN_MODELS = [GAWRON, CULO, W_AVG]
     
     # Network names
     ARTERIAL = "arterial"
@@ -115,7 +115,7 @@ class Keychain:
     NGUYEN = "nguyen"
     ORTUZAR = "ortuzar"
     TWO_ROUTE_YIELD = "two_route_yield"
-    NETWORKS = [ARTERIAL, COLOGNE, CSOMOR, GRID, INGOLSTADT, NGUYEN, ORTUZAR, TWO_ROUTE_YIELD]
+    NETWORK_NAMES = [ARTERIAL, COLOGNE, CSOMOR, GRID, INGOLSTADT, NGUYEN, ORTUZAR, TWO_ROUTE_YIELD]
     
     ###########################################################
 
@@ -124,18 +124,18 @@ class Keychain:
     PATHS_CSV_FILE_NAME = "paths.csv"
     AGENTS_CSV_FILE_NAME = "agents.csv"
     
-    NETWORK_FOLDER = "../network_and_config/$net$/"
-    CONNECTION_FILE_PATH = "../network_and_config/$net$/$net$.con.xml"
-    EDGE_FILE_PATH = "../network_and_config/$net$/$net$.edg.xml"
-    NOD_FILE_PATH = "../network_and_config/$net$/$net$.nod.xml"
-    SUMO_CONFIG_PATH = "../network_and_config/$net$/$net$.sumocfg"
-    ROU_FILE_PATH = "../network_and_config/$net$/$net$.rou.xml"
-    SUMO_FCD = "../network_and_config/$net$/fcd.xml"
-    ROUTE_XML_PATH = "../network_and_config/$net$/route.rou.xml"
-    DETECTORS_XML_PATH = "../network_and_config/$net$/det.add.xml"
-    DETECTORS_CSV_PATH = "../network_and_config/$net$/detectors.csv"
+    NETWORK_FOLDER = "../networks/$net$/"
+    CONNECTION_FILE_PATH = "../networks/$net$/$net$.con.xml"
+    EDGE_FILE_PATH = "../networks/$net$/$net$.edg.xml"
+    NOD_FILE_PATH = "../networks/$net$/$net$.nod.xml"
+    SUMO_CONFIG_PATH = "../networks/$net$/$net$.sumocfg"
+    ROU_FILE_PATH = "../networks/$net$/$net$.rou.xml"
+    SUMO_FCD = "../networks/$net$/fcd.xml"
+    ROUTE_XML_PATH = "../networks/$net$/route.rou.xml"
+    DETECTORS_XML_PATH = "../networks/$net$/det.add.xml"
+    DETECTORS_CSV_PATH = "../networks/$net$/detectors.csv"
     
-    DEFAULT_ODS_PATH = "../network_and_config/default_ods.json"
+    DEFAULT_ODS_PATH = "../networks/default_ods.json"
     
     EPISODES_LOGS_FOLDER = "episodes"
     DETECTOR_LOGS_FOLDER = "detector"
