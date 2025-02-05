@@ -3,5 +3,4 @@
 ```{eval-rst}
 .. autoclass:: RouteRL.environment.environment.TrafficEnvironment
     :members:
-    :no-index:
 ```

@@ -3,5 +3,4 @@
 ```{eval-rst}
 .. autoclass:: RouteRL.environment.agent.HumanAgent
     :members:
-    :no-index:
 ```
