@@ -5,7 +5,7 @@ import time
 
 from prettytable import PrettyTable
 
-from ..keychain import Keychain as kc
+from routerl.keychain import Keychain as kc
     
     
 def get_params(file_path, resolve=True, update=None):

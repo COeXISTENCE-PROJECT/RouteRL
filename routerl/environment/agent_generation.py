@@ -5,9 +5,9 @@ import numpy as np
 import pandas as pd
 import random
 
-from RouteRL.environment import HumanAgent
-from RouteRL.environment import MachineAgent
-from ..keychain import Keychain as kc
+from routerl.keychain import Keychain as kc
+from routerl.environment import HumanAgent
+from routerl.environment import MachineAgent
 
 
 logger = logging.getLogger()

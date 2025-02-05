@@ -1,10 +1,9 @@
 import logging
 import os
 import polars as pl
-import pandas as pd
 
-from ..keychain import Keychain as kc
-from ..utilities import make_dir
+from routerl.keychain import Keychain as kc
+from routerl.utilities import make_dir
 
 logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
@@ -105,7 +104,7 @@ class Recorder:
         Returns:
             None
         """
-
+        
         ep_observations_df = pl.from_dicts(ep_observations)
         rewards_df = pl.from_dicts(rewards)
 
@@ -118,7 +117,7 @@ class Recorder:
         merged_df = merged_df.join(cost_tables_df, on=kc.AGENT_ID)
         merged_df.write_csv(make_dir(self.episodes_folder, f"ep{episode}.csv"))
 
-    def remember_detector(self,episode, det_dict) -> None:
+    def remember_detector(self, episode, det_dict) -> None:
         """Remember the detector.
 
         Args:
@@ -127,9 +126,9 @@ class Recorder:
         Returns:
             None
         """
-
-        df = pd.DataFrame(list(det_dict.items()), columns=['detid', 'flow'])
-        df.to_csv(make_dir(self.detector_folder, f'detector_ep{episode}.csv'),index=False)
+        
+        df = pl.DataFrame(list(det_dict.items()), schema=['detid', 'flow'], orient="row")
+        df.write_csv(make_dir(self.detector_folder, f'detector_ep{episode}.csv'))
 
     def save_losses(self, agents) -> None:
         """Save losses.

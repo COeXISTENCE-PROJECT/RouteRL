@@ -7,5 +7,8 @@ from .agent_generation import generate_agent_data
 
 from .simulator import SumoSimulator
 
+from .observations import Observations
+from .observations import PreviousAgentStart
+from .observations import PreviousAgentStartPlusStartTime
+
 from .environment import TrafficEnvironment
-from .observations import Observations, PreviousAgentStart

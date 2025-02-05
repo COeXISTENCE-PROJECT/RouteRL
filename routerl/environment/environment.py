@@ -16,14 +16,14 @@ import pandas as pd
 import random
 import threading
 
-from .agent import MachineAgent
-from .agent_generation import generate_agents
-from ..keychain import Keychain as kc
-from .observations import PreviousAgentStart, PreviousAgentStartPlusStartTime, Observations
-from .simulator import SumoSimulator
-from ..services.recorder import Recorder
-from ..services.plotter import plotter
-from ..utilities import get_params
+from routerl.environment import generate_agents
+from routerl.environment import SumoSimulator
+from routerl.environment import MachineAgent
+from routerl.environment import PreviousAgentStart, PreviousAgentStartPlusStartTime, Observations
+from routerl.keychain import Keychain as kc
+from routerl.services import plotter
+from routerl.services import Recorder
+from routerl.utilities import get_params
 
 from pettingzoo.utils.env import AECEnv
 from pettingzoo.utils import agent_selector

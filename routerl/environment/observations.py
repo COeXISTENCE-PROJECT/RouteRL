@@ -7,7 +7,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 
-from ..keychain import Keychain as kc
+from routerl.keychain import Keychain as kc
 
 
 class Observations(ABC):

@@ -4,18 +4,14 @@
 """
 
 import os
+import janux as jx
 import logging
 import random
-import janux as jx
 import pandas as pd
 import traci
 
-from ..keychain import Keychain as kc
-from ..utilities import confirm_env_variable
-
-#TODO unused packages
-import json
-from ..utilities import get_params
+from routerl.keychain import Keychain as kc
+from routerl.utilities import confirm_env_variable
 
 logger = logging.getLogger()
 logger.setLevel(logging.WARNING)

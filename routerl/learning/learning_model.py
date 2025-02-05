@@ -3,7 +3,7 @@ import random
 
 from abc import ABC, abstractmethod
 
-from ..keychain import Keychain as kc
+from routerl.keychain import Keychain as kc
 
 
 class BaseLearningModel(ABC):

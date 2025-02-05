@@ -1,11 +1,10 @@
-from .learning_model import (
+from routerl.keychain import Keychain as kc
+
+from routerl.learning import (
     Gawron,
     Culo,
     WeightedAverage
 )
-
-from ..keychain import Keychain as kc
-
 
 def get_learning_model(params, initial_knowledge):
     """Returns a learning model based on the provided parameters.
