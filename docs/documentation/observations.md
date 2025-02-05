@@ -11,17 +11,32 @@ To create a new observation function, you must define a class that inherits from
 ```{eval-rst}
 .. autoclass:: RouteRL.environment.observations.Observations
     :members:
+    :exclude-members: _private_method
     :no-index:
 ```
 
 ### Default Observation Function: `PreviousAgentStart`
 
-The `PreviousAgentStart` class serves as the default implementation for observation functions in `RouteRL`. This class is designed to monitor and manage the number of agents with identical origin-destination pairs and start times, operating within a predefined threshold. It simplifies the observation process for environments where such tracking is crucial.
+The `PreviousAgentStart` class serves as the default implementation for observation functions in `RouteRL`. This class is designed to monitor and manage the number of agents with identical origin-destination pairs and start times, operating within a predefined threshold. 
 
 Details of the `PreviousAgentStart` class are provided below:
 
 ```{eval-rst}
 .. autoclass:: RouteRL.environment.observations.PreviousAgentStart
+    :members:  
+    :exclude-members: _private_method
+    :no-index:
+```
+
+### Second Observation Function: `PreviousAgentStartPlusStartTime`
+
+The `PreviousAgentStartPlusStartTime` class is another observation functions in `RouteRL`. This class is designed to monitor and manage the number of agents with identical origin-destination pairs and start times, operating within a predefined threshold as well as the start time of the specific agent. 
+
+Details of the `PreviousAgentStartPlusStartTime` class are provided below:
+
+```{eval-rst}
+.. autoclass:: RouteRL.environment.observations.PreviousAgentStartPlusStartTime
     :members:
+    :exclude-members: _private_method
     :no-index:
 ```
