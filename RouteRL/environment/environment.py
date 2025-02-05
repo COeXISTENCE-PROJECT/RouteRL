@@ -72,26 +72,6 @@ class TrafficEnvironment(AECEnv):
         human_agents (list): list of all human agents
         possible_agents (list): list of all possible agents
         episode_actions (dict): episode actions 
-    Methods:
-        _set_seed(int): random seed
-        _initialize_machine_agents(): initializes agents
-        start: simulation start
-        reset: reset environment
-        step (int): simulation step
-        close: close environment
-        observe (int): observe environment
-        mutation (bool): mutate agents
-        get_observation: get observation
-        _help_step: help step
-        _reset_episode: reset episode
-        _assign_rewards: assign rewards
-        simulation_loop: simulation loop
-        get_free_flow_times: get free flow times
-        _record: record data
-        plot_results: plot results
-        render: render environment
-        observation_space: observation space
-        action_space: action space    
     """
 
     def __init__(self,

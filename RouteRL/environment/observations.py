@@ -17,8 +17,6 @@ class Observations(ABC):
         machine_agents_list (List[Any]): List of machine agents.
         human_agents_list (List[Any]): List of human agents.
 
-    Methods:
-        observation_space (List[Any]): List of observation spaces.
     """
 
     def __init__(self, machine_agents_list: List[Any], human_agents_list: List[Any]) -> None:
@@ -52,10 +50,7 @@ class PreviousAgentStart(Observations):
         training_params (Dict[str, Any]): Training parameters.
     Attributes:
         observations (List[Any]): List of observations.
-    Methods:
-        reset_observations (List[Any]): Reset observations.
-        observation_space (List[Any]): List of observation spaces.
-        agent_observations (List[Any]): List of agent observations.
+   
     """
 
     def __init__(
@@ -131,7 +126,7 @@ class PreviousAgentStart(Observations):
 
 
 class PreviousAgentStartPlusStartTime(Observations):
-    """Observes the number of agents with the same origin-destination and start time within a threshold."""
+    """Observes the number of agents with the same origin-destination and start time within a threshold and includes the start of the specific agent as well."""
 
     def __init__(
         self,

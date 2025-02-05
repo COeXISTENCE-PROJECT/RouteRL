@@ -50,15 +50,6 @@ class SumoSimulator():
         sumo_connection: Sumo connection.
         timestep: Time step.
         route_id_cache: Routes id cache.
-    Methods:
-        _check_paths_ready: Check paths ready.
-        _get_paths: Get paths.
-        _save_paths_to_disk: Save paths to disc.
-        start: Start simulation.
-        stop: Stop simulation.
-        reset: Reset simulation.
-        add_vehicle: Add vehicle.
-        step: Step simulation.
     """
 
     def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423):

@@ -28,12 +28,6 @@ class BaseAgent(ABC):
         origin (float): The origin of the simulation.
         destination (float): The destination value of the simulation.
         behavior (float): The behavior of the simulation.
-    Methods:
-        last_reward (float):
-        act (float):
-        learn (float):
-        get_state (float):
-        get_reward (float):
     """
 
     def __init__(self, id, kind, start_time, origin, destination, behavior):
@@ -135,13 +129,6 @@ class HumanAgent(BaseAgent):
     Attributes:
         model (dict): The model of the agent.
         last_reward (float): The last reward of the agent.
-
-    Methods:
-        last_reward: The last reward of the agent.
-        act: The action of the agent.
-        learn: The action of the agent.
-        get_state: The current state of the agent.
-        get_reward: The current reward of the agent.
     """
 
     def __init__(self, id, start_time, origin, destination, params, initial_knowledge, **kwargs):
@@ -243,12 +230,6 @@ class MachineAgent(BaseAgent):
         model : The model of the agent behavior.
         last_reward (float): The last reward of the agent.
         rewards_coefs (dict): The reward coefficients of the agent.
-    Methods:
-        act (float): The action of the agent.
-        learn (float): The action of the agent.
-        get_state (float): The current state of the agent.
-        get_reward (float): The current reward of the agent.
-        _get_reward_coefs (float): The coefficient of the reward of the agent.
     """
 
     def __init__(self, id, start_time, origin, destination, params, action_space_size):
