@@ -364,12 +364,14 @@ class Plotter:
 
         # Hide unused subplots if any
         for ax in axes[idx+1:]:
-            ax.axis('off')    # Hide unused subplots if any
+            ax.axis('off')
 
         for ax in axes.flat:
             ax.legend().set_visible(False)
+            
         handles, labels = axes[0].get_legend_handles_labels()
-        fig.legend(handles, labels, loc='upper center', ncol=2, fontsize=self.legend_font_size)
+        legend_loc = 'upper center' if num_od_pairs > 1 else 'upper right'
+        fig.legend(handles, labels, loc=legend_loc, ncol=2, fontsize=self.legend_font_size)
         fig.subplots_adjust(top=0.90)
 
         plt.savefig(save_to)
@@ -436,7 +438,8 @@ class Plotter:
         for ax in axes.flat:
             ax.legend().set_visible(False)
         handles, labels = axes[0].get_legend_handles_labels()
-        fig.legend(handles, labels, loc='upper center', ncol=3, fontsize=self.legend_font_size)
+        legend_loc = 'upper center' if len(all_od_pairs) > 1 else 'upper right'
+        fig.legend(handles, labels, loc=legend_loc, ncol=3, fontsize=self.legend_font_size)
         fig.subplots_adjust(top=0.85)
 
         plt.savefig(save_to)
@@ -655,7 +658,7 @@ def plotter(params = None):
         plotter: plotter
     """
     if params is None:
-        logging.warning(f"No parameters provided. Loading default parameters. This may result in incorrect plots.")
+        logging.warning(f"No parameters provided for plotter, using default parameters. This may result in incorrect plots.")
         curr_dir = os.path.dirname(os.path.realpath(__file__))
         params_path = os.path.join(curr_dir, f'../environment/{kc.PARAMS_FILE}')
         params = get_params(params_path)
