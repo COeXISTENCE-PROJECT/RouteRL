@@ -332,7 +332,7 @@ class Plotter:
         num_od_pairs = len(all_actions)
         
         # Determine the layout of the subplots (rows x columns)
-        num_columns = self.default_num_columns
+        num_columns = self.default_num_columns if num_od_pairs > self.default_num_columns else num_od_pairs
         num_rows = (num_od_pairs + num_columns - 1) // num_columns  # Calculate rows needed
         
         figure_size = (self.multimode_width * num_columns, self.multimode_height * num_rows)
@@ -393,7 +393,7 @@ class Plotter:
         all_od_pairs = sorted(all_od_pairs, key=lambda x: f"{x[0]}-{x[1]}")
         
         # Determine the layout of the subplots (rows x columns)
-        num_columns = self.default_num_columns
+        num_columns = self.default_num_columns if len(all_od_pairs) > self.default_num_columns else len(all_od_pairs)
         num_rows = (len(all_od_pairs) + num_columns - 1) // num_columns  # Calculate rows needed
         
         figure_size = (self.multimode_width * num_columns, self.multimode_height * num_rows)
@@ -582,7 +582,7 @@ class Plotter:
         """
 
         all_od_pairs = self._retrieve_all_od_pairs()
-        od_to_key = lambda o, d: f"{o} - {d}"
+        od_to_key = lambda o, d: f"({o}, {d})"
         all_values_dict = {od_to_key(od[0], od[1]) : dict() for od in all_od_pairs}
         for episode in self.saved_episodes:
             data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")

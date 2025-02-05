@@ -134,12 +134,6 @@ class SumoSimulator():
         Returns:
             None
         """
-
-        if self.network_name == kc.TWO_ROUTE_YIELD:
-            paths_df = pd.read_csv(os.path.join(self.network_folder, "default_paths.csv"))
-            self._save_paths_to_disk(paths_df, path_gen_params[kc.ORIGINS], path_gen_params[kc.DESTINATIONS])
-            return #TODO break instead???
-        
         # Build the network
         network = jx.build_digraph(self.conn_file_path, self.edge_file_path, self.routes_xml_path)
         
