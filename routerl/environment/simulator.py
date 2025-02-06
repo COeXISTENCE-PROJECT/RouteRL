@@ -133,7 +133,7 @@ class SumoSimulator():
             "verbose": False
         }
         routes = jx.basic_generator(network, origins, destinations, as_df=True, calc_free_flow=True, **path_gen_kwargs)
-        self._save_paths_to_disk(routes, origins, destinations)
+        self._save_paths_to_disc(routes, origins, destinations)
         
         # Save paths visualizations
         path_visuals_path = params[kc.PLOTS_FOLDER]
@@ -153,7 +153,7 @@ class SumoSimulator():
                                     routes_to_show, origin, destination, 
                                     show=False, save_file_path=fig_save_path, title=title)
 
-    def _save_paths_to_disk(self, routes_df: pd.DataFrame, origins: list, destinations: list) -> None:
+    def _save_paths_to_disc(self, routes_df: pd.DataFrame, origins: list, destinations: list) -> None:
 
         origins = {node_name: idx for idx, node_name in enumerate(origins)}
         destinations = {node_name: idx for idx, node_name in enumerate(destinations)}
