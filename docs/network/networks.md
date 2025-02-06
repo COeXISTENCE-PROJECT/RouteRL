@@ -7,18 +7,18 @@ firstpage:
 
 
 <p align="center">
-    <img src="../img/cologne.png" width="45%" />
-    <img src="../img/csomor.png" width="45%" />
+    <img src="docs/img/cologne.png" width="45%" />
+    <img src="docs/img/csomor.png" width="45%" />
 </p>
 <p align="center">
-    <img src="../img/arterial.png" width="45%" />
-    <img src="../img/grid.png" width="45%" />
+    <img src="docs/img/arterial.png" width="45%" />
+    <img src="docs/img/grid.png" width="45%" />
 </p>
 <p align="center">
-    <img src="../img/ingolstadt.png" width="45%" />
-    <img src="../img/sourdun.png" width="45%" />
+    <img src="docs/img/ingolstadt.png" width="45%" />
+    <img src="docs/img/sourdun.png" width="45%" />
 </p>
 <p align="center">
-    <img src="../img/two_route_net.png" width="45%" />
-    <img src="../img/square.png" width="45%" />
+    <img src="docs/img/two_route_net.png" width="45%" />
+    <img src="docs/img/square.png" width="45%" />
 </p>
