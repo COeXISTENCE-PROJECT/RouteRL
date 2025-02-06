@@ -144,7 +144,7 @@ class TrafficEnvironment(AECEnv):
         )
 
         ## Initialize the observation object
-        self.observation_obj = self.get_observation()
+        self.observation_obj = self.get_observation_function()
 
         self._observation_spaces = self.observation_obj.observation_space()
 
@@ -585,7 +585,7 @@ class TrafficEnvironment(AECEnv):
     ### Decide on the observation function to be used ###
     #####################################################
     
-    def get_observation(self) -> Observations:
+    def get_observation_function(self) -> Observations:
         """Returns an observation object based on the provided parameters.
 
         Returns:

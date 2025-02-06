@@ -47,6 +47,16 @@
     "sourdun_small": {
         "origins" : ["-137569597#2", "-137569616"],
         "destinations" : ["-137569586#0", "-137380908#0"]
+    },
+
+    "grid6": {
+        "origins" : ["left_in", "top_in"],
+        "destinations" : ["right_out", "bottom_out"]
+    },
+
+    "square": {
+        "origins" : ["right1B1", "top1B1"],
+        "destinations" : ["A0bottom0", "B0bottom1"]
     }
 
 }
