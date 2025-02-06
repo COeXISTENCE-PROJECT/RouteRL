@@ -33,12 +33,6 @@ logger.setLevel(logging.WARNING)
 
 
 class TrafficEnvironment(AECEnv):
-    #TODO it is needed anymore?
-    metadata = {
-        "render_modes": ["human"],
-        "name": "TrafficEnvironment",
-    }
-
     """ A PettingZoo AECEnv interface for optimal route choice using SUMO simulator.
     
     This environment is designed for the training of human agents (rational decision-makers) 
@@ -121,6 +115,12 @@ class TrafficEnvironment(AECEnv):
         machine_agents (list): List of all machine agent objects
         human_agents (list): List of all human agent objects
     """
+    
+    #TODO it is needed anymore?
+    metadata = {
+        "render_modes": ["human"],
+        "name": "TrafficEnvironment",
+    }
 
     def __init__(self,
                  seed: int = 23423,
