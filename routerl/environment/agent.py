@@ -16,18 +16,11 @@ class BaseAgent(ABC):
 
     Args:
         id (int): The id of the agent.
-        kind (str): The kind of the agent.
-        start_time (float): The start time of the simulation.
-        origin (float): The origin of the simulation.
-        destination (float): The destination value of the simulation.
-        behavior (float): The behavior of the simulation.
-    Attributes:
-        id (int): The id of the agent.
-        kind (str): The kind of the agent.
-        start_time (float): The start time of the simulation.
-        origin (float): The origin of the simulation.
-        destination (float): The destination value of the simulation.
-        behavior (float): The behavior of the simulation.
+        kind (str): The kind of the agent (Human or AV).
+        start_time (float): The start time of the agent.
+        origin (float): The origin of the agent.
+        destination (float): The destination value of the agent.
+        behavior (float): The behavior of the agent.
     """
 
     def __init__(self, id, kind, start_time, origin, destination, behavior):
@@ -119,14 +112,11 @@ class HumanAgent(BaseAgent):
 
     Args:
         id (int): The id of the agent.
-        start_time (float): The start time of the simulation.
-        origin (float): The origin of the simulation.
-        destination (float): The destination value of the simulation.
-        params (dict): The parameters of the agent.
+        start_time (float): The start time of the agent.
+        origin (float): The origin of the agent.
+        destination (float): The destination value of the agent.
+        params (dict): The parameters for the learning model of the agent.
         initial_knowledge (float): The initial knowledge of the agent.
-    Attributes:
-        model (dict): The model of the agent.
-        last_reward (float): The last reward of the agent.
     """
 
     def __init__(self, id, start_time, origin, destination, params, initial_knowledge):
@@ -144,7 +134,7 @@ class HumanAgent(BaseAgent):
         """Set the last reward of the agent.
 
         Returns:
-            self._last_reward: The last reward of the agent.
+            float: The last reward of the agent.
         """
 
         return self._last_reward
@@ -165,9 +155,9 @@ class HumanAgent(BaseAgent):
         """Returns the agent's action (route of choice) based on the current observation from the environment.
 
         Args:
-            observation (float): The observation of the agent.
+            observation (list): The observation of the agent.
         Returns:
-            self.model.act(observation) [int]: The action of the agent.
+            int: The action of the agent.
         """
 
         return self.model.act(observation)
@@ -203,7 +193,7 @@ class HumanAgent(BaseAgent):
         Args:
             observation (list[dict]): The observation of the agent.
         Returns:
-            own_tt (float): Own travel time of the agent.
+            float: Own travel time of the agent.
         """
 
         own_tt = -1 * next(obs[kc.TRAVEL_TIME] for obs in observation if obs[kc.AGENT_ID] == self.id)
@@ -216,18 +206,13 @@ class MachineAgent(BaseAgent):
 
     Args:
         id (int): The id of the agent.
-        start_time (float): The start time of the simulation.
-        origin (float): The origin of the simulation.
-        destination (float): The destination value of the simulation.
+        start_time (float): The start time of the agent.
+        origin (float): The origin of the agent.
+        destination (float): The destination value of the agent.
         params (dict): The parameters of the agent.
+            - observed_span (dict): The observed span of the agent.
+            - behavior (str): The behavior of the agent.
         action_space_size (int): The size of the action space of the agent.
-    Attributes:
-        observed_span (dict): The observed span of the agent.
-        action_space_size (int): The size of the action space of the agent.
-        state_size (int): The state size of the agent.
-        model : The model of the agent behavior.
-        last_reward (float): The last reward of the agent.
-        rewards_coefs (dict): The reward coefficients of the agent.
     """
 
     def __init__(self, id, start_time, origin, destination, params, action_space_size):
@@ -296,7 +281,7 @@ class MachineAgent(BaseAgent):
         Args:
             observation (list[dict]): The recent observations of the agent.
         Returns:
-            warmth_agents list[int]: The current state representation.
+            list[int]: The current state representation.
         """
 
         min_start_time = self.start_time - self.observed_span
@@ -332,12 +317,12 @@ class MachineAgent(BaseAgent):
 
     def get_reward(self, observation: list[dict]) -> float:
         """This method calculated the reward of each individual agent, based on the travel time of the agent,
-        the group of agents, the other agents, and all agents.
+        the group of agents, the other agents, and all agents, weighted according to the agent's behavior.
 
         Args:
             observation (list[dict]): The current observation of the agent.
         Returns:
-            agent_reward (float): The reward of the agent.
+            float: The reward of the agent.
         """
 
         min_start_time, max_start_time = self.start_time - self.observed_span, self.start_time + self.observed_span

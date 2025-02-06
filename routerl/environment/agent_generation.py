@@ -15,17 +15,29 @@ logger.setLevel(logging.WARNING)
 
 
 def generate_agents(params, free_flow_times, generate_data, seed=23423) -> list:
-    """Generates agent objects
+    """Generates agent objects for the enviornment.
+    
+    This function creates agents based on predefined parameters, either by 
+    generating new data or loading existing data from a CSV file. Each agent 
+    is instantiated as either a `MachineAgent` or `HumanAgent`, depending on 
+    its type.
 
     Args:
         params (dict): Parameters dictionary
+            containing key-value pairs for:
+                - `params["agent_parameters"]["num_agents"]`: Total number of agents.
+                - `params["agent_parameters"]["machine_parameters"]`: Settings for `MachineAgent`.
+                - `params["agent_parameters"]["human_parameters"]`: Settings for `HumanAgent`.
         free_flow_times (list): Free flow times
-        generate_data (bool): Generate data
-        seed (int): Random seed
+        generate_data (bool): If True, generates new agent data. If False, loads 
+                              existing agent data from a CSV file specified by 
+                              `params[kc.RECORDS_FOLDER]`.
+        seed (int, optional): Random seed for reproducibility. Defaults to 23423.
+        
     Returns:
-        agents (list): List of agent objects
+        list: A list of `BaseAgent` objects (either `MachineAgent` or `HumanAgent`).
     Raises:
-        ValueError: If it is unrecognized agent type.
+        ValueError: If an unrecognized agent type is encountered in the data.
     """
 
     set_seed(seed)
@@ -98,7 +110,7 @@ def generate_agent_data(params, seed=23423) -> pd.DataFrame:
     # Generating agent data
     for id in range(num_agents):
         
-        # Decide on agent type 
+        # Decide on agent type (temporary solution)
         agent_type = kc.TYPE_HUMAN
 
         # Randomly assign origin & destination

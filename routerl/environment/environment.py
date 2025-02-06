@@ -41,37 +41,85 @@ class TrafficEnvironment(AECEnv):
 
     """ A PettingZoo AECEnv interface for optimal route choice using SUMO simulator.
     
-    This environment is utilized for the training of human agents (rational decision-makers) 
+    This environment is designed for the training of human agents (rational decision-makers) 
     and machine agents (reinforcement learning agents).
     See https://sumo.dlr.de/docs/ for details on SUMO.
     See https://pettingzoo.farama.org/ for details on PettingZoo. 
     
     Args:
-        seed (int, optional): random seed
-        create_agents (bool, optional): whether to create agents
-        crete_paths (bool, optional): whether to create paths
-        kwargs (dict): keyword arguments
+        seed (int, optional): 
+            Random seed for reproducibility. Defaults to 23423.
+        create_agents (bool, optional):
+            Whether to create agents data, defaults to True.
+            If False, requires agents data to be provided in `training_records/agents.csv`.
+        crete_paths (bool, optional):
+            Whether to generate paths, defaults to True. 
+            ATTENTION: Set False only if you have already generated paths.
+        kwargs (dict, optional): 
+            User-defined parameter overrides. These override the default values 
+            from `params.json` and allow customization of different aspects of the environment.
+            All supported keys are **optional** and they include:
+
+            **Agent Settings (`agent_parameters`)**:
+                - `"num_agents"` (int = 100): Total number of agents.
+                - `"new_machines_after_mutation"` (int) = 25: Number of human agents converted to machines after mutation.
+                - `"machine_parameters"` (dict): Configuration for machine agents:
+                    - `"behavior"` (str = "selfish"): Route choice social behavior (can be one of `"selfish"`, `"social"`, `"altruistic"`, `"competitive"`, `"collaborative"`, `"malicious"`).
+                    - `"observed_span"` (int = 300): Time window considered for machine agent observations.
+                    - `"observation_type"` (str = "previous_agents_plus_start_time"): Type of observation ("previous_agents_plus_start_time"` or `"previous_agents"`).
+                - `"human_parameters"` (dict): Configuration for human agents:
+                    - `"model"` (str = "culo"): Human decision-making model (can be one of `"gawron"`, `"culo"`, `"w_avg"`).
+                    - `"alpha_j"` (float = 0.5): Cost expectation coefficient. Should be between 0 and 1.
+                    - `"alpha_zero"` (float = 0.5): Sensitivity to new experience. Should complement `alpha_j`.
+                    - `"beta"` (float = -1.5): Parameter affecting decision randomness.
+                    - `"beta_randomness"` (float = 0.1): Variability in beta among humans population.
+                    - `"remember"` (int = 3): Number of past experiences retained in `w_avg` model.
+
+            **Environment Settings (`environment_parameters`)**:
+                - `"number_of_days"` (int = 1): Number of simulated days.
+
+            **SUMO Simulator Settings (`simulator_parameters`)**:
+                - `"network_name"` (str = "csomor"): Network name. Can be one of `"arterial"`, "`cologne`", `"csomor`", `"grid"`, `"ingolstadt"`, `"nguyen"`, `"ortuzar"`, `"two_route_yield"`.
+                - `"simulation_timesteps"` (int = 180): Total simulation time in seconds.
+                - `"sumo_type"` (str = "sumo"): SUMO execution mode (`"sumo"` or `"sumo-gui"`). `"sumo-gui"` opens SUMO GUI.
+
+            **Path Generation Settings (`path_generation_parameters`)**:
+                - `"number_of_paths"` (int = 3): Number of routes to be generated per OD.
+                - `"beta"` (float = -3.0): Sensitivity to travel time in path choice. Should be negative. Less negative values will result in more variability, randomness and loopiness.
+                - `"weight"` (str = "time"): Optimization criterion (e.g., `"time"`).
+                - `"num_samples"` (int = 100): Number of samples used for path generation. Larger values result in more longer execution but variety in paths.
+                - `"origins"` (str | list[str] = "default"): Origin points (`"default"` or list of specific edge IDs).
+                - `"destinations"` (str | list[str] = "default"): Destination points (`"default"` or list of specific edge IDs).
+
+            **Plotting & Logging Settings (`plotter_parameters`)**:
+                - `"records_folder"` (str = "training_records"): Directory where training records are stored.
+                - `"plots_folder"` (str = "plots"): Directory where plots are saved.
+                - `"smooth_by"` (int = 50): Smoothing parameter for plotting results.
+                - `"phases"` (list[int] = [0, 100]): x-axes to draw vertical lines on plots.
+                - `"phase_names"` (list[str] = ["Human learning", "Mutation - Machine learning"]): Names of corresponding phases. Should have the same dimension as `phases`.
+                
+            **Check `environment/params.json` for more details on the default values. String values starting with dollar signs cannot be altered.**
+
+            **Example Usage**:
+            ```python
+            env = TrafficEnvironment(
+                seed=42, 
+                create_agents=False, 
+                environment_parameters={"number_of_days": 5},
+                agent_parameters={"num_agents": 50},
+                simulator_parameters={"sumo_type": "sumo-gui"}
+            )
+            ```
     Attributes:
-        render_mode (string): rendering mode
-        environment_params (dict): environment parameters
-        agent_params (dict): agent parameters
-        plotter_params (dict): plotter parameters
-        path_gen_params (dict): path generation parameters
-        travel_times_list (list): travel times list
-        day (int): day
-        human_learning (bool): whether human learning
-        machine_same_start_time (list): # TO DO
-        action_timestep (list): # TO DO
-        number_of_days (int): number of days
-        action_space_size (int): size of action space
-        _set_seed(int): random seed
-        recorder (Recorder): recorder
-        simulator (SumoSimulator): sumo simulator
-        all_agents (list): list of all agents
-        machine_agents (list): list of all machine agents
-        human_agents (list): list of all human agents
-        possible_agents (list): list of all possible agents
-        episode_actions (dict): episode actions 
+        day (int): day index
+        human_learning (bool): Whether human agents are learning
+        number_of_days (int): Number of days to simulate
+        action_space_size (int): Size of action space
+        recorder (Recorder): Recorder object for recording simulation data to disk
+        simulator (SumoSimulator): Sumo simulator object for simulation
+        all_agents (list): List of all agent objects
+        machine_agents (list): List of all machine agent objects
+        human_agents (list): List of all human agent objects
     """
 
     def __init__(self,
