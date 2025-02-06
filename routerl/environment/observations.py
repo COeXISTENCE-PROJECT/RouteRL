@@ -5,7 +5,7 @@ Observation functions for RL agents (AVs).
 from gymnasium.spaces import Box
 import numpy as np
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 
 from routerl.keychain import Keychain as kc
 
@@ -56,7 +56,7 @@ class PreviousAgentStart(Observations):
         human_agents_list: List[Any],
         simulation_params: Dict[str, Any],
         agent_params: Dict[str, Any],
-        training_params: Dict[str, Any]
+        training_params: Union[Dict[str, Any], None]
         ) -> None:
 
         super().__init__(machine_agents_list, human_agents_list)
@@ -133,7 +133,7 @@ class PreviousAgentStartPlusStartTime(Observations):
         human_agents_list: List[Any],
         simulation_params: Dict[str, Any],
         agent_params: Dict[str, Any],
-        training_params: Dict[str, Any]
+        training_params: Union[Dict[str, Any], None]
     ) -> None:
         """Initialize the observation function.
 

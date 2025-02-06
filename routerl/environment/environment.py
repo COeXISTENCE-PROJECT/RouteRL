@@ -175,9 +175,8 @@ class TrafficEnvironment(AECEnv):
             seed (int, optional): Seed for random number generation. Defaults to None.
             options (dict, optional): Additional options for resetting the environment. Defaults to None.
         Returns:
-            self.observations [Any]: observations.
-            infos [dict]: dictionary of information for the agents.
-            tuple: A tuple containing the initial observations and information for the agents.
+            self.observations (Any): observations.
+            infos (dict): dictionary of information for the agents.
         """
 
         self.episode_actions = dict()
@@ -594,6 +593,7 @@ class TrafficEnvironment(AECEnv):
         Raises:
             ValueError: If model is unknown.
         """
+
         params = self.agent_params[kc.MACHINE_PARAMETERS]
         observation_type = params[kc.OBSERVATION_TYPE]
         if observation_type == kc.PREVIOUS_AGENTS_PLUS_START_TIME:
