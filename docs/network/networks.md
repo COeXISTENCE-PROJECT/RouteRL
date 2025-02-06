@@ -1,4 +1,9 @@
-# Network Configurations
+---
+title: Networks
+firstpage:
+---
+
+# Networks
 
 
 <p align="center">
