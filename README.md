@@ -1,14 +1,14 @@
-<img src="docs/_static/trans_bg.jpeg" align="right" width="20%"/>
+<img src="docs/_static/logo.png" align="right" width="20%"/>
 
 # RouteRL
 
 
 <!-- start intro -->
 
-RouteRL provides a multi-agent reinforcement learning environment for urban route choice in different city networks. 
+RouteRL provides a multi-agent reinforcement learning environment for urban route choice in city networks. 
 
-- The main class is [TrafficEnvironment](https://github.com/COeXISTENCE-PROJECT/Milestone-One/blob/env2pz/RouteRL/environment/environment.py) and is a [PettingZoo](https://pettingzoo.farama.org/index.html) AEC API environment.
-- There are two types of agents in the environment and are both represented by the [BaseAgent](https://github.com/COeXISTENCE-PROJECT/Milestone-One/blob/env2pz/RouteRL/environment/agent.py) class.
+- The main class is [TrafficEnvironment](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/environment/environment.py) and is a [PettingZoo](https://pettingzoo.farama.org/index.html) AEC API environment.
+- There are two types of agents in the environment and are both represented by the [BaseAgent](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/3d2ca55e4474eee062f161c42f47a212b3936377/routerl/environment/agent.py#L14) class.
   - Human drivers are simulated using human route-choice behavior from transportation research.
   - Automated vehicles (AVs) are the RL agents that aim to optimize their routes and learn the most efficient paths.
 - It is compatible with popular RL libraries such as [stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/guide/examples.html) and [TorchRL](https://pytorch.org/rl/stable/tutorials/torchrl_demo.html).

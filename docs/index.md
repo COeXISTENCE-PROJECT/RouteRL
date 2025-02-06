@@ -4,9 +4,7 @@ firstpage:
 lastpage:
 ---
 
-# RouteRL
-
-```{figure} _static/logo.png
+```{figure} _static/two_route_graphic.png
    :alt: RouteRL
 ```
 
