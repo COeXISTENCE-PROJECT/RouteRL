@@ -124,14 +124,12 @@ class HumanAgent(BaseAgent):
         destination (float): The destination value of the simulation.
         params (dict): The parameters of the agent.
         initial_knowledge (float): The initial knowledge of the agent.
-        **kwargs: The keyword arguments of the agent.
-
     Attributes:
         model (dict): The model of the agent.
         last_reward (float): The last reward of the agent.
     """
 
-    def __init__(self, id, start_time, origin, destination, params, initial_knowledge, **kwargs):
+    def __init__(self, id, start_time, origin, destination, params, initial_knowledge):
         kind = kc.TYPE_HUMAN
         behavior = kc.SELFISH
         super().__init__(id, kind, start_time, origin, destination, behavior)
@@ -283,7 +281,6 @@ class MachineAgent(BaseAgent):
 
     def learn(self, _) -> None:
         """Learning method
-
         Args:
             _ (Any): The current state of the agent.
         Returns:
