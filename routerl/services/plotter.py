@@ -26,24 +26,6 @@ class Plotter:
 
     Args:
         params (list): list of the parameters
-
-    Attributes:
-        phases (list): list of the phases
-        phase_names (list): list of the phase names
-        colors (list): list of the colors
-        phase_colors (list): list of the phase colors
-        linestyles (list): list of the linestyles
-        smooth_by (int): smoothing factor
-        default_width (float): the width of the plot
-        default_height (float): the height of the plot
-        multimode_width (float): the width of the multimode
-        multimode_height (float): the height of the multimode
-        default_num_columns (int): the number of columns
-        records_folder (str): the folder where the records should be stored
-        episodes_folder (str): the folder where the episodes should be stored
-        loss_file_path (str): the path of the loss file
-        saved_episodes (list): list of the saved episodes
-
     Methods:
         plot: plot the results
         visualise_mean_reward: visualise the mean reward
@@ -56,12 +38,25 @@ class Plotter:
     """
 
     def __init__(self, params):
+        self.label_size = 12
+        self.tick_label_size = 12
+        self.line_width = 3
+        self.title_size = 16
+        self.default_width = 15
+        self.default_height = 15
+        self.legend_font_size = 12
+        self.default_num_columns = 3
+        self.multimode_width = 3
+        self.multimode_height = 3
+        self.linestyles = ['-']
+        self.colors = []
+
         self.params = params
         self.phases = params[kc.PHASES]
         self.phase_names = params[kc.PHASE_NAMES]
         self.smooth_by = params[kc.SMOOTH_BY]
         self.records_folder = params[kc.RECORDS_FOLDER]
-        
+
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), kc.PLOTTER_CONFIG_FILE), 'r') as file:
             config = json.load(file)
         for key, value in config.items():
@@ -136,7 +131,11 @@ class Plotter:
 
         for phase_idx, phase in enumerate(self.phases):
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
-            plt.axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color, linewidth=self.line_width)
+            plt.axvline(x=phase,
+                        label=self.phase_names[phase_idx],
+                        linestyle='--',
+                        color=color,
+                        linewidth=self.line_width)
 
         plt.xticks(fontsize=self.tick_label_size)
         plt.yticks(fontsize=self.tick_label_size)
@@ -174,7 +173,11 @@ class Plotter:
 
         for phase_idx, phase in enumerate(self.phases):
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
-            plt.axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color, linewidth=self.line_width)
+            plt.axvline(x=phase,
+                        label=self.phase_names[phase_idx],
+                        linestyle='--',
+                        color=color,
+                        linewidth=self.line_width)
 
         plt.xticks(fontsize=self.tick_label_size)
         plt.yticks(fontsize=self.tick_label_size)
@@ -222,7 +225,11 @@ class Plotter:
             axes[0].plot(episodes, smoothed_tt, color=self.colors[idx], label=od, linewidth=self.line_width)
         for phase_idx, phase in enumerate(self.phases):
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
-            axes[0].axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color, linewidth=self.line_width)
+            axes[0].axvline(x=phase,
+                            label=self.phase_names[phase_idx],
+                            linestyle='--',
+                            color=color,
+                            linewidth=self.line_width)
         axes[0].tick_params(axis='both', which='major', labelsize=self.tick_label_size)
         axes[0].set_xlabel('Episode', fontsize=self.label_size)
         axes[0].set_ylabel('Mean Travel Time', fontsize=self.label_size)
@@ -236,11 +243,19 @@ class Plotter:
             episodes = list(ep_tt_dict.keys())
             var_tts = list(ep_tt_dict.values())
             smoothed_var_tts = running_average(var_tts, last_n=self.smooth_by)
-            axes[1].plot(episodes, smoothed_var_tts, color=self.colors[idx], label=kind, linewidth=self.line_width)
+            axes[1].plot(episodes,
+                         smoothed_var_tts,
+                         color=self.colors[idx],
+                         label=kind,
+                         linewidth=self.line_width)
 
         for phase_idx, phase in enumerate(self.phases):
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
-            axes[1].axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color, linewidth=self.line_width)
+            axes[1].axvline(x=phase,
+                            label=self.phase_names[phase_idx],
+                            linestyle='--',
+                            color=color,
+                            linewidth=self.line_width)
         axes[1].tick_params(axis='both', which='major', labelsize=self.tick_label_size)
         axes[1].set_xlabel('Episode', fontsize=self.label_size)
         axes[1].set_ylabel('Variance', fontsize=self.label_size)
@@ -349,11 +364,19 @@ class Plotter:
             for idx2, unique_action in enumerate(unique_actions[od]):
                 action_data = [ep_actions.get(unique_action, 0) for ep_actions in actions]
                 action_data = running_average(action_data, last_n=self.smooth_by)
-                ax.plot(self.saved_episodes, action_data, color=self.colors[idx2], label=f"{unique_action}", linewidth=self.line_width)
+                ax.plot(self.saved_episodes,
+                        action_data,
+                        color=self.colors[idx2],
+                        label=f"{unique_action}",
+                        linewidth=self.line_width)
 
             for phase_idx, phase in enumerate(self.phases):
                 color = self.phase_colors[phase_idx % len(self.phase_colors)]
-                ax.axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color, linewidth=self.line_width)
+                ax.axvline(x=phase,
+                           label=self.phase_names[phase_idx],
+                           linestyle='--',
+                           color=color,
+                           linewidth=self.line_width)
 
             ax.set_title(f"Actions for {od}", fontsize=self.title_size, fontweight='bold')
             ax.set_xlabel('Episodes', fontsize=self.label_size)
@@ -420,11 +443,20 @@ class Plotter:
                     action_data = running_average(action_data, last_n=self.smooth_by)
                     color = self.colors[idx3]
                     linestyle = self.linestyles[idx2 % len(self.linestyles)]
-                    ax.plot(episodes, action_data, color=color, linestyle=linestyle, label=f"{kind}-{action}", linewidth=self.line_width)
+                    ax.plot(episodes,
+                            action_data,
+                            color=color,
+                            linestyle=linestyle,
+                            label=f"{kind}-{action}",
+                            linewidth=self.line_width)
 
             for phase_idx, phase in enumerate(self.phases):
                 color = self.phase_colors[phase_idx % len(self.phase_colors)]
-                ax.axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color, linewidth=self.line_width)
+                ax.axvline(x=phase,
+                           label=self.phase_names[phase_idx],
+                           linestyle='--',
+                           color=color,
+                           linewidth=self.line_width)
 
             ax.set_xlabel('Episodes', fontsize=self.label_size)
             ax.set_ylabel('Fraction of drivers', fontsize=self.label_size)
@@ -462,10 +494,18 @@ class Plotter:
         sim_lengths = running_average(sim_lengths, last_n=self.smooth_by)
 
         plt.figure(figsize=(self.default_width, self.default_height), layout='tight')
-        plt.plot(self.saved_episodes, sim_lengths, color=self.colors[0], label="Simulation time steps", linewidth=self.line_width)
+        plt.plot(self.saved_episodes,
+                 sim_lengths,
+                 color=self.colors[0],
+                 label="Simulation time steps",
+                 linewidth=self.line_width)
         for phase_idx, phase in enumerate(self.phases):
             color = self.phase_colors[phase_idx % len(self.phase_colors)]
-            plt.axvline(x=phase, label=self.phase_names[phase_idx], linestyle='--', color=color, linewidth=self.line_width)
+            plt.axvline(x=phase,
+                        label=self.phase_names[phase_idx],
+                        linestyle='--',
+                        color=color,
+                        linewidth=self.line_width)
         plt.xticks(fontsize=self.tick_label_size)
         plt.yticks(fontsize=self.tick_label_size)
         plt.xlabel('Episode', fontsize=self.label_size)
@@ -658,7 +698,8 @@ def plotter(params = None):
         plotter: plotter
     """
     if params is None:
-        logging.warning(f"No parameters provided for plotter, using default parameters. This may result in incorrect plots.")
+        logging.warning(f"No parameters provided for plotter, "
+                        f"using default parameters. This may result in incorrect plots.")
         curr_dir = os.path.dirname(os.path.realpath(__file__))
         params_path = os.path.join(curr_dir, f'../environment/{kc.PARAMS_FILE}')
         params = get_params(params_path)
