@@ -1,6 +1,6 @@
 # Automated Vehicle (AV) agents
 
 ```{eval-rst}
-.. autoclass:: RouteRL.environment.agent.MachineAgent
+.. autoclass:: routerl.environment.agent.MachineAgent
     :members:
 ```

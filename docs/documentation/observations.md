@@ -9,7 +9,7 @@ To create a new observation function, you must define a class that inherits from
 ## Observations Class
 
 ```{eval-rst}
-.. autoclass:: RouteRL.environment.observations.Observations
+.. autoclass:: routerl.environment.observations.Observations
     :members:
     :exclude-members: _private_method
     :no-index:
@@ -22,7 +22,7 @@ The `PreviousAgentStart` class serves as the default implementation for observat
 Details of the `PreviousAgentStart` class are provided below:
 
 ```{eval-rst}
-.. autoclass:: RouteRL.environment.observations.PreviousAgentStart
+.. autoclass:: routerl.environment.observations.PreviousAgentStart
     :members:  
     :exclude-members: _private_method
     :no-index:
@@ -35,7 +35,7 @@ The `PreviousAgentStartPlusStartTime` class is another observation functions in 
 Details of the `PreviousAgentStartPlusStartTime` class are provided below:
 
 ```{eval-rst}
-.. autoclass:: RouteRL.environment.observations.PreviousAgentStartPlusStartTime
+.. autoclass:: routerl.environment.observations.PreviousAgentStartPlusStartTime
     :members:
     :exclude-members: _private_method
     :no-index:
