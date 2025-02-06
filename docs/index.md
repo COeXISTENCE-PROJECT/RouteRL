@@ -35,6 +35,15 @@ network/networks
 
 ```{toctree}
 :hidden:
+:caption: Actions, Rewards, Observations
+
+action_reward_observation/actions
+action_reward_observation/rewards
+action_reward_observation/observations
+```
+
+```{toctree}
+:hidden:
 :caption: Development
 
 Github <https://github.com/COeXISTENCE-PROJECT/Milestone-One>
