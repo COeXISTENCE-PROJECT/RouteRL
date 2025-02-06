@@ -6,7 +6,7 @@ lastpage:
 
 # RouteRL
 
-```{figure} _static/trans_bg.jpeg
+```{figure} _static/logo.png
    :alt: RouteRL
 ```
 
