@@ -152,6 +152,7 @@ class PreviousAgentStartPlusStartTime(Observations):
         self.agent_params = agent_params
         self.training_params = training_params
         self.observations = self.reset_observation()
+        self.agent_vectors = {}
 
     def __call__(self, all_agents: List[Any]) -> Dict[str, Any]:
         """Generate observations for all agents.
