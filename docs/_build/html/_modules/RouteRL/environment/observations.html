@@ -5,8 +5,8 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>RouteRL.environment.observations - RouteRL 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+        <title>routerl.environment.observations - routerl 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
     
@@ -15,7 +15,7 @@
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
+    --color-code-background: #eeffcc;
   --color-code-foreground: black;
   
   }
@@ -165,7 +165,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">RouteRL 0.0.1 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">routerl 0.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,7 +189,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">RouteRL 0.0.1 documentation</span>
+  <span class="sidebar-brand-text">routerl 0.0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -203,7 +203,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/simulator.html">SUMO simulator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/machine_agents.html">Automated Vehicle (AV) agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/human_agents.html">Human drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../documentation/observations.html">Observation functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation/observations.html">Observation Functions</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
@@ -242,64 +242,66 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for RouteRL.environment.observations</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Observation functions for RL agents (AVs).&quot;&quot;&quot;</span>
+          <h1>Source code for routerl.environment.observations</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Observation functions for RL agents (AVs).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span> <span class="nn">gymnasium.spaces</span> <span class="kn">import</span> <span class="n">Box</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">..keychain</span> <span class="kn">import</span> <span class="n">Keychain</span> <span class="k">as</span> <span class="n">kc</span>
+<span class="kn">from</span> <span class="nn">routerl.keychain</span> <span class="kn">import</span> <span class="n">Keychain</span> <span class="k">as</span> <span class="n">kc</span>
 
 
 <div class="viewcode-block" id="Observations">
-<a class="viewcode-back" href="../../../documentation/observations.html#RouteRL.environment.observations.Observations">[docs]</a>
+<a class="viewcode-back" href="../../../documentation/observations.html#routerl.environment.observations.Observations">[docs]</a>
 <span class="k">class</span> <span class="nc">Observations</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for observation functions.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for observation functions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        machine_agents_list (List[Any]): List of machine agents.</span>
+<span class="sd">        human_agents_list (List[Any]): List of human agents.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machine_agents_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">human_agents_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize the observation function.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            machine_agents_list (List[Any]): List of machine agents.</span>
-<span class="sd">            human_agents_list (List[Any]): List of human agents.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">machine_agents_list</span> <span class="o">=</span> <span class="n">machine_agents_list</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">human_agents_list</span> <span class="o">=</span> <span class="n">human_agents_list</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_agents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Method to obtain observations of all agents.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            all_agents (List[Any]): List of all agents.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Dict[str, Any]: A dictionary of observations keyed by agent IDs.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="Observations.observation_space">
-<a class="viewcode-back" href="../../../documentation/observations.html#RouteRL.environment.observations.Observations.observation_space">[docs]</a>
+<a class="viewcode-back" href="../../../documentation/observations.html#routerl.environment.observations.Observations.observation_space">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">observation_space</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Box</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Define the observation space for the observation function.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define the observation space for the observation function.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Dict[str, Box]: A dictionary where keys are agent IDs and values are Gym spaces.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">pass</span></div>
 </div>
 
 
 
 <div class="viewcode-block" id="PreviousAgentStart">
-<a class="viewcode-back" href="../../../documentation/observations.html#RouteRL.environment.observations.PreviousAgentStart">[docs]</a>
+<a class="viewcode-back" href="../../../documentation/observations.html#routerl.environment.observations.PreviousAgentStart">[docs]</a>
 <span class="k">class</span> <span class="nc">PreviousAgentStart</span><span class="p">(</span><span class="n">Observations</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Observes the number of agents with the same origin-destination and start time within a threshold.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Observes the number of agents with the same origin-destination and start time within a threshold.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        machine_agents_list (List[Any]): List of machine agents.</span>
+<span class="sd">        human_agents_list (List[Any]): List of human agents.</span>
+<span class="sd">        simulation_params (Dict[str, Any]): Simulation parameters.</span>
+<span class="sd">        agent_params (Dict[str, Any]): Agent parameters.</span>
+<span class="sd">        training_params (Dict[str, Any]): Training parameters.</span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        observations (List[Any]): List of observations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -307,18 +309,9 @@
         <span class="n">human_agents_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
         <span class="n">simulation_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">agent_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-        <span class="n">training_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize the observation function.</span>
+        <span class="n">training_params</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            machine_agents_list (List[Any]): List of machine agents.</span>
-<span class="sd">            human_agents_list (List[Any]): List of human agents.</span>
-<span class="sd">            simulation_params (Dict[str, Any]): Dictionary of simulation parameters.</span>
-<span class="sd">            agent_params (Dict[str, Any]): Dictionary of agent parameters.</span>
-<span class="sd">            training_params (Dict[str, Any]): Dictionary of training parameters.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">machine_agents_list</span><span class="p">,</span> <span class="n">human_agents_list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">simulation_params</span> <span class="o">=</span> <span class="n">simulation_params</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">agent_params</span> <span class="o">=</span> <span class="n">agent_params</span>
@@ -326,15 +319,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_observation</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_agents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate observations for all agents.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            all_agents (List[Any]): List of all agents.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Dict[str, Any]: A dictionary of observations keyed by agent IDs.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">machine</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine_agents_list</span><span class="p">:</span>
             <span class="n">observation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">NUMBER_OF_PATHS</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
 
@@ -351,14 +335,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">observations</span>
 
 <div class="viewcode-block" id="PreviousAgentStart.reset_observation">
-<a class="viewcode-back" href="../../../documentation/observations.html#RouteRL.environment.observations.PreviousAgentStart.reset_observation">[docs]</a>
+<a class="viewcode-back" href="../../../documentation/observations.html#routerl.environment.observations.PreviousAgentStart.reset_observation">[docs]</a>
     <span class="k">def</span> <span class="nf">reset_observation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Reset observations to the initial state.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset observations to the initial state.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Dict[str, np.ndarray]: A dictionary of initial observations for all machine agents.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="p">{</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">id</span><span class="p">):</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">NUMBER_OF_PATHS</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine_agents_list</span>
@@ -366,14 +350,14 @@
 
 
 <div class="viewcode-block" id="PreviousAgentStart.observation_space">
-<a class="viewcode-back" href="../../../documentation/observations.html#RouteRL.environment.observations.PreviousAgentStart.observation_space">[docs]</a>
+<a class="viewcode-back" href="../../../documentation/observations.html#routerl.environment.observations.PreviousAgentStart.observation_space">[docs]</a>
     <span class="k">def</span> <span class="nf">observation_space</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Box</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Define the observation space for each machine agent.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define the observation space for each machine agent.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Dict[str, Box]: A dictionary where keys are agent IDs and values are Gym spaces.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="p">{</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">id</span><span class="p">):</span> <span class="n">Box</span><span class="p">(</span>
                 <span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -386,18 +370,148 @@
 
 
 <div class="viewcode-block" id="PreviousAgentStart.agent_observations">
-<a class="viewcode-back" href="../../../documentation/observations.html#RouteRL.environment.observations.PreviousAgentStart.agent_observations">[docs]</a>
+<a class="viewcode-back" href="../../../documentation/observations.html#routerl.environment.observations.PreviousAgentStart.agent_observations">[docs]</a>
     <span class="k">def</span> <span class="nf">agent_observations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Retrieve the observation for a specific agent.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve the observation for a specific agent.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            agent_id (str): The ID of the agent.</span>
-
 <span class="sd">        Returns:</span>
 <span class="sd">            np.ndarray: The observation array for the specified agent.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">observations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">agent_id</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">NUMBER_OF_PATHS</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="PreviousAgentStartPlusStartTime">
+<a class="viewcode-back" href="../../../documentation/observations.html#routerl.environment.observations.PreviousAgentStartPlusStartTime">[docs]</a>
+<span class="k">class</span> <span class="nc">PreviousAgentStartPlusStartTime</span><span class="p">(</span><span class="n">Observations</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Observes the number of agents with the same origin-destination and start time within a threshold</span>
+<span class="sd">    and includes the start of the specific agent as well.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">machine_agents_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+        <span class="n">human_agents_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+        <span class="n">simulation_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">agent_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">training_params</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the observation function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            machine_agents_list (List[Any]): List of machine agents.</span>
+<span class="sd">            human_agents_list (List[Any]): List of human agents.</span>
+<span class="sd">            simulation_params (Dict[str, Any]): Dictionary of simulation parameters.</span>
+<span class="sd">            agent_params (Dict[str, Any]): Dictionary of agent parameters.</span>
+<span class="sd">            training_params (Dict[str, Any]): Dictionary of training parameters.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">machine_agents_list</span><span class="p">,</span> <span class="n">human_agents_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation_params</span> <span class="o">=</span> <span class="n">simulation_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agent_params</span> <span class="o">=</span> <span class="n">agent_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training_params</span> <span class="o">=</span> <span class="n">training_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_observation</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agent_vectors</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_agents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate observations for all agents.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            all_agents (List[Any]): List of all agents.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Any]: A dictionary of observations keyed by agent IDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">machine</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine_agents_list</span><span class="p">:</span>
+            <span class="n">observation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">NUMBER_OF_PATHS</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">all_agents</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">machine</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">agent</span><span class="o">.</span><span class="n">id</span> <span class="ow">and</span>
+                    <span class="n">machine</span><span class="o">.</span><span class="n">origin</span> <span class="o">==</span> <span class="n">agent</span><span class="o">.</span><span class="n">origin</span> <span class="ow">and</span>
+                    <span class="n">machine</span><span class="o">.</span><span class="n">destination</span> <span class="o">==</span> <span class="n">agent</span><span class="o">.</span><span class="n">destination</span> <span class="ow">and</span>
+                    <span class="n">machine</span><span class="o">.</span><span class="n">start_time</span> <span class="o">&gt;</span> <span class="n">agent</span><span class="o">.</span><span class="n">start_time</span><span class="p">):</span>
+                    
+                    <span class="n">observation</span><span class="p">[</span><span class="n">agent</span><span class="o">.</span><span class="n">last_action</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">observations</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">machine</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">machine</span><span class="o">.</span><span class="n">start_time</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>  <span class="c1"># Start time as scalar</span>
+                    <span class="n">observation</span>  <span class="c1"># Vector of observations</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">observations</span>
+
+<div class="viewcode-block" id="PreviousAgentStartPlusStartTime.reset_observation">
+<a class="viewcode-back" href="../../../documentation/observations.html#routerl.environment.observations.PreviousAgentStartPlusStartTime.reset_observation">[docs]</a>
+    <span class="k">def</span> <span class="nf">reset_observation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset observations to the initial state.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            obs (Dict[str, np.ndarray]): A dictionary of initial observations for all machine agents.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Initialize agent vectors as zero arrays</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agent_vectors</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">agent</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">NUMBER_OF_PATHS</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine_agents_list</span>
+        <span class="p">}</span>
+        
+        <span class="c1"># Gather observations in a consistent format</span>
+        <span class="n">obs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">id</span><span class="p">):</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>  <span class="c1"># Combine start_time and vector into a single array</span>
+                <span class="p">[</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">agent</span><span class="o">.</span><span class="n">start_time</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>  <span class="c1"># Start time as scalar</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">agent_vectors</span><span class="p">[</span><span class="n">agent</span><span class="p">]</span>  <span class="c1"># Vector as array</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine_agents_list</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">obs</span></div>
+
+
+<div class="viewcode-block" id="PreviousAgentStartPlusStartTime.observation_space">
+<a class="viewcode-back" href="../../../documentation/observations.html#routerl.environment.observations.PreviousAgentStartPlusStartTime.observation_space">[docs]</a>
+    <span class="k">def</span> <span class="nf">observation_space</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Box</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Define the observation space for each machine agent.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Box]: A dictionary where keys are agent IDs and values are Gym spaces.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">total_size</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">NUMBER_OF_PATHS</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">id</span><span class="p">):</span> <span class="n">Box</span><span class="p">(</span>
+                <span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">high</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+                <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">total_size</span><span class="p">,),</span>  <span class="c1"># Combined size for start_time and vector</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">machine_agents_list</span>
+        <span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="PreviousAgentStartPlusStartTime.agent_observations">
+<a class="viewcode-back" href="../../../documentation/observations.html#routerl.environment.observations.PreviousAgentStartPlusStartTime.agent_observations">[docs]</a>
+    <span class="k">def</span> <span class="nf">agent_observations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve the observation for a specific agent.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent_id (str): The ID of the agent.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: The observation array for the specified agent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">observations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">agent_id</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">NUMBER_OF_PATHS</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">))</span></div>
 </div>
 
 </pre></div>

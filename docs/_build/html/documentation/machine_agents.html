@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Human drivers" href="human_agents.html" /><link rel="prev" title="SUMO simulator" href="../simulator.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Human drivers" href="human_agents.html" /><link rel="prev" title="SUMO simulator" href="simulator.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>Automated Vehicle (AV) agents - RouteRL 0.0.1 documentation</title>
+        <title>Automated Vehicle (AV) agents - routerl 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">RouteRL 0.0.1 documentation</div></a>
+      <a href="../index.html"><div class="brand">routerl 0.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -178,7 +178,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -190,7 +190,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">RouteRL 0.0.1 documentation</span>
+  <span class="sidebar-brand-text">routerl 0.0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -201,10 +201,10 @@
   <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="pz_env.html">PettingZoo environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../simulator.html">SUMO simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulator.html">SUMO simulator</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Automated Vehicle (AV) agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="human_agents.html">Human drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="observations.html">Observation functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="observations.html">Observation Functions</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
@@ -247,7 +247,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -256,31 +256,98 @@
           <section class="tex2jax_ignore mathjax_ignore" id="automated-vehicle-av-agents">
 <h1>Automated Vehicle (AV) agents<a class="headerlink" href="#automated-vehicle-av-agents" title="Link to this heading">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="RouteRL.environment.agent.MachineAgent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">RouteRL.environment.agent.</span></span><span class="sig-name descname"><span class="pre">MachineAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_space_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/RouteRL/environment/agent.html#MachineAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.agent.MachineAgent" title="Link to this definition">¶</a></dt>
-<dd><p>A class that models Autonomous Vehicles (AVs), focusing on their learning mechanisms and decision-making processes for selecting optimal routes.</p>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">routerl.environment.agent.</span></span><span class="sig-name descname"><span class="pre">MachineAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_space_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/routerl/environment/agent.html#MachineAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>A class that models Autonomous Vehicles (AVs), focusing on their learning mechanisms
+and decision-making processes for selecting optimal routes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>int</em>) – The id of the agent.</p></li>
+<li><p><strong>start_time</strong> (<em>float</em>) – The start time of the simulation.</p></li>
+<li><p><strong>origin</strong> (<em>float</em>) – The origin of the simulation.</p></li>
+<li><p><strong>destination</strong> (<em>float</em>) – The destination value of the simulation.</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – The parameters of the agent.</p></li>
+<li><p><strong>action_space_size</strong> (<em>int</em>) – The size of the action space of the agent.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>observed_span</strong> (<em>dict</em>) – The observed span of the agent.</p></li>
+<li><p><strong>action_space_size</strong> (<em>int</em>) – The size of the action space of the agent.</p></li>
+<li><p><strong>state_size</strong> (<em>int</em>) – The state size of the agent.</p></li>
+<li><p><strong>model</strong> – The model of the agent behavior.</p></li>
+<li><p><strong>last_reward</strong> (<em>float</em>) – The last reward of the agent.</p></li>
+<li><p><strong>rewards_coefs</strong> (<em>dict</em>) – The reward coefficients of the agent.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="RouteRL.environment.agent.MachineAgent.act">
-<span class="sig-name descname"><span class="pre">act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/agent.html#MachineAgent.act"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.agent.MachineAgent.act" title="Link to this definition">¶</a></dt>
-<dd><p>Returns the agent’s action (route of choice) based on the current observation from the environment.</p>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/routerl/environment/agent.html#MachineAgent.act"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Acting method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>_</strong> (<em>Any</em>) – The current state of the agent.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>None</strong></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="RouteRL.environment.agent.MachineAgent.get_reward">
-<span class="sig-name descname"><span class="pre">get_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/agent.html#MachineAgent.get_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.agent.MachineAgent.get_reward" title="Link to this definition">¶</a></dt>
-<dd><p>This function calculated the reward of each individual agent, based on the travel time of the agent, the group of agents, the other agents, and all agents.</p>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/routerl/environment/agent.html#MachineAgent.get_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>This method calculated the reward of each individual agent, based on the travel time of the agent,
+the group of agents, the other agents, and all agents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>observation</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – The current observation of the agent.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>agent_reward</strong> (<em>float</em>) – The reward of the agent.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="RouteRL.environment.agent.MachineAgent.get_state">
-<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/agent.html#MachineAgent.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.agent.MachineAgent.get_state" title="Link to this definition">¶</a></dt>
-<dd><p>Generates the current state representation based on recent observations of agents navigating from the same origin to the same destination.</p>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/routerl/environment/agent.html#MachineAgent.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Generates the current state representation based on recent observations of agents navigating
+from the same origin to the same destination.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>observation</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – The recent observations of the agent.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>warmth_agents list[int]</strong> – The current state representation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_reward</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em></dt>
+<dd><p>Set the last reward of the agent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>float</strong> – The last reward of the agent.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="RouteRL.environment.agent.MachineAgent.learn">
-<span class="sig-name descname"><span class="pre">learn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/RouteRL/environment/agent.html#MachineAgent.learn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#RouteRL.environment.agent.MachineAgent.learn" title="Link to this definition">¶</a></dt>
-<dd><p>Updates the agent’s knowledge based on the action taken and the resulting observations.</p>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">learn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/routerl/environment/agent.html#MachineAgent.learn"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Learning method
+:param _: The current state of the agent.
+:type _: Any</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None</strong></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -301,7 +368,7 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../simulator.html">
+          <a class="prev-page" href="simulator.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
@@ -330,33 +397,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Automated Vehicle (AV) agents</a><ul>
-<li><a class="reference internal" href="#RouteRL.environment.agent.MachineAgent"><code class="docutils literal notranslate"><span class="pre">MachineAgent</span></code></a><ul>
-<li><a class="reference internal" href="#RouteRL.environment.agent.MachineAgent.act"><code class="docutils literal notranslate"><span class="pre">MachineAgent.act()</span></code></a></li>
-<li><a class="reference internal" href="#RouteRL.environment.agent.MachineAgent.get_reward"><code class="docutils literal notranslate"><span class="pre">MachineAgent.get_reward()</span></code></a></li>
-<li><a class="reference internal" href="#RouteRL.environment.agent.MachineAgent.get_state"><code class="docutils literal notranslate"><span class="pre">MachineAgent.get_state()</span></code></a></li>
-<li><a class="reference internal" href="#RouteRL.environment.agent.MachineAgent.learn"><code class="docutils literal notranslate"><span class="pre">MachineAgent.learn()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

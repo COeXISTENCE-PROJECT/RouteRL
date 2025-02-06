@@ -1,15 +1,15 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="./">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="PettingZoo environment" href="documentation/pz_env.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="Observation Functions" href="../documentation/observations.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>routerl 0.0.1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
+        <title>&lt;no title&gt; - routerl 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     
     
 
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">routerl 0.0.1 documentation</div></a>
+      <a href="../index.html"><div class="brand">routerl 0.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -187,12 +187,12 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
   <span class="sidebar-brand-text">routerl 0.0.1 documentation</span>
   
-</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -200,11 +200,11 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="documentation/pz_env.html">PettingZoo environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="documentation/simulator.html">SUMO simulator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="documentation/machine_agents.html">Automated Vehicle (AV) agents</a></li>
-<li class="toctree-l1"><a class="reference internal" href="documentation/human_agents.html">Human drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="documentation/observations.html">Observation Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../documentation/pz_env.html">PettingZoo environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../documentation/simulator.html">SUMO simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../documentation/machine_agents.html">Automated Vehicle (AV) agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../documentation/human_agents.html">Human drivers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../documentation/observations.html">Observation Functions</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
@@ -229,12 +229,12 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/docs/index.md?plain=true" title="View this page">
+  <a class="muted-link" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/docs/network/networks.md?plain=true" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
 </div><div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/edit/main/docs/index.md" title="Edit this page">
+  <a class="muted-link" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/edit/main/docs/network/networks.md" title="Edit this page">
     <svg><use href="#svg-pencil"></use></svg>
     <span class="visually-hidden">Edit this page</span>
   </a>
@@ -253,46 +253,42 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="routerl">
-<h1>RouteRL<a class="headerlink" href="#routerl" title="Link to this heading">¶</a></h1>
-<figure class="align-default">
-<img alt="RouteRL" src="_images/trans_bg.jpeg" />
-</figure>
-<p>RouteRL provides a multi-agent reinforcement learning environment for urban route choice in different city networks.</p>
-<ul class="simple">
-<li><p>The main class is <a class="reference external" href="https://github.com/COeXISTENCE-PROJECT/Milestone-One/blob/env2pz/RouteRL/environment/environment.py">TrafficEnvironment</a> and is a <a class="reference external" href="https://pettingzoo.farama.org/index.html">PettingZoo</a> AEC API environment.</p></li>
-<li><p>There are two types of agents in the environment and are both represented by the <a class="reference external" href="https://github.com/COeXISTENCE-PROJECT/Milestone-One/blob/env2pz/RouteRL/environment/agent.py">BaseAgent</a> class.</p>
-<ul>
-<li><p>Human drivers are simulated using human route-choice behavior from transportation research.</p></li>
-<li><p>Automated vehicles (AVs) are the RL agents that aim to optimize their routes and learn the most efficient paths.</p></li>
-</ul>
-</li>
-<li><p>It is compatible with popular RL libraries such as <a class="reference external" href="https://stable-baselines3.readthedocs.io/en/master/guide/examples.html">stable-baselines3</a> and <a class="reference external" href="https://pytorch.org/rl/stable/tutorials/torchrl_demo.html">TorchRL</a>.</p></li>
-</ul>
-<p>For more details, check the documentation <a class="reference external" href="https://coexistence-project.github.io/RouteRL/">online</a>.</p>
-<div class="toctree-wrapper compound">
+          <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">p</span> <span class="na">align</span><span class="o">=</span><span class="s">&quot;center&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;../img/cologne.png&quot;</span> <span class="na">width</span><span class="o">=</span><span class="s">&quot;45%&quot;</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;../img/csomor.png&quot;</span> <span class="na">width</span><span class="o">=</span><span class="s">&quot;45%&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span> <span class="na">align</span><span class="o">=</span><span class="s">&quot;center&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;../img/arterial.png&quot;</span> <span class="na">width</span><span class="o">=</span><span class="s">&quot;45%&quot;</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;../img/grid.png&quot;</span> <span class="na">width</span><span class="o">=</span><span class="s">&quot;45%&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span> <span class="na">align</span><span class="o">=</span><span class="s">&quot;center&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;../img/ingolstadt.png&quot;</span> <span class="na">width</span><span class="o">=</span><span class="s">&quot;45%&quot;</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;../img/sourdun.png&quot;</span> <span class="na">width</span><span class="o">=</span><span class="s">&quot;45%&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">p</span> <span class="na">align</span><span class="o">=</span><span class="s">&quot;center&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;../img/two_route_net.png&quot;</span> <span class="na">width</span><span class="o">=</span><span class="s">&quot;45%&quot;</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;../img/square.png&quot;</span> <span class="na">width</span><span class="o">=</span><span class="s">&quot;45%&quot;</span> <span class="p">/&gt;</span>
+<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+</pre></div>
 </div>
-<div class="toctree-wrapper compound">
-</div>
-<div class="toctree-wrapper compound">
-</div>
-</section>
 
         </article>
       </div>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="documentation/pz_env.html">
+          
+          <a class="prev-page" href="../documentation/observations.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
-                  <span>Next</span>
+                  <span>Previous</span>
                 </div>
-                <div class="title">PettingZoo environment</div>
+                
+                <div class="title">Observation Functions</div>
+                
               </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -317,9 +313,9 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=d45e8c67"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/scripts/furo.js?v=5fa4622c"></script>
+</div><script src="../_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
     </body>
 </html>

@@ -1,6 +1,3 @@
-# Network Configurations
-
-
 ```html
 <p align="center">
     <img src="../img/cologne.png" width="45%" />

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>RouteRL.environment.simulator - RouteRL 0.0.1 documentation</title>
+        <title>routerl.environment.simulator - routerl 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -165,7 +165,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">RouteRL 0.0.1 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">routerl 0.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,7 +189,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">RouteRL 0.0.1 documentation</span>
+  <span class="sidebar-brand-text">routerl 0.0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -200,10 +200,10 @@
   <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/pz_env.html">PettingZoo environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../simulator.html">SUMO simulator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation/simulator.html">SUMO simulator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/machine_agents.html">Automated Vehicle (AV) agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/human_agents.html">Human drivers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../documentation/observations.html">Observation functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../documentation/observations.html">Observation Functions</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
@@ -242,165 +242,326 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for RouteRL.environment.simulator</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+          <h1>Source code for routerl.environment.simulator</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">#TODO what simulator.py is?</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">janux</span> <span class="k">as</span> <span class="nn">jx</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">traci</span>
 
-<span class="kn">from</span> <span class="nn">..keychain</span> <span class="kn">import</span> <span class="n">Keychain</span> <span class="k">as</span> <span class="n">kc</span>
-<span class="kn">from</span> <span class="nn">..utilities</span> <span class="kn">import</span> <span class="n">confirm_env_variable</span>
-
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">routerl.keychain</span> <span class="kn">import</span> <span class="n">Keychain</span> <span class="k">as</span> <span class="n">kc</span>
+<span class="kn">from</span> <span class="nn">routerl.utilities</span> <span class="kn">import</span> <span class="n">confirm_env_variable</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
 
+
 <div class="viewcode-block" id="SumoSimulator">
-<a class="viewcode-back" href="../../../simulator.html#RouteRL.environment.simulator.SumoSimulator">[docs]</a>
+<a class="viewcode-back" href="../../../documentation/simulator.html#routerl.environment.simulator.SumoSimulator">[docs]</a>
 <span class="k">class</span> <span class="nc">SumoSimulator</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sumo simulator class</span>
+
 <span class="sd">    A class responsible for managing the communication between our learning agents and the SUMO traffic simulator.</span>
 <span class="sd">    SUMO provides the traffic environment where vehicles travel between designated origins and destinations,</span>
 <span class="sd">    and it returns the corresponding travel times for these vehicles.</span>
 
+<span class="sd">    Args:</span>
+<span class="sd">        params (dict): Dictionary of parameters for the SUMO environment.</span>
+<span class="sd">        path_gen_params (dict): Dictionary of parameters for the SUMO environment.</span>
+<span class="sd">        seed: Random number generator seed.</span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        network_name: Network name.</span>
+<span class="sd">        sumo_type: Type of sumo.</span>
+<span class="sd">        number_of_paths: Number of paths.</span>
+<span class="sd">        simulation_length: Simulation length.</span>
+<span class="sd">        paths_csv_file_path (str): Paths to csv files.</span>
+<span class="sd">        sumo_config_path (str): Path to sumo configuration file.</span>
+<span class="sd">        routes_xml_path (str): Path to routes defined as xml files.</span>
+<span class="sd">        sumo_fcd: Sumo floating car data.</span>
+<span class="sd">        detector_save_path (str): Path to save the detected vehicles.</span>
+<span class="sd">        conn_file_path (str): Path to connections file.</span>
+<span class="sd">        edge_file_path (str): Path to edges file.</span>
+<span class="sd">        nod_file_path (str): Path to nodes file.</span>
+<span class="sd">        rou_xml_save_path (str): Path to save routes xml file.</span>
+<span class="sd">        sumo_id: Sumo id.</span>
+<span class="sd">        sumo_connection: Sumo connection.</span>
+<span class="sd">        timestep: Time step.</span>
+<span class="sd">        route_id_cache: Routes id cache.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_config_path</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">SUMO_CONFIG_PATH</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">paths_csv_path</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">PATHS_CSV_SAVE_PATH</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">routes_xml_path</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ROUTE_FILE_PATH</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_fcd</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">SUMO_FCD</span><span class="p">]</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">path_gen_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">23423</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_name</span>        <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">NETWORK_NAME</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_type</span>           <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">SUMO_TYPE</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_paths</span>     <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">NUMBER_OF_PATHS</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation_length</span>   <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">SIMULATION_TIMESTEPS</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_type</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">SUMO_TYPE</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_var</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ENV_VAR</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_paths</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">NUMBER_OF_PATHS</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">simulation_length</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">SIMULATION_TIMESTEPS</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">SEED</span><span class="p">]</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">detector_save_path</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">PATHS_CSV_SAVE_DETECTORS</span><span class="p">]</span>
+        <span class="n">curr_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 
-        <span class="c1">## Detectors</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">detectors_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">detector_save_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="c1">###FIX THIS</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">det_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors_name</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network_folder</span>      <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_dir</span><span class="p">,</span>
+                                                <span class="n">kc</span><span class="o">.</span><span class="n">NETWORK_FOLDER</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$net$&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_config_path</span>    <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_dir</span><span class="p">,</span>
+                                                <span class="n">kc</span><span class="o">.</span><span class="n">SUMO_CONFIG_PATH</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$net$&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">routes_xml_path</span>     <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_dir</span><span class="p">,</span>
+                                                <span class="n">kc</span><span class="o">.</span><span class="n">ROU_FILE_PATH</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$net$&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_fcd</span>            <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_dir</span><span class="p">,</span>
+                                                <span class="n">kc</span><span class="o">.</span><span class="n">SUMO_FCD</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$net$&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">detector_save_path</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_dir</span><span class="p">,</span>
+                                                <span class="n">kc</span><span class="o">.</span><span class="n">DETECTORS_CSV_PATH</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$net$&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn_file_path</span>      <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_dir</span><span class="p">,</span>
+                                                <span class="n">kc</span><span class="o">.</span><span class="n">CONNECTION_FILE_PATH</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$net$&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_file_path</span>      <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_dir</span><span class="p">,</span>
+                                                <span class="n">kc</span><span class="o">.</span><span class="n">EDGE_FILE_PATH</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$net$&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nod_file_path</span>       <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_dir</span><span class="p">,</span>
+                                                <span class="n">kc</span><span class="o">.</span><span class="n">NOD_FILE_PATH</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$net$&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rou_xml_save_path</span>   <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_dir</span><span class="p">,</span>
+                                                <span class="n">kc</span><span class="o">.</span><span class="n">ROUTE_XML_PATH</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$net$&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">det_xml_save_path</span>   <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_dir</span><span class="p">,</span>
+                                                <span class="n">kc</span><span class="o">.</span><span class="n">DETECTORS_XML_PATH</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$net$&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_od_path</span>     <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curr_dir</span><span class="p">,</span>
+                                                <span class="n">kc</span><span class="o">.</span><span class="n">DEFAULT_ODS_PATH</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">paths_csv_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">RECORDS_FOLDER</span><span class="p">],</span> <span class="n">kc</span><span class="o">.</span><span class="n">PATHS_CSV_FILE_NAME</span><span class="p">)</span>
 
+        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sumo_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span> <span class="o">=</span> <span class="kc">None</span>
 
+        <span class="n">confirm_env_variable</span><span class="p">(</span><span class="n">kc</span><span class="o">.</span><span class="n">ENV_VAR</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="s2">&quot;tools&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">path_gen_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_paths</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">path_gen_params</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[SUCCESS] Path generation completed.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_paths_ready</span><span class="p">()</span>
-        <span class="n">confirm_env_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env_var</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="s2">&quot;tools&quot;</span><span class="p">)</span>
-        
+        <span class="bp">self</span><span class="o">.</span><span class="n">detectors_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_detectors</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">route_id_cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[SUCCESS] Simulator is ready to simulate!&quot;</span><span class="p">)</span>
 
-    <span class="c1">#####################</span>
-
-    <span class="c1">##### CONFIG CHECK #####</span>
+    <span class="c1">################################</span>
+    <span class="c1">######## CONFIG CHECKS #########</span>
+    <span class="c1">################################</span>
 
     <span class="k">def</span> <span class="nf">_check_paths_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Checks if the required paths file for the simulation exists.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths_csv_path</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rou_xml_save_path</span><span class="p">):</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;[CONFIRMED] Paths file is ready.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
                 <span class="s2">&quot;Paths file is not ready. Please generate paths first.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;To do this, please navigate to &#39;path_generation/generate_paths.py&#39; &quot;</span>
-                <span class="s2">&quot;and execute the script to create the necessary paths for the simulation.&quot;</span>
+                <span class="s2">&quot;To do this, define arguments in params.json and pass it &quot;</span>
+                <span class="s2">&quot;to the environment under path_generation_parameters&quot;</span>
             <span class="p">)</span>
+            
+    <span class="k">def</span> <span class="nf">_get_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">path_gen_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
-    <span class="c1">#####################</span>
+        <span class="c1"># Build the network</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="n">jx</span><span class="o">.</span><span class="n">build_digraph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conn_file_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_file_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">routes_xml_path</span><span class="p">)</span>
+        
+        <span class="c1"># Get origins and destinations</span>
+        <span class="n">origins</span> <span class="o">=</span> <span class="n">path_gen_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ORIGINS</span><span class="p">]</span>
+        <span class="n">destinations</span> <span class="o">=</span> <span class="n">path_gen_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">DESTINATIONS</span><span class="p">]</span>
+        
+        <span class="c1"># Generate paths</span>
+        <span class="n">path_gen_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;number_of_paths&quot;</span><span class="p">:</span> <span class="n">path_gen_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">NUMBER_OF_PATHS</span><span class="p">],</span>
+            <span class="s2">&quot;random_seed&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
+            <span class="s2">&quot;num_samples&quot;</span><span class="p">:</span> <span class="n">path_gen_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">NUM_SAMPLES</span><span class="p">],</span>
+            <span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="n">path_gen_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">BETA</span><span class="p">],</span>
+            <span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="n">path_gen_params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">WEIGHT</span><span class="p">],</span>
+            <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="kc">False</span>
+        <span class="p">}</span>
+        <span class="n">routes</span> <span class="o">=</span> <span class="n">jx</span><span class="o">.</span><span class="n">basic_generator</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">origins</span><span class="p">,</span> <span class="n">destinations</span><span class="p">,</span> <span class="n">as_df</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">calc_free_flow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">path_gen_kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_paths_to_disc</span><span class="p">(</span><span class="n">routes</span><span class="p">,</span> <span class="n">origins</span><span class="p">,</span> <span class="n">destinations</span><span class="p">)</span>
+        
+        <span class="c1"># Save paths visualizations</span>
+        <span class="n">path_visuals_path</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">PLOTS_FOLDER</span><span class="p">]</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path_visuals_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Visualize paths and save figures</span>
+        <span class="k">for</span> <span class="n">origin_idx</span><span class="p">,</span> <span class="n">origin</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">origins</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">dest_idx</span><span class="p">,</span> <span class="n">destination</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">destinations</span><span class="p">):</span>
+                <span class="c1"># Filter routes for the current origin-destination pair</span>
+                <span class="n">routes_to_show</span> <span class="o">=</span> <span class="p">(</span><span class="n">routes</span><span class="p">[(</span><span class="n">routes</span><span class="p">[</span><span class="s2">&quot;origins&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">origin_idx</span><span class="p">)</span>
+                                         <span class="o">&amp;</span> <span class="p">(</span><span class="n">routes</span><span class="p">[</span><span class="s2">&quot;destinations&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dest_idx</span><span class="p">)][</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+                <span class="n">routes_to_show</span> <span class="o">=</span> <span class="p">[</span><span class="n">route</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">routes_to_show</span><span class="p">]</span>
+                <span class="c1"># Specify the save path and title for the figure</span>
+                <span class="n">fig_save_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_visuals_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">origin_idx</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">dest_idx</span><span class="si">}</span><span class="s2">.png&quot;</span><span class="p">)</span>
+                <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Origin: </span><span class="si">{</span><span class="n">origin_idx</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">origin</span><span class="si">}</span><span class="s2">), Destination: </span><span class="si">{</span><span class="n">dest_idx</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="c1"># Show the routes</span>
+                <span class="n">jx</span><span class="o">.</span><span class="n">show_multi_routes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nod_file_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_file_path</span><span class="p">,</span>
+                                    <span class="n">routes_to_show</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> 
+                                    <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save_file_path</span><span class="o">=</span><span class="n">fig_save_path</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
 
-    <span class="c1">##### SUMO CONTROL #####</span>
+    <span class="k">def</span> <span class="nf">_save_paths_to_disc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routes_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">origins</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">destinations</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">origins</span> <span class="o">=</span> <span class="p">{</span><span class="n">node_name</span><span class="p">:</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">node_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">origins</span><span class="p">)}</span>
+        <span class="n">destinations</span> <span class="o">=</span> <span class="p">{</span><span class="n">node_name</span><span class="p">:</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">node_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">destinations</span><span class="p">)}</span>
+        
+        <span class="c1"># Format routes dataframe</span>
+        <span class="n">routes_df</span><span class="p">[</span><span class="s2">&quot;origins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">routes_df</span><span class="p">[</span><span class="s2">&quot;origins&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">origins</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+        <span class="n">routes_df</span><span class="p">[</span><span class="s2">&quot;destinations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">routes_df</span><span class="p">[</span><span class="s2">&quot;destinations&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">destinations</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+        <span class="n">routes_df</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">routes_df</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">))</span>
+        <span class="n">routes_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;origins&quot;</span><span class="p">,</span> <span class="s2">&quot;destinations&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Save paths to csv</span>
+        <span class="n">routes_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths_csv_file_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Convert routes dataframe to a dictionary with od indices</span>
+        <span class="n">paths_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">origin_idx</span> <span class="ow">in</span> <span class="n">origins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">destination_idx</span> <span class="ow">in</span> <span class="n">destinations</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">rows</span> <span class="o">=</span> <span class="n">routes_df</span><span class="p">[(</span><span class="n">routes_df</span><span class="p">[</span><span class="s2">&quot;origins&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">origin_idx</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">routes_df</span><span class="p">[</span><span class="s2">&quot;destinations&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">destination_idx</span><span class="p">)]</span>
+                <span class="n">paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">rows</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+                <span class="n">paths_dict</span><span class="p">[(</span><span class="n">origin_idx</span><span class="p">,</span> <span class="n">destination_idx</span><span class="p">)]</span> <span class="o">=</span> <span class="n">paths</span>
+
+        <span class="c1"># Save paths to xml</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rou_xml_save_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">rou</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;&lt;routes&gt;&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">rou</span><span class="p">)</span>
+            <span class="c1"># TODO: Following two lines are hardcoded. Change them to be dynamic.</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&lt;vType id=</span><span class="se">\&quot;</span><span class="s2">Human</span><span class="se">\&quot;</span><span class="s2"> color=</span><span class="se">\&quot;</span><span class="s2">red</span><span class="se">\&quot;</span><span class="s2"> guiShape=</span><span class="se">\&quot;</span><span class="s2">passenger/sedan</span><span class="se">\&quot;</span><span class="s2">/&gt;&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">rou</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&lt;vType id=</span><span class="se">\&quot;</span><span class="s2">AV</span><span class="se">\&quot;</span><span class="s2"> color=</span><span class="se">\&quot;</span><span class="s2">yellow</span><span class="se">\&quot;</span><span class="s2">/&gt;&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">rou</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">origin_idx</span> <span class="ow">in</span> <span class="n">origins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">destination_idx</span> <span class="ow">in</span> <span class="n">destinations</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="n">paths</span> <span class="o">=</span> <span class="p">(</span><span class="n">routes_df</span><span class="p">[(</span><span class="n">routes_df</span><span class="p">[</span><span class="s2">&quot;origins&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">origin_idx</span><span class="p">)</span>
+                                       <span class="o">&amp;</span> <span class="p">(</span><span class="n">routes_df</span><span class="p">[</span><span class="s2">&quot;destinations&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">destination_idx</span><span class="p">)][</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">paths</span><span class="p">):</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;route id=&quot;</span><span class="si">{</span><span class="n">origin_idx</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">destination_idx</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s1">&quot; edges=&quot;&#39;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">rou</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">rou</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&quot; /&gt;&#39;</span><span class="p">,</span><span class="n">file</span><span class="o">=</span><span class="n">rou</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&lt;/routes&gt;&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">rou</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_detectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">paths_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">paths_csv_file_path</span><span class="p">)</span>
+        <span class="n">paths_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths_df</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
+        <span class="n">detectors_name</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">node</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths_list</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">path</span><span class="p">])))</span>
+        
+        <span class="n">detectors_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">detectors_name</span><span class="p">})</span>
+        <span class="n">detectors_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">detector_save_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">det_xml_save_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">det</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;&lt;additional&gt;&quot;&quot;&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">det</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">det_id</span> <span class="ow">in</span> <span class="n">detectors_name</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;inductionLoop id=</span><span class="se">\&quot;</span><span class="si">{</span><span class="n">det_id</span><span class="si">}</span><span class="s2">_det</span><span class="se">\&quot;</span><span class="s2"> lane=</span><span class="se">\&quot;</span><span class="si">{</span><span class="n">det_id</span><span class="si">}</span><span class="s2">_0</span><span class="se">\&quot;</span><span class="s2"> pos=</span><span class="se">\&quot;</span><span class="s2">-5</span><span class="se">\&quot;</span><span class="s2"> file=</span><span class="se">\&quot;</span><span class="s2">NUL</span><span class="se">\&quot;</span><span class="s2"> friendlyPos=</span><span class="se">\&quot;</span><span class="s2">True</span><span class="se">\&quot;</span><span class="s2">/&gt;&quot;</span><span class="p">,</span>
+                      <span class="n">file</span><span class="o">=</span><span class="n">det</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&lt;/additional&gt;&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">det</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">detectors_name</span>
+
+    <span class="c1">################################</span>
+    <span class="c1">######## SUMO CONTROL ##########</span>
+    <span class="c1">################################</span>
 
 <div class="viewcode-block" id="SumoSimulator.start">
-<a class="viewcode-back" href="../../../simulator.html#RouteRL.environment.simulator.SumoSimulator.start">[docs]</a>
+<a class="viewcode-back" href="../../../documentation/simulator.html#routerl.environment.simulator.SumoSimulator.start">[docs]</a>
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Starts the SUMO simulation with the specified configuration.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Starts the SUMO simulation with the specified configuration.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">sumo_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sumo_type</span><span class="p">,</span><span class="s2">&quot;--seed&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span> <span class="s2">&quot;--fcd-output&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sumo_fcd</span><span class="p">,</span> <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sumo_config_path</span><span class="p">]</span> 
+        <span class="n">sumo_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sumo_type</span><span class="p">,</span><span class="s2">&quot;--seed&quot;</span><span class="p">,</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">),</span>
+                    <span class="s2">&quot;--fcd-output&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sumo_fcd</span><span class="p">,</span>
+                    <span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sumo_config_path</span><span class="p">]</span>
         <span class="n">traci</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">sumo_cmd</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sumo_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span> <span class="o">=</span> <span class="n">traci</span><span class="o">.</span><span class="n">getConnection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sumo_id</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SumoSimulator.stop">
-<a class="viewcode-back" href="../../../simulator.html#RouteRL.environment.simulator.SumoSimulator.stop">[docs]</a>
+<a class="viewcode-back" href="../../../documentation/simulator.html#routerl.environment.simulator.SumoSimulator.stop">[docs]</a>
     <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Stops and closes the SUMO simulation.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stops and closes the SUMO simulation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SumoSimulator.reset">
-<a class="viewcode-back" href="../../../simulator.html#RouteRL.environment.simulator.SumoSimulator.reset">[docs]</a>
-    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Resets the SUMO simulation to its initial state.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">load</span><span class="p">([</span><span class="s2">&quot;--seed&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span> <span class="s2">&quot;--fcd-output&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sumo_fcd</span><span class="p">,</span> <span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sumo_config_path</span><span class="p">])</span>
+<a class="viewcode-back" href="../../../documentation/simulator.html#routerl.environment.simulator.SumoSimulator.reset">[docs]</a>
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Resets the SUMO simulation to its initial state.</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">det_dict</span> <span class="o">=</span> <span class="p">[]</span></div>
-
-
-    <span class="c1">#####################</span>
-
-    <span class="c1">##### SIMULATION #####</span>
-    
-<div class="viewcode-block" id="SumoSimulator.add_vehice">
-<a class="viewcode-back" href="../../../simulator.html#RouteRL.environment.simulator.SumoSimulator.add_vehice">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_vehice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">act_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adds a vehicle to the SUMO simulation environment with the specified route and parameters.</span>
-
-<span class="sd">        Parameters:</span>
-<span class="sd">        - act_dict (dict): A dictionary containing key vehicle attributes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">route_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_id_cache</span><span class="o">.</span><span class="n">setdefault</span><span class="p">((</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ORIGIN</span><span class="p">],</span> <span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_DESTINATION</span><span class="p">],</span> <span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ACTION</span><span class="p">]),</span> \
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ORIGIN</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_DESTINATION</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ACTION</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">kind</span> <span class="o">=</span> <span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_KIND</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">vehID</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ID</span><span class="p">]),</span> <span class="n">routeID</span><span class="o">=</span><span class="n">route_id</span><span class="p">,</span> <span class="n">depart</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_START_TIME</span><span class="p">]),</span> <span class="n">typeID</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span></div>
-
-    
-<div class="viewcode-block" id="SumoSimulator.step">
-<a class="viewcode-back" href="../../../simulator.html#RouteRL.environment.simulator.SumoSimulator.step">[docs]</a>
-    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Advances the SUMO simulation by one timestep and retrieves information about vehicle arrivals and detector data.</span>
+<span class="sd">        Reads detector data.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        - tuple: A tuple containing:</span>
-<span class="sd">            - self.timestep (int): The current simulation timestep.</span>
-<span class="sd">            - arrivals (list): List of vehicle IDs that arrived at their destinations during the current timestep.</span>
-<span class="sd">            - self.det_dict (list): The current detector data (currently an empty list).</span>
-<span class="sd">    </span>
+<span class="sd">            det_dict (dict[Any, None]): dictionary with detector data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">det_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors_name</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">det_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors_name</span><span class="p">:</span>
+            <span class="n">det_dict</span><span class="p">[</span><span class="n">det_name</span><span class="p">]</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">inductionloop</span><span class="o">.</span><span class="n">getIntervalVehicleNumber</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">det_name</span><span class="si">}</span><span class="s2">_det&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">load</span><span class="p">([</span><span class="s2">&quot;--seed&quot;</span><span class="p">,</span>
+                                   <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">),</span>
+                                   <span class="s2">&quot;--fcd-output&quot;</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">sumo_fcd</span><span class="p">,</span>
+                                   <span class="s1">&#39;-c&#39;</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">sumo_config_path</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">det_dict</span></div>
+
+
+    <span class="c1">################################</span>
+    <span class="c1">######### SIMULATION ###########</span>
+    <span class="c1">################################</span>
+
+<div class="viewcode-block" id="SumoSimulator.add_vehicle">
+<a class="viewcode-back" href="../../../documentation/simulator.html#routerl.environment.simulator.SumoSimulator.add_vehicle">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_vehicle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">act_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a vehicle to the SUMO simulation environment with the specified route and parameters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            act_dict (dict): A dictionary containing key vehicle attributes.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">route_id</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">route_id_cache</span><span class="o">.</span><span class="n">setdefault</span><span class="p">((</span>
+                <span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ORIGIN</span><span class="p">],</span>
+                <span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_DESTINATION</span><span class="p">],</span>
+                <span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ACTION</span><span class="p">]),</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ORIGIN</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_DESTINATION</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">ACTION</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_KIND</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">vehicle</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">vehID</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ID</span><span class="p">]),</span>
+                                         <span class="n">routeID</span><span class="o">=</span><span class="n">route_id</span><span class="p">,</span>
+                                         <span class="n">depart</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">act_dict</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_START_TIME</span><span class="p">]),</span>
+                                         <span class="n">typeID</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SumoSimulator.step">
+<a class="viewcode-back" href="../../../documentation/simulator.html#routerl.environment.simulator.SumoSimulator.step">[docs]</a>
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Advances the SUMO simulation by one timestep and retrieves information</span>
+<span class="sd">        about vehicle arrivals and detector data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            self.timestep (int): The current simulation timestep.</span>
+<span class="sd">            arrivals (list): List of vehicle IDs that arrived at their destinations during the current timestep.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
    
         <span class="n">arrivals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">getArrivedIDList</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sumo_connection</span><span class="o">.</span><span class="n">simulationStep</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span> <span class="o">+=</span> <span class="mi">1</span>
-
-        <span class="c1">#### Detectors</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;for id, name in enumerate(self.detectors_name):</span>
-<span class="sd">            </span>
-<span class="sd">            link = self.sumo_connection.inductionloop.getIntervalVehicleNumber(f&quot;{name}_det&quot;)</span>
-<span class="sd">            self.det_dict[name] = ((link / self.timestep) * 3600) # 1hour&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">det_dict</span> <span class="o">=</span> <span class="p">[]</span>
         
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span><span class="p">,</span> <span class="n">arrivals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">det_dict</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span><span class="p">,</span> <span class="n">arrivals</span></div>
 </div>
 
-    
-    <span class="c1">#####################</span>
-    
 </pre></div>
         </article>
       </div>
