@@ -5,7 +5,7 @@ firstpage:
 
 # Networks
 
-```{figure} _static/cologne.png
+```{figure} ../_static/cologne.png
    :alt: RouteRL
 ```
 

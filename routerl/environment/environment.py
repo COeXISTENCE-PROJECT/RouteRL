@@ -314,7 +314,7 @@ class TrafficEnvironment(AECEnv):
             None
         """
 
-        self.simulator.stop()
+        #self.simulator.stop()
 
     def observe(self, agent: str) -> np.ndarray:
         """Retrieve the observations for a specific agent.
