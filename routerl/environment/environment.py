@@ -110,7 +110,13 @@ class TrafficEnvironment(AECEnv):
         self.machine_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_MACHINE]
         self.human_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_HUMAN]
         self.possible_agents = list()
-        
+
+        self.n_agents = 0
+        self.rewards_humans = {}
+        self.observations = {}
+        self._agent_selector = agent_selector(self.possible_agents)
+        self.agent_selection = self._agent_selector.next()
+
         if len(self.machine_agents):
             self._initialize_machine_agents()
         if not self.human_agents:
