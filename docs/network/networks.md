@@ -5,6 +5,9 @@ firstpage:
 
 # Networks
 
+```{figure} _static/cologne.png
+   :alt: RouteRL
+```
 
 <p align="center">
     <img src="docs/img/cologne.png" width="45%" />
