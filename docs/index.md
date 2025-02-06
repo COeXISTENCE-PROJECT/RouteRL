@@ -28,6 +28,13 @@ documentation/observations
 
 ```{toctree}
 :hidden:
+:caption: Networks
+
+network/networks
+```
+
+```{toctree}
+:hidden:
 :caption: Development
 
 Github <https://github.com/COeXISTENCE-PROJECT/Milestone-One>
