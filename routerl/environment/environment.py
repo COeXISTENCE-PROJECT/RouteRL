@@ -159,12 +159,6 @@ class TrafficEnvironment(AECEnv):
         self.human_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_HUMAN]
         self.possible_agents = list()
 
-        self.n_agents = 0
-        self.rewards_humans = {}
-        self.observations = {}
-        self._agent_selector = agent_selector(self.possible_agents)
-        self.agent_selection = self._agent_selector.next()
-
         if len(self.machine_agents):
             self._initialize_machine_agents()
         if not self.human_agents:
@@ -426,9 +420,8 @@ class TrafficEnvironment(AECEnv):
         travel_times = dict()
         for veh_id in arrivals:
             agent_id = int(veh_id)
-            travel_times[agent_id] = {kc.TRAVEL_TIME:
-                                          (timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0
-                                      }
+            travel_times[agent_id] = ({kc.TRAVEL_TIME:
+                                           (timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0})
             travel_times[agent_id].update(self.episode_actions[agent_id])
 
         return travel_times.values()

@@ -172,7 +172,7 @@ class SumoSimulator():
         for origin_idx in origins.values():
             for destination_idx in destinations.values():
                 rows = routes_df[(routes_df["origins"] == origin_idx) & (routes_df["destinations"] == destination_idx)]
-                paths = list(rows["path"].values)
+                paths = rows["path"].to_list()
                 paths_dict[(origin_idx, destination_idx)] = paths
 
         # Save paths to xml
