@@ -5,28 +5,36 @@ firstpage:
 
 # Networks
 
-```{figure} ../_static/cologne.png
-   :alt: RouteRL
-```
-
 <div style="display: flex; justify-content: space-between;">
-    <img src="../_static/ingolstadt.png" alt="Ingolstadt" width="48%" />
-    <img src="../_static/cologne.png" alt="Cologne" width="48%" />
+    <figure style="width: 48%;">
+        <img src="../_static/ingolstadt.png" alt="Ingolstadt" width="100%" />
+        <figcaption>Ingolstadt Network</figcaption>
+    </figure>
+    <figure style="width: 48%;">
+        <img src="../_static/cologne.png" alt="Cologne" width="100%" />
+        <figcaption>Cologne Network</figcaption>
+    </figure>
 </div>
 
-<p align="center">
-    <img src="../img/cologne.png" width="45%" />
-    <img src="../img/csomor.png" width="45%" />
-</p>
-<p align="center">
-    <img src="../img/arterial.png" width="45%" />
-    <img src="../img/grid.png" width="45%" />
-</p>
-<p align="center">
-    <img src="../img/ingolstadt.png" width="45%" />
-    <img src="../img/sourdun.png" width="45%" />
-</p>
-<p align="center">
-    <img src="../img/two_route_net.png" width="45%" />
-    <img src="../img/square.png" width="45%" />
-</p>
+<div style="display: flex; justify-content: space-between;">
+    <figure style="width: 48%;">
+        <img src="../_static/csomor.png" alt="Csomor" width="100%" />
+        <figcaption>Csomor Network</figcaption>
+    </figure>
+    <figure style="width: 48%;">
+        <img src="../_static/two_route_net.png" alt="Two Route Network" width="100%" />
+        <figcaption>Two Route Network</figcaption>
+    </figure>
+</div>
+
+<div style="display: flex; justify-content: space-between;">
+    <figure style="width: 48%;">
+        <img src="../_static/arterial.png" alt="Arterial" width="100%" />
+        <figcaption>Arterial Network</figcaption>
+    </figure>
+    <figure style="width: 48%;">
+        <img src="../_static/grid.png" alt="Grid" width="100%" />
+        <figcaption>Grid Network</figcaption>
+    </figure>
+</div>
+
