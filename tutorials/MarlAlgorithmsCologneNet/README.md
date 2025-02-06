@@ -2,9 +2,9 @@
 
 ---
 
-In these notebooks, we utilize the Csömör network in our simulator [SUMO](https://eclipse.dev/sumo/), where agents-vehicles will determine their route choices.
+In these notebooks, we utilize the Cologne network in our simulator [SUMO](https://eclipse.dev/sumo/), where agents-vehicles will determine their route choices.
 
-<img src="../../docs/img/csomor2.png" alt="Csömör network" width="700" />
+<img src="../../docs/img/cologne.png" alt="Cologne network" width="700" />
 
 
 --- 
