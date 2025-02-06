@@ -79,20 +79,20 @@ class TrafficEnvironment(AECEnv):
                  create_agents: bool = True,
                  create_paths: bool = True,
                  **kwargs) -> None:
-        
+
         super().__init__()
         self.render_mode = None
-        
+
         # Read default parameters, update w #TODO kwargs
         params_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), kc.PARAMS_FILE)
         params = get_params(params_path, resolve=True, update=kwargs)
-        
+
         self.environment_params = params[kc.ENVIRONMENT]
         self.simulation_params = params[kc.SIMULATOR]
         self.agent_params = params[kc.AGENTS]
         self.plotter_params = params[kc.PLOTTER]
         self.path_gen_params = params[kc.PATH_GEN] if create_paths else None
-        
+
         self.travel_times_list = []
         self.day = 0
         self.human_learning = True
@@ -131,7 +131,7 @@ class TrafficEnvironment(AECEnv):
             \nMachines: {sorted(self.machine_agents, key=lambda agent: agent.id)}\
             \nHumans: {sorted(self.human_agents, key=lambda agent: agent.id)}"
         return message
-    
+
     def _set_seed(self, seed: int) -> None:
         random.seed(seed)
         np.random.seed(seed)
@@ -203,7 +203,7 @@ class TrafficEnvironment(AECEnv):
         else:
             self.observations = {}
 
-        infos = {a: {}  for a in self.possible_agents}
+        infos = {a: {} for a in self.possible_agents}
 
         return self.observations, infos
 
@@ -223,8 +223,7 @@ class TrafficEnvironment(AECEnv):
         # If there are machines in the system
         if self.possible_agents:
             if (self.terminations[self.agent_selection]
-                or self.truncations[self.agent_selection]):
-
+                    or self.truncations[self.agent_selection]):
                 # handles stepping an agent which is already dead
                 # accepts a None action for the one agent, and moves the agent_selection to
                 # the next dead agent,  or if there are no more dead agents, to the next live agent
@@ -238,17 +237,17 @@ class TrafficEnvironment(AECEnv):
             self.simulation_loop(machine_action, agent)
 
             # Collect rewards if it is the last agent to act
-            if self._agent_selector.is_last(): 
+            if self._agent_selector.is_last():
                 # Increase day number
                 self.day += 1
 
                 # Calculate the rewards
-                self._assign_rewards() 
+                self._assign_rewards()
 
                 # The episode ends when we complete episode_length days
-                self.truncations = {agent: not (self.day % self.number_of_days)  for agent in self.agents}
+                self.truncations = {agent: not (self.day % self.number_of_days) for agent in self.agents}
                 self.terminations = {agent: not (self.day % self.number_of_days) for agent in self.agents}
-                self.info = {agent: {} for agent in self.agents}
+                self.infos = {agent: {} for agent in self.agents}
                 self.observations = self.observation_obj(self.all_agents)
                 self._reset_episode()
             else:
@@ -333,19 +332,19 @@ class TrafficEnvironment(AECEnv):
             random_humans_deleted.append(random_human)
             self.machine_agents.append(MachineAgent(random_human.id,
                                                     random_human.start_time,
-                                                    random_human.origin, 
-                                                    random_human.destination, 
-                                                    self.agent_params[kc.MACHINE_PARAMETERS], 
+                                                    random_human.origin,
+                                                    random_human.destination,
+                                                    self.agent_params[kc.MACHINE_PARAMETERS],
                                                     self.action_space_size))
             self.possible_agents.append(str(random_human.id))
 
         self.n_agents = len(self.possible_agents)
         self.all_agents = self.machine_agents + self.human_agents
-        
+
         if disable_human_learning:  self.human_learning = False
 
         logging.info(f"Now there are {len(self.human_agents)} human agents.")
-        
+
         self._initialize_machine_agents()
 
     #########################
@@ -374,12 +373,12 @@ class TrafficEnvironment(AECEnv):
                            kc.AGENT_START_TIME: agent.start_time}
             self.simulator.add_vehicle(action_dict)
             self.episode_actions[agent.id] = action_dict
-        timestep, arrivals = self.simulator.step()  
+        timestep, arrivals = self.simulator.step()
 
         travel_times = dict()
         for veh_id in arrivals:
             agent_id = int(veh_id)
-            travel_times[agent_id] = {kc.TRAVEL_TIME :
+            travel_times[agent_id] = {kc.TRAVEL_TIME:
                                           (timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0
                                       }
             travel_times[agent_id].update(self.episode_actions[agent_id])
@@ -473,7 +472,7 @@ class TrafficEnvironment(AECEnv):
                     else:
                         # Machine acting
                         machine.last_action = machine_action
-                        self.actions_timestep.append((machine, machine_action))  
+                        self.actions_timestep.append((machine, machine_action))
 
                         # The machine acted should be deleted from the self.machine_same_start_time list
                         if machine in self.machine_same_start_time:
@@ -484,7 +483,7 @@ class TrafficEnvironment(AECEnv):
                             agent_action = True
 
             # If all machines that have start time as the simulator timestep acted
-            if not self.machine_same_start_time: 
+            if not self.machine_same_start_time:
                 travel_times = self._help_step(self.actions_timestep)
 
                 for agent_dict in travel_times:
@@ -585,12 +584,11 @@ class TrafficEnvironment(AECEnv):
         """
 
         return self._action_spaces[agent]
-    
 
     #####################################################
     ### Decide on the observation function to be used ###
     #####################################################
-    
+
     def get_observation_function(self) -> Observations:
         """Returns an observation object based on the provided parameters.
 
@@ -604,15 +602,15 @@ class TrafficEnvironment(AECEnv):
         observation_type = params[kc.OBSERVATION_TYPE]
         if observation_type == kc.PREVIOUS_AGENTS_PLUS_START_TIME:
             return PreviousAgentStartPlusStartTime(self.machine_agents,
-                                                  self.human_agents,
-                                                  self.simulation_params,
-                                                  self.agent_params,
-                                                  None)
+                                                   self.human_agents,
+                                                   self.simulation_params,
+                                                   self.agent_params,
+                                                   None)
         elif observation_type == kc.PREVIOUS_AGENTS:
             return PreviousAgentStart(self.machine_agents,
-                                                  self.human_agents,
-                                                  self.simulation_params,
-                                                  self.agent_params,
-                                                  None)
+                                      self.human_agents,
+                                      self.simulation_params,
+                                      self.agent_params,
+                                      None)
         else:
             raise ValueError('[MODEL INVALID] Unrecognized model: ' + observation_type)

@@ -49,13 +49,12 @@ def generate_agents(params, free_flow_times, generate_data, seed=23423) -> list:
         origin, destination = row_dict[kc.AGENT_ORIGIN], row_dict[kc.AGENT_DESTINATION]
 
         if row_dict[kc.AGENT_KIND] == kc.TYPE_MACHINE:
-            agent_params = params[kc.HUMAN_PARAMETERS]
-            initial_knowledge = free_flow_times[(origin, destination)]
+            agent_params = params[kc.MACHINE_PARAMETERS]
             mutate_to = MachineAgent(id,
                                      start_time,
                                      origin,
                                      destination,
-                                     params[kc.MACHINE_PARAMETERS],
+                                     agent_params,
                                      action_space_size)
             agents.append(mutate_to)
         elif row_dict[kc.AGENT_KIND] == kc.TYPE_HUMAN:
