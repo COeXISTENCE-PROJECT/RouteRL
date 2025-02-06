@@ -4,15 +4,15 @@
 <sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
-        <net-file value="../../RouteRL/network_and_config/two_route_yield/network.net.xml"/>
-        <route-files value="../../RouteRL/network_and_config/two_route_yield/rou.rou.xml"/>
-        <additional-files value="../../RouteRL/network_and_config/two_route_yield/det.add.xml"/>
+        <net-file value="../../routerl/network_and_config/two_route_yield/network.net.xml"/>
+        <route-files value="../../routerl/network_and_config/two_route_yield/rou.rou.xml"/>
+        <additional-files value="../../routerl/network_and_config/two_route_yield/det.add.xml"/>
     </input>
 
     <output>
-        <fcd-output value="../../RouteRL/network_and_config/two_route_yield/fcd.xml"/>
-        <summary-output value="../../RouteRL/network_and_config/two_route_yield/summary.xml"/>
-        <tripinfo-output value="../../RouteRL/network_and_config/two_route_yield/tripinfo.xml"/>
+        <fcd-output value="../../routerl/network_and_config/two_route_yield/fcd.xml"/>
+        <summary-output value="../../routerl/network_and_config/two_route_yield/summary.xml"/>
+        <tripinfo-output value="../../routerl/network_and_config/two_route_yield/tripinfo.xml"/>
     </output>
 
     <processing>

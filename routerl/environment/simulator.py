@@ -104,13 +104,6 @@ class SumoSimulator():
     ################################
 
     def _check_paths_ready(self) -> None:
-        """Checks if the required paths file for the simulation exists.
-
-        Returns:
-            None
-        Raises:
-            FileNotFoundError: If required paths file does not exist.
-        """
 
         if os.path.isfile(self.rou_xml_save_path):
             logging.info("[CONFIRMED] Paths file is ready.")
@@ -122,14 +115,7 @@ class SumoSimulator():
             )
             
     def _get_paths(self, params: dict, path_gen_params: dict) -> None:
-        """Method that generates paths for simulation.
 
-        Args:
-            params (dict): Dictionary of parameters.
-            path_gen_params (dict): Dictionary of path generation parameters.
-        Returns:
-            None
-        """
         # Build the network
         network = jx.build_digraph(self.conn_file_path, self.edge_file_path, self.routes_xml_path)
         
@@ -168,15 +154,6 @@ class SumoSimulator():
                                     show=False, save_file_path=fig_save_path, title=title)
 
     def _save_paths_to_disk(self, routes_df: pd.DataFrame, origins: list, destinations: list) -> None:
-        """Method that saves paths to disc.
-
-        Args:
-            routes_df (pd.DataFrame): routes dataframe.
-            origins (list): list of origin ids.
-            destinations (list): list of destination ids.
-        Returns:
-            None
-        """
 
         origins = {node_name: idx for idx, node_name in enumerate(origins)}
         destinations = {node_name: idx for idx, node_name in enumerate(destinations)}
@@ -215,11 +192,6 @@ class SumoSimulator():
             print("</routes>", file=rou)
 
     def _get_detectors(self):
-        """Method that gets detectors.
-
-        Returns:
-            detectors_name: name of the detectors.
-        """
 
         paths_df = pd.read_csv(self.paths_csv_file_path)
         paths_list = [path.split(" ") for path in paths_df["path"].values]

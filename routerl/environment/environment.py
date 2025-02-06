@@ -127,26 +127,13 @@ class TrafficEnvironment(AECEnv):
         return message
     
     def _set_seed(self, seed: int) -> None:
-        """Set the seed for random number generation.
-
-        Args:
-            seed (int): random seed
-        Returns:
-            None
-        """
-
         random.seed(seed)
         np.random.seed(seed)
         self.seed = seed
         logging.info(f"Seed set to {seed}.")
 
     def _initialize_machine_agents(self) -> None:
-        """Initialize the machine agents.
 
-        Returns:
-            None
-        """
-        
         ## Sort machine agents based on their start_time
         sorted_machine_agents = sorted(self.machine_agents, key=lambda agent: agent.start_time)
         self.possible_agents = [str(agent.id) for agent in sorted_machine_agents]
@@ -188,6 +175,8 @@ class TrafficEnvironment(AECEnv):
             seed (int, optional): Seed for random number generation. Defaults to None.
             options (dict, optional): Additional options for resetting the environment. Defaults to None.
         Returns:
+            self.observations [Any]: observations.
+            infos [dict]: dictionary of information for the agents.
             tuple: A tuple containing the initial observations and information for the agents.
         """
 
@@ -370,15 +359,6 @@ class TrafficEnvironment(AECEnv):
         return self.simulator.timestep, self.episode_actions.values()
 
     def _help_step(self, actions: list[tuple]) -> dict:
-        """This function is responsible for supplying the simulator with the actions of vehicles
-        that begin their journey at the current timestep.
-        Simultaneously, it records the travel times of vehicles that finished their trip this timestep.
-
-        Args:
-            actions (list[tuple]): A list of tuples containing the current timestep and the actions of vehicles
-        Returns:
-            travel_times.values() (dict): A dictionary containing the current timestep and the actions of vehicles
-        """
 
         for agent, action in actions:
             action_dict = {kc.AGENT_ID: agent.id,
@@ -402,12 +382,7 @@ class TrafficEnvironment(AECEnv):
         return travel_times.values()
 
     def _reset_episode(self) -> None:
-        """ Reset the environment after one day implementation.
 
-        Returns:
-            None
-        """
-        
         detectors_dict = self.simulator.reset()
 
         if self.possible_agents:
@@ -424,11 +399,6 @@ class TrafficEnvironment(AECEnv):
         self.episode_actions = dict()
 
     def _assign_rewards(self) -> None:
-        """This function assigns rewards to the agents.
-
-        Returns:
-            None
-        """
 
         for agent in self.all_agents:
             reward = agent.get_reward(self.travel_times_list)
@@ -550,19 +520,6 @@ class TrafficEnvironment(AECEnv):
     ############################
 
     def _record(self, episode: int, ep_observations: dict, agents: list, detectors_dict: dict) -> None:
-        """Record the episode data including observations and rewards.
-
-        This method logs the observations and rewards for the current episode
-        and updates the progress of the simulation.
-
-        Args:
-            episode (int): The current episode number.
-            ep_observations (dict): Observations recorded during the episode.
-            agents (list): List of agent objects to record rewards for.
-            detectors_dict (dict): Dictionary of detector objects.
-        Returns:
-            None
-        """
 
         dc_episode, dc_ep_observations, dc_agents = dc(episode), dc(ep_observations), dc(agents)
         rewards = [{kc.AGENT_ID: agent.id, kc.REWARD: agent.last_reward} for agent in dc_agents]

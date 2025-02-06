@@ -16,7 +16,6 @@ class Observations(ABC):
     Args:
         machine_agents_list (List[Any]): List of machine agents.
         human_agents_list (List[Any]): List of human agents.
-
     """
 
     def __init__(self, machine_agents_list: List[Any], human_agents_list: List[Any]) -> None:
@@ -29,8 +28,7 @@ class Observations(ABC):
 
     @abstractmethod
     def observation_space(self) -> Dict[str, Box]:
-        """
-        Define the observation space for the observation function.
+        """Define the observation space for the observation function.
 
         Returns:
             Dict[str, Box]: A dictionary where keys are agent IDs and values are Gym spaces.
@@ -50,7 +48,6 @@ class PreviousAgentStart(Observations):
         training_params (Dict[str, Any]): Training parameters.
     Attributes:
         observations (List[Any]): List of observations.
-   
     """
 
     def __init__(
@@ -126,7 +123,9 @@ class PreviousAgentStart(Observations):
 
 
 class PreviousAgentStartPlusStartTime(Observations):
-    """Observes the number of agents with the same origin-destination and start time within a threshold and includes the start of the specific agent as well."""
+    """Observes the number of agents with the same origin-destination and start time within a threshold
+    and includes the start of the specific agent as well.
+    """
 
     def __init__(
         self,
@@ -136,8 +135,7 @@ class PreviousAgentStartPlusStartTime(Observations):
         agent_params: Dict[str, Any],
         training_params: Dict[str, Any]
     ) -> None:
-        """
-        Initialize the observation function.
+        """Initialize the observation function.
 
         Args:
             machine_agents_list (List[Any]): List of machine agents.
@@ -145,7 +143,10 @@ class PreviousAgentStartPlusStartTime(Observations):
             simulation_params (Dict[str, Any]): Dictionary of simulation parameters.
             agent_params (Dict[str, Any]): Dictionary of agent parameters.
             training_params (Dict[str, Any]): Dictionary of training parameters.
+        Returns:
+            None
         """
+
         super().__init__(machine_agents_list, human_agents_list)
         self.simulation_params = simulation_params
         self.agent_params = agent_params
@@ -153,15 +154,14 @@ class PreviousAgentStartPlusStartTime(Observations):
         self.observations = self.reset_observation()
 
     def __call__(self, all_agents: List[Any]) -> Dict[str, Any]:
-        """
-        Generate observations for all agents.
+        """Generate observations for all agents.
 
         Args:
             all_agents (List[Any]): List of all agents.
-
         Returns:
             Dict[str, Any]: A dictionary of observations keyed by agent IDs.
         """
+
         for machine in self.machine_agents_list:
             observation = np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32)
 
@@ -183,12 +183,12 @@ class PreviousAgentStartPlusStartTime(Observations):
         return self.observations
 
     def reset_observation(self) -> Dict[str, np.ndarray]:
-        """
-        Reset observations to the initial state.
+        """Reset observations to the initial state.
 
         Returns:
-            Dict[str, np.ndarray]: A dictionary of initial observations for all machine agents.
+            obs (Dict[str, np.ndarray]): A dictionary of initial observations for all machine agents.
         """
+
         # Initialize agent vectors as zero arrays
         self.agent_vectors = {
             agent: np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32)
@@ -215,7 +215,6 @@ class PreviousAgentStartPlusStartTime(Observations):
         Returns:
             Dict[str, Box]: A dictionary where keys are agent IDs and values are Gym spaces.
         """
-        #print("observation space is: ", )
 
         total_size = 1 + self.simulation_params[kc.NUMBER_OF_PATHS]
 
@@ -230,13 +229,12 @@ class PreviousAgentStartPlusStartTime(Observations):
         }
     
     def agent_observations(self, agent_id: str) -> np.ndarray:
-        """
-        Retrieve the observation for a specific agent.
+        """Retrieve the observation for a specific agent.
 
         Args:
             agent_id (str): The ID of the agent.
-
         Returns:
             np.ndarray: The observation array for the specified agent.
         """
+
         return self.observations.get(agent_id, np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32))

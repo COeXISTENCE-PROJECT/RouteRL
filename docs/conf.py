@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'RouteRL'
+project = 'routerl'
 copyright = '2024, Anastasia Psarou, Ahmet Onur Akman'
 author = 'Anastasia Psarou, Ahmet Onur Akman'
 

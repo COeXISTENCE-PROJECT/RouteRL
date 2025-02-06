@@ -243,16 +243,19 @@ class MachineAgent(BaseAgent):
         self.last_reward = None
         self.rewards_coefs = self._get_reward_coefs()
 
-    def __repr__(self):
-        return f"Machine {self.id}"
+    def __repr__(self) -> str:
+        machine_id = f"Machine {self.id}"
+
+        return machine_id
 
     @property
     def last_reward(self) -> float:
         """Set the last reward of the agent.
 
         Returns:
-            self._last_reward (float): The last reward of the agent.
+            float: The last reward of the agent.
         """
+
         return self._last_reward
 
     @last_reward.setter
@@ -296,7 +299,7 @@ class MachineAgent(BaseAgent):
         Args:
             observation (list[dict]): The recent observations of the agent.
         Returns:
-            list[int]: The current state representation.
+            warmth_agents list[int]: The current state representation.
         """
 
         min_start_time = self.start_time - self.observed_span
@@ -327,7 +330,8 @@ class MachineAgent(BaseAgent):
                 warmth = start_time - min_start_time
                 warmth_machine[action] += warmth
 
-        return warmth_human + warmth_machine
+        warmth_agents = warmth_human + warmth_machine
+        return warmth_agents
 
     def get_reward(self, observation: list[dict]) -> float:
         """This method calculated the reward of each individual agent, based on the travel time of the agent,
@@ -336,7 +340,7 @@ class MachineAgent(BaseAgent):
         Args:
             observation (list[dict]): The current observation of the agent.
         Returns:
-            float: The reward of the agent.
+            agent_reward (float): The reward of the agent.
         """
 
         min_start_time, max_start_time = self.start_time - self.observed_span, self.start_time + self.observed_span
@@ -362,18 +366,10 @@ class MachineAgent(BaseAgent):
         all_tt = np.mean(all_obs) if all_obs else 0
         
         a, b, c, d = self.rewards_coefs
-        return a * own_tt + b * group_tt + c * others_tt + d * all_tt
+        agent_reward  = a * own_tt + b * group_tt + c * others_tt + d * all_tt
+        return agent_reward
 
     def _get_reward_coefs(self) -> tuple:
-        """This function returns the coefficients for the reward calculation, based on the behavior of the agent.
-
-        Returns:
-            a (float): the weight of the agent's travel time.
-            b (float): the weight of the group's travel time.'
-            c (float): the weight of the other agents' travel time.'
-            d (float): the weight of the all agents' travel time.'
-        """
-
         a, b, c, d = 0, 0, 0, 0
         if self.behavior == kc.SELFISH:
             a, b, c, d = -1, 0, 0, 0 
