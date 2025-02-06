@@ -61,19 +61,19 @@ class TrafficEnvironment(AECEnv):
             All supported keys are **optional** and they include:
 
             **Agent Settings (`agent_parameters`)**:
-                - `"num_agents"` (int = 100): Total number of agents.
-                - `"new_machines_after_mutation"` (int) = 25: Number of human agents converted to machines after mutation.
+                - `"num_agents"` (int, default 100): Total number of agents.
+                - `"new_machines_after_mutation"` (int, default 25): Number of human agents converted to machines after mutation.
                 - `"machine_parameters"` (dict): Configuration for machine agents:
-                    - `"behavior"` (str = "selfish"): Route choice social behavior (can be one of `"selfish"`, `"social"`, `"altruistic"`, `"competitive"`, `"collaborative"`, `"malicious"`).
-                    - `"observed_span"` (int = 300): Time window considered for machine agent observations.
-                    - `"observation_type"` (str = "previous_agents_plus_start_time"): Type of observation ("previous_agents_plus_start_time"` or `"previous_agents"`).
+                    - `"behavior"` (str, default "selfish"): Route choice social behavior (can be one of `"selfish"`, `"social"`, `"altruistic"`, `"competitive"`, `"collaborative"`, `"malicious"`).
+                    - `"observed_span"` (int, default 300): Time window considered for machine agent observations.
+                    - `"observation_type"` (str, default "previous_agents_plus_start_time"): Type of observation (`"previous_agents_plus_start_time"` or `"previous_agents"`).
                 - `"human_parameters"` (dict): Configuration for human agents:
-                    - `"model"` (str = "culo"): Human decision-making model (can be one of `"gawron"`, `"culo"`, `"w_avg"`).
-                    - `"alpha_j"` (float = 0.5): Cost expectation coefficient. Should be between 0 and 1.
-                    - `"alpha_zero"` (float = 0.5): Sensitivity to new experience. Should complement `alpha_j`.
-                    - `"beta"` (float = -1.5): Parameter affecting decision randomness.
-                    - `"beta_randomness"` (float = 0.1): Variability in beta among humans population.
-                    - `"remember"` (int = 3): Number of past experiences retained in `w_avg` model.
+                    - `"model"` (str, default "culo"): Human decision-making model (can be one of `"gawron"`, `"culo"`, `"w_avg"`).
+                    - `"alpha_j"` (float, default 0.5): Cost expectation coefficient (should be between 0 and 1).
+                    - `"alpha_zero"` (float, default 0.5): Sensitivity to new experience (should complement `alpha_j`).
+                    - `"beta"` (float, default -1.5): Parameter affecting decision randomness.
+                    - `"beta_randomness"` (float, default 0.1): Variability in beta among the human population.
+                    - `"remember"` (int, default 3): Number of past experiences retained in the `w_avg` model.
 
             **Environment Settings (`environment_parameters`)**:
                 - `"number_of_days"` (int = 1): Number of simulated days.
