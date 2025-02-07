@@ -51,9 +51,7 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install gymnasium, janux, matplotlib, nbconvert, nbformat, numpy, pandas, pettingzoo, polars, prettytable, pytest, seaborn, tensordict, torch, torchrl, tqdm, traci
-          
-
+          python3 -m pip install gymnasium janux matplotlib nbconvert nbformat numpy pandas pettingzoo polars prettytable pytest seaborn tensordict torch torchrl tqdm traci
 
       - name: Run notebook tests
         run: pytest -rs tests/test_tutorials.py
