@@ -2,7 +2,7 @@
 
 # RouteRL
 
-![Notebook Tests](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_notebooks.yml/badge.svg)
+![Notebook Tests](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml/badge.svg)
 
 <!-- start intro -->
 
