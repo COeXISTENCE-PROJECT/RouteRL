@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>routerl.environment.environment - routerl 0.0.1 documentation</title>
+        <title>routerl.environment.environment - RouteRL 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -165,7 +165,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">routerl 0.0.1 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">RouteRL 0.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -188,8 +188,11 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../_static/logo.png" alt="Logo"/>
+  </div>
   
-  <span class="sidebar-brand-text">routerl 0.0.1 documentation</span>
+  <span class="sidebar-brand-text">RouteRL 0.0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -204,6 +207,17 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/machine_agents.html">Automated Vehicle (AV) agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/human_agents.html">Human drivers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/observations.html">Observation Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Networks &amp; Demand</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../network_and_demand/networks.html">Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../network_and_demand/demand.html">Demand</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Actions, Rewards, Observations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../action_reward_observation/actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../action_reward_observation/rewards.html">Rewards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../action_reward_observation/observations.html">Observations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
@@ -280,46 +294,152 @@
 <div class="viewcode-block" id="TrafficEnvironment">
 <a class="viewcode-back" href="../../../documentation/pz_env.html#routerl.environment.environment.TrafficEnvironment">[docs]</a>
 <span class="k">class</span> <span class="nc">TrafficEnvironment</span><span class="p">(</span><span class="n">AECEnv</span><span class="p">):</span>
-    <span class="c1">#TODO it is needed anymore?</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A PettingZoo AECEnv interface for optimal route choice using SUMO simulator.</span>
+<span class="sd">    </span>
+<span class="sd">    This environment is designed for the training of human agents (rational decision-makers) </span>
+<span class="sd">    and machine agents (reinforcement learning agents).</span>
+
+<span class="sd">    See `SUMO &lt;https://sumo.dlr.de/docs/&gt;`_ for details on SUMO.</span>
+<span class="sd">    See `PettingZoo &lt;https://pettingzoo.farama.org/&gt;`_ for details on PettingZoo. </span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        seed (int, optional): </span>
+<span class="sd">            Random seed for reproducibility. Defaults to ``23423``.</span>
+<span class="sd">        create_agents (bool, optional):</span>
+<span class="sd">            Whether to create agent data. Defaults to ``True``.</span>
+<span class="sd">            If ``False``, agents data must be provided in ``training_records/agents.csv``.</span>
+<span class="sd">        create_paths (bool, optional):</span>
+<span class="sd">            Whether to generate paths. Defaults to ``True``.</span>
+<span class="sd">            **Warning:** Set to ``False`` only if paths are already generated.</span>
+<span class="sd">        **kwargs (dict, optional): </span>
+<span class="sd">            User-defined parameter overrides. These override default values </span>
+<span class="sd">            from ``params.json`` and allow customization of the environment.</span>
+<span class="sd">    </span>
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        agent_parameters (dict, optional):</span>
+<span class="sd">            Agent settings.</span>
+<span class="sd">            </span>
+<span class="sd">            num_agents (int, default=100):</span>
+<span class="sd">                Total number of agents.</span>
+<span class="sd">            </span>
+<span class="sd">            new_machines_after_mutation (int, default=25):</span>
+<span class="sd">                Number of humans converted to machines.</span>
+<span class="sd">            </span>
+<span class="sd">            machine_parameters (dict):</span>
+<span class="sd">                Machine agent settings.</span>
+<span class="sd">                </span>
+<span class="sd">                behavior (str, default=&quot;selfish&quot;):</span>
+<span class="sd">                    Route choice behavior (options: ``selfish``, ``social``, ``altruistic``, ``malicious``, ``competitive``, ``collaborative``).</span>
+<span class="sd">                </span>
+<span class="sd">                observed_span (int, default=300):</span>
+<span class="sd">                    Time window considered for observations.</span>
+<span class="sd">                    </span>
+<span class="sd">                observation_type (str, default=&quot;previous_agents_plus_start_time&quot;):</span>
+<span class="sd">                    Type of observation.</span>
+
+<span class="sd">            human_parameters (dict, optional): </span>
+<span class="sd">                Human agent settings.</span>
+<span class="sd">                </span>
+<span class="sd">                model (str, default=&quot;culo&quot;):</span>
+<span class="sd">                    Decision-making model (options: ``gawron``, ``culo``, ``w_avg``).</span>
+<span class="sd">                    </span>
+<span class="sd">                alpha_j (float, default=0.5):</span>
+<span class="sd">                    Cost expectation coefficient (0-1 range).</span>
+<span class="sd">                    </span>
+<span class="sd">                alpha_zero (float, default=0.5):</span>
+<span class="sd">                    Sensitivity to new experiences.</span>
+<span class="sd">                    </span>
+<span class="sd">                beta (float, default=-1.5):</span>
+<span class="sd">                    Decision randomness parameter.</span>
+<span class="sd">                    </span>
+<span class="sd">                beta_randomness (float, default=0.1):</span>
+<span class="sd">                    Variability in ``beta`` among the human population.</span>
+<span class="sd">                    </span>
+<span class="sd">                remember (int, default=3):</span>
+<span class="sd">                    Number of past experiences retained.</span>
+
+<span class="sd">        environment_parameters (dict, optional):</span>
+<span class="sd">            Environment settings.</span>
+<span class="sd">            </span>
+<span class="sd">            number_of_days (int, default=1):</span>
+<span class="sd">                Number of days in the scenario.</span>
+
+<span class="sd">        simulator_parameters (dict, optional): </span>
+<span class="sd">            SUMO simulator settings.</span>
+<span class="sd">            </span>
+<span class="sd">            network_name (str, default=&quot;csomor&quot;):</span>
+<span class="sd">                Network name (e.g., ``arterial``, ``cologne``, ``grid``).</span>
+<span class="sd">            </span>
+<span class="sd">            simulation_timesteps (int, default=180):</span>
+<span class="sd">                Total simulation time in seconds.</span>
+<span class="sd">            </span>
+<span class="sd">            sumo_type (str, default=&quot;sumo&quot;):</span>
+<span class="sd">                SUMO execution mode (``sumo`` or ``sumo-gui``).</span>
+
+<span class="sd">        path_generation_parameters (dict, optional):</span>
+<span class="sd">            Path generation settings.</span>
+<span class="sd">            </span>
+<span class="sd">            number_of_paths (int, default=3):</span>
+<span class="sd">                Number of routes per OD.</span>
+<span class="sd">                </span>
+<span class="sd">            beta (float, default=-3.0):</span>
+<span class="sd">                Sensitivity to travel time in path choice.</span>
+<span class="sd">                </span>
+<span class="sd">            weight (str, default=&quot;time&quot;):</span>
+<span class="sd">                Optimization criterion (e.g., ``time``).</span>
+<span class="sd">                </span>
+<span class="sd">            num_samples (int, default=100):</span>
+<span class="sd">                Number of samples for path generation.</span>
+<span class="sd">                </span>
+<span class="sd">            origins (str | list[str], default=&quot;default&quot;):</span>
+<span class="sd">                Origin points.</span>
+<span class="sd">                </span>
+<span class="sd">            destinations (str | list[str], default=&quot;default&quot;):</span>
+<span class="sd">                Destination points.</span>
+
+<span class="sd">        plotter_parameters (dict, optional): </span>
+<span class="sd">            Plotting &amp; logging settings.</span>
+<span class="sd">            </span>
+<span class="sd">            records_folder (str, default=&quot;training_records&quot;):</span>
+<span class="sd">                Directory for training records.</span>
+<span class="sd">                </span>
+<span class="sd">            plots_folder (str, default=&quot;plots&quot;):</span>
+<span class="sd">                Directory for plots.</span>
+<span class="sd">                </span>
+<span class="sd">            smooth_by (int, default=50): </span>
+<span class="sd">                Smoothing parameter for plots.</span>
+<span class="sd">                </span>
+<span class="sd">            phases (list[int], default=[0, 100]):</span>
+<span class="sd">                X-axis positions for phase markers.</span>
+<span class="sd">                </span>
+<span class="sd">            phase_names (list[str], default=[&quot;Human learning&quot;, &quot;Mutation - Machine learning&quot;]):</span>
+<span class="sd">                Phase names for labeling phase markers.</span>
+<span class="sd">    </span>
+<span class="sd">    Example usage:</span>
+<span class="sd">        &gt;&gt;&gt; env = TrafficEnvironment(</span>
+<span class="sd">        ...     seed=42, </span>
+<span class="sd">        ...     create_agents=False, </span>
+<span class="sd">        ...     environment_parameters={&quot;number_of_days&quot;: 5},</span>
+<span class="sd">        ...     agent_parameters={&quot;num_agents&quot;: 50},</span>
+<span class="sd">        ...     simulator_parameters={&quot;sumo_type&quot;: &quot;sumo-gui&quot;}</span>
+<span class="sd">        ... )</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        day (int): Current day index in the simulation.</span>
+<span class="sd">        human_learning (bool): Whether human agents are learning.</span>
+<span class="sd">        number_of_days (int): Number of days to simulate.</span>
+<span class="sd">        action_space_size (int): Size of the action space.</span>
+<span class="sd">        recorder (Recorder): Object for recording simulation data.</span>
+<span class="sd">        simulator (SumoSimulator): SUMO simulator instance.</span>
+<span class="sd">        all_agents (list): List of all agent objects.</span>
+<span class="sd">        machine_agents (list): List of all machine agent objects.</span>
+<span class="sd">        human_agents (list): List of all human agent objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
     <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;render_modes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;human&quot;</span><span class="p">],</span>
         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;TrafficEnvironment&quot;</span><span class="p">,</span>
     <span class="p">}</span>
-
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; A PettingZoo AECEnv interface for optimal route choice using SUMO simulator.</span>
-<span class="sd">    </span>
-<span class="sd">    This environment is utilized for the training of human agents (rational decision-makers) </span>
-<span class="sd">    and machine agents (reinforcement learning agents).</span>
-<span class="sd">    See https://sumo.dlr.de/docs/ for details on SUMO.</span>
-<span class="sd">    See https://pettingzoo.farama.org/ for details on PettingZoo. </span>
-<span class="sd">    </span>
-<span class="sd">    Args:</span>
-<span class="sd">        seed (int, optional): random seed</span>
-<span class="sd">        create_agents (bool, optional): whether to create agents</span>
-<span class="sd">        crete_paths (bool, optional): whether to create paths</span>
-<span class="sd">        kwargs (dict): keyword arguments</span>
-<span class="sd">    Attributes:</span>
-<span class="sd">        render_mode (string): rendering mode</span>
-<span class="sd">        environment_params (dict): environment parameters</span>
-<span class="sd">        agent_params (dict): agent parameters</span>
-<span class="sd">        plotter_params (dict): plotter parameters</span>
-<span class="sd">        path_gen_params (dict): path generation parameters</span>
-<span class="sd">        travel_times_list (list): travel times list</span>
-<span class="sd">        day (int): day</span>
-<span class="sd">        human_learning (bool): whether human learning</span>
-<span class="sd">        machine_same_start_time (list): # TO DO</span>
-<span class="sd">        action_timestep (list): # TO DO</span>
-<span class="sd">        number_of_days (int): number of days</span>
-<span class="sd">        action_space_size (int): size of action space</span>
-<span class="sd">        _set_seed(int): random seed</span>
-<span class="sd">        recorder (Recorder): recorder</span>
-<span class="sd">        simulator (SumoSimulator): sumo simulator</span>
-<span class="sd">        all_agents (list): list of all agents</span>
-<span class="sd">        machine_agents (list): list of all machine agents</span>
-<span class="sd">        human_agents (list): list of all human agents</span>
-<span class="sd">        possible_agents (list): list of all possible agents</span>
-<span class="sd">        episode_actions (dict): episode actions </span>
-<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">23423</span><span class="p">,</span>
@@ -357,12 +477,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">machine_agents</span> <span class="o">=</span> <span class="p">[</span><span class="n">agent</span> <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_agents</span> <span class="k">if</span> <span class="n">agent</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">kc</span><span class="o">.</span><span class="n">TYPE_MACHINE</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">human_agents</span> <span class="o">=</span> <span class="p">[</span><span class="n">agent</span> <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_agents</span> <span class="k">if</span> <span class="n">agent</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">kc</span><span class="o">.</span><span class="n">TYPE_HUMAN</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">possible_agents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_agents</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rewards_humans</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">observations</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_agent_selector</span> <span class="o">=</span> <span class="n">agent_selector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">possible_agents</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">agent_selection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agent_selector</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_agents</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_machine_agents</span><span class="p">()</span>
@@ -415,8 +529,8 @@
 <div class="viewcode-block" id="TrafficEnvironment.start">
 <a class="viewcode-back" href="../../../documentation/pz_env.html#routerl.environment.environment.TrafficEnvironment.start">[docs]</a>
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the simulation.</span>
-
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the connection with SUMO.</span>
+<span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -432,8 +546,9 @@
 <span class="sd">        Args:</span>
 <span class="sd">            seed (int, optional): Seed for random number generation. Defaults to None.</span>
 <span class="sd">            options (dict, optional): Additional options for resetting the environment. Defaults to None.</span>
+<span class="sd">            </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            self.observations (Any): observations.</span>
+<span class="sd">            observations (dict): observations.</span>
 <span class="sd">            infos (dict): dictionary of information for the agents.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -465,12 +580,14 @@
     <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">machine_action</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Step method.</span>
 
-<span class="sd">        Takes an action for the current agent (specified by agent_selection) and updates</span>
+<span class="sd">        Takes an action for the current agent (specified by `agent_selection`) and updates</span>
 <span class="sd">        various parameters including rewards, cumulative rewards, terminations, truncations,</span>
-<span class="sd">        infos, and agent_selection. Also updates any internal state used by observe() or render().</span>
+<span class="sd">        infos, and agent_selection. Also updates any internal state used by `observe()`.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            machine_action (int, optional): The action to be taken by the machine agent. Defaults to None.</span>
+<span class="sd">            machine_action (int, optional):</span>
+<span class="sd">                The action to be taken by the machine agent. Defaults to None.</span>
+<span class="sd">            </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -528,10 +645,10 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
 
+        <span class="c1">#self.simulator.stop()</span>
 
 <div class="viewcode-block" id="TrafficEnvironment.observe">
 <a class="viewcode-back" href="../../../documentation/pz_env.html#routerl.environment.environment.TrafficEnvironment.observe">[docs]</a>
@@ -540,6 +657,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            agent (str): The identifier for the agent whose observations are to be retrieved.</span>
+<span class="sd">            </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            self.observation_obj.agent_observations(agent) (np.ndarray): The observations for the specified agent.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -561,8 +679,10 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            disable_human_learning (bool, optional): Boolean flag to disable human agents.</span>
+<span class="sd">            </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
+<span class="sd">            </span>
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If there are insufficient human agents available for mutation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -646,9 +766,8 @@
         <span class="n">travel_times</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">veh_id</span> <span class="ow">in</span> <span class="n">arrivals</span><span class="p">:</span>
             <span class="n">agent_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">veh_id</span><span class="p">)</span>
-            <span class="n">travel_times</span><span class="p">[</span><span class="n">agent_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">kc</span><span class="o">.</span><span class="n">TRAVEL_TIME</span><span class="p">:</span>
-                                          <span class="p">(</span><span class="n">timestep</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">episode_actions</span><span class="p">[</span><span class="n">agent_id</span><span class="p">][</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_START_TIME</span><span class="p">])</span> <span class="o">/</span> <span class="mf">60.0</span>
-                                      <span class="p">}</span>
+            <span class="n">travel_times</span><span class="p">[</span><span class="n">agent_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">({</span><span class="n">kc</span><span class="o">.</span><span class="n">TRAVEL_TIME</span><span class="p">:</span>
+                                           <span class="p">(</span><span class="n">timestep</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">episode_actions</span><span class="p">[</span><span class="n">agent_id</span><span class="p">][</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_START_TIME</span><span class="p">])</span> <span class="o">/</span> <span class="mf">60.0</span><span class="p">})</span>
             <span class="n">travel_times</span><span class="p">[</span><span class="n">agent_id</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">episode_actions</span><span class="p">[</span><span class="n">agent_id</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="n">travel_times</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
@@ -700,13 +819,14 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This function contains the integration of the agent&#39;s actions to SUMO.</span>
 
 <span class="sd">        We iterate through all the time steps of the simulation.</span>
-<span class="sd">        For each timestep there are None, one or more than one agents type (humans, machines) that start.</span>
+<span class="sd">        For each timestep there are none, one or more than one agents type (humans, machines) that start.</span>
 <span class="sd">        If more than one machine agents have the same start time, we break from this function because</span>
 <span class="sd">        we need to take the agent&#39;s action from the STEP function.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            machine_action (int): The id of the machine agent whose action is to be performed.</span>
 <span class="sd">            machine_id (int): The id of the machine agent whose action is to be performed.</span>
+<span class="sd">            </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -829,17 +949,8 @@
     <span class="c1">### PettingZoo functions ###</span>
     <span class="c1">############################</span>
 
-<div class="viewcode-block" id="TrafficEnvironment.render">
-<a class="viewcode-back" href="../../../documentation/pz_env.html#routerl.environment.environment.TrafficEnvironment.render">[docs]</a>
     <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Method that render action.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">pass</span></div>
-
+        <span class="k">pass</span>
 
 <div class="viewcode-block" id="TrafficEnvironment.observation_space">
 <a class="viewcode-back" href="../../../documentation/pz_env.html#routerl.environment.environment.TrafficEnvironment.observation_space">[docs]</a>
@@ -892,14 +1003,12 @@
             <span class="k">return</span> <span class="n">PreviousAgentStartPlusStartTime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_agents</span><span class="p">,</span>
                                                    <span class="bp">self</span><span class="o">.</span><span class="n">human_agents</span><span class="p">,</span>
                                                    <span class="bp">self</span><span class="o">.</span><span class="n">simulation_params</span><span class="p">,</span>
-                                                   <span class="bp">self</span><span class="o">.</span><span class="n">agent_params</span><span class="p">,</span>
-                                                   <span class="kc">None</span><span class="p">)</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">agent_params</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">observation_type</span> <span class="o">==</span> <span class="n">kc</span><span class="o">.</span><span class="n">PREVIOUS_AGENTS</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">PreviousAgentStart</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">machine_agents</span><span class="p">,</span>
                                       <span class="bp">self</span><span class="o">.</span><span class="n">human_agents</span><span class="p">,</span>
                                       <span class="bp">self</span><span class="o">.</span><span class="n">simulation_params</span><span class="p">,</span>
-                                      <span class="bp">self</span><span class="o">.</span><span class="n">agent_params</span><span class="p">,</span>
-                                      <span class="kc">None</span><span class="p">)</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">agent_params</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;[MODEL INVALID] Unrecognized model: &#39;</span> <span class="o">+</span> <span class="n">observation_type</span><span class="p">)</span></div>
 </div>

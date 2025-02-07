@@ -3,6 +3,6 @@
 ```{eval-rst}
 .. autoclass:: routerl.environment.environment.TrafficEnvironment
     :members:
-    :exclude-members: _private_method
+    :exclude-members: metadata, render, _*
     :no-index:
 ```

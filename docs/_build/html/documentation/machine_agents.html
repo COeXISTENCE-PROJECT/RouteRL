@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Human drivers" href="human_agents.html" /><link rel="prev" title="SUMO simulator" href="simulator.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>Automated Vehicle (AV) agents - routerl 0.0.1 documentation</title>
+        <title>Automated Vehicle (AV) agents - RouteRL 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">routerl 0.0.1 documentation</div></a>
+      <a href="../index.html"><div class="brand">RouteRL 0.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,8 +189,11 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
+  </div>
   
-  <span class="sidebar-brand-text">routerl 0.0.1 documentation</span>
+  <span class="sidebar-brand-text">RouteRL 0.0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -205,6 +208,17 @@
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Automated Vehicle (AV) agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="human_agents.html">Human drivers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="observations.html">Observation Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Networks &amp; Demand</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../network_and_demand/networks.html">Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../network_and_demand/demand.html">Demand</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Actions, Rewards, Observations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../action_reward_observation/actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../action_reward_observation/rewards.html">Rewards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../action_reward_observation/observations.html">Observations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
@@ -264,28 +278,18 @@ and decision-making processes for selecting optimal routes.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>id</strong> (<em>int</em>) – The id of the agent.</p></li>
-<li><p><strong>start_time</strong> (<em>float</em>) – The start time of the simulation.</p></li>
-<li><p><strong>origin</strong> (<em>float</em>) – The origin of the simulation.</p></li>
-<li><p><strong>destination</strong> (<em>float</em>) – The destination value of the simulation.</p></li>
-<li><p><strong>params</strong> (<em>dict</em>) – The parameters of the agent.</p></li>
+<li><p><strong>start_time</strong> (<em>float</em>) – The start time of the agent.</p></li>
+<li><p><strong>origin</strong> (<em>float</em>) – The origin of the agent.</p></li>
+<li><p><strong>destination</strong> (<em>float</em>) – The destination value of the agent.</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – The parameters of the machine agent as specified in <a class="reference external" href="https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#">here</a>.</p></li>
 <li><p><strong>action_space_size</strong> (<em>int</em>) – The size of the action space of the agent.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Variables<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>observed_span</strong> (<em>dict</em>) – The observed span of the agent.</p></li>
-<li><p><strong>action_space_size</strong> (<em>int</em>) – The size of the action space of the agent.</p></li>
-<li><p><strong>state_size</strong> (<em>int</em>) – The state size of the agent.</p></li>
-<li><p><strong>model</strong> – The model of the agent behavior.</p></li>
-<li><p><strong>last_reward</strong> (<em>float</em>) – The last reward of the agent.</p></li>
-<li><p><strong>rewards_coefs</strong> (<em>dict</em>) – The reward coefficients of the agent.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/routerl/environment/agent.html#MachineAgent.act"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Acting method</p>
+<dd><p><strong>Deprecated</strong></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>_</strong> (<em>Any</em>) – The current state of the agent.</p>
@@ -300,13 +304,13 @@ and decision-making processes for selecting optimal routes.</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">get_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/routerl/environment/agent.html#MachineAgent.get_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>This method calculated the reward of each individual agent, based on the travel time of the agent,
-the group of agents, the other agents, and all agents.</p>
+the group of agents, the other agents, and all agents, weighted according to the agent’s behavior.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>observation</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – The current observation of the agent.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>agent_reward</strong> (<em>float</em>) – The reward of the agent.</p>
+<dd class="field-even"><p><strong>float</strong> – The reward of the agent.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -321,7 +325,7 @@ from the same origin to the same destination.</p>
 <dd class="field-odd"><p><strong>observation</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – The recent observations of the agent.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>warmth_agents list[int]</strong> – The current state representation.</p>
+<dd class="field-even"><p><strong>list[int]</strong> – The current state representation.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -340,12 +344,13 @@ from the same origin to the same destination.</p>
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">learn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/routerl/environment/agent.html#MachineAgent.learn"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Learning method
-:param _: The current state of the agent.
-:type _: Any</p>
+<dd><p><strong>Deprecated</strong></p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>_</strong> (<em>Any</em>) – The current state of the agent.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>None</strong></p>
 </dd>
 </dl>
 </dd></dl>

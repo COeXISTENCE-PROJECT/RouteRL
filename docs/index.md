@@ -15,6 +15,17 @@ lastpage:
 
 ```{toctree}
 :hidden:
+:caption: Installation
+
+```{include} ../README.md
+:start-after: <!-- start installation  -->
+:end-before: <!-- end installation  -->
+```
+
+```
+
+```{toctree}
+:hidden:
 :caption: Documentation
 
 documentation/pz_env

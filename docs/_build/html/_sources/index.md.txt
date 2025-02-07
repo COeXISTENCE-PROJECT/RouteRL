@@ -4,9 +4,7 @@ firstpage:
 lastpage:
 ---
 
-# RouteRL
-
-```{figure} _static/trans_bg.jpeg
+```{figure} _static/two_route_graphic.png
    :alt: RouteRL
 ```
 
@@ -28,9 +26,19 @@ documentation/observations
 
 ```{toctree}
 :hidden:
-:caption: Networks
+:caption: Networks & Demand
 
-network/networks
+network_and_demand/networks
+network_and_demand/demand
+```
+
+```{toctree}
+:hidden:
+:caption: Actions, Rewards, Observations
+
+action_reward_observation/actions
+action_reward_observation/rewards
+action_reward_observation/observations
 ```
 
 ```{toctree}

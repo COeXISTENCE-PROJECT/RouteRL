@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>routerl.environment.simulator - routerl 0.0.1 documentation</title>
+        <title>routerl.environment.simulator - RouteRL 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -165,7 +165,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">routerl 0.0.1 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">RouteRL 0.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -188,8 +188,11 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../_static/logo.png" alt="Logo"/>
+  </div>
   
-  <span class="sidebar-brand-text">routerl 0.0.1 documentation</span>
+  <span class="sidebar-brand-text">RouteRL 0.0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -204,6 +207,17 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/machine_agents.html">Automated Vehicle (AV) agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/human_agents.html">Human drivers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/observations.html">Observation Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Networks &amp; Demand</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../network_and_demand/networks.html">Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../network_and_demand/demand.html">Demand</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Actions, Rewards, Observations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../action_reward_observation/actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../action_reward_observation/rewards.html">Rewards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../action_reward_observation/observations.html">Observations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
@@ -244,10 +258,10 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for routerl.environment.simulator</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">#TODO what simulator.py is?</span>
-
+<span class="sd">This file, simulator.py, defines the SumoSimulator class, </span>
+<span class="sd">which manages the interaction between driver agents and the SUMO traffic simulator </span>
+<span class="sd">by handling simulation setup, path generation, vehicle management, and simulation control.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">janux</span> <span class="k">as</span> <span class="nn">jx</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -272,27 +286,19 @@
 <span class="sd">    and it returns the corresponding travel times for these vehicles.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        params (dict): Dictionary of parameters for the SUMO environment.</span>
-<span class="sd">        path_gen_params (dict): Dictionary of parameters for the SUMO environment.</span>
-<span class="sd">        seed: Random number generator seed.</span>
+<span class="sd">        params (dict):</span>
+<span class="sd">            Dictionary of parameters for the SUMO environment. Specified `here &lt;https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#&gt;`_.</span>
+<span class="sd">        path_gen_params (dict):</span>
+<span class="sd">            Dictionary of parameters for the SUMO environment. specified `here &lt;https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#&gt;`_.</span>
+<span class="sd">        seed (int): </span>
+<span class="sd">            Random seed for reproducibility.</span>
+<span class="sd">        </span>
 <span class="sd">    Attributes:</span>
 <span class="sd">        network_name: Network name.</span>
-<span class="sd">        sumo_type: Type of sumo.</span>
-<span class="sd">        number_of_paths: Number of paths.</span>
 <span class="sd">        simulation_length: Simulation length.</span>
-<span class="sd">        paths_csv_file_path (str): Paths to csv files.</span>
-<span class="sd">        sumo_config_path (str): Path to sumo configuration file.</span>
-<span class="sd">        routes_xml_path (str): Path to routes defined as xml files.</span>
-<span class="sd">        sumo_fcd: Sumo floating car data.</span>
-<span class="sd">        detector_save_path (str): Path to save the detected vehicles.</span>
-<span class="sd">        conn_file_path (str): Path to connections file.</span>
-<span class="sd">        edge_file_path (str): Path to edges file.</span>
-<span class="sd">        nod_file_path (str): Path to nodes file.</span>
-<span class="sd">        rou_xml_save_path (str): Path to save routes xml file.</span>
-<span class="sd">        sumo_id: Sumo id.</span>
-<span class="sd">        sumo_connection: Sumo connection.</span>
-<span class="sd">        timestep: Time step.</span>
-<span class="sd">        route_id_cache: Routes id cache.</span>
+<span class="sd">        sumo_id: SUMO connection id.</span>
+<span class="sd">        sumo_connection: Traci-SUMO connection object.</span>
+<span class="sd">        timestep: Time step being simulated within the day.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">path_gen_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">23423</span><span class="p">):</span>
@@ -419,7 +425,7 @@
         <span class="k">for</span> <span class="n">origin_idx</span> <span class="ow">in</span> <span class="n">origins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">destination_idx</span> <span class="ow">in</span> <span class="n">destinations</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">rows</span> <span class="o">=</span> <span class="n">routes_df</span><span class="p">[(</span><span class="n">routes_df</span><span class="p">[</span><span class="s2">&quot;origins&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">origin_idx</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">routes_df</span><span class="p">[</span><span class="s2">&quot;destinations&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">destination_idx</span><span class="p">)]</span>
-                <span class="n">paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">rows</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+                <span class="n">paths</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
                 <span class="n">paths_dict</span><span class="p">[(</span><span class="n">origin_idx</span><span class="p">,</span> <span class="n">destination_idx</span><span class="p">)]</span> <span class="o">=</span> <span class="n">paths</span>
 
         <span class="c1"># Save paths to xml</span>
@@ -498,7 +504,7 @@
 <span class="sd">        Reads detector data.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            det_dict (dict[Any, None]): dictionary with detector data.</span>
+<span class="sd">            det_dict (dict[str, float]): dictionary with detector data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">det_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors_name</span><span class="p">}</span>

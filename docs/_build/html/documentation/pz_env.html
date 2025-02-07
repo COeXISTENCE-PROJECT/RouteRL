@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="SUMO simulator" href="simulator.html" /><link rel="prev" title="RouteRL" href="../index.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="SUMO simulator" href="simulator.html" /><link rel="prev" title="&lt;no title&gt;" href="../index.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>PettingZoo environment - routerl 0.0.1 documentation</title>
+        <title>PettingZoo environment - RouteRL 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">routerl 0.0.1 documentation</div></a>
+      <a href="../index.html"><div class="brand">RouteRL 0.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,8 +189,11 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/logo.png" alt="Logo"/>
+  </div>
   
-  <span class="sidebar-brand-text">routerl 0.0.1 documentation</span>
+  <span class="sidebar-brand-text">RouteRL 0.0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -205,6 +208,17 @@
 <li class="toctree-l1"><a class="reference internal" href="machine_agents.html">Automated Vehicle (AV) agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="human_agents.html">Human drivers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="observations.html">Observation Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Networks &amp; Demand</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../network_and_demand/networks.html">Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../network_and_demand/demand.html">Demand</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Actions, Rewards, Observations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../action_reward_observation/actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../action_reward_observation/rewards.html">Rewards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../action_reward_observation/observations.html">Observations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
@@ -258,7 +272,136 @@
 <dl class="py class">
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">routerl.environment.environment.</span></span><span class="sig-name descname"><span class="pre">TrafficEnvironment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">23423</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_agents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_paths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/routerl/environment/environment.html#TrafficEnvironment"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><dl class="py method">
+<dd><p>A PettingZoo AECEnv interface for optimal route choice using SUMO simulator.</p>
+<p>This environment is designed for the training of human agents (rational decision-makers)
+and machine agents (reinforcement learning agents).</p>
+<p>See <a class="reference external" href="https://sumo.dlr.de/docs/">SUMO</a> for details on SUMO.
+See <a class="reference external" href="https://pettingzoo.farama.org/">PettingZoo</a> for details on PettingZoo.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Random seed for reproducibility. Defaults to <code class="docutils literal notranslate"><span class="pre">23423</span></code>.</p></li>
+<li><p><strong>create_agents</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create agent data. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>, agents data must be provided in <code class="docutils literal notranslate"><span class="pre">training_records/agents.csv</span></code>.</p></li>
+<li><p><strong>create_paths</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to generate paths. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+<strong>Warning:</strong> Set to <code class="docutils literal notranslate"><span class="pre">False</span></code> only if paths are already generated.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – User-defined parameter overrides. These override default values
+from <code class="docutils literal notranslate"><span class="pre">params.json</span></code> and allow customization of the environment.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>agent_parameters</strong> (<em>dict</em><em>, </em><em>optional</em>) – <p>Agent settings.</p>
+<dl>
+<dt>num_agents (int, default=100):</dt><dd><p>Total number of agents.</p>
+</dd>
+<dt>new_machines_after_mutation (int, default=25):</dt><dd><p>Number of humans converted to machines.</p>
+</dd>
+<dt>machine_parameters (dict):</dt><dd><p>Machine agent settings.</p>
+<dl class="simple">
+<dt>behavior (str, default=”selfish”):</dt><dd><p>Route choice behavior (options: <code class="docutils literal notranslate"><span class="pre">selfish</span></code>, <code class="docutils literal notranslate"><span class="pre">social</span></code>, <code class="docutils literal notranslate"><span class="pre">altruistic</span></code>, <code class="docutils literal notranslate"><span class="pre">malicious</span></code>, <code class="docutils literal notranslate"><span class="pre">competitive</span></code>, <code class="docutils literal notranslate"><span class="pre">collaborative</span></code>).</p>
+</dd>
+<dt>observed_span (int, default=300):</dt><dd><p>Time window considered for observations.</p>
+</dd>
+<dt>observation_type (str, default=”previous_agents_plus_start_time”):</dt><dd><p>Type of observation.</p>
+</dd>
+</dl>
+</dd>
+<dt>human_parameters (dict, optional):</dt><dd><p>Human agent settings.</p>
+<dl class="simple">
+<dt>model (str, default=”culo”):</dt><dd><p>Decision-making model (options: <code class="docutils literal notranslate"><span class="pre">gawron</span></code>, <code class="docutils literal notranslate"><span class="pre">culo</span></code>, <code class="docutils literal notranslate"><span class="pre">w_avg</span></code>).</p>
+</dd>
+<dt>alpha_j (float, default=0.5):</dt><dd><p>Cost expectation coefficient (0-1 range).</p>
+</dd>
+<dt>alpha_zero (float, default=0.5):</dt><dd><p>Sensitivity to new experiences.</p>
+</dd>
+<dt>beta (float, default=-1.5):</dt><dd><p>Decision randomness parameter.</p>
+</dd>
+<dt>beta_randomness (float, default=0.1):</dt><dd><p>Variability in <code class="docutils literal notranslate"><span class="pre">beta</span></code> among the human population.</p>
+</dd>
+<dt>remember (int, default=3):</dt><dd><p>Number of past experiences retained.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>environment_parameters</strong> (<em>dict</em><em>, </em><em>optional</em>) – <p>Environment settings.</p>
+<dl class="simple">
+<dt>number_of_days (int, default=1):</dt><dd><p>Number of days in the scenario.</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>simulator_parameters</strong> (<em>dict</em><em>, </em><em>optional</em>) – <p>SUMO simulator settings.</p>
+<dl class="simple">
+<dt>network_name (str, default=”csomor”):</dt><dd><p>Network name (e.g., <code class="docutils literal notranslate"><span class="pre">arterial</span></code>, <code class="docutils literal notranslate"><span class="pre">cologne</span></code>, <code class="docutils literal notranslate"><span class="pre">grid</span></code>).</p>
+</dd>
+<dt>simulation_timesteps (int, default=180):</dt><dd><p>Total simulation time in seconds.</p>
+</dd>
+<dt>sumo_type (str, default=”sumo”):</dt><dd><p>SUMO execution mode (<code class="docutils literal notranslate"><span class="pre">sumo</span></code> or <code class="docutils literal notranslate"><span class="pre">sumo-gui</span></code>).</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>path_generation_parameters</strong> (<em>dict</em><em>, </em><em>optional</em>) – <p>Path generation settings.</p>
+<dl class="simple">
+<dt>number_of_paths (int, default=3):</dt><dd><p>Number of routes per OD.</p>
+</dd>
+<dt>beta (float, default=-3.0):</dt><dd><p>Sensitivity to travel time in path choice.</p>
+</dd>
+<dt>weight (str, default=”time”):</dt><dd><p>Optimization criterion (e.g., <code class="docutils literal notranslate"><span class="pre">time</span></code>).</p>
+</dd>
+<dt>num_samples (int, default=100):</dt><dd><p>Number of samples for path generation.</p>
+</dd>
+<dt>origins (str | list[str], default=”default”):</dt><dd><p>Origin points.</p>
+</dd>
+<dt>destinations (str | list[str], default=”default”):</dt><dd><p>Destination points.</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>plotter_parameters</strong> (<em>dict</em><em>, </em><em>optional</em>) – <p>Plotting &amp; logging settings.</p>
+<dl class="simple">
+<dt>records_folder (str, default=”training_records”):</dt><dd><p>Directory for training records.</p>
+</dd>
+<dt>plots_folder (str, default=”plots”):</dt><dd><p>Directory for plots.</p>
+</dd>
+<dt>smooth_by (int, default=50):</dt><dd><p>Smoothing parameter for plots.</p>
+</dd>
+<dt>phases (list[int], default=[0, 100]):</dt><dd><p>X-axis positions for phase markers.</p>
+</dd>
+<dt>phase_names (list[str], default=[“Human learning”, “Mutation - Machine learning”]):</dt><dd><p>Phase names for labeling phase markers.</p>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>Example usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">env</span> <span class="o">=</span> <span class="n">TrafficEnvironment</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">create_agents</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">environment_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;number_of_days&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="n">agent_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;num_agents&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="n">simulator_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sumo_type&quot;</span><span class="p">:</span> <span class="s2">&quot;sumo-gui&quot;</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>day</strong> (<em>int</em>) – Current day index in the simulation.</p></li>
+<li><p><strong>human_learning</strong> (<em>bool</em>) – Whether human agents are learning.</p></li>
+<li><p><strong>number_of_days</strong> (<em>int</em>) – Number of days to simulate.</p></li>
+<li><p><strong>action_space_size</strong> (<em>int</em>) – Size of the action space.</p></li>
+<li><p><strong>recorder</strong> (<em>Recorder</em>) – Object for recording simulation data.</p></li>
+<li><p><strong>simulator</strong> (<em>SumoSimulator</em>) – SUMO simulator instance.</p></li>
+<li><p><strong>all_agents</strong> (<em>list</em>) – List of all agent objects.</p></li>
+<li><p><strong>machine_agents</strong> (<em>list</em>) – List of all machine agent objects.</p></li>
+<li><p><strong>human_agents</strong> (<em>list</em>) – List of all human agent objects.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">action_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/routerl/environment/environment.html#TrafficEnvironment.action_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Method that returns the action space of the agent.</p>
@@ -317,50 +460,6 @@ and values are lists of free flow times.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – If model is unknown.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'name':</span> <span class="pre">'TrafficEnvironment',</span> <span class="pre">'render_modes':</span> <span class="pre">['human']}</span></em></dt>
-<dd><p>A PettingZoo AECEnv interface for optimal route choice using SUMO simulator.</p>
-<p>This environment is utilized for the training of human agents (rational decision-makers)
-and machine agents (reinforcement learning agents).
-See <a class="reference external" href="https://sumo.dlr.de/docs/">https://sumo.dlr.de/docs/</a> for details on SUMO.
-See <a class="reference external" href="https://pettingzoo.farama.org/">https://pettingzoo.farama.org/</a> for details on PettingZoo.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – random seed</p></li>
-<li><p><strong>create_agents</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to create agents</p></li>
-<li><p><strong>crete_paths</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to create paths</p></li>
-<li><p><strong>kwargs</strong> (<em>dict</em>) – keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Variables<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>render_mode</strong> (<em>string</em>) – rendering mode</p></li>
-<li><p><strong>environment_params</strong> (<em>dict</em>) – environment parameters</p></li>
-<li><p><strong>agent_params</strong> (<em>dict</em>) – agent parameters</p></li>
-<li><p><strong>plotter_params</strong> (<em>dict</em>) – plotter parameters</p></li>
-<li><p><strong>path_gen_params</strong> (<em>dict</em>) – path generation parameters</p></li>
-<li><p><strong>travel_times_list</strong> (<em>list</em>) – travel times list</p></li>
-<li><p><strong>day</strong> (<em>int</em>) – day</p></li>
-<li><p><strong>human_learning</strong> (<em>bool</em>) – whether human learning</p></li>
-<li><p><strong>machine_same_start_time</strong> (<em>list</em>) – # TO DO</p></li>
-<li><p><strong>action_timestep</strong> (<em>list</em>) – # TO DO</p></li>
-<li><p><strong>number_of_days</strong> (<em>int</em>) – number of days</p></li>
-<li><p><strong>action_space_size</strong> (<em>int</em>) – size of action space</p></li>
-<li><p><strong>_set_seed</strong> (<em>int</em>) – random seed</p></li>
-<li><p><strong>recorder</strong> (<em>Recorder</em>) – recorder</p></li>
-<li><p><strong>simulator</strong> (<em>SumoSimulator</em>) – sumo simulator</p></li>
-<li><p><strong>all_agents</strong> (<em>list</em>) – list of all agents</p></li>
-<li><p><strong>machine_agents</strong> (<em>list</em>) – list of all machine agents</p></li>
-<li><p><strong>human_agents</strong> (<em>list</em>) – list of all human agents</p></li>
-<li><p><strong>possible_agents</strong> (<em>list</em>) – list of all possible agents</p></li>
-<li><p><strong>episode_actions</strong> (<em>dict</em>) – episode actions</p></li>
-</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -425,17 +524,6 @@ other vehicles, removes a specified number of these agents, and replaces them wi
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/routerl/environment/environment.html#TrafficEnvironment.render"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Method that render action.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>None</strong></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="../_modules/routerl/environment/environment.html#TrafficEnvironment.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Resets the environment.</p>
 <dl class="field-list simple">
@@ -447,7 +535,7 @@ other vehicles, removes a specified number of these agents, and replaces them wi
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>self.observations</strong> (<em>Any</em>) – observations.</p></li>
+<li><p><strong>observations</strong> (<em>dict</em>) – observations.</p></li>
 <li><p><strong>infos</strong> (<em>dict</em>) – dictionary of information for the agents.</p></li>
 </ul>
 </dd>
@@ -459,7 +547,7 @@ other vehicles, removes a specified number of these agents, and replaces them wi
 <span class="sig-name descname"><span class="pre">simulation_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">machine_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">machine_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/routerl/environment/environment.html#TrafficEnvironment.simulation_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>This function contains the integration of the agent’s actions to SUMO.</p>
 <p>We iterate through all the time steps of the simulation.
-For each timestep there are None, one or more than one agents type (humans, machines) that start.
+For each timestep there are none, one or more than one agents type (humans, machines) that start.
 If more than one machine agents have the same start time, we break from this function because
 we need to take the agent’s action from the STEP function.</p>
 <dl class="field-list simple">
@@ -478,7 +566,7 @@ we need to take the agent’s action from the STEP function.</p>
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/routerl/environment/environment.html#TrafficEnvironment.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Start the simulation.</p>
+<dd><p>Start the connection with SUMO.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>None</strong></p>
@@ -490,9 +578,9 @@ we need to take the agent’s action from the STEP function.</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">machine_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/routerl/environment/environment.html#TrafficEnvironment.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Step method.</p>
-<p>Takes an action for the current agent (specified by agent_selection) and updates
+<p>Takes an action for the current agent (specified by <cite>agent_selection</cite>) and updates
 various parameters including rewards, cumulative rewards, terminations, truncations,
-infos, and agent_selection. Also updates any internal state used by observe() or render().</p>
+infos, and agent_selection. Also updates any internal state used by <cite>observe()</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>machine_action</strong> (<em>int</em><em>, </em><em>optional</em>) – The action to be taken by the machine agent. Defaults to None.</p>

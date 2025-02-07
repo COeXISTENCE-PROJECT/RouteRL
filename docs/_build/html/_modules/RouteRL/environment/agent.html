@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>routerl.environment.agent - routerl 0.0.1 documentation</title>
+        <title>routerl.environment.agent - RouteRL 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -165,7 +165,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">routerl 0.0.1 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">RouteRL 0.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -188,8 +188,11 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../_static/logo.png" alt="Logo"/>
+  </div>
   
-  <span class="sidebar-brand-text">routerl 0.0.1 documentation</span>
+  <span class="sidebar-brand-text">RouteRL 0.0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -204,6 +207,17 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/machine_agents.html">Automated Vehicle (AV) agents</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/human_agents.html">Human drivers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../documentation/observations.html">Observation Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Networks &amp; Demand</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../network_and_demand/networks.html">Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../network_and_demand/demand.html">Demand</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Actions, Rewards, Observations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../action_reward_observation/actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../action_reward_observation/rewards.html">Rewards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../action_reward_observation/observations.html">Observations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
@@ -260,19 +274,18 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This is the abstract base class for the human and machine agent classes.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        id (int): The id of the agent.</span>
-<span class="sd">        kind (str): The kind of the agent.</span>
-<span class="sd">        start_time (float): The start time of the simulation.</span>
-<span class="sd">        origin (float): The origin of the simulation.</span>
-<span class="sd">        destination (float): The destination value of the simulation.</span>
-<span class="sd">        behavior (float): The behavior of the simulation.</span>
-<span class="sd">    Attributes:</span>
-<span class="sd">        id (int): The id of the agent.</span>
-<span class="sd">        kind (str): The kind of the agent.</span>
-<span class="sd">        start_time (float): The start time of the simulation.</span>
-<span class="sd">        origin (float): The origin of the simulation.</span>
-<span class="sd">        destination (float): The destination value of the simulation.</span>
-<span class="sd">        behavior (float): The behavior of the simulation.</span>
+<span class="sd">        id (int): </span>
+<span class="sd">            The id of the agent.</span>
+<span class="sd">        kind (str): </span>
+<span class="sd">            The kind of the agent (Human or AV).</span>
+<span class="sd">        start_time (float): </span>
+<span class="sd">            The start time of the agent.</span>
+<span class="sd">        origin (float): </span>
+<span class="sd">            The origin of the agent.</span>
+<span class="sd">        destination (float): </span>
+<span class="sd">            The destination value of the agent.</span>
+<span class="sd">        behavior (float): </span>
+<span class="sd">            The behavior of the agent.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">behavior</span><span class="p">):</span>
@@ -365,15 +378,18 @@
 <span class="sd">    and decision-making in route selection.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        id (int): The id of the agent.</span>
-<span class="sd">        start_time (float): The start time of the simulation.</span>
-<span class="sd">        origin (float): The origin of the simulation.</span>
-<span class="sd">        destination (float): The destination value of the simulation.</span>
-<span class="sd">        params (dict): The parameters of the agent.</span>
-<span class="sd">        initial_knowledge (float): The initial knowledge of the agent.</span>
-<span class="sd">    Attributes:</span>
-<span class="sd">        model (dict): The model of the agent.</span>
-<span class="sd">        last_reward (float): The last reward of the agent.</span>
+<span class="sd">        id (int):</span>
+<span class="sd">            The id of the agent.</span>
+<span class="sd">        start_time (float):</span>
+<span class="sd">            The start time of the agent.</span>
+<span class="sd">        origin (float):</span>
+<span class="sd">            The origin of the agent.</span>
+<span class="sd">        destination (float):</span>
+<span class="sd">            The destination value of the agent.</span>
+<span class="sd">        params (dict):</span>
+<span class="sd">            The parameters for the learning model of the agent as specified in `here &lt;https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#&gt;`_.</span>
+<span class="sd">        initial_knowledge (float):</span>
+<span class="sd">            The initial knowledge of the agent.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">initial_knowledge</span><span class="p">):</span>
@@ -391,7 +407,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the last reward of the agent.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            self._last_reward: The last reward of the agent.</span>
+<span class="sd">            float: The last reward of the agent.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_reward</span>
@@ -414,9 +430,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the agent&#39;s action (route of choice) based on the current observation from the environment.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            observation (float): The observation of the agent.</span>
+<span class="sd">            observation (list): The observation of the agent.</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            self.model.act(observation) [int]: The action of the agent.</span>
+<span class="sd">            int: The action of the agent.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span></div>
@@ -461,7 +477,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            observation (list[dict]): The observation of the agent.</span>
 <span class="sd">        Returns:</span>
-<span class="sd">            own_tt (float): Own travel time of the agent.</span>
+<span class="sd">            float: Own travel time of the agent.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">own_tt</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="nb">next</span><span class="p">(</span><span class="n">obs</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">TRAVEL_TIME</span><span class="p">]</span> <span class="k">for</span> <span class="n">obs</span> <span class="ow">in</span> <span class="n">observation</span> <span class="k">if</span> <span class="n">obs</span><span class="p">[</span><span class="n">kc</span><span class="o">.</span><span class="n">AGENT_ID</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
@@ -477,19 +493,18 @@
 <span class="sd">    and decision-making processes for selecting optimal routes.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        id (int): The id of the agent.</span>
-<span class="sd">        start_time (float): The start time of the simulation.</span>
-<span class="sd">        origin (float): The origin of the simulation.</span>
-<span class="sd">        destination (float): The destination value of the simulation.</span>
-<span class="sd">        params (dict): The parameters of the agent.</span>
-<span class="sd">        action_space_size (int): The size of the action space of the agent.</span>
-<span class="sd">    Attributes:</span>
-<span class="sd">        observed_span (dict): The observed span of the agent.</span>
-<span class="sd">        action_space_size (int): The size of the action space of the agent.</span>
-<span class="sd">        state_size (int): The state size of the agent.</span>
-<span class="sd">        model : The model of the agent behavior.</span>
-<span class="sd">        last_reward (float): The last reward of the agent.</span>
-<span class="sd">        rewards_coefs (dict): The reward coefficients of the agent.</span>
+<span class="sd">        id (int): </span>
+<span class="sd">            The id of the agent.</span>
+<span class="sd">        start_time (float): </span>
+<span class="sd">            The start time of the agent.</span>
+<span class="sd">        origin (float): </span>
+<span class="sd">            The origin of the agent.</span>
+<span class="sd">        destination (float): </span>
+<span class="sd">            The destination value of the agent.</span>
+<span class="sd">        params (dict): </span>
+<span class="sd">            The parameters of the machine agent as specified in `here &lt;https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#&gt;`_.</span>
+<span class="sd">        action_space_size (int): </span>
+<span class="sd">            The size of the action space of the agent.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">action_space_size</span><span class="p">):</span>
@@ -533,7 +548,7 @@
 <div class="viewcode-block" id="MachineAgent.act">
 <a class="viewcode-back" href="../../../documentation/machine_agents.html#routerl.environment.agent.MachineAgent.act">[docs]</a>
     <span class="k">def</span> <span class="nf">act</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Acting method</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;**Deprecated**</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            _ (Any): The current state of the agent.</span>
@@ -547,9 +562,11 @@
 <div class="viewcode-block" id="MachineAgent.learn">
 <a class="viewcode-back" href="../../../documentation/machine_agents.html#routerl.environment.agent.MachineAgent.learn">[docs]</a>
     <span class="k">def</span> <span class="nf">learn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Learning method</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;**Deprecated**</span>
+<span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            _ (Any): The current state of the agent.</span>
+<span class="sd">            </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -565,8 +582,9 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            observation (list[dict]): The recent observations of the agent.</span>
+<span class="sd">            </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            warmth_agents list[int]: The current state representation.</span>
+<span class="sd">            list[int]: The current state representation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">min_start_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">observed_span</span>
@@ -605,12 +623,13 @@
 <a class="viewcode-back" href="../../../documentation/machine_agents.html#routerl.environment.agent.MachineAgent.get_reward">[docs]</a>
     <span class="k">def</span> <span class="nf">get_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This method calculated the reward of each individual agent, based on the travel time of the agent,</span>
-<span class="sd">        the group of agents, the other agents, and all agents.</span>
+<span class="sd">        the group of agents, the other agents, and all agents, weighted according to the agent&#39;s behavior.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            observation (list[dict]): The current observation of the agent.</span>
+<span class="sd">                </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            agent_reward (float): The reward of the agent.</span>
+<span class="sd">            float: The reward of the agent.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">min_start_time</span><span class="p">,</span> <span class="n">max_start_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">observed_span</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">observed_span</span>

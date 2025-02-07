@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="PettingZoo environment" href="documentation/pz_env.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>routerl 0.0.1 documentation</title>
+        <title>RouteRL 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">routerl 0.0.1 documentation</div></a>
+      <a href="#"><div class="brand">RouteRL 0.0.1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -189,8 +189,11 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
   
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="_static/logo.png" alt="Logo"/>
+  </div>
   
-  <span class="sidebar-brand-text">routerl 0.0.1 documentation</span>
+  <span class="sidebar-brand-text">RouteRL 0.0.1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -206,9 +209,16 @@
 <li class="toctree-l1"><a class="reference internal" href="documentation/human_agents.html">Human drivers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="documentation/observations.html">Observation Functions</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Networks</span></p>
+<p class="caption" role="heading"><span class="caption-text">Networks &amp; Demand</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="network/networks.html">Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="network_and_demand/networks.html">Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="network_and_demand/demand.html">Demand</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Actions, Rewards, Observations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="action_reward_observation/actions.html">Actions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="action_reward_observation/rewards.html">Rewards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="action_reward_observation/observations.html">Observations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
@@ -257,30 +267,28 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="routerl">
-<h1>RouteRL<a class="headerlink" href="#routerl" title="Link to this heading">¶</a></h1>
-<figure class="align-default">
-<img alt="RouteRL" src="_images/trans_bg.jpeg" />
+          <figure class="align-default">
+<img alt="RouteRL" src="_images/two_route_graphic.png" />
 </figure>
-<p>RouteRL provides a multi-agent reinforcement learning environment for urban route choice in different city networks.</p>
+<p>RouteRL is a multi-agent reinforcement learning environment for urban route choice that simulates the coexistence of human drivers and Automated Vehicles (AVs) in city networks.</p>
 <ul class="simple">
-<li><p>The main class is <a class="reference external" href="https://github.com/COeXISTENCE-PROJECT/Milestone-One/blob/env2pz/RouteRL/environment/environment.py">TrafficEnvironment</a> and is a <a class="reference external" href="https://pettingzoo.farama.org/index.html">PettingZoo</a> AEC API environment.</p></li>
-<li><p>There are two types of agents in the environment and are both represented by the <a class="reference external" href="https://github.com/COeXISTENCE-PROJECT/Milestone-One/blob/env2pz/RouteRL/environment/agent.py">BaseAgent</a> class.</p>
+<li><p>The main class is <a class="reference external" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/environment/environment.py">TrafficEnvironment</a> and is a <a class="reference external" href="https://pettingzoo.farama.org/index.html">PettingZoo</a> AEC API environment.</p></li>
+<li><p>There are two types of agents in the environment and are both represented by the <a class="reference external" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/3d2ca55e4474eee062f161c42f47a212b3936377/routerl/environment/agent.py#L14">BaseAgent</a> class.</p>
 <ul>
 <li><p>Human drivers are simulated using human route-choice behavior from transportation research.</p></li>
 <li><p>Automated vehicles (AVs) are the RL agents that aim to optimize their routes and learn the most efficient paths.</p></li>
 </ul>
 </li>
-<li><p>It is compatible with popular RL libraries such as <a class="reference external" href="https://stable-baselines3.readthedocs.io/en/master/guide/examples.html">stable-baselines3</a> and <a class="reference external" href="https://pytorch.org/rl/stable/tutorials/torchrl_demo.html">TorchRL</a>.</p></li>
+<li><p>It is compatible with popular RL libraries such as <a class="reference external" href="https://pytorch.org/rl/stable/tutorials/torchrl_demo.html">TorchRL</a>.</p></li>
 </ul>
-<p>For more details, check the documentation <a class="reference external" href="https://coexistence-project.github.io/RouteRL/">online</a>.</p>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
 </div>
-</section>
+<div class="toctree-wrapper compound">
+</div>
 
         </article>
       </div>
