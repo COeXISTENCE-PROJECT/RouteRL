@@ -704,13 +704,11 @@ class TrafficEnvironment(AECEnv):
             return PreviousAgentStartPlusStartTime(self.machine_agents,
                                                    self.human_agents,
                                                    self.simulation_params,
-                                                   self.agent_params,
-                                                   None)
+                                                   self.agent_params)
         elif observation_type == kc.PREVIOUS_AGENTS:
             return PreviousAgentStart(self.machine_agents,
                                       self.human_agents,
                                       self.simulation_params,
-                                      self.agent_params,
-                                      None)
+                                      self.agent_params)
         else:
             raise ValueError('[MODEL INVALID] Unrecognized model: ' + observation_type)

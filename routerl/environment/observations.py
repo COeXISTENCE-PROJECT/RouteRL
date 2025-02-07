@@ -45,7 +45,6 @@ class PreviousAgentStart(Observations):
         human_agents_list (List[Any]): List of human agents.
         simulation_params (Dict[str, Any]): Simulation parameters.
         agent_params (Dict[str, Any]): Agent parameters.
-        training_params (Dict[str, Any]): Training parameters.
     Attributes:
         observations (List[Any]): List of observations.
     """
@@ -56,13 +55,11 @@ class PreviousAgentStart(Observations):
         human_agents_list: List[Any],
         simulation_params: Dict[str, Any],
         agent_params: Dict[str, Any],
-        training_params: Union[Dict[str, Any], None]
         ) -> None:
 
         super().__init__(machine_agents_list, human_agents_list)
         self.simulation_params = simulation_params
         self.agent_params = agent_params
-        self.training_params = training_params
         self.observations = self.reset_observation()
 
     def __call__(self, all_agents: List[Any]) -> Dict[str, Any]:
@@ -133,7 +130,6 @@ class PreviousAgentStartPlusStartTime(Observations):
         human_agents_list: List[Any],
         simulation_params: Dict[str, Any],
         agent_params: Dict[str, Any],
-        training_params: Union[Dict[str, Any], None]
     ) -> None:
         """Initialize the observation function.
 
@@ -142,7 +138,6 @@ class PreviousAgentStartPlusStartTime(Observations):
             human_agents_list (List[Any]): List of human agents.
             simulation_params (Dict[str, Any]): Dictionary of simulation parameters.
             agent_params (Dict[str, Any]): Dictionary of agent parameters.
-            training_params (Dict[str, Any]): Dictionary of training parameters.
         Returns:
             None
         """
@@ -150,7 +145,6 @@ class PreviousAgentStartPlusStartTime(Observations):
         super().__init__(machine_agents_list, human_agents_list)
         self.simulation_params = simulation_params
         self.agent_params = agent_params
-        self.training_params = training_params
         self.observations = self.reset_observation()
         self.agent_vectors = {}
 
