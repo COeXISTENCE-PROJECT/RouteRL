@@ -5,7 +5,7 @@ import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
 from pathlib import Path
 
-TUTORIALS_DIR = Path("../tutorials")
+TUTORIALS_DIR = Path("tutorials")
 
 notebooks = list(TUTORIALS_DIR.rglob("*.ipynb"))
 

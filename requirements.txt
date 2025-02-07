@@ -2,6 +2,7 @@ gymnasium==1.0.0
 janux==1.0.0
 matplotlib==3.9.3
 nbconvert==7.16.6
+nbformat==5.10.4
 numpy==2.0.2
 pandas==2.2.3
 pettingzoo==1.24.3
