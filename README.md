@@ -18,6 +18,39 @@ For more details, check the documentation [online](https://coexistence-project.g
 <!-- end intro -->
 
 
+## RouteRL usage and functionalities at glance
+
+```python
+env = TrafficEnvironment(seed=42, **env_params) # initialize the traffic environment
+
+env.start() # start the connection with SUMO
+
+# Human learning 
+for episode in range(human_learning_episodes): 
+    env.step()
+
+env.mutation() # some human agents transition to AV agents
+
+# Human and AV agents interact with the environment using a random policy
+for episode in range(episodes): 
+    print(f"\nStarting episode {episode + 1}")
+    env.reset()
+    
+    for agent in env.agent_iter():
+        observation, reward, termination, truncation, info = env.last()
+
+        if termination or truncation:
+            action = None
+        else:
+            # Policy action or random sampling
+            action = env.action_space(agent).sample()
+        print(f"Agent {agent} takes action: {action}")
+        
+        env.step(action)
+        print(f"Agent {agent} has stepped, environment updated.\n")
+
+```
+
 
 <!--# How to run on servers?
 
