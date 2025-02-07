@@ -1,6 +1,6 @@
 # Install
 
 ```{include} ../../README.md
-:start-after: <!-- start install -->
-:end-before: <!-- end install -->
+:start-after: <!-- start installation -->
+:end-before: <!-- end installation -->
 ```
