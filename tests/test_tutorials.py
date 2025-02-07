@@ -6,8 +6,10 @@ from nbconvert.preprocessors import ExecutePreprocessor
 from pathlib import Path
 
 TUTORIALS_DIR = Path("tutorials")
-
 notebooks = list(TUTORIALS_DIR.rglob("*.ipynb"))
+
+print(f"DEBUG: Looking for notebooks in {TUTORIALS_DIR.resolve()}")
+print(f"DEBUG: Found {len(notebooks)} notebooks.")
 
 @pytest.fixture(scope="session", autouse=True)
 def check_sumo_installed():
@@ -20,8 +22,8 @@ def test_notebook_execution(notebook_path):
     with open(notebook_path, encoding="utf-8") as f:
         notebook = nbformat.read(f, as_version=4)
 
-    #kernel_name = notebook["metadata"].get("kernelspec", {}).get("name", "python")
-    executor = ExecutePreprocessor(timeout=1200, kernel_name="python")
+    kernel_name = notebook["metadata"].get("kernelspec", {}).get("name", "python3")
+    executor = ExecutePreprocessor(timeout=1200, kernel_name=kernel_name)
 
     try:
         executor.preprocess(notebook, {"metadata": {"path": notebook_path.parent}})

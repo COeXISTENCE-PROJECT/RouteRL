@@ -28,6 +28,11 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Install Jupyter and Kernel
+        run: |
+          pip install jupyter nbconvert pytest
+          python -m ipykernel install --user --name=python3
+
       - name: Install SUMO
         run: |
           sudo apt-get update
