@@ -32,7 +32,7 @@ install:
   - pip install -r RouteRL/requirements.txt
   - pip install coveralls
 script:
- - python -m unittest tests/test_tutorials.py
- - coverage run -m unittest tests/test_tutorials.py
+ - python -m unittest RouteRL_test.py
+ - coverage run -m unittest RouteRL_test.py
 after_success:
  - coveralls
