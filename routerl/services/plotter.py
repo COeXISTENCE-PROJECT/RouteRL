@@ -25,7 +25,9 @@ class Plotter:
     """Plot the results of the training
 
     Args:
-        params (list): list of the parameters as `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_.
+        params (list): 
+            Plotter parameters as specified `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_.
+            
     Methods:
         plot: plot the results
         visualise_mean_reward: visualise the mean reward

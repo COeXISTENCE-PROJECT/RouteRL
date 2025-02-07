@@ -117,12 +117,18 @@ class HumanAgent(BaseAgent):
     and decision-making in route selection.
 
     Args:
-        id (int): The id of the agent.
-        start_time (float): The start time of the agent.
-        origin (float): The origin of the agent.
-        destination (float): The destination value of the agent.
-        params (dict): The parameters for the learning model of the agent.
-        initial_knowledge (float): The initial knowledge of the agent.
+        id (int):
+            The id of the agent.
+        start_time (float):
+            The start time of the agent.
+        origin (float):
+            The origin of the agent.
+        destination (float):
+            The destination value of the agent.
+        params (dict):
+            The parameters for the learning model of the agent as specified in `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_..
+        initial_knowledge (float):
+            The initial knowledge of the agent.
     """
 
     def __init__(self, id, start_time, origin, destination, params, initial_knowledge):

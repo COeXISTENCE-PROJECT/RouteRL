@@ -13,19 +13,13 @@ class Recorder:
     """Record the training process.
 
     Args:
-        params (list): A list of parameters.
-    Attributes:
-        records_folder: RECORDS_FOLDER
-        episodes_folder: EPISODES_LOGS_FOLDER
-        detector_folder: DETECTORS_LOGS_FOLDER
-        loss_file_path: LOSSES_LOG_FILE_NAME
+        params (list):
+            Plotter parameters as specified `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_.
+        
     Methods:
-        _clear_records: removes records from records_folder
-        _get_txt_file_path: gets text file from records_folder
-        record: remembers episodes and detectors
-        remember_episode: remembers episode
-        remember_detector: remembers detector
-        save_losses: saves losses
+        record: saves episode data and detector statistics to disk.
+        remember_episode: records episode data.
+        remember_detector: decords detector data
     """
 
     def __init__(self, params):
