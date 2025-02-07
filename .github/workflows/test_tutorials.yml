@@ -45,4 +45,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run notebook tests
-        run: pytest tests/test_tutorials.py
+        run: pytest -rs tests/test_tutorials.py
