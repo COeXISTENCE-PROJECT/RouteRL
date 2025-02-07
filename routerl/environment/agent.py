@@ -126,7 +126,7 @@ class HumanAgent(BaseAgent):
         destination (float):
             The destination value of the agent.
         params (dict):
-            The parameters for the learning model of the agent as specified in `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_..
+            The parameters for the learning model of the agent as specified in `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_.
         initial_knowledge (float):
             The initial knowledge of the agent.
     """

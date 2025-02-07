@@ -23,19 +23,18 @@ def generate_agents(params, free_flow_times, generate_data, seed=23423) -> list:
     its type.
 
     Args:
-        params (dict): Parameters dictionary
-            containing key-value pairs for:
-                - `params["agent_parameters"]["num_agents"]`: Total number of agents.
-                - `params["agent_parameters"]["machine_parameters"]`: Settings for `MachineAgent`.
-                - `params["agent_parameters"]["human_parameters"]`: Settings for `HumanAgent`.
-        free_flow_times (dict[tuple[int], list[float]]): Free flow times of route options per OD.
-        generate_data (bool): If True, generates new agent data. If False, loads 
-                              existing agent data from a CSV file specified by 
-                              `params[kc.RECORDS_FOLDER]`.
+        params (dict):
+            Agent parameters dictionary as specified in `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_.
+        free_flow_times (dict[tuple[int], list[float]]):
+            Free flow times of route options per OD.
+        generate_data (bool):
+            If True, generates new agent data. If False, loads existing agent 
+            data from a CSV file specified by `params[kc.RECORDS_FOLDER]`.
         seed (int, optional): Random seed for reproducibility. Defaults to 23423.
         
     Returns:
         list: A list of `BaseAgent` objects (either `MachineAgent` or `HumanAgent`).
+        
     Raises:
         ValueError: If an unrecognized agent type is encountered in the data.
     """
@@ -88,10 +87,10 @@ def generate_agent_data(params, seed=23423) -> pd.DataFrame:
     Constructs a dataframe, where each row is an agent and columns are attributes.
 
     Args:
-        params (dict): Parameters dictionary.
+        params (dict): Agent parameters dictionary as specified in `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_.
         seed (int): Random seed.
     Returns:
-        agents_df (pd.DataFrame): dataframe with agents attributes.
+        agents_df (pd.DataFrame): Pandas dataframe with agents attributes.
     """
     
     num_agents = params[kc.NUM_AGENTS]
