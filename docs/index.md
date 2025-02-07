@@ -17,11 +17,7 @@ lastpage:
 :hidden:
 :caption: Installation
 
-```{include} ../README.md
-:start-after: <!-- start installation  -->
-:end-before: <!-- end installation  -->
-```
-
+install/install.md
 ```
 
 ```{toctree}
