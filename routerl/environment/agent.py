@@ -15,12 +15,18 @@ class BaseAgent(ABC):
     """This is the abstract base class for the human and machine agent classes.
 
     Args:
-        id (int): The id of the agent.
-        kind (str): The kind of the agent (Human or AV).
-        start_time (float): The start time of the agent.
-        origin (float): The origin of the agent.
-        destination (float): The destination value of the agent.
-        behavior (float): The behavior of the agent.
+        id (int): 
+            The id of the agent.
+        kind (str): 
+            The kind of the agent (Human or AV).
+        start_time (float): 
+            The start time of the agent.
+        origin (float): 
+            The origin of the agent.
+        destination (float): 
+            The destination value of the agent.
+        behavior (float): 
+            The behavior of the agent.
     """
 
     def __init__(self, id, kind, start_time, origin, destination, behavior):
@@ -205,14 +211,18 @@ class MachineAgent(BaseAgent):
     and decision-making processes for selecting optimal routes.
 
     Args:
-        id (int): The id of the agent.
-        start_time (float): The start time of the agent.
-        origin (float): The origin of the agent.
-        destination (float): The destination value of the agent.
-        params (dict): The parameters of the agent.
-            - observed_span (dict): The observed span of the agent.
-            - behavior (str): The behavior of the agent.
-        action_space_size (int): The size of the action space of the agent.
+        id (int): 
+            The id of the agent.
+        start_time (float): 
+            The start time of the agent.
+        origin (float): 
+            The origin of the agent.
+        destination (float): 
+            The destination value of the agent.
+        params (dict): 
+            The parameters of the machine agent as specified in `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_.
+        action_space_size (int): 
+            The size of the action space of the agent.
     """
 
     def __init__(self, id, start_time, origin, destination, params, action_space_size):
@@ -254,7 +264,7 @@ class MachineAgent(BaseAgent):
         self._last_reward = reward
 
     def act(self, _) -> None:
-        """Acting method
+        """**Deprecated**
 
         Args:
             _ (Any): The current state of the agent.
@@ -265,9 +275,11 @@ class MachineAgent(BaseAgent):
         return None
 
     def learn(self, _) -> None:
-        """Learning method
+        """**Deprecated**
+        
         Args:
             _ (Any): The current state of the agent.
+            
         Returns:
             None
         """
@@ -280,6 +292,7 @@ class MachineAgent(BaseAgent):
 
         Args:
             observation (list[dict]): The recent observations of the agent.
+            
         Returns:
             list[int]: The current state representation.
         """
@@ -321,6 +334,7 @@ class MachineAgent(BaseAgent):
 
         Args:
             observation (list[dict]): The current observation of the agent.
+                
         Returns:
             float: The reward of the agent.
         """

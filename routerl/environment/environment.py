@@ -67,7 +67,7 @@ class TrafficEnvironment(AECEnv):
             machine_parameters (dict):
                 Machine agent settings.
                 
-                behavior`` (str, default="selfish"):
+                behavior (str, default="selfish"):
                     Route choice behavior (options: ``selfish``, ``social``, ``altruistic``, ``malicious``, ``competitive``, ``collaborative``).
                 
                 observed_span (int, default=300):
@@ -100,7 +100,8 @@ class TrafficEnvironment(AECEnv):
         environment_parameters (dict, optional):
             Environment settings.
             
-            number_of_days (int, default=1): Number of days in the scenario.
+            number_of_days (int, default=1):
+                Number of days in the scenario.
 
         simulator_parameters (dict, optional): 
             SUMO simulator settings.
@@ -174,7 +175,6 @@ class TrafficEnvironment(AECEnv):
         human_agents (list): List of all human agent objects.
     """
     
-    #TODO it is needed anymore?
     metadata = {
         "render_modes": ["human"],
         "name": "TrafficEnvironment",
@@ -266,8 +266,8 @@ class TrafficEnvironment(AECEnv):
     ################################
 
     def start(self) -> None:
-        """Start the simulation.
-
+        """Start the connection with SUMO.
+        
         Returns:
             None
         """
@@ -280,8 +280,9 @@ class TrafficEnvironment(AECEnv):
         Args:
             seed (int, optional): Seed for random number generation. Defaults to None.
             options (dict, optional): Additional options for resetting the environment. Defaults to None.
+            
         Returns:
-            self.observations (Any): observations.
+            observations (dict): observations.
             infos (dict): dictionary of information for the agents.
         """
 
@@ -310,12 +311,14 @@ class TrafficEnvironment(AECEnv):
     def step(self, machine_action: int = None) -> None:
         """Step method.
 
-        Takes an action for the current agent (specified by agent_selection) and updates
+        Takes an action for the current agent (specified by `agent_selection`) and updates
         various parameters including rewards, cumulative rewards, terminations, truncations,
-        infos, and agent_selection. Also updates any internal state used by observe() or render().
+        infos, and agent_selection. Also updates any internal state used by `observe()`.
 
         Args:
-            machine_action (int, optional): The action to be taken by the machine agent. Defaults to None.
+            machine_action (int, optional):
+                The action to be taken by the machine agent. Defaults to None.
+            
         Returns:
             None
         """
@@ -379,6 +382,7 @@ class TrafficEnvironment(AECEnv):
 
         Args:
             agent (str): The identifier for the agent whose observations are to be retrieved.
+            
         Returns:
             self.observation_obj.agent_observations(agent) (np.ndarray): The observations for the specified agent.
         """
@@ -397,8 +401,10 @@ class TrafficEnvironment(AECEnv):
 
         Args:
             disable_human_learning (bool, optional): Boolean flag to disable human agents.
+            
         Returns:
             None
+            
         Raises:
             ValueError: If there are insufficient human agents available for mutation.
         """
@@ -529,13 +535,14 @@ class TrafficEnvironment(AECEnv):
         """This function contains the integration of the agent's actions to SUMO.
 
         We iterate through all the time steps of the simulation.
-        For each timestep there are None, one or more than one agents type (humans, machines) that start.
+        For each timestep there are none, one or more than one agents type (humans, machines) that start.
         If more than one machine agents have the same start time, we break from this function because
         we need to take the agent's action from the STEP function.
 
         Args:
             machine_action (int): The id of the machine agent whose action is to be performed.
             machine_id (int): The id of the machine agent whose action is to be performed.
+            
         Returns:
             None
         """
@@ -652,12 +659,6 @@ class TrafficEnvironment(AECEnv):
     ############################
 
     def render(self) -> None:
-        """Method that render action.
-
-        Returns:
-            None
-        """
-
         pass
 
     @functools.lru_cache(maxsize=None)

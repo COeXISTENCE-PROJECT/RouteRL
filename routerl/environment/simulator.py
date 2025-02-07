@@ -1,8 +1,8 @@
 """
-#TODO what simulator.py is?
-
+This file, simulator.py, defines the SumoSimulator class, 
+which manages the interaction between driver agents and the SUMO traffic simulator 
+by handling simulation setup, path generation, vehicle management, and simulation control.
 """
-
 import os
 import janux as jx
 import logging
@@ -25,27 +25,19 @@ class SumoSimulator():
     and it returns the corresponding travel times for these vehicles.
 
     Args:
-        params (dict): Dictionary of parameters for the SUMO environment.
-        path_gen_params (dict): Dictionary of parameters for the SUMO environment.
-        seed: Random number generator seed.
+        params (dict):
+            Dictionary of parameters for the SUMO environment. Specified `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_.
+        path_gen_params (dict):
+            Dictionary of parameters for the SUMO environment. specified `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_.
+        seed (int): 
+            Random seed for reproducibility.
+        
     Attributes:
         network_name: Network name.
-        sumo_type: Type of sumo.
-        number_of_paths: Number of paths.
         simulation_length: Simulation length.
-        paths_csv_file_path (str): Paths to csv files.
-        sumo_config_path (str): Path to sumo configuration file.
-        routes_xml_path (str): Path to routes defined as xml files.
-        sumo_fcd: Sumo floating car data.
-        detector_save_path (str): Path to save the detected vehicles.
-        conn_file_path (str): Path to connections file.
-        edge_file_path (str): Path to edges file.
-        nod_file_path (str): Path to nodes file.
-        rou_xml_save_path (str): Path to save routes xml file.
-        sumo_id: Sumo id.
-        sumo_connection: Sumo connection.
-        timestep: Time step.
-        route_id_cache: Routes id cache.
+        sumo_id: SUMO connection id.
+        sumo_connection: Traci-SUMO connection object.
+        timestep: Time step being simulated within the day.
     """
 
     def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423):
@@ -243,7 +235,7 @@ class SumoSimulator():
         Reads detector data.
 
         Returns:
-            det_dict (dict[Any, None]): dictionary with detector data.
+            det_dict (dict[str, float]): dictionary with detector data.
         """
 
         det_dict = {name: None for name in self.detectors_name}
