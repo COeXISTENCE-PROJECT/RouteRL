@@ -20,8 +20,8 @@ def test_notebook_execution(notebook_path):
     with open(notebook_path, encoding="utf-8") as f:
         notebook = nbformat.read(f, as_version=4)
 
-    kernel_name = notebook["metadata"].get("kernelspec", {}).get("name", "python")
-    executor = ExecutePreprocessor(timeout=1200, kernel_name=kernel_name)
+    #kernel_name = notebook["metadata"].get("kernelspec", {}).get("name", "python")
+    executor = ExecutePreprocessor(timeout=1200, kernel_name="python")
 
     try:
         executor.preprocess(notebook, {"metadata": {"path": notebook_path.parent}})
