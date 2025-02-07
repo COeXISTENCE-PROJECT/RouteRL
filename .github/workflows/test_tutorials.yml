@@ -36,4 +36,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run notebook tests
-        run: pytest test_tutorials.py
+        run: pytest tests/test_tutorials.py
