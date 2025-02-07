@@ -26,9 +26,10 @@ documentation/observations
 
 ```{toctree}
 :hidden:
-:caption: Networks
+:caption: Networks & Demand
 
-network/networks
+network_and_demand/networks
+network_and_demand/demand
 ```
 
 ```{toctree}
