@@ -31,7 +31,7 @@ for episode in range(human_learning_episodes):
 
 env.mutation() # some human agents transition to AV agents
 
-# Human and AV agents interact with the environment using a random policy
+# Human and AV agents interact with the environment and AVs are using a random policy
 for episode in range(episodes): 
     print(f"\nStarting episode {episode + 1}")
     env.reset()
