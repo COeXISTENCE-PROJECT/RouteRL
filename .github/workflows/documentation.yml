@@ -1,4 +1,4 @@
-name: docs_pages_workflow
+name: Online Documentation
 
 on:
   push:
