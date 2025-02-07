@@ -2,6 +2,7 @@
 
 # RouteRL
 
+![Notebook Tests](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_notebooks.yml/badge.svg)
 
 <!-- start intro -->
 
@@ -13,10 +14,9 @@ RouteRL is a multi-agent reinforcement learning environment for urban route choi
   - Automated vehicles (AVs) are the RL agents that aim to optimize their routes and learn the most efficient paths.
 - It is compatible with popular RL libraries such as [TorchRL](https://pytorch.org/rl/stable/tutorials/torchrl_demo.html).
 
-For more details, check the documentation [online](https://coexistence-project.github.io/RouteRL/).
-
 <!-- end intro -->
 
+For more details, check the documentation [online](https://coexistence-project.github.io/RouteRL/).
 
 ## RouteRL usage and functionalities at glance
 

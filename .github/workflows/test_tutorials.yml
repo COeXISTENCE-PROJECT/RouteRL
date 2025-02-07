@@ -1,0 +1,39 @@
+name: Test Tutorials
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test-notebooks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install SUMO
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sumo sumo-tools sumo-doc
+          echo "SUMO_HOME=/usr/share/sumo" >> $GITHUB_ENV
+          echo "/usr/share/sumo/bin" >> $GITHUB_PATH
+
+      - name: Verify SUMO installation
+        run: |
+          echo "SUMO_HOME is set to $SUMO_HOME"
+          sumo --version
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run notebook tests
+        run: pytest test_tutorials.py
