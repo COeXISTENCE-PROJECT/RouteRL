@@ -4,10 +4,17 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'tutorials/**'  # Runs only if files in tutorials/ change
+
   pull_request:
+    branches:
+      - main
+    paths:
+      - 'tutorials/**'
 
 jobs:
-  test-notebooks:
+  test-tutorials:
     runs-on: ubuntu-latest
 
     steps:
