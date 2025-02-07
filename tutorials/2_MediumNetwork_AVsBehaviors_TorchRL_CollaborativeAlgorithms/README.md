@@ -33,16 +33,17 @@
 As described in the **[paper](https://openreview.net/pdf?id=88zP8xh5D2)**, the reward function enforces a selected behavior on the agent.  
 For an agent *k* with behavioral parameters **φₖ ∈ ℝ⁴**, the reward is defined as:
 
-\[
-rₖ = φₖ₁ \cdot T_{\text{own}ₖ} + φₖ₂ \cdot T_{\text{group}ₖ} + φₖ₃ \cdot T_{\text{other}ₖ} + φₖ₄ \cdot T_{\text{all}ₖ}
-\]
+$$
+r_k = \varphi_{k1} \cdot T_{\text{own}, k} + \varphi_{k2} \cdot T_{\text{group}, k} + \varphi_{k3} \cdot T_{\text{other}, k} + \varphi_{k4} \cdot T_{\text{all}, k}
+$$
+
 
 where **Tₖ** is a vector of travel time statistics provided to agent *k*, containing:
 
-- **Own Travel Time (T_own):** The amount of time the agent has spent in traffic.
-- **Group Travel Time (T_group):** The average travel time of agents in the same group (e.g., AVs for an AV agent).
-- **Other Group Travel Time (T_other):** The average travel time of agents in other groups (e.g., humans for an AV agent).
-- **System-wide Travel Time (T_all):** The average travel time of all agents in the traffic network.
+- **Own Travel Time** ($T_{\text{own}, k}$): The amount of time the agent has spent in traffic.
+- **Group Travel Time** ($T_{\text{group}, k}$): The average travel time of agents in the same group (e.g., AVs for an AV agent).
+- **Other Group Travel Time** ($T_{\text{other}, k}$): The average travel time of agents in other groups (e.g., humans for an AV agent).
+- **System-wide Travel Time** ($T_{\text{all}, k}$): The average travel time of all agents in the traffic network.
 
 ---
 
