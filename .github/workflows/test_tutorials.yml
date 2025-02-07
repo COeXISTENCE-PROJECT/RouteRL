@@ -33,6 +33,7 @@ jobs:
           python3.10 -m venv ./py310
           source ./py310/bin/activate
 
+          python3 -m pip install --upgrade pip
           python3 -m pip install jupyter nbconvert pytest
           python3 -m ipykernel install --user --name=python3
 
@@ -50,7 +51,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip
           python3 -m pip install gymnasium janux matplotlib nbconvert nbformat numpy pandas pettingzoo polars prettytable pytest seaborn tensordict torch torchrl tqdm traci
 
       - name: Run notebook tests
