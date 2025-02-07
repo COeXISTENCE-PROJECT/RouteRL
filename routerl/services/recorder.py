@@ -52,7 +52,7 @@ class Recorder:
             for file in os.listdir(folder):
                 os.remove(os.path.join(folder, file))
 
-    def _get_txt_file_path(self, filename) -> None:
+    def _get_txt_file_path(self, filename) -> str:
         """Gets text file from records_folder.
 
         Args:

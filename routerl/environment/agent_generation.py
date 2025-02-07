@@ -28,7 +28,7 @@ def generate_agents(params, free_flow_times, generate_data, seed=23423) -> list:
                 - `params["agent_parameters"]["num_agents"]`: Total number of agents.
                 - `params["agent_parameters"]["machine_parameters"]`: Settings for `MachineAgent`.
                 - `params["agent_parameters"]["human_parameters"]`: Settings for `HumanAgent`.
-        free_flow_times (list): Free flow times
+        free_flow_times (dict[tuple[int], list[float]]): Free flow times of route options per OD.
         generate_data (bool): If True, generates new agent data. If False, loads 
                               existing agent data from a CSV file specified by 
                               `params[kc.RECORDS_FOLDER]`.
