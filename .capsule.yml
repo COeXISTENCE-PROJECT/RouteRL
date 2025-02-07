@@ -1,0 +1,39 @@
+language: python
+python:
+  - "3.12"
+install:
+  - |
+    case "$(uname)" in
+      "Linux")
+        wget -O Miniconda3-Linux.sh https://repo.anaconda.com/miniconda/Miniconda3-py312_24.9.2-0-Linux-x86_64.sh
+        bash Miniconda3-Linux.sh -b -p $HOME/miniconda
+        ;;
+      "Darwin")
+        wget -O Miniconda3-MacOSX.sh https://repo.anaconda.com/miniconda/Miniconda3-py312_24.9.2-0-MacOSX-x86_64.sh
+        bash Miniconda3-MacOSX.sh -b -p $HOME/miniconda
+        ;;
+      "MINGW"*|"MSYS"*|"CYGWIN"*)
+        wget -O Miniconda3-Windows.exe https://repo.anaconda.com/miniconda/Miniconda3-py312_24.9.2-0-Windows-x86_64.exe
+        ./Miniconda3-Windows.exe /S /D=C:\\Miniconda3 || exit 1
+        ;;
+      *)
+        echo "Unsupported OS"
+        exit 1
+        ;;
+    esac
+  - source "$HOME/miniconda/etc/profile.d/conda.sh" || source /c/Miniconda3/Scripts/activate || exit 1
+  - conda init || exit 1
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda || exit 1
+  - conda info -a
+  - conda config --prepend channels conda-forge
+  - conda create -n ox --strict-channel-priority osmnx || exit 1
+  - conda activate ox || exit 1
+  - pip install -r RouteRL/requirements.txt || exit 1
+  - pip install coveralls || exit 1
+script:
+ - python -m unittest discover -s tests -p "*RouteRL_test.py" || exit 1
+ - coverage run -m unittest discover -s tests -p "*RouteRL_test.py" || exit 1
+after_success:
+ - coveralls
