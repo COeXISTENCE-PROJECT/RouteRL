@@ -2,7 +2,7 @@
 
 # RouteRL
 
-[![Tutorials Tests](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml/badge.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml)
+[![Tutorials Tests](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml/badge.svg?event=workflow_dispatch)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml)
 [![Online Documentation](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/documentation.yml/badge.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/documentation.yml)
 
 <!-- start intro -->
