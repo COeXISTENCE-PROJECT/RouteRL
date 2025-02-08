@@ -369,13 +369,21 @@ class TrafficEnvironment(AECEnv):
             self._reset_episode()
 
     def close(self) -> None:
-        """Close the environment and stop the SUMO simulation.
+        """Not implemented.
+
+        Returns:
+            None
+        """
+        pass
+    
+    def stop_simulation(self) -> None:
+        """End the simulation.
 
         Returns:
             None
         """
 
-        #self.simulator.stop()
+        self.simulator.stop()
 
     def observe(self, agent: str) -> np.ndarray:
         """Retrieve the observations for a specific agent.
