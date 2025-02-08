@@ -1,31 +1,27 @@
-import os
 import shutil
 import pytest
-import nbformat
-from nbconvert.preprocessors import ExecutePreprocessor
+import subprocess
 from pathlib import Path
 
 TUTORIALS_DIR = Path("tutorials")
-notebooks = list(TUTORIALS_DIR.rglob("*.ipynb"))
+python_scripts = list(TUTORIALS_DIR.rglob("*.py"))
 
-print(f"DEBUG: Looking for notebooks in {TUTORIALS_DIR.resolve()}")
-print(f"DEBUG: Found {len(notebooks)} notebooks.")
+print(f"[DEBUG] Looking for Python scripts in {TUTORIALS_DIR.resolve()}")
+print(f"[DEBUG] Found {len(python_scripts)} Python scripts.")
 
 @pytest.fixture(scope="session", autouse=True)
 def check_sumo_installed():
     sumo_executable = shutil.which("sumo")
     if sumo_executable is None:
-        pytest.exit("SUMO is not installed or not in PATH.")
+        pytest.exit("[SUMO ERROR] SUMO is not installed or not in PATH.")
 
-@pytest.mark.parametrize("notebook_path", notebooks)
-def test_notebook_execution(notebook_path): 
-    with open(notebook_path, encoding="utf-8") as f:
-        notebook = nbformat.read(f, as_version=4)
-
-    kernel_name = notebook["metadata"].get("kernelspec", {}).get("name", "python3")
-    executor = ExecutePreprocessor(timeout=1200, kernel_name=kernel_name)
-
+@pytest.mark.parametrize("script_path", python_scripts)
+def test_python_script_execution(script_path):
     try:
-        executor.preprocess(notebook, {"metadata": {"path": notebook_path.parent}})
-    except Exception as e:
-        pytest.fail(f"Notebook {notebook_path} failed to execute: {e}")
+        script_filename = script_path.name
+        result = subprocess.run(
+            ["python", script_filename], capture_output=True, text=True, check=True, cwd=script_path.parent
+        )
+        print(f"[DEBUG] Successfully executed {script_path}")
+    except subprocess.CalledProcessError as e:
+        pytest.fail(f"[FAIL] Script {script_path} failed to execute: {e.stderr}")

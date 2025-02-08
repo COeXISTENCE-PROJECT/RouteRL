@@ -1,4 +1,4 @@
-name: Tutorials Tests
+name: Tutorial Tests
 
 on:
   push:
@@ -21,21 +21,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Python Setup
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-
-      - name: Install Jupyter and Kernel
-        run: |
-          python3.10 -m venv ./py310
-          source ./py310/bin/activate
-
-          python3 -m pip install --upgrade pip
-          python3 -m pip install jupyter nbconvert pytest
-          python3 -m ipykernel install --user --name=python3
 
       - name: Install SUMO
         run: |
@@ -51,7 +42,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python3 -m pip install gymnasium janux matplotlib nbconvert nbformat numpy pandas pettingzoo polars prettytable pytest seaborn tensordict torch torchrl tqdm traci
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
-      - name: Run notebook tests
+      - name: Run tutorial tests
         run: pytest -rs tests/test_tutorials.py

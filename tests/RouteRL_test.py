@@ -103,3 +103,5 @@ for episode in range(episodes):
         
         env.step(action)
         print(f"Agent {agent} has stepped, environment updated.\n")
+        
+env.stop_simulation()
