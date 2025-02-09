@@ -2,7 +2,7 @@
     "colors" : [
         "firebrick", "teal", "peru", "navy", 
         "salmon", "slategray", "darkviolet", 
-        "goldenrod", "darkolivegreen", "black"],
+        "lightskyblue", "darkolivegreen", "black"],
     "linestyles" : ["solid", "dashed", "dotted", "dashdot"],
     "default_width" : 12,
     "default_height" : 6,
@@ -13,5 +13,6 @@
     "title_size" : 18,
     "label_size" : 14,
     "tick_label_size" : 12,
-    "legend_font_size" : 12
+    "legend_font_size" : 12,
+    "font_family" : "Times New Roman"
 }

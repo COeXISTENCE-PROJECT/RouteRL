@@ -8,6 +8,7 @@ import seaborn as sns
 import warnings
 
 from collections import Counter
+from matplotlib import rcParams
 from statistics import mean, variance
 from typing import Union
 
@@ -37,6 +38,9 @@ class Plotter:
         visualise_action_shifts: visualise the action shifts
         visualise_sim_length: visualise the simulation length
         visualise_losses: visualise the losses
+        
+    Note:
+        Plotter styling configuration is stored in `routerl/services/plotter_config.json` file.
     """
 
     def __init__(self, params):
@@ -64,6 +68,7 @@ class Plotter:
         for key, value in config.items():
             setattr(self, key, value)
         self.phase_colors = list(reversed(self.colors))
+        rcParams['font.family'] = self.font_family
         
         make_dir(self.records_folder)
         self.episodes_folder = make_dir([self.records_folder, kc.EPISODES_LOGS_FOLDER])
@@ -694,7 +699,8 @@ class Plotter:
 
 
 def plotter(params = None):
-    """Plotter
+    """
+    Creates a ``Plotter`` instance and plots the results of the training.
 
     Returns:
         plotter: plotter
