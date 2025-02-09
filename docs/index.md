@@ -50,6 +50,16 @@ action_reward_observation/observations
 
 ```{toctree}
 :hidden:
+:caption: Tutorials
+
+notebooks/1_Quickstart_TraffficEnvironment_Introduction/main
+notebooks/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/qmix_mutation
+notebooks/3_BiggerNetwork_IndependentAgents/iql_mutation
+notebooks/4_CsomorNetwork_DifferentMARLAlgorithms/vdn_mutation
+```
+
+```{toctree}
+:hidden:
 :caption: Development
 
 Github <https://github.com/COeXISTENCE-PROJECT/Milestone-One>
