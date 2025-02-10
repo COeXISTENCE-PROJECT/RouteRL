@@ -54,8 +54,8 @@ install:
   - pip install coveralls
 # Running tests
 script:
- - python -m unittest tests/test_tutorials.py
- - coverage run -m unittest tests/test_tutorials.py
+ - python -m unittest tests/RouteRL_test.py
+ - coverage run -m unittest tests/RouteRL_test.py
 # Sending cover raport
 after_success:
  - coveralls
