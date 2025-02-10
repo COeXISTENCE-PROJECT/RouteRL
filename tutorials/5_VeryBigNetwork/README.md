@@ -17,7 +17,7 @@
 
 ### Manhattan Network Visualization
 <p align="center">
-  <img src="../../docs/img/manhattan.png" alt="Manhattan network" width="700"/>
+  <img src="../../docs/_static/manhattan.png" alt="Manhattan network" width="700"/>
 </p>
 
 ---
