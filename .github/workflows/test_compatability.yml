@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12, 3.13]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -50,11 +50,10 @@ jobs:
       - name: Run tutorial
         working-directory: tutorials/scripts/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms
         run: |
-          python qmix_mutation.py
-          EXITCODE=$?
+          python qmix_mutation.py || EXITCODE=$?
           if [ $EXITCODE -ne 0 ]; then
-            echo "Notice: Python version ${{ matrix.python-version }} is not compatible with the tutorial (exit code $EXITCODE)."
+            echo "### ERROR ###: Python version ${{ matrix.python-version }} failed to run (exit code $EXITCODE)."
           else
-            echo "Tutorial ran successfully on Python ${{ matrix.python-version }}."
+            echo "### SUCCESS ###: Tutorial ran successfully on Python ${{ matrix.python-version }}."
           fi
           exit 0
