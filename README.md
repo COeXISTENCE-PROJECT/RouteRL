@@ -68,8 +68,17 @@ for episode in range(episodes):
 
 <!-- start installation -->
 
-- `pip install routerl` or
-- clone this repository for latest version
+- **Prerequisite**: Make sure you have SUMO installed in your system. This procedure should be carried out separately, by following the instructions provided [here](https://sumo.dlr.de/docs/Installing/index.html).
+- **Option 1**: Install the latest stable version from PyPI:  
+  ```
+    pip install routerl
+  ```
+- **Option 2**: Clone this repository for latest version, and manually install its dependencies: 
+  ```
+    git clone https://github.com/COeXISTENCE-PROJECT/RouteRL
+    cd RouteRL
+    pip install -r requirements.txt
+  ```
  
 <!-- end installation -->  
 
