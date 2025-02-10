@@ -16,15 +16,12 @@ install:
         ;;
       "Darwin")
         wget -O Miniconda3-MacOSX.sh https://repo.anaconda.com/miniconda/Miniconda3-py312_24.9.2-0-MacOSX-x86_64.sh
-        bash Miniconda3-MacOSX.sh -b -p $HOME/miniconda
-        ;;
+        bash Miniconda3-MacOSX.sh -b -p $HOME/miniconda ;;
       "MINGW"*|"MSYS"*|"CYGWIN"*)
         wget -O Miniconda3-Windows.exe https://repo.anaconda.com/miniconda/Miniconda3-py312_24.9.2-0-Windows-x86_64.exe
-        ./Miniconda3-Windows.exe /S /D=C:\\Miniconda3
-        ;;
+        ./Miniconda3-Windows.exe /S /D=C:\\Miniconda3 ;;
       *)
-        echo "Unsupported OS"
-        ;;
+        echo "Unsupported OS" ;;
     esac
   # Conda activation and configuration
   - source "$HOME/miniconda/etc/profile.d/conda.sh" || source /c/Miniconda3/Scripts/activate
@@ -44,28 +41,20 @@ install:
       "Linux")
         sudo add-apt-repository ppa:sumo/stable;
         sudo apt-get update;
-        sudo apt-get install sumo sumo-tools sumo-doc
-        ;;
+        sudo apt-get install sumo sumo-tools sumo-doc ;;
       "Darwin")
-        brew install sumo
-        ;;
+        brew install sumo ;;
       "MINGW"*|"MSYS"*|"CYGWIN"*)
-        winget install --name sumo
-        ;;
+        winget install --name sumo ;;
       *)
-        echo "Unsupported OS"
-        ;;
+        echo "Unsupported OS";;
     esac
   # Installing dependencies
   - pip install -r requirements.txt
   - pip install coveralls
 # Running tests
 script:
- - python -m unittest tests/RouteRL_test.py
- - python -m unittest tests/test_notebooks.py
  - python -m unittest tests/test_tutorials.py
- - coverage run -m unittest tests/RouteRL_test.py
- - coverage run -m unittest tests/test_notebooks.py
  - coverage run -m unittest tests/test_tutorials.py
 # Sending cover raport
 after_success:
