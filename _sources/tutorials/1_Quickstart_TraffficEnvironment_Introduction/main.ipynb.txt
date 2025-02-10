@@ -1,0 +1,421 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Introduction to the TrafficEnvironment"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "> TrafficEnvironment integrates multi-agent reinforcement learning (MARL) with a microscopic traffic simulation tool to explore the potential of MARL in optimizing urban route choice. The aim of the framework is to simulate the coexistence of human drivers and Automated Vehicles (AVs) in city networks.\n",
+    "\n",
+    "> We use [SUMO](https://sumo.dlr.de/docs/index.html), an open-source, microscopic and continuous traffic simulation.\n",
+    "\n",
+    "## Related work\n",
+    "\n",
+    "> Some methods have utilized MARL for optimal route choice (Thomasini et al. [2023](https://alaworkshop2023.github.io/papers/ALA2023_paper_69.pdf/)). These approaches\n",
+    "are typically based on macroscopic traffic simulations, which model relationships among traffic\n",
+    "flow characteristics such as density, flow, and mean speed of a traffic stream. In contrast, our\n",
+    "problem employs a microscopic model, which focuses on interactions between individual vehicles.\n",
+    "\n",
+    "> Additionally, a method proposed by (Tavares and Bazzan [2012](https://www.researchgate.net/publication/235219033_Reinforcement_learning_for_route_choice_in_an_abstract_traffic_scenario)) addresses optimal route choice at the microscopic level, where rewards are generated through a predefined function. In contrast, in our approach, rewards are provided dynamically by a continuous traffic simulator."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Import libraries"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import sys\n",
+    "import os\n",
+    "sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '../../')))\n",
+    "\n",
+    "from routerl import TrafficEnvironment"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Define hyperparameters\n",
+    "\n",
+    "> Further adjustments can be made by modifying the parameters in <code style=\"color:white\">routerl/environment/params.json</code>"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "human_learning_episodes = 100\n",
+    "\n",
+    "\n",
+    "env_params = {\n",
+    "    \"agent_parameters\" : {\n",
+    "        \"num_agents\" : 100,\n",
+    "        \"new_machines_after_mutation\": 10,\n",
+    "        \"human_parameters\" : {\n",
+    "            \"model\" : \"w_avg\"\n",
+    "        },\n",
+    "        \"machine_parameters\" :\n",
+    "        {\n",
+    "            \"behavior\" : \"malicious\",\n",
+    "        }\n",
+    "    },\n",
+    "    \"simulator_parameters\" : {\n",
+    "        \"network_name\" : \"two_route_yield\"\n",
+    "    },  \n",
+    "    \"plotter_parameters\" : {\n",
+    "        \"phases\" : [0, human_learning_episodes],\n",
+    "        \"smooth_by\" : 50,\n",
+    "    },\n",
+    "    \"path_generation_parameters\":\n",
+    "    {\n",
+    "        \"number_of_paths\" : 3,\n",
+    "        \"beta\" : -5,\n",
+    "    }\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Environment initialization"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "> In this example, the environment initially contains only human agents.\n",
+    "\n",
+    "\n",
+    "> In our setup, road networks initially consist of human agents, with AVs introduced later. However, RouteRL is flexible and can operate with only AV agents, only human agents, or a mix of both."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[CONFIRMED] Environment variable exists: SUMO_HOME\n",
+      "[SUCCESS] Added module directory: /opt/homebrew/opt/sumo/share/sumo/tools\n",
+      "TrafficEnvironment with 100 agents.            \n",
+      "0 machines and 100 humans.            \n",
+      "Machines: []            \n",
+      "Humans: [Human 0, Human 1, Human 2, Human 3, Human 4, Human 5, Human 6, Human 7, Human 8, Human 9, Human 10, Human 11, Human 12, Human 13, Human 14, Human 15, Human 16, Human 17, Human 18, Human 19, Human 20, Human 21, Human 22, Human 23, Human 24, Human 25, Human 26, Human 27, Human 28, Human 29, Human 30, Human 31, Human 32, Human 33, Human 34, Human 35, Human 36, Human 37, Human 38, Human 39, Human 40, Human 41, Human 42, Human 43, Human 44, Human 45, Human 46, Human 47, Human 48, Human 49, Human 50, Human 51, Human 52, Human 53, Human 54, Human 55, Human 56, Human 57, Human 58, Human 59, Human 60, Human 61, Human 62, Human 63, Human 64, Human 65, Human 66, Human 67, Human 68, Human 69, Human 70, Human 71, Human 72, Human 73, Human 74, Human 75, Human 76, Human 77, Human 78, Human 79, Human 80, Human 81, Human 82, Human 83, Human 84, Human 85, Human 86, Human 87, Human 88, Human 89, Human 90, Human 91, Human 92, Human 93, Human 94, Human 95, Human 96, Human 97, Human 98, Human 99]\n"
+     ]
+    }
+   ],
+   "source": [
+    "env = TrafficEnvironment(seed=42, **env_params)\n",
+    "\n",
+    "print(env)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Number of total agents is:  100 \n",
+      "\n",
+      "Agents are:  [Human 0, Human 1, Human 2, Human 3, Human 4, Human 5, Human 6, Human 7, Human 8, Human 9, Human 10, Human 11, Human 12, Human 13, Human 14, Human 15, Human 16, Human 17, Human 18, Human 19, Human 20, Human 21, Human 22, Human 23, Human 24, Human 25, Human 26, Human 27, Human 28, Human 29, Human 30, Human 31, Human 32, Human 33, Human 34, Human 35, Human 36, Human 37, Human 38, Human 39, Human 40, Human 41, Human 42, Human 43, Human 44, Human 45, Human 46, Human 47, Human 48, Human 49, Human 50, Human 51, Human 52, Human 53, Human 54, Human 55, Human 56, Human 57, Human 58, Human 59, Human 60, Human 61, Human 62, Human 63, Human 64, Human 65, Human 66, Human 67, Human 68, Human 69, Human 70, Human 71, Human 72, Human 73, Human 74, Human 75, Human 76, Human 77, Human 78, Human 79, Human 80, Human 81, Human 82, Human 83, Human 84, Human 85, Human 86, Human 87, Human 88, Human 89, Human 90, Human 91, Human 92, Human 93, Human 94, Human 95, Human 96, Human 97, Human 98, Human 99] \n",
+      "\n",
+      "Number of human agents is:  100 \n",
+      "\n",
+      "Number of machine agents (autonomous vehicles) is:  0 \n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"Number of total agents is: \", len(env.all_agents), \"\\n\")\n",
+    "print(\"Agents are: \", env.all_agents, \"\\n\")\n",
+    "print(\"Number of human agents is: \", len(env.human_agents), \"\\n\")\n",
+    "print(\"Number of machine agents (autonomous vehicles) is: \", len(env.machine_agents), \"\\n\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "> Reset the environment and the connection with SUMO"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Human learning"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      " Retrying in 1 seconds\n"
+     ]
+    }
+   ],
+   "source": [
+    "env.start()\n",
+    "\n",
+    "for episode in range(human_learning_episodes):\n",
+    "    \n",
+    "    env.step()\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Mutation"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "> Mutation: a portion of human agents are converted into machine agents (autonomous vehicles). "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "env.mutation()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Number of total agents is:  100 \n",
+      "\n",
+      "Agents are:  [Machine 1, Machine 15, Machine 10, Machine 91, Machine 22, Machine 73, Machine 5, Machine 52, Machine 81, Machine 77, Human 0, Human 2, Human 3, Human 4, Human 6, Human 7, Human 8, Human 9, Human 11, Human 12, Human 13, Human 14, Human 16, Human 17, Human 18, Human 19, Human 20, Human 21, Human 23, Human 24, Human 25, Human 26, Human 27, Human 28, Human 29, Human 30, Human 31, Human 32, Human 33, Human 34, Human 35, Human 36, Human 37, Human 38, Human 39, Human 40, Human 41, Human 42, Human 43, Human 44, Human 45, Human 46, Human 47, Human 48, Human 49, Human 50, Human 51, Human 53, Human 54, Human 55, Human 56, Human 57, Human 58, Human 59, Human 60, Human 61, Human 62, Human 63, Human 64, Human 65, Human 66, Human 67, Human 68, Human 69, Human 70, Human 71, Human 72, Human 74, Human 75, Human 76, Human 78, Human 79, Human 80, Human 82, Human 83, Human 84, Human 85, Human 86, Human 87, Human 88, Human 89, Human 90, Human 92, Human 93, Human 94, Human 95, Human 96, Human 97, Human 98, Human 99] \n",
+      "\n",
+      "Number of human agents is:  90 \n",
+      "\n",
+      "Number of machine agents (autonomous vehicles) is:  10 \n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"Number of total agents is: \", len(env.all_agents), \"\\n\")\n",
+    "print(\"Agents are: \", env.all_agents, \"\\n\")\n",
+    "print(\"Number of human agents is: \", len(env.human_agents), \"\\n\")\n",
+    "print(\"Number of machine agents (autonomous vehicles) is: \", len(env.machine_agents), \"\\n\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[Machine 1,\n",
+       " Machine 15,\n",
+       " Machine 10,\n",
+       " Machine 91,\n",
+       " Machine 22,\n",
+       " Machine 73,\n",
+       " Machine 5,\n",
+       " Machine 52,\n",
+       " Machine 81,\n",
+       " Machine 77]"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "env.machine_agents"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "> Human and AV agents interact with the environment over multiple episodes, with AVs following a random policy as defined in the PettingZoo environment [loop](https://pettingzoo.farama.org/content/basic_usage/)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "Starting episode 1\n",
+      "Agent 52 takes action: 1\n",
+      "Agent 52 has stepped, environment updated.\n",
+      "\n",
+      "Agent 5 takes action: 0\n",
+      "Agent 5 has stepped, environment updated.\n",
+      "\n",
+      "Agent 1 takes action: 0\n",
+      "Agent 1 has stepped, environment updated.\n",
+      "\n",
+      "Agent 15 takes action: 0\n",
+      "Agent 15 has stepped, environment updated.\n",
+      "\n",
+      "Agent 81 takes action: 1\n",
+      "Agent 81 has stepped, environment updated.\n",
+      "\n",
+      "Agent 91 takes action: 1\n",
+      "Agent 91 has stepped, environment updated.\n",
+      "\n",
+      "Agent 77 takes action: 0\n",
+      "Agent 77 has stepped, environment updated.\n",
+      "\n",
+      "Agent 73 takes action: 0\n",
+      "Agent 73 has stepped, environment updated.\n",
+      "\n",
+      "Agent 10 takes action: 1\n",
+      "Agent 10 has stepped, environment updated.\n",
+      "\n",
+      "Agent 22 takes action: 0\n",
+      "Agent 22 has stepped, environment updated.\n",
+      "\n",
+      "Agent 52 takes action: None\n",
+      "Agent 52 has stepped, environment updated.\n",
+      "\n",
+      "Agent 5 takes action: None\n",
+      "Agent 5 has stepped, environment updated.\n",
+      "\n",
+      "Agent 1 takes action: None\n",
+      "Agent 1 has stepped, environment updated.\n",
+      "\n",
+      "Agent 15 takes action: None\n",
+      "Agent 15 has stepped, environment updated.\n",
+      "\n",
+      "Agent 81 takes action: None\n",
+      "Agent 81 has stepped, environment updated.\n",
+      "\n",
+      "Agent 91 takes action: None\n",
+      "Agent 91 has stepped, environment updated.\n",
+      "\n",
+      "Agent 77 takes action: None\n",
+      "Agent 77 has stepped, environment updated.\n",
+      "\n",
+      "Agent 73 takes action: None\n",
+      "Agent 73 has stepped, environment updated.\n",
+      "\n",
+      "Agent 10 takes action: None\n",
+      "Agent 10 has stepped, environment updated.\n",
+      "\n",
+      "Agent 22 takes action: None\n",
+      "Agent 22 has stepped, environment updated.\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "episodes = 1\n",
+    "\n",
+    "for episode in range(episodes):\n",
+    "    print(f\"\\nStarting episode {episode + 1}\")\n",
+    "    env.reset()\n",
+    "    \n",
+    "    for agent in env.agent_iter():\n",
+    "        observation, reward, termination, truncation, info = env.last()\n",
+    "\n",
+    "        if termination or truncation:\n",
+    "            action = None\n",
+    "        else:\n",
+    "            # Policy action or random sampling\n",
+    "            action = env.action_space(agent).sample()\n",
+    "        print(f\"Agent {agent} takes action: {action}\")\n",
+    "        \n",
+    "        env.step(action)\n",
+    "        print(f\"Agent {agent} has stepped, environment updated.\\n\")\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "env.stop_simulation()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "<code style=\"color:white\">agent_iter(max_iter=2**63)</code> returns an iterator that yields the current agent of the environment. It terminates when all agents in the environment are done or when max_iter (steps have been executed).\n",
+    "\n",
+    "<code style=\"color:white\">last(observe=True)</code> returns observation, reward, done, and info for the agent currently able to act. The returned reward is the cumulative reward that the agent has received since it last acted. If observe is set to False, the observation will not be computed, and None will be returned in its place. Note that a single agent being done does not imply the environment is done.\n",
+    "\n",
+    "<code style=\"color:white\">reset()</code> resets the environment and sets it up for use when called the first time. This method must be called before any other method.\n",
+    "\n",
+    "<code style=\"color:white\">step(action)</code> takes and executes the action of the agent in the environment, automatically switches control to the next agent."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "venv",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.6"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
