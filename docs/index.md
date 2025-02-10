@@ -52,10 +52,10 @@ action_reward_observation/observations
 :hidden:
 :caption: Tutorials
 
-notebooks/1_Quickstart_TraffficEnvironment_Introduction/main
-notebooks/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/qmix_mutation
-notebooks/3_BiggerNetwork_IndependentAgents/iql_mutation
-notebooks/4_CsomorNetwork_DifferentMARLAlgorithms/vdn_mutation
+tutorials/1_Quickstart_TraffficEnvironment_Introduction/main
+tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/qmix_mutation
+tutorials/3_BiggerNetwork_IndependentAgents/iql_mutation
+tutorials/4_CsomorNetwork_DifferentMARLAlgorithms/vdn_mutation
 ```
 
 ```{toctree}
