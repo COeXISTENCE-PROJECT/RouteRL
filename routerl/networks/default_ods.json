@@ -57,6 +57,10 @@
     "square": {
         "origins" : ["right1B1", "top1B1"],
         "destinations" : ["A0bottom0", "B0bottom1"]
+    },
+    "manhattan": {
+        "origins": ["-1087048475#0"],
+        "destinations": ["587061846#4"]
     }
 
 }
