@@ -12,14 +12,11 @@
 
 ### Included Tutorials:
 
-- **[VDN Tutorial](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/vdn_mutation.ipynb)**  
-  Uses **Value Decomposition Networks** ([VDN](https://arxiv.org/pdf/1706.05296)) for decentralized MARL training.
+- **[VDN Tutorial.](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/vdn_mutation.ipynb)** Uses **Value Decomposition Networks** ([VDN](https://arxiv.org/pdf/1706.05296)) for decentralized MARL training.
 
-- **[QMIX Tutorial](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/qmix_mutation.ipynb)**  
-  Implements **QMIX** ([QMIX](http://arxiv.org/abs/1803.11485)), which leverages a mixing network with a monotonicity constraint.
+- **[QMIX Tutorial.](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/qmix_mutation.ipynb)** Implements **QMIX** ([QMIX](http://arxiv.org/abs/1803.11485)), which leverages a mixing network with a monotonicity constraint.
 
-- **[MAPPO Tutorial](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/mappo_mutation.ipynb)**  
-  Uses **Multi-Agent Proximal Policy Optimization** ([MAPPO](https://arxiv.org/abs/2103.01955)), the multi-agent adaptation of **PPO** ([PPO](https://arxiv.org/abs/1707.06347)).
+- **[MAPPO Tutorial.](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/mappo_mutation.ipynb)** Uses **Multi-Agent Proximal Policy Optimization** ([MAPPO](https://arxiv.org/abs/2103.01955)), the multi-agent adaptation of **PPO** ([PPO](https://arxiv.org/abs/1707.06347)).
 
 ---
 
@@ -32,8 +29,7 @@
 
 ## Defining Automated Vehicles Behavior Through Reward Formulations
 
-As described in the **[paper](https://openreview.net/pdf?id=88zP8xh5D2)**, the reward function enforces a selected behavior on the agent.  
-For an agent *k* with behavioral parameters **φₖ ∈ ℝ⁴**, the reward is defined as:
+As described in the **[paper](https://openreview.net/pdf?id=88zP8xh5D2)**, the reward function enforces a selected behavior on the agent. For an agent *k* with behavioral parameters **φₖ ∈ ℝ⁴**, the reward is defined as:
 
 $$
 r_k = \varphi_{k1} \cdot T_{\text{own}, k} + \varphi_{k2} \cdot T_{\text{group}, k} + \varphi_{k3} \cdot T_{\text{other}, k} + \varphi_{k4} \cdot T_{\text{all}, k}
