@@ -1,1 +1,1 @@
-python main.py
+python tests/RouteRL_test.py
