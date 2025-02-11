@@ -35,12 +35,12 @@ env.mutation() # some human agents transition to AV agents
 for agent in env.agent_iter():
     observation, reward, termination, truncation, info = env.last()
 
-    action = policy.sample() # We consider that we have a trained policy
+    action = policy.sample() # we consider that we have a trained policy
 
     env.step(action)
  
-env.plot_results() # Plot the results
-env.stop_simulation() # Stop the connection with SUMO
+env.plot_results() # plot the results
+env.stop_simulation() # stop the connection with SUMO
 ```
 
 
