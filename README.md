@@ -185,3 +185,20 @@ env.stop_simulation()
  
 <!-- end installation -->  
 
+
+----------------
+
+## Citation
+
+```bibtex
+@misc{RouteRL,
+  author      = {Ahmet Onur Akman, Anastasia Psarou, Łukasz Gorczyca, Zoltan\a{'}n Görgy Varga, Grzegorz Jamróz, 
+  Rafał Kucharski},
+  title       = {RouteRL},
+  year        = {2025},
+  url         = {https://github.com/COeXISTENCE-PROJECT/RouteRL},
+  publisher   = {GitHub},
+  journal     = {GitHub repository}
+}
+```
+
