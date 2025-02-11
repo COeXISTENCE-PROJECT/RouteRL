@@ -178,7 +178,7 @@ env.stop_simulation()
   ```
 - **Option 2**: Clone this repository for latest version, and manually install its dependencies: 
   ```
-    git clone https://github.com/COeXISTENCE-PROJECT/RouteRL
+    git clone https://github.com/COeXISTENCE-PROJECT/RouteRL.git
     cd RouteRL
     pip install -r requirements.txt
   ```
