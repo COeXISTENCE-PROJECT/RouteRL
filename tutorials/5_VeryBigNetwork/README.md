@@ -1,11 +1,12 @@
 # Large-Sized Network: Independent AV agents
 
+> In this tutorial we use a big-scale netowk for agents navigation. The chosen origin and destination points are specified in this [file](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/networks/default_ods.json), and can be adjusted by users. In parallel, we define AV behaviors based on the agents' reward formulation and implement their learning process using the [TorchRL](https://github.com/pytorch/rl) library.
+
 ---
 
 ## Network Overview
 
-> In these notebooks, we utilize the **Manhattan network** within our simulator, [SUMO](https://eclipse.dev/sumo/).  
-> Since agents exhibit **selfish behavior**, we employ **independent learning algorithms** to model their decision-making.
+> In these notebooks, we utilize the **Manhattan network** within our simulator, [SUMO](https://eclipse.dev/sumo/).  Since agents exhibit **selfish behavior**, we employ **independent learning algorithms** to model their decision-making.
 
 ### Included Tutorials:
 - **[IPPO Tutorial](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/tutorials/3_BiggerNetwork_IndependentAgents/mappo_ippo_mutation.ipynb)**  
