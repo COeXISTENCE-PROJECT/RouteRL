@@ -53,9 +53,9 @@ action_reward_observation/observations
 :caption: Tutorials
 
 tutorials/1_Quickstart_TraffficEnvironment_Introduction/main
-tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/qmix_mutation
-tutorials/3_BiggerNetwork_IndependentAgents/iql_mutation
-tutorials/4_CsomorNetwork_DifferentMARLAlgorithms/vdn_mutation
+tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/README.md
+tutorials/3_BiggerNetwork_IndependentAgents/README.md
+tutorials/4_CsomorNetwork_DifferentMARLAlgorithms/README.md
 ```
 
 ```{toctree}
