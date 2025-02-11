@@ -1,12 +1,14 @@
 # Medium-Sized Network: AV Behaviors & Collaborative MARL with TorchRL
 
+> In this tutorial we use a medium sized-network for agents navigation. The chosen origin and destination points are specified in this [file](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/networks/default_ods.json), and  can be adjusted by users. In parallel, we define AV behaviors based on the agents' reward formulation and implement their learning process using the [TorchRL](https://github.com/pytorch/rl) library.
+
+
+
 ---
 
 ## Network Overview
 
-> In these notebooks, we utilize the **Cologne network** within our simulator, [SUMO](https://eclipse.dev/sumo/).  
-> As an initial baseline, we employ **malicious AV behavior**, where all AVs share the same reward,  
-> making it an ideal setup for algorithms designed to solve collaborative tasks.
+> In these notebooks, we utilize the **Cologne network** within our simulator, [SUMO](https://eclipse.dev/sumo/). As an initial baseline, we employ **malicious AV behavior**, where all AVs share the same reward, making it an ideal setup for algorithms designed to solve collaborative tasks.
 
 ### Included Tutorials:
 
@@ -28,7 +30,7 @@
 
 ---
 
-## AV Behaviors
+## Defining Automated Vehicles Behavior Through Reward Formulations
 
 As described in the **[paper](https://openreview.net/pdf?id=88zP8xh5D2)**, the reward function enforces a selected behavior on the agent.  
 For an agent *k* with behavioral parameters **φₖ ∈ ℝ⁴**, the reward is defined as:
