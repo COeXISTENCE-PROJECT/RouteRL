@@ -1,12 +1,12 @@
 # Csomor Network: Experimenting with MARL Algorithms
 
+> In this tutorial we use a medium sized-network for agents navigation. The chosen origin and destination points are specified in this [file](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/networks/default_ods.json), and  can be adjusted by users. In parallel, we the AV agent's learning process using different MARL algorithms provided by the [TorchRL](https://github.com/pytorch/rl) library.
+
 ---
 
 ## Network Overview
 
-> In these notebooks, we utilize the **Csomor network** within our simulator, [SUMO](https://eclipse.dev/sumo/).  
-> This environment serves as a **flexible testbed** for experimenting with different MARL algorithms,  
-> allowing users to modify the **number of agents**, **number of paths**, and other key parameters.
+> In these notebooks, we utilize the **Csomor network** within our simulator, [SUMO](https://eclipse.dev/sumo/). This environment serves as a **flexible testbed** for experimenting with different MARL algorithms, allowing users to modify the **number of agents**, **number of paths**, and other key parameters.
 
 ### Included Tutorials:
 
