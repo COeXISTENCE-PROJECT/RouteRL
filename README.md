@@ -192,8 +192,8 @@ env.stop_simulation()
 
 ```bibtex
 @misc{RouteRL,
-  author      = {Ahmet Onur Akman, Anastasia Psarou, Łukasz Gorczyca, Zoltan\a{'}n Görgy Varga, Grzegorz Jamróz, 
-  Rafał Kucharski},
+  author      = {Ahmet Onur Akman, Anastasia Psarou, Łukasz Gorczyca, 
+  Zoltán Görgy Varga, Grzegorz Jamróz, Rafał Kucharski},
   title       = {RouteRL},
   year        = {2025},
   url         = {https://github.com/COeXISTENCE-PROJECT/RouteRL},
