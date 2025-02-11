@@ -32,7 +32,7 @@ for episode in range(human_learning_episodes): # human learning
 
 env.mutation() # some human agents transition to AV agents
 
-for agent in env.agent_iter():
+for agent in env.agent_iter(): # pettingzoo stepping loop
     observation, reward, termination, truncation, info = env.last()
 
     action = policy.sample() # we consider that we have a trained policy
