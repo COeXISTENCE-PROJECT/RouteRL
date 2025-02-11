@@ -45,11 +45,5 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
-      - name: Install Git LFS
-        run: git lfs install
-  
-      - name: Pull LFS files
-        run : git lfs pull
-
       - name: Run tutorial tests
         run: pytest -rs tests/test_tutorials.py
