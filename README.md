@@ -33,23 +33,126 @@ for episode in range(human_learning_episodes):
 
 env.mutation() # some human agents transition to AV agents
 
-# Human and AV agents interact with the environment and AVs are using a random policy
-for episode in range(episodes): 
-    print(f"\nStarting episode {episode + 1}")
-    env.reset()
-    
-    for agent in env.agent_iter():
-        observation, reward, termination, truncation, info = env.last()
+# PettingZoo environment wrapper
+group = {'agents': [str(machine.id) for machine in env.machine_agents]}
 
-        if termination or truncation:
-            action = None
-        else:
-            # Policy action or random sampling
-            action = env.action_space(agent).sample()
-        print(f"Agent {agent} takes action: {action}")
-        
-        env.step(action)
-        print(f"Agent {agent} has stepped, environment updated.\n")
+env = PettingZooWrapper(
+    env=env,
+    use_mask=True,
+    categorical_actions=True,
+    done_on_any = False,
+    group_map=group,
+    device=device
+)
+
+# Policy network
+net = MultiAgentMLP(
+        n_agent_inputs=env.observation_spec["agents", "observation"].shape[-1],
+        n_agent_outputs=env.action_spec.space.n,
+        n_agents=env.n_agents,
+        centralised=False,
+        share_params=False,
+        device=device,
+        depth=mlp_depth,
+        num_cells=mlp_cells,
+        activation_class=nn.ReLU,
+    )
+
+module = TensorDictModule(
+        net, in_keys=[("agents", "observation")], out_keys=[("agents", "action_value")]
+)
+value_module = QValueModule(
+    action_value_key=("agents", "action_value"),
+    out_keys=[
+        env.action_key,
+        ("agents", "action_value"),
+        ("agents", "chosen_action_value"),
+    ],
+    spec=env.action_spec,
+    action_space=None,
+)
+
+qnet = SafeSequential(module, value_module)
+
+# Collector
+collector = SyncDataCollector(
+        env,
+        qnet,
+        device=device,
+        storing_device=device,
+        frames_per_batch=frames_per_batch,
+        total_frames=total_frames,
+    )
+
+# Replay buffer
+replay_buffer = TensorDictReplayBuffer(
+        storage=LazyTensorStorage(memory_size, device=device),
+        sampler=SamplerWithoutReplacement(),
+        batch_size=minibatch_size,
+    )
+
+# DQN loss function
+loss_module = DQNLoss(qnet, delay_value=True)
+
+loss_module.set_keys(
+        action_value=("agents", "action_value"),
+        action=env.action_key,
+        value=("agents", "chosen_action_value"),
+        reward=env.reward_key,
+        done=("agents", "done"),
+        terminated=("agents", "terminated"),
+)
+
+loss_module.make_value_estimator(ValueEstimators.TD0, gamma=gamma)
+target_net_updater = SoftUpdate(loss_module, eps=eps)
+
+optim = torch.optim.Adam(loss_module.parameters(), lr)
+
+# Training loop
+
+for i, tensordict_data in tqdm(enumerate(collector), total=n_iters, desc="Training"):
+    
+    current_frames = tensordict_data.numel()
+    data_view = tensordict_data.reshape(-1)
+    replay_buffer.extend(data_view)
+    
+    training_tds = []
+
+    ## Update the policies of the learning agents
+    for _ in range(num_epochs):
+        for _ in range(frames_per_batch // minibatch_size):
+            subdata = replay_buffer.sample()
+            loss_vals = loss_module(subdata)
+            training_tds.append(loss_vals.detach())
+
+            loss_value = loss_vals["loss"]
+            loss_value.backward()
+
+            total_norm = torch.nn.utils.clip_grad_norm_(loss_module.parameters(), max_grad_norm)
+            training_tds[-1].set("grad_norm", total_norm.mean())
+
+            optim.step()
+            optim.zero_grad()
+        target_net_updater.step()
+
+    qnet_explore[1].step(frames=current_frames)  # Update exploration annealing
+    collector.update_policy_weights_()
+    
+    training_tds = torch.stack(training_tds) 
+
+collector.shutdown()
+
+# Testing phase
+
+num_episodes = 100
+for episode in range(num_episodes):
+    env.rollout(len(env.machine_agents), policy=qnet)
+
+# Plot the results 
+env.plot_results()
+
+# Stop the connection with SUMO
+env.stop_simulation()
 
 ```
 
