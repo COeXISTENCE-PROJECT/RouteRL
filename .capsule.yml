@@ -23,16 +23,14 @@ install:
       *)
         echo "Unsupported OS" ;;
     esac
-  # Conda activation and configuration
+  # Conda configuration and activation
   - source "$HOME/miniconda/etc/profile.d/conda.sh" || source /c/Miniconda3/Scripts/activate
   - conda init
+  # Clear the contents of the path name list
   - hash -r
-  - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
-  # Debugging conda
   - conda info -a
-  # Creating an environment with Conda
-  - conda config --prepend channels conda-forge
+  - conda config --add channels conda-forge
   - conda create -n routerl
   - conda activate routerl
   # SUMO instalation
