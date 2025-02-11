@@ -1,3 +1,30 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:72eda746488921a20d43107681fe5623f0e1e70dea0a97dffbc762e5049965dc
-size 1131
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-12-04 17:19:16 by Eclipse SUMO sumo Version v1_21_0+0879-92336f44d2b
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="../../routerl/network_and_config/two_route_yield/network.net.xml"/>
+        <route-files value="../../routerl/network_and_config/two_route_yield/rou.rou.xml"/>
+        <additional-files value="../../routerl/network_and_config/two_route_yield/det.add.xml"/>
+    </input>
+
+    <output>
+        <fcd-output value="../../routerl/network_and_config/two_route_yield/fcd.xml"/>
+        <summary-output value="../../routerl/network_and_config/two_route_yield/summary.xml"/>
+        <tripinfo-output value="../../routerl/network_and_config/two_route_yield/tripinfo.xml"/>
+    </output>
+
+    <processing>
+        <time-to-teleport value="-1"/>
+    </processing>
+
+    <report>
+        <no-step-log value="true"/>
+    </report>
+
+    <random_number>
+        <seed value="23423"/>
+    </random_number>
+
+</sumoConfiguration>
