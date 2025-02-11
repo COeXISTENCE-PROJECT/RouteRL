@@ -97,11 +97,8 @@ print("device is: ", device)
 
 env = TrafficEnvironment(seed=42, **env_params)
 
-print(env)
-
 
 print("Number of total agents is: ", len(env.all_agents), "\n")
-print("Agents are: ", env.all_agents, "\n")
 print("Number of human agents is: ", len(env.human_agents), "\n")
 print("Number of machine agents (autonomous vehicles) is: ", len(env.machine_agents), "\n")
 
@@ -114,13 +111,14 @@ for episode in range(human_learning_episodes):
     
     env.step()
 
+print("--------- Mutation ---------")
+
 #### Mutation
 # Mutation: a portion of human agents are converted into machine agents (autonomous vehicles). 
 env.mutation()
 
 
 print("Number of total agents is: ", len(env.all_agents), "\n")
-print("Agents are: ", env.all_agents, "\n")
 print("Number of human agents is: ", len(env.human_agents), "\n")
 print("Number of machine agents (autonomous vehicles) is: ", len(env.machine_agents), "\n")
 
