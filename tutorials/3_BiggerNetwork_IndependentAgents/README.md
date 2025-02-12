@@ -22,5 +22,3 @@
 <p align="center">
   <img src="plots_saved/ingolstadt.png" alt="Ingolstadt network" width="700"/>
 </p>
-
----

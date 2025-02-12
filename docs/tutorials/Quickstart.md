@@ -1,5 +1,5 @@
 # Quickstart
 
-```{include} ../../tutorials/1_Quickstart_TraffficEnvironment_Introduction/main.ipynb
+```{nbinclude} ../../tutorials/1_Quickstart_TraffficEnvironment_Introduction/main.ipynb
 
 ```
