@@ -52,10 +52,10 @@ action_reward_observation/observations
 :hidden:
 :caption: Tutorials
 
-tutorials_2/1_Quickstart_TraffficEnvironment_Introduction/main
-tutorials_2/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/README.md
-tutorials_2/3_BiggerNetwork_IndependentAgents/README.md
-tutorials_2/4_CsomorNetwork_DifferentMARLAlgorithms/README.md
+tutorials/Quickstart
+tutorials/2_medium_network
+tutorials/3_BiggerNetwork_IndependentAgents/README.md
+tutorials/4_CsomorNetwork_DifferentMARLAlgorithms/README.md
 ```
 
 ```{toctree}
