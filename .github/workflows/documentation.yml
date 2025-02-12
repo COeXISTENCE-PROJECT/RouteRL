@@ -27,6 +27,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install sphinx sphinx-rtd-theme myst-nb furo torch "numpy==2.0.2" scipy pandas prettytable traci gymnasium pettingzoo janux
           python -m pip install torchrl polars seaborn networkx matplotlib beautifulsoup4
+          python -m pip install nbsphinx pandoc
 
       - name: Build Sphinx documentation
         run: |
