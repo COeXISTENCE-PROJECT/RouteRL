@@ -55,8 +55,7 @@ action_reward_observation/observations
 tutorials/Quickstart
 tutorials/2_medium_network
 tutorials/3_bigger_network
-tutorials/4_csomor_network
-tutorials/5_big_scale_network
+tutorials/4_big_scale_network
 ```
 
 ```{toctree}
