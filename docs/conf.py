@@ -51,7 +51,9 @@ myst_enable_extensions = [
     "amsmath",
     "deflist",
     "html_image",
-    "colon_fence"
+    "colon_fence",
+    "linkify",
+    "smartquotes",
 ]
 
 autodoc_default_options = {
