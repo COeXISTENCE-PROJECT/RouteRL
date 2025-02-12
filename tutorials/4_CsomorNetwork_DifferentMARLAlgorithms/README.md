@@ -32,7 +32,7 @@ This network supports all MARL algorithms implemented in the framework. Users ca
 
 ### Csomor Network Visualization
 <p align="center">
-  <img src="../../docs/img/csomor.png" alt="Csomor network" width="700"/>
+  <img src="plots_saved/csomor.png" alt="Csomor network" width="700"/>
 </p>
 
 ---

@@ -22,7 +22,7 @@
 
 ### Cologne Network Visualization
 <p align="center">
-  <img src="../../docs/img/cologne.png" alt="Cologne network" width="700"/>
+  <img src="plots_saved/cologne.png" alt="Cologne network" width="700"/>
 </p>
 
 ---
