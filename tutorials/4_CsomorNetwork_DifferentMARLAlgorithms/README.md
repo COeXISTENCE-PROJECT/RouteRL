@@ -48,5 +48,4 @@ Here users can experiment with different configurations:
 
 Users can fine-tune these parameters within the provided notebooks to study the effects on agent coordination, traffic congestion, and overall efficiency.
 
----
 

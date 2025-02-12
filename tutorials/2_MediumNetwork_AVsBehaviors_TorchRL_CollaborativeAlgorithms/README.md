@@ -56,4 +56,3 @@ where **Tₖ** is a vector of travel time statistics provided to agent *k*, cont
 | **Selfish**        | 1    | 0    | 0    | 0    | Minimize delay for oneself                        |
 | **Social**        | 0.5  | 0    | 0    | 0.5  | Minimize delay for oneself & everyone            |
 
----

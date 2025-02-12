@@ -20,4 +20,3 @@
   <img src="../../docs/_static/manhattan.png" alt="Manhattan network" width="700"/>
 </p>
 
----
