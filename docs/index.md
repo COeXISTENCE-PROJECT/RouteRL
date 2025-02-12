@@ -54,8 +54,9 @@ action_reward_observation/observations
 
 tutorials/Quickstart
 tutorials/2_medium_network
-../tutorials/3_BiggerNetwork_IndependentAgents/README.md
-../tutorials/4_CsomorNetwork_DifferentMARLAlgorithms/README.md
+tutorials/3_bigger_network
+tutorials/4_csomor_network
+tutorials/5_big_scale_network
 ```
 
 ```{toctree}
