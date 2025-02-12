@@ -52,8 +52,6 @@ myst_enable_extensions = [
     "deflist",
     "html_image",
     "colon_fence",
-    "linkify",
-    "smartquotes",
 ]
 
 autodoc_default_options = {
