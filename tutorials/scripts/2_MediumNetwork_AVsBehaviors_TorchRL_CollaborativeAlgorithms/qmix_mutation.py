@@ -1,18 +1,57 @@
 # %% [markdown]
-# # QMIX algorithm implementation
+# # Simulating fleets of automated vehicles (AVs) making routing decisions: Medium traffic network, AV behaviors, QMIX algorithm implementation
 
 # %% [markdown]
-# > In this notebook, we implement a state-of-the-art Multi Agent Reinforcement Leaning (MARL) algorithms **[QMIX](https://arxiv.org/pdf/1803.11485)** in our environment. QMIX is a deep MARL method that allows end-to-end learning of decentralized policies in a centralized setting amd makes efficient use of extra state information. 
+# > In this notebook, on the `Cologne` network, we simulate **100 human agents** for `950 days`. After 100 days **40 of the human agents** mutate into automated vehicles (AVs) and use the `QMIX` algorithm implemented from the `TorchRL` library to learn the optimal route. The AVs are `malicious` and their goal is to maximize human travel time. Since all AVs share the same reward signal, we model them using a  collaborative MARL algorithm. 
+# 
+# ---
+
+# %% [markdown]
+# > The network used.
+# > 
+# ![Network used](plots_saved/cologne.png)
+# 
+# ---
+
+# %% [markdown]
+# As described in the **[paper](https://openreview.net/pdf?id=88zP8xh5D2)**, the reward function enforces a selected behavior on the agent. For an agent *k* with behavioral parameters **φₖ ∈ ℝ⁴**, the reward is defined as:
+# 
+# $$
+# r_k = \varphi_{k1} \cdot T_{\text{own}, k} + \varphi_{k2} \cdot T_{\text{group}, k} + \varphi_{k3} \cdot T_{\text{other}, k} + \varphi_{k4} \cdot T_{\text{all}, k}
+# $$
+# 
+# 
+# where **Tₖ** is a vector of travel time statistics provided to agent *k*, containing:
+# 
+# - **Own Travel Time** ($T_{\text{own}, k}$): The amount of time the agent has spent in traffic.
+# - **Group Travel Time** ($T_{\text{group}, k}$): The average travel time of agents in the same group (e.g., AVs for an AV agent).
+# - **Other Group Travel Time** ($T_{\text{other}, k}$): The average travel time of agents in other groups (e.g., humans for an AV agent).
+# - **System-wide Travel Time** ($T_{\text{all}, k}$): The average travel time of all agents in the traffic network.
+
+# %% [markdown]
+# ---
+# 
+# ## Behavioral Strategies & Objective Weightings
+# 
+# | **Behavior**    | **ϕ₁** | **ϕ₂** | **ϕ₃** | **ϕ₄** | **Interpretation**                                    |
+# |---------------|------|------|------|------|----------------------------------------------------|
+# | **Altruistic**     | 0    | 0    | 0    | 1    | Minimize delay for everyone                       |
+# | **Collaborative**  | 0.5  | 0.5  | 0    | 0    | Minimize delay for oneself and one’s own group    |
+# | **Competitive**    | 2    | 0    | -1   | 0    | Minimize self-delay & maximize delay for others  |
+# | **Malicious**      | 0    | 0    | -1   | 0    | Maximize delay for the other group               |
+# | **Selfish**        | 1    | 0    | 0    | 0    | Minimize delay for oneself                        |
+# | **Social**        | 0.5  | 0    | 0    | 0.5  | Minimize delay for oneself & everyone            |
+# 
+# ---
+
+# %% [markdown]
+# ### QMIX algorithm implementation
+
+# %% [markdown]
+# > **[QMIX](https://arxiv.org/pdf/1803.11485)** is a deep MARL method that allows end-to-end learning of decentralized policies in a centralized setting amd makes efficient use of extra state information. 
 # 
 # 
 # > Tutorial based on [QMIX TorchRL Tutorial](https://github.com/pytorch/rl/blob/main/sota-implementations/multiagent/qmix_vdn.py).
-
-# %% [markdown]
-# ![Qmix](../../docs/img/qmix.png)
-# 
-# 
-# > Picture taken from QMIX [paper](https://arxiv.org/pdf/1803.11485).
-# 
 
 # %% [markdown]
 # #### High-level overview of QMIX algorithm
@@ -22,12 +61,8 @@
 # The mixing network is a feed-forward neural network that has as input the agent network outputs and mixes them monotonically. It produces the values of Q<sub>tot</sub>.
 # 
 # The weights of the mixing network are produced by separate hypernetworks. Each hypernetwork takes the state *s* as input and generated the weights of one layer of the mixing network.
-
-# %% [markdown]
-# ### Simulation overview
-
-# %% [markdown]
-# > We simulate our environment with an initial population of **100 human agents**. These agents navigate the environment and eventually converge on the fastest path. After this convergence, we will transition **40 of these human agents** into **machine agents**, specifically autonomous vehicles (AVs), which will then employ the QMIX reinforcement learning algorithms to further refine their learning.
+# 
+# ---
 
 # %% [markdown]
 # #### Imported libraries
@@ -35,7 +70,7 @@
 # %%
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '../../../')))
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '../../')))
 
 import torch
 from tqdm import tqdm
@@ -95,13 +130,13 @@ eps_greedy_end=0
 mixing_embed_dim = 32
 
 human_learning_episodes = 100
-
+new_machines_after_mutation = 40
 
 # Environment
 env_params = {
     "agent_parameters" : {
         "num_agents" : 100,
-        "new_machines_after_mutation": 40,
+        "new_machines_after_mutation": new_machines_after_mutation,
         "human_parameters" : {
             "model" : "w_avg"
         },
@@ -132,11 +167,18 @@ env_params = {
 
 # %%
 env = TrafficEnvironment(seed=42, **env_params)
-print(env)
+
+# %% [markdown]
+# > Available paths create using the [Janux](https://github.com/COeXISTENCE-PROJECT/JanuX) framework.
+
+# %% [markdown]
+# | |  |
+# |---------|---------|
+# |  ![](plots_saved/0_0.png) |  ![](plots_saved/0_1.png) |
+# | ![](plots_saved/1_0.png) | ![](plots_saved/1_1.png) |
 
 # %%
 print("Number of total agents is: ", len(env.all_agents), "\n")
-print("Agents are: ", env.all_agents, "\n")
 print("Number of human agents is: ", len(env.human_agents), "\n")
 print("Number of machine agents (autonomous vehicles) is: ", len(env.machine_agents), "\n")
 
@@ -158,20 +200,18 @@ for episode in range(human_learning_episodes):
 # #### Mutation
 
 # %% [markdown]
-# > **Mutation**: a portion of human agents are converted into machine agents (autonomous vehicles). You can adjust the number of agents to be mutated in the <code style="color:white">/params.json</code> file.
+# > **Mutation**: a portion of human agents are converted into machine agents (autonomous vehicles). 
 
 # %%
 env.mutation()
 
 # %%
 print("Number of total agents is: ", len(env.all_agents), "\n")
-print("Agents are: ", env.all_agents, "\n")
 print("Number of human agents is: ", len(env.human_agents), "\n")
 print("Number of machine agents (autonomous vehicles) is: ", len(env.machine_agents), "\n")
 
 # %% [markdown]
-# > Create a group that contains all the machine (RL) agents.
-# 
+# > `TorchRL` enables us to make different groups with different agents. Here, all the AV agents are included in one group.
 
 # %%
 machine_list = []
@@ -182,6 +222,9 @@ group = {'agents': machine_list}
 
 # %% [markdown]
 # #### PettingZoo environment wrapper
+
+# %% [markdown]
+# > In order to employ the `TorchRL` library in our environment we need to use their `PettingZooWrapper` function.
 
 # %%
 env = PettingZooWrapper(
@@ -383,6 +426,8 @@ for i, tensordict_data in tqdm(enumerate(collector), total=n_iters, desc="Traini
 # > Testing phase
 
 # %%
+qnet_explore.eval() # set the policy into evaluation mode
+
 num_episodes = 100
 for episode in range(num_episodes):
     env.rollout(len(env.machine_agents), policy=qnet_explore)
@@ -392,6 +437,24 @@ for episode in range(num_episodes):
 
 # %%
 env.plot_results()
+
+# %% [markdown]
+# > The plots reveal that the introduction of AVs into urban traffic influences human agents' decision-making. This insight highlights the need for research aimed at mitigating potential negative effects of AV introduction, such as increased human travel times, congestion, and subsequent rises in $CO_2$ emissions.
+
+# %% [markdown]
+# | |  |
+# |---------|---------|
+# | **Action shifts of human and AV agents** ![](plots_saved/qmix_actions_shifts.png) | **Action shifts of all vehicles in the network** ![](plots_saved/qmix_actions.png) |
+# | ![](plots_saved/qmix_rewards.png) | ![](plots_saved/qmix_travel_times.png) |
+# 
+# 
+# <p align="center">
+#   <img src="plots_saved/qmix_tt_dist.png" width="700" />
+# </p>
+# 
+
+# %% [markdown]
+# > Interrupt the connection with `SUMO`.
 
 # %%
 env.stop_simulation()

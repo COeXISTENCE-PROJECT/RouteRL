@@ -1,54 +1,26 @@
 # %% [markdown]
-# # Simulating fleets of automated vehicles (AVs) making routing decisions: Medium traffic network, AV behaviors, IPPO/MAPPO algorithm implementation
+# # Simulating fleets of automated vehicles (AVs) making routing decisions: Bigger traffic network, IPPO algorithm implementation
 
 # %% [markdown]
-# > In this notebook, on the `Cologne` network, we simulate **100 human agents** for `950 days`. After 100 days **40 of the human agents** mutate into automated vehicles (AVs) and use the [`MAPPO`]((https://arxiv.org/pdf/2103.01955)) (Multi-agent Proximal Policy Optimization) algorithm implemented from the `TorchRL` library to learn the optimal route. The AVs are `malicious` and their goal is to maximize human travel time. Since all AVs share the same reward signal, we model them using an algorithm that can be suitable for collaborative MARL tasks. 
+# > In this notebook, on the `Ingolstadt` network, we simulate **100 human agents** for `1700 days`. After 100 days **20 of the human agents** mutate into automated vehicles (AVs) and use the [`IPPO`](https://arxiv.org/pdf/2011.09533) (Independent Proximal Policy Optimization) algorithm implemented from the `TorchRL` library to learn the optimal route. The AVs are `selfish` and their goal is to maximize their own travel time. Since all AVs have their own reward signal, we model them using independent MARL algorithms. 
 # 
 # ---
 
 # %% [markdown]
 # > The network used.
 # > 
-# ![Network used](plots_saved/cologne.png)
+# ![Network used](plots_saved/ingolstadt.png)
 # 
 # ---
 
 # %% [markdown]
-# As described in the **[paper](https://openreview.net/pdf?id=88zP8xh5D2)**, the reward function enforces a selected behavior on the agent. For an agent *k* with behavioral parameters **φₖ ∈ ℝ⁴**, the reward is defined as:
-# 
-# $$
-# r_k = \varphi_{k1} \cdot T_{\text{own}, k} + \varphi_{k2} \cdot T_{\text{group}, k} + \varphi_{k3} \cdot T_{\text{other}, k} + \varphi_{k4} \cdot T_{\text{all}, k}
-# $$
-# 
-# 
-# where **Tₖ** is a vector of travel time statistics provided to agent *k*, containing:
-# 
-# - **Own Travel Time** ($T_{\text{own}, k}$): The amount of time the agent has spent in traffic.
-# - **Group Travel Time** ($T_{\text{group}, k}$): The average travel time of agents in the same group (e.g., AVs for an AV agent).
-# - **Other Group Travel Time** ($T_{\text{other}, k}$): The average travel time of agents in other groups (e.g., humans for an AV agent).
-# - **System-wide Travel Time** ($T_{\text{all}, k}$): The average travel time of all agents in the traffic network.
-
-# %% [markdown]
-# ---
-# 
-# ## Behavioral Strategies & Objective Weightings
-# 
-# | **Behavior**    | **ϕ₁** | **ϕ₂** | **ϕ₃** | **ϕ₄** | **Interpretation**                                    |
-# |---------------|------|------|------|------|----------------------------------------------------|
-# | **Altruistic**     | 0    | 0    | 0    | 1    | Minimize delay for everyone                       |
-# | **Collaborative**  | 0.5  | 0.5  | 0    | 0    | Minimize delay for oneself and one’s own group    |
-# | **Competitive**    | 2    | 0    | -1   | 0    | Minimize self-delay & maximize delay for others  |
-# | **Malicious**      | 0    | 0    | -1   | 0    | Maximize delay for the other group               |
-# | **Selfish**        | 1    | 0    | 0    | 0    | Minimize delay for oneself                        |
-# | **Social**        | 0.5  | 0    | 0    | 0.5  | Minimize delay for oneself & everyone            |
-# 
-# ---
-
-# %% [markdown]
-# > This tutorial is based on [Multi-Agent Reinforcement Learning (PPO) with TorchRL Tutorial](https://pytorch.org/rl/stable/tutorials/multiagent_ppo.html).
+# > Tutorial based on [Multi-Agent Reinforcement Learning (PPO) with TorchRL Tutorial](https://pytorch.org/rl/stable/tutorials/multiagent_ppo.html).
 
 # %% [markdown]
 # ![Alt text](../../docs/img/env.png)
+# 
+# 
+# ---
 # 
 
 # %% [markdown]
@@ -118,7 +90,7 @@ critic_network_num_cells = 64
 
 # Human learning phase
 human_learning_episodes = 100
-new_machines_after_mutation = 40
+new_machines_after_mutation = 20
 
 # number of episodes the AV training will take
 training_episodes = (frames_per_batch / new_machines_after_mutation) * n_iters
@@ -130,27 +102,17 @@ env_params = {
         "human_parameters" : {
             "model" : "w_avg"
         },
-        "machine_parameters" :
-        {
-            "behavior" : "malicious",
-        }
     },
     "simulator_parameters" : {
-        "network_name" : "cologne"
+        "network_name" : "ingolstadt"
     },  
     "plotter_parameters" : {
-        "phases" : [0, human_learning_episodes, training_episodes + human_learning_episodes],
-        "smooth_by" : 50,
-        "phase_names" : [
-            "Human learning", 
-            "Mutation - Machine learning",
-            "Testing phase"
-        ]
+        "phases" : [0, human_learning_episodes],
     },
     "path_generation_parameters":
     {
-        "number_of_paths" : 3,
-        "beta" : -5,
+        "number_of_paths" : 5,
+        "beta" : -2,
     }
 }
 
@@ -195,7 +157,7 @@ for episode in range(human_learning_episodes):
 # #### Mutation
 
 # %% [markdown]
-# > **Mutation**: a portion of human agents are converted into machine agents (autonomous vehicles). 
+# > **Mutation**: a portion of human agents are converted into machine agents (autonomous vehicles).
 
 # %%
 env.mutation()
@@ -206,20 +168,19 @@ print("Number of human agents is: ", len(env.human_agents), "\n")
 print("Number of machine agents (autonomous vehicles) is: ", len(env.machine_agents), "\n")
 
 # %% [markdown]
+# #### PettingZoo environment wrapper
+
+# %% [markdown]
 # > `TorchRL` enables us to make different groups with different agents. Here, all the AV agents are included in one group.
 
 # %%
 group = {'agents': [str(machine.id) for machine in env.machine_agents]}
 
-# %% [markdown]
-# #### PettingZoo environment wrapper
-
-# %%
 env = PettingZooWrapper(
     env=env,
-    use_mask=True, # Whether to use the mask in the outputs. It is important for AEC environments to mask out non-acting agents.
+    use_mask=True,
     categorical_actions=True,
-    done_on_any = False, # Whether the environment’s done keys are set by aggregating the agent keys using any() (when True) or all() (when False).
+    done_on_any = False,
     group_map=group,
     device=device
 )
@@ -284,12 +245,9 @@ policy = ProbabilisticActor(
 # %% [markdown]
 # #### Critic network
 
-# %% [markdown]
-# > The critic reads the observations and returns the corresponding value estimates.
-
 # %%
 share_parameters_critic = True
-mappo = True  # IPPO if False
+mappo = False  # IPPO if False
 
 critic_net = MultiAgentMLP(
     n_agent_inputs=env.observation_spec["agents", "observation"].shape[-1],
@@ -308,6 +266,12 @@ critic = TensorDictModule(
     in_keys=[("agents", "observation")],
     out_keys=[("agents", "state_value")],
 )
+
+# %%
+print("Running policy:", policy(env.reset()))
+
+# %%
+print("Running value:", critic(env.reset()))
 
 # %% [markdown]
 # #### Collector
@@ -453,12 +417,11 @@ for tensordict_data in collector: ##loops over frame_per_batch
 policy.eval() # set the policy into evaluation mode
 
 num_episodes = 100
-
 for episode in range(num_episodes):
     env.rollout(len(env.machine_agents), policy=policy)
 
 # %% [markdown]
-# >  Check `\plots` directory to find the plots created from this experiment.
+# > Plots of the training process are include in the **\plots** folder.
 
 # %%
 env.plot_results()
@@ -469,12 +432,12 @@ env.plot_results()
 # %% [markdown]
 # | |  |
 # |---------|---------|
-# | **Action shifts of human and AV agents** ![](plots_saved/mappo_actions_shifts.png) | **Action shifts of all vehicles in the network** ![](plots_saved/mappo_actions.png) |
-# | ![](plots_saved/mappo_rewards.png) | ![](plots_saved/mappo_travel_times.png) |
+# | **Action shifts of human and AV agents** ![](plots_saved/ippo_actions_shifts.png) | **Action shifts of all vehicles in the network** ![](plots_saved/ippo_actions.png) |
+# | ![](plots_saved/ippo_rewards.png) | ![](plots_saved/ippo_travel_times.png) |
 # 
 # 
 # <p align="center">
-#   <img src="plots_saved/mappo_tt_dist.png" width="700" />
+#   <img src="plots_saved/ippo_tt_dist.png" width="700" />
 # </p>
 # 
 

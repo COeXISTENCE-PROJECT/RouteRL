@@ -1,22 +1,27 @@
 # %% [markdown]
-# # Independent Q-learning
+# # Simulating fleets of automated vehicles (AVs) making routing decisions: Bigger traffic network, IQL algorithm implementation
 
 # %% [markdown]
-# > In this notebook, we implement the **[Independent Q learning]()** Multi Agent Reinforcement Leaning (MARL) algorithm in our environment. 
+# > In this notebook, on the `Ingolstadt` network, we simulate **100 human agents** for `1700 days`. After 100 days **20 of the human agents** mutate into automated vehicles (AVs) and use the `IQL` (Independent Q-Learning) algorithm implemented from the `TorchRL` library to learn the optimal route. The AVs are `selfish` and their goal is to maximize their own travel time. Since all AVs have their own reward signal, we model them using independent MARL algorithms. 
 # 
+# ---
+
+# %% [markdown]
+# > The network used.
+# > 
+# ![Network used](plots_saved/ingolstadt.png)
 # 
+# ---
+
+# %% [markdown]
 # > Tutorial based on [IQL TorchRL Tutorial](https://github.com/pytorch/rl/blob/main/sota-implementations/multiagent/iql.py).
 
 # %% [markdown]
 # #### High-level overview of IQL algorithm
 # 
 # In IQL a centralized state-action value function is used, Q<sub>tot</sub>, and each agent α learns an individual action-value function Q<sub>α</sub>, independently.
-
-# %% [markdown]
-# ### Simulation overview
-
-# %% [markdown]
-# > We simulate our environment with an initial population of **100 human agents**. These agents navigate the environment and eventually converge on the fastest path. After this convergence, we will transition **20 of these human agents** into **machine agents**, specifically autonomous vehicles (AVs), which will then employ the Independent Q learning reinforcement learning algorithm to further refine their learning.
+# 
+# ---
 
 # %% [markdown]
 # #### Imported libraries
@@ -24,7 +29,7 @@
 # %%
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '../../../')))
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '../../')))
 
 import torch
 from tqdm import tqdm
@@ -47,19 +52,17 @@ from routerl import TrafficEnvironment
 
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
+# %% [markdown]
+# #### Hyperparameters setting
+
 # %%
 device = (
     torch.device(0)
     if torch.cuda.is_available()
     else torch.device("cpu")
 )
-
 print("device is: ", device)
 
-# %% [markdown]
-# #### Hyperparameters setting
-
-# %%
 # Sampling
 frames_per_batch = 100  # Number of team frames collected per training iteration
 n_iters = 300  # Number of sampling and training iterations - the episodes the plotter plots
@@ -84,12 +87,15 @@ mlp_cells = 32
 
 # Human learning phase
 human_learning_episodes = 100
+new_machines_after_mutation = 20
 
-# Environment
+# number of episodes the AV training will take
+training_episodes = (frames_per_batch / new_machines_after_mutation) * n_iters
+
 env_params = {
     "agent_parameters" : {
         "num_agents" : 100,
-        "new_machines_after_mutation": 20,
+        "new_machines_after_mutation": new_machines_after_mutation,
         "human_parameters" : {
             "model" : "w_avg"
         },
@@ -98,8 +104,7 @@ env_params = {
         "network_name" : "ingolstadt"
     },  
     "plotter_parameters" : {
-        "phases" : [0, human_learning_episodes],
-        "smooth_by" : 50,
+        "phases" : [0, human_learning_episodes, training_episodes + human_learning_episodes],
     },
     "path_generation_parameters":
     {
@@ -116,7 +121,15 @@ env_params = {
 
 # %%
 env = TrafficEnvironment(seed=42, **env_params)
-print(env)
+
+# %% [markdown]
+# > Available paths create using the [Janux](https://github.com/COeXISTENCE-PROJECT/JanuX) framework.
+
+# %% [markdown]
+# | |  |
+# |---------|---------|
+# |  ![](plots_saved/0_0.png) |  ![](plots_saved/0_1.png) |
+# | ![](plots_saved/1_0.png) | ![](plots_saved/1_1.png) |
 
 # %% [markdown]
 # > Reset the environment and the connection with SUMO
@@ -143,11 +156,10 @@ env.mutation()
 print(env)
 
 # %% [markdown]
-# > Create a group that contains all the machine (RL) agents.
-# 
+# #### PettingZoo environment wrapper
 
 # %% [markdown]
-# #### PettingZoo environment wrapper
+# > `TorchRL` enables us to make different groups with different agents. Here, all the AV agents are included in one group.
 
 # %%
 group = {'agents': [str(machine.id) for machine in env.machine_agents]}
@@ -163,9 +175,6 @@ env = PettingZooWrapper(
 
 # %% [markdown]
 # #### Transforms
-
-# %% [markdown]
-# Here we instantiate a <code style="color:white">RewardSum</code> transformer that will sum rewards over episode.
 
 # %%
 env = TransformedEnv(
@@ -314,15 +323,41 @@ collector.shutdown()
 # > Testing phase
 
 # %%
+qnet_explore.eval() # set the policy into evaluation mode
+
 num_episodes = 100
 for episode in range(num_episodes):
     env.rollout(len(env.machine_agents), policy=qnet_explore)
+
+# %% [markdown]
+# > Save the trained policy
+
+# %%
+#torch.save(qnet_explore, "trained_policy.pt")
 
 # %% [markdown]
 # > Plots of the training process are include in the **\plots** folder.
 
 # %%
 env.plot_results()
+
+# %% [markdown]
+# > The plots reveal that the introduction of AVs into urban traffic influences human agents' decision-making. This insight highlights the need for research aimed at mitigating potential negative effects of AV introduction, such as increased human travel times, congestion, and subsequent rises in $CO_2$ emissions.
+
+# %% [markdown]
+# | |  |
+# |---------|---------|
+# | **Action shifts of human and AV agents** ![](plots_saved/iql_actions_shifts.png) | **Action shifts of all vehicles in the network** ![](plots_saved/iql_actions.png) |
+# | ![](plots_saved/iql_rewards.png) | ![](plots_saved/iql_travel_times.png) |
+# 
+# 
+# <p align="center">
+#   <img src="plots_saved/iql_tt_dist.png" width="700" />
+# </p>
+# 
+
+# %% [markdown]
+# > Interrupt the connection with `SUMO`.
 
 # %%
 env.stop_simulation()
