@@ -8,6 +8,8 @@
 
 <!-- start intro -->
 
+<img src="docs/_static/overview.png" align="center" width="60%"/>
+
 RouteRL is a novel framework that integrates MARL with a microscopic traffic simulation, [SUMO](https://sumo.dlr.de/docs/index.html), facilitating the testing and development of efficient route choice strategies. The proposed framework simulates the daily route choices of driver agents in a city, including two types: 
 - human drivers, emulated using discrete choice models,
 - and AVs, modeled as MARL agents optimizing their policies for a predefined objective.
