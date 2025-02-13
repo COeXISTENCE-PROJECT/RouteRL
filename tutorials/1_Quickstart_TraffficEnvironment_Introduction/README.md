@@ -2,7 +2,7 @@
 
 ## Overview  
 
-In thi tutorial we introduce the [**TrafficEnvironment**](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/environment/environment.py) class, a [**PettingZoo**](https://pettingzoo.farama.org/index.html) AEC API environment, that implements the route decision-making of agents/vehicles navigating in different road networks. The environment supports two kind of agents: 
+In this tutorial we introduce the [**TrafficEnvironment**](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/environment/environment.py) class, a [**PettingZoo**](https://pettingzoo.farama.org/index.html) AEC API environment, that implements the route decision-making of agents/vehicles navigating in different road networks. The environment supports two kind of agents: 
 - Human drivers, that are simulated using human route-choice behavior from transportation research.
 - Automated vehicles, are the RL agents that aim to optimize their routes and learn the most efficient paths.
 
