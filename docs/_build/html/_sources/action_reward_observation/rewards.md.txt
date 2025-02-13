@@ -1,6 +1,0 @@
----
-title: Rewards
-firstpage:
----
-
-# Rewards

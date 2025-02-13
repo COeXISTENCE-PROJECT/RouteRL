@@ -16,3 +16,11 @@ paths.csv
 
 venv/
 playground.ipynb
+
+manhattan.rou.xml
+manhattan.edg.xml
+manhattan.net.xml
+manhattan.con.xml
+manhattan.nod.xml
+manhattan.tll.xml
+manhattan.typ.xml
