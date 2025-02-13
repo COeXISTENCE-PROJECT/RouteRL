@@ -29,7 +29,7 @@ import torch
 from torchrl.envs.libs.pettingzoo import PettingZooWrapper
 
 
-sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '../../')))
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '../../../')))
 
 from routerl import TrafficEnvironment
 

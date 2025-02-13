@@ -7,8 +7,8 @@ firstpage:
 
 Some of the networks utilized in this study include **Ingolstadt**, **Cologne**, **Csomor**, and **Manhattan**, each representing different traffic scenarios for evaluating the impact of autonomous vehicles (AVs) on urban mobility.
 
-For a detailed definition of the network names and their corresponding keychain, refer to the official keychain file available at:  
-[**Network Keychain Reference**]([insert_link_here](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/9c02a6eca4df0900460ab44d4029a77eeb10e5ff/routerl/keychain.py#L121C5-L121C135)).
+For a detailed definition of the network names and their corresponding keychain:  
+[**Network Keychain**](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/9c02a6eca4df0900460ab44d4029a77eeb10e5ff/routerl/keychain.py#L121C5-L121C135).
 
 <div style="display: flex; justify-content: space-between;">
     <figure style="width: 48%;">
@@ -52,11 +52,11 @@ For a detailed definition of the network names and their corresponding keychain,
 <div style="display: flex; justify-content: space-between;">
     <figure style="width: 48%;">
         <img src="../_static/ortuzar.png" alt="Ortuzar" width="100%" />
-        <figcaption style="text-align: center;">Arterial Network</figcaption>
+        <figcaption style="text-align: center;">Ortuzar Network</figcaption>
     </figure>
     <figure style="width: 48%;">
         <img src="../_static/manhattan.png" alt="Manhattan" width="100%" />
-        <figcaption style="text-align: center;">Grid Network</figcaption>
+        <figcaption style="text-align: center;">Manhattan Network</figcaption>
     </figure>
 </div>
 
@@ -65,10 +65,10 @@ For a detailed definition of the network names and their corresponding keychain,
 <div style="display: flex; justify-content: space-between;">
     <figure style="width: 48%;">
         <img src="../_static/nguyen.png" alt="Nguyen" width="100%" />
-        <figcaption style="text-align: center;">Arterial Network</figcaption>
+        <figcaption style="text-align: center;">Nguyen Network</figcaption>
     </figure>
     <figure style="width: 48%;">
         <img src="../_static/grid6.png" alt="Grid 6" width="100%" />
-        <figcaption style="text-align: center;">Grid Network</figcaption>
+        <figcaption style="text-align: center;">Grid 6 Network</figcaption>
     </figure>
 </div>
