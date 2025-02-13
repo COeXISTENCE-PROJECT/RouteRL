@@ -114,11 +114,9 @@ class Keychain:
     INGOLSTADT = "ingolstadt"
     NGUYEN = "nguyen"
     ORTUZAR = "ortuzar"
-    SOURDUN = "sourdun"
-    SOURDUN_SMALL = "sourdun_small"
     TWO_ROUTE_YIELD = "two_route_yield"
     MANHATTAN = "manhattan"
-    NETWORK_NAMES = [ARTERIAL, COLOGNE, CSOMOR, GRID, INGOLSTADT, NGUYEN, ORTUZAR, SOURDUN, SOURDUN_SMALL, TWO_ROUTE_YIELD, MANHATTAN]
+    NETWORK_NAMES = [ARTERIAL, COLOGNE, CSOMOR, GRID, INGOLSTADT, NGUYEN, ORTUZAR, TWO_ROUTE_YIELD, MANHATTAN]
     
     ###########################################################
 
@@ -156,6 +154,6 @@ class Keychain:
 
     ###################### ZENODO DATA ########################
 
-    ZENODO_RECORD_ID = "zenodo_record_id"
+    ZENODO_RECORD_ID = 14866276
 
     ###########################################################

@@ -42,14 +42,14 @@ def resolve_ods(params):
         params[kc.PATH_GEN][kc.ORIGINS] = default_ods[kc.ORIGINS]
     if params[kc.PATH_GEN][kc.DESTINATIONS] == "default":
         params[kc.PATH_GEN][kc.DESTINATIONS] = default_ods[kc.DESTINATIONS]
-    if params[kc.SIMULATOR][kc.NETWORK_NAME] == "two_route_yield":
+    if params[kc.SIMULATOR][kc.NETWORK_NAME] == kc.TWO_ROUTE_YIELD:
         params[kc.PATH_GEN][kc.NUMBER_OF_PATHS] = 2
-    if params[kc.SIMULATOR][kc.NETWORK_NAME] == "manhattan": # manhattan network is big so we store the network files in zenodo
-        zenodo_record_id = params[kc.PATH_GEN][kc.ZENODO_RECORD_ID]
+    if params[kc.SIMULATOR][kc.NETWORK_NAME] == kc.MANHATTAN: # manhattan network is big so we store the network files in zenodo
+        zenodo_record_id = kc.ZENODO_RECORD_ID
         api_url = f"https://zenodo.org/api/records/{zenodo_record_id}"
 
         curr_dir = os.path.dirname(os.path.abspath(__file__))
-        save_folder = os.path.join(curr_dir, kc.NETWORK_FOLDER).replace("$net$", "manhattan")
+        save_folder = os.path.join(curr_dir, kc.NETWORK_FOLDER).replace("$net$", kc.MANHATTAN)
         
         response = requests.get(api_url)
         data = response.json()
