@@ -5,6 +5,11 @@ firstpage:
 
 # Networks
 
+Some of the networks utilized in this study include **Ingolstadt**, **Cologne**, **Csomor**, and **Manhattan**, each representing different traffic scenarios for evaluating the impact of autonomous vehicles (AVs) on urban mobility.
+
+For a detailed definition of the network names and their corresponding keychain, refer to the official keychain file available at:  
+[**Network Keychain Reference**]([insert_link_here](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/9c02a6eca4df0900460ab44d4029a77eeb10e5ff/routerl/keychain.py#L121C5-L121C135)).
+
 <div style="display: flex; justify-content: space-between;">
     <figure style="width: 48%;">
         <img src="../_static/ingolstadt.png" alt="Ingolstadt" width="100%" />
@@ -15,6 +20,8 @@ firstpage:
         <figcaption style="text-align: center;">Cologne Network</figcaption>
     </figure>
 </div>
+
+<br>
 
 <div style="display: flex; justify-content: space-between;">
     <figure style="width: 48%;">
@@ -27,6 +34,8 @@ firstpage:
     </figure>
 </div>
 
+<br>
+
 <div style="display: flex; justify-content: space-between;">
     <figure style="width: 48%;">
         <img src="../_static/arterial.png" alt="Arterial" width="100%" />
@@ -38,6 +47,8 @@ firstpage:
     </figure>
 </div>
 
+<br>
+
 <div style="display: flex; justify-content: space-between;">
     <figure style="width: 48%;">
         <img src="../_static/ortuzar.png" alt="Ortuzar" width="100%" />
@@ -48,6 +59,8 @@ firstpage:
         <figcaption style="text-align: center;">Grid Network</figcaption>
     </figure>
 </div>
+
+<br>
 
 <div style="display: flex; justify-content: space-between;">
     <figure style="width: 48%;">
