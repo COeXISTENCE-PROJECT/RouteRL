@@ -1,5 +1,3 @@
-# Quickstart
-
-```{include} ../../tutorials/1_Quickstart_TraffficEnvironment_Introduction/main
+```{include} ../../tutorials/1_Quickstart_TraffficEnvironment_Introduction/README.md
 
 ```
