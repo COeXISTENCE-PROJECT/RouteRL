@@ -54,7 +54,9 @@
         "num_samples" : 100,
 
         "origins" : "default",
-        "destinations" : "default"
+        "destinations" : "default",
+
+        "zenodo_record_id" : 14866276
     }, 
 
     "plotter_parameters":

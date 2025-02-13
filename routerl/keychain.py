@@ -153,3 +153,9 @@ class Keychain:
     ACTIONS_SHIFTS_PLOT_FILE_NAME = "actions_shifts.png"
     
     ###########################################################
+
+    ###################### ZENODO DATA ########################
+
+    ZENODO_RECORD_ID = "zenodo_record_id"
+
+    ###########################################################

@@ -1,5 +1,6 @@
 import json
 import os
+import requests
 import sys
 import time
 
@@ -43,6 +44,29 @@ def resolve_ods(params):
         params[kc.PATH_GEN][kc.DESTINATIONS] = default_ods[kc.DESTINATIONS]
     if params[kc.SIMULATOR][kc.NETWORK_NAME] == "two_route_yield":
         params[kc.PATH_GEN][kc.NUMBER_OF_PATHS] = 2
+    if params[kc.SIMULATOR][kc.NETWORK_NAME] == "manhattan": # manhattan network is big so we store the network files in zenodo
+        zenodo_record_id = params[kc.PATH_GEN][kc.ZENODO_RECORD_ID]
+        api_url = f"https://zenodo.org/api/records/{zenodo_record_id}"
+
+        curr_dir = os.path.dirname(os.path.abspath(__file__))
+        save_folder = os.path.join(curr_dir, kc.NETWORK_FOLDER).replace("$net$", "manhattan")
+        
+        response = requests.get(api_url)
+        data = response.json()
+
+        # Download all files
+        for file_info in data["files"]:
+            file_url = file_info["links"]["self"]
+            file_name = file_info["key"]
+
+            # Construct the full save path
+            save_path = os.path.join(save_folder, file_name)
+            response = requests.get(file_url, stream=True)
+            
+            # Write the file to the specified folder
+            with open(save_path, "wb") as file:
+                for chunk in response.iter_content(chunk_size=1024):
+                    file.write(chunk)
     return params
 
 
