@@ -37,3 +37,25 @@ firstpage:
         <figcaption style="text-align: center;">Grid Network</figcaption>
     </figure>
 </div>
+
+<div style="display: flex; justify-content: space-between;">
+    <figure style="width: 48%;">
+        <img src="../_static/ortuzar.png" alt="Ortuzar" width="100%" />
+        <figcaption style="text-align: center;">Arterial Network</figcaption>
+    </figure>
+    <figure style="width: 48%;">
+        <img src="../_static/manhattan.png" alt="Manhattan" width="100%" />
+        <figcaption style="text-align: center;">Grid Network</figcaption>
+    </figure>
+</div>
+
+<div style="display: flex; justify-content: space-between;">
+    <figure style="width: 48%;">
+        <img src="../_static/nguyen.png" alt="Nguyen" width="100%" />
+        <figcaption style="text-align: center;">Arterial Network</figcaption>
+    </figure>
+    <figure style="width: 48%;">
+        <img src="../_static/grid6.png" alt="Grid 6" width="100%" />
+        <figcaption style="text-align: center;">Grid Network</figcaption>
+    </figure>
+</div>

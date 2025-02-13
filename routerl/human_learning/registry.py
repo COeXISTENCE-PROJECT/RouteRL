@@ -1,6 +1,6 @@
 from routerl.keychain import Keychain as kc
 
-from routerl.learning import (
+from routerl.human_learning import (
     Gawron,
     Culo,
     WeightedAverage

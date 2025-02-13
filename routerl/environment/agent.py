@@ -8,7 +8,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 
 from routerl.keychain import Keychain as kc
-from routerl.learning import get_learning_model
+from routerl.human_learning import get_learning_model
 
 
 class BaseAgent(ABC):

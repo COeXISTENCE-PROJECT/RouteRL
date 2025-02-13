@@ -23,7 +23,7 @@ from .environment import (
     TrafficEnvironment
 )
 
-from .learning import (
+from .human_learning import (
     get_learning_model
 )
 
