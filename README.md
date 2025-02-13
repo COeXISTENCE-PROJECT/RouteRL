@@ -79,19 +79,3 @@ env.stop_simulation() # stop the connection with SUMO
 <!-- end installation -->  
 
 
-----------------
-
-## Citation
-
-```bibtex
-@misc{RouteRL,
-  author      = {Ahmet Onur Akman, Anastasia Psarou, Łukasz Gorczyca, 
-  Zoltán Görgy Varga, Grzegorz Jamróz, Rafał Kucharski},
-  title       = {RouteRL},
-  year        = {2025},
-  url         = {https://github.com/COeXISTENCE-PROJECT/RouteRL},
-  publisher   = {GitHub},
-  journal     = {GitHub repository}
-}
-```
-
