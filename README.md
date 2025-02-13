@@ -78,6 +78,9 @@ env.stop_simulation() # stop the connection with SUMO
     cd RouteRL
     pip install -r requirements.txt
   ```
+
+- **Option 3**: Go to [RouteRL capsule](https://codeocean.com/capsule/) on codeocean website 
+and click *Reproducible Run*.
  
 <!-- end installation -->  
 
