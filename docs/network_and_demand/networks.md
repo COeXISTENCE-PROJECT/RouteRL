@@ -22,6 +22,7 @@ For a detailed definition of the network names and their corresponding keychain:
 </div>
 
 <br>
+<br>
 
 <div style="display: flex; justify-content: space-between;">
     <figure style="width: 48%;">
@@ -34,6 +35,7 @@ For a detailed definition of the network names and their corresponding keychain:
     </figure>
 </div>
 
+<br>
 <br>
 
 <div style="display: flex; justify-content: space-between;">
@@ -48,6 +50,7 @@ For a detailed definition of the network names and their corresponding keychain:
 </div>
 
 <br>
+<br>
 
 <div style="display: flex; justify-content: space-between;">
     <figure style="width: 48%;">
@@ -60,6 +63,7 @@ For a detailed definition of the network names and their corresponding keychain:
     </figure>
 </div>
 
+<br>
 <br>
 
 <div style="display: flex; justify-content: space-between;">
