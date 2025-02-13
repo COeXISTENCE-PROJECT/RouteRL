@@ -8,7 +8,6 @@
 import sys
 import os
 from tqdm import tqdm
-import numpy as np
 
 import torch
 from tensordict.nn import TensorDictModule, TensorDictSequential
