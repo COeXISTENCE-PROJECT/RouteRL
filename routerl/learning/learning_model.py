@@ -123,8 +123,8 @@ class Culo(BaseLearningModel):
         self.beta = random.uniform(params[kc.BETA] - beta_randomness, params[kc.BETA] + beta_randomness)
 
         # Learning rate components
-        self.alpha_zero = 1
-        self.alpha_j = params[kc.ALPHA_J]
+        self.alpha_zero = params[kc.ALPHA_ZERO]
+        self.alpha_j = 1
 
         # Initialize cost array with initial knowledge
         self.cost = np.array(initial_knowledge, dtype=float)
