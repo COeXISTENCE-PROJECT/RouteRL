@@ -6,6 +6,8 @@
 [![Online Documentation](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/documentation.yml/badge.svg)](https://coexistence-project.github.io/RouteRL/)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/LICENSE.txt)
 
+<img src="docs/_static/overview.png" align="center" width="60%"/> \\
+
 <!-- start intro -->
 
 RouteRL is a novel framework that integrates MARL with a microscopic traffic simulation, [SUMO](https://sumo.dlr.de/docs/index.html), facilitating the testing and development of efficient route choice strategies. The proposed framework simulates the daily route choices of driver agents in a city, including two types: 

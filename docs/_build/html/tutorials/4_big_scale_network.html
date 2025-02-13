@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Demand" href="demand.html" /><link rel="prev" title="Observation Functions" href="../documentation/observations.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="Large-Sized Network: Independent AV agents" href="3_bigger_network.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
-        <title>Networks - RouteRL 0.0.1 documentation</title>
+        <title>Large-Sized Network: Independent AV agents - RouteRL 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
@@ -180,7 +180,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -216,9 +216,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../documentation/observations.html">Observation Functions</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Networks &amp; Demand</span></p>
-<ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Networks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="demand.html">Demand</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../network_and_demand/networks.html">Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../network_and_demand/demand.html">Demand</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Actions, Rewards, Observations</span></p>
 <ul>
@@ -227,11 +227,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../action_reward_observation/observations.html">Observations</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/Quickstart.html"><strong>Introduction to Our Multi-Agent PettingZoo Framework and Its Functionalities</strong></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/2_medium_network.html">Medium-Sized Network: AV Behaviors &amp; Collaborative MARL with TorchRL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/3_bigger_network.html">Large-Sized Network: Independent AV agents</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/4_big_scale_network.html">Large-Sized Network: Independent AV agents</a></li>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Quickstart.html"><strong>Introduction to Our Multi-Agent PettingZoo Framework and Its Functionalities</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_medium_network.html">Medium-Sized Network: AV Behaviors &amp; Collaborative MARL with TorchRL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_bigger_network.html">Large-Sized Network: Independent AV agents</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Large-Sized Network: Independent AV agents</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
@@ -256,12 +256,12 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/docs/network_and_demand/networks.md?plain=true" title="View this page">
+  <a class="muted-link" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/docs/tutorials/4_big_scale_network.md?plain=true" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
 </div><div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/edit/main/docs/network_and_demand/networks.md" title="Edit this page">
+  <a class="muted-link" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/edit/main/docs/tutorials/4_big_scale_network.md" title="Edit this page">
     <svg><use href="#svg-pencil"></use></svg>
     <span class="visually-hidden">Edit this page</span>
   </a>
@@ -274,75 +274,38 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="networks">
-<h1>Networks<a class="headerlink" href="#networks" title="Link to this heading">¶</a></h1>
-<p>Some of the networks utilized in this study include <strong>Ingolstadt</strong>, <strong>Cologne</strong>, <strong>Csomor</strong>, and <strong>Manhattan</strong>, each representing different traffic scenarios for evaluating the impact of autonomous vehicles (AVs) on urban mobility.</p>
-<p>For a detailed definition of the network names and their corresponding keychain:<br />
-<a class="reference external" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/9c02a6eca4df0900460ab44d4029a77eeb10e5ff/routerl/keychain.py#L121C5-L121C135"><strong>Network Keychain</strong></a>.</p>
-<div style="display: flex; justify-content: space-between;">
-    <figure style="width: 48%;">
-        <img src="../_static/ingolstadt.png" alt="Ingolstadt" width="100%" />
-        <figcaption style="text-align: center;">Ingolstadt Network</figcaption>
-    </figure>
-    <figure style="width: 48%;">
-        <img src="../_static/cologne.png" alt="Cologne" width="100%" />
-        <figcaption style="text-align: center;">Cologne Network</figcaption>
-    </figure>
-</div>
-<br>
-<br>
-<div style="display: flex; justify-content: space-between;">
-    <figure style="width: 48%;">
-        <img src="../_static/csomor.png" alt="Csomor" width="100%" />
-        <figcaption style="text-align: center;">Csomor Network</figcaption>
-    </figure>
-    <figure style="width: 48%;">
-        <img src="../_static/two_route_yield.png" alt="Two Route Network" width="100%" />
-        <figcaption style="text-align: center;">Two Route Network</figcaption>
-    </figure>
-</div>
-<br>
-<br>
-<div style="display: flex; justify-content: space-between;">
-    <figure style="width: 48%;">
-        <img src="../_static/arterial.png" alt="Arterial" width="100%" />
-        <figcaption style="text-align: center;">Arterial Network</figcaption>
-    </figure>
-    <figure style="width: 48%;">
-        <img src="../_static/grid.png" alt="Grid" width="100%" />
-        <figcaption style="text-align: center;">Grid Network</figcaption>
-    </figure>
-</div>
-<br>
-<br>
-<div style="display: flex; justify-content: space-between;">
-    <figure style="width: 48%;">
-        <img src="../_static/ortuzar.png" alt="Ortuzar" width="100%" />
-        <figcaption style="text-align: center;">Ortuzar Network</figcaption>
-    </figure>
-    <figure style="width: 48%;">
-        <img src="../_static/manhattan.png" alt="Manhattan" width="100%" />
-        <figcaption style="text-align: center;">Manhattan Network</figcaption>
-    </figure>
-</div>
-<br>
-<br>
-<div style="display: flex; justify-content: space-between;">
-    <figure style="width: 48%;">
-        <img src="../_static/nguyen.png" alt="Nguyen" width="100%" />
-        <figcaption style="text-align: center;">Nguyen Network</figcaption>
-    </figure>
-    <figure style="width: 48%;">
-        <img src="../_static/grid6.png" alt="Grid 6" width="100%" />
-        <figcaption style="text-align: center;">Grid 6 Network</figcaption>
-    </figure>
-</div>
+          <section class="tex2jax_ignore mathjax_ignore" id="large-sized-network-independent-av-agents">
+<h1>Large-Sized Network: Independent AV agents<a class="headerlink" href="#large-sized-network-independent-av-agents" title="Link to this heading">¶</a></h1>
+<blockquote>
+<div><p>In this tutorial we use a big-scale netowk for agents navigation. The chosen origin and destination points are specified in this <a class="reference external" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/networks/default_ods.json">file</a>, and can be adjusted by users. In parallel, we define AV behaviors based on the agents’ reward formulation and implement their learning process using the <a class="reference external" href="https://github.com/pytorch/rl">TorchRL</a> library.</p>
+</div></blockquote>
+<hr class="docutils" />
+<section id="network-overview">
+<h2>Network Overview<a class="headerlink" href="#network-overview" title="Link to this heading">¶</a></h2>
+<blockquote>
+<div><p>In these notebooks, we utilize the <strong>Manhattan network</strong> within our simulator, <a class="reference external" href="https://eclipse.dev/sumo/">SUMO</a>.  Since agents exhibit <strong>selfish behavior</strong>, we employ <strong>independent learning algorithms</strong> to model their decision-making.</p>
+</div></blockquote>
+<section id="included-tutorials">
+<h3>Included Tutorials:<a class="headerlink" href="#included-tutorials" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong><a class="reference external" href="https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/tutorials/3_BiggerNetwork_IndependentAgents/mappo_ippo_mutation.ipynb">IPPO Tutorial</a></strong><br />
+Implements <strong>Independent Proximal Policy Optimization (IPPO)</strong> (<a class="reference external" href="https://arxiv.org/pdf/2011.09533">IPPO</a>), which has demonstrated strong benchmark performance in various tasks (<a class="reference external" href="https://arxiv.org/abs/2103.01955">paper1</a>, <a class="reference external" href="https://arxiv.org/abs/2006.07869">paper2</a>).</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="manhattan-network-visualization">
+<h3>Manhattan Network Visualization<a class="headerlink" href="#manhattan-network-visualization" title="Link to this heading">¶</a></h3>
+<p align="center">
+  <img src="../../docs/_static/manhattan.png" alt="Manhattan network" width="700"/>
+</p>
+</section>
+</section>
 </section>
 
         </article>
@@ -350,23 +313,15 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="demand.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Demand</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="../documentation/observations.html">
+          
+          <a class="prev-page" href="3_bigger_network.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Observation Functions</div>
+                <div class="title">Large-Sized Network: Independent AV agents</div>
                 
               </div>
             </a>
@@ -388,8 +343,31 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Large-Sized Network: Independent AV agents</a><ul>
+<li><a class="reference internal" href="#network-overview">Network Overview</a><ul>
+<li><a class="reference internal" href="#included-tutorials">Included Tutorials:</a></li>
+<li><a class="reference internal" href="#manhattan-network-visualization">Manhattan Network Visualization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

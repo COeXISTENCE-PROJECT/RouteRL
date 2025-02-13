@@ -641,8 +641,7 @@ class TrafficEnvironment(AECEnv):
 
     def _record(self, episode: int, ep_observations: dict, agents: list, detectors_dict: dict) -> None:
 
-        dc_episode, dc_ep_observations, dc_agents = dc(episode), dc(ep_observations), dc(agents)
-        rewards = [{kc.AGENT_ID: agent.id, kc.REWARD: agent.last_reward} for agent in dc_agents]
+        dc_episode, dc_ep_observations, dc_agents, dc_detectors = dc(episode), dc(ep_observations), dc(agents), dc(detectors_dict)
         zero_space = [0] * self.action_space_size
 
         cost_tables = [
@@ -653,7 +652,7 @@ class TrafficEnvironment(AECEnv):
             for agent in dc_agents
         ]
 
-        self.recorder.record(dc_episode, dc_ep_observations, rewards, cost_tables, detectors_dict)
+        self.recorder.record(dc_episode, dc_ep_observations, cost_tables, dc_detectors)
 
     def plot_results(self) -> None:
         """Method that plot the results of the simulation.
