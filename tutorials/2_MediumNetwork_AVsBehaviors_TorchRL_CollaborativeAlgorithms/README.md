@@ -10,6 +10,8 @@
 
 > In these notebooks, we utilize the **Cologne network** within our simulator, [SUMO](https://eclipse.dev/sumo/). As an initial baseline, we employ **malicious AV behavior**, where all AVs share the same reward, making it an ideal setup for algorithms designed to solve collaborative tasks.
 
+> Users can customize parameters by modifying the entries in [`routerl/environment/params.json`](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/4f4bc0a90d821e95b7193b00c93d6aaf10b34f41/routerl/environment/params.json). Alternatively, they can define a dictionary with their preferred settings and pass it as an argument to the `TrafficEnvironment` class.
+
 ### Included Tutorials:
 
 - **[VDN Tutorial.](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/vdn_mutation.ipynb)** Uses **Value Decomposition Networks** ([VDN](https://arxiv.org/pdf/1706.05296)) for decentralized MARL training.

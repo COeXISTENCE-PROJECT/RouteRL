@@ -8,10 +8,11 @@
 
 > In these notebooks, we utilize the **Manhattan network** within our simulator, [SUMO](https://eclipse.dev/sumo/).  Since agents exhibit **selfish behavior**, we employ **independent learning algorithms** to model their decision-making.
 
+> Users can customize parameters by modifying the entries in [`routerl/environment/params.json`](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/4f4bc0a90d821e95b7193b00c93d6aaf10b34f41/routerl/environment/params.json). Alternatively, they can define a dictionary with their preferred settings and pass it as an argument to the `TrafficEnvironment` class.
+
 ### Included Tutorials:
 - **[IPPO Tutorial](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/tutorials/3_BiggerNetwork_IndependentAgents/mappo_ippo_mutation.ipynb)**  
   Implements **Independent Proximal Policy Optimization (IPPO)** ([IPPO](https://arxiv.org/pdf/2011.09533)), which has demonstrated strong benchmark performance in various tasks ([paper1](https://arxiv.org/abs/2103.01955), [paper2](https://arxiv.org/abs/2006.07869)).
-
 
 ---
 
