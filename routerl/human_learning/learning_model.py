@@ -49,9 +49,9 @@ class Gawron(BaseLearningModel):
         initial_knowledge (list or array): Initial knowledge or costs for actions.
     Attributes:
         beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
-        alpha_zero (float): ALPHA_ZERO.
-        alpha_j (float): ALPHA_J = 1 - ALPHA_ZERO.
-        cost (np.ndarray): cost array.
+        alpha_zero (float): Agent's adaptation to new experiences.
+        alpha_j (float): Weight for previous cost expectation (1 - ALPHA_ZERO).
+        cost (np.ndarray): Agent's cost expectations for each option.
     Methods:
         act: selects an action based on the current state and cost.
         learn: trains the model on a batch of states and actions.
@@ -107,9 +107,9 @@ class Culo(BaseLearningModel):
         initial_knowledge (list or array): Initial knowledge or costs for actions.
     Attributes:
         beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
-        alpha_zero (float): ALPHA_ZERO.
-        alpha_j (float): ALPHA_J = 1 - ALPHA_ZERO.
-        cost (np.ndarray): cost array.
+        alpha_zero (float): Agent's adaptation to new experiences.
+        alpha_j (float): Weight for previous cost expectation (constant = 1).
+        cost (np.ndarray): Agent's cost expectations for each option.
     Methods:
         act: selects an action based on the current state and cost.
         learn: trains the model on a batch of states and actions.
@@ -164,10 +164,10 @@ class WeightedAverage(BaseLearningModel):
         initial_knowledge (list or array): Initial knowledge or costs for actions.
     Attributes:
         beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
-        alpha_zero (float): ALPHA_ZERO.
-        alpha_j (float): ALPHA_J = 1 - ALPHA_ZERO.
-        remember (string): REMEMBER
-        cost (np.ndarray): cost array.
+        alpha_zero (float): Agent's adaptation to new experiences.
+        alpha_j (float): Weight for previous cost expectation (1 - ALPHA_ZERO).
+        remember (string): Memory size
+        cost (np.ndarray): Agent's cost expectations for each option.
         memory (list(list)): A list of lists containing the memory of each state.
     Methods:
         act: selects an action based on the current state and cost.

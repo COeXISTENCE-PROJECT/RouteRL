@@ -33,6 +33,15 @@ documentation/observations
 
 ```{toctree}
 :hidden:
+:caption: Human Learning Models
+
+human_models/gawron
+human_models/culo
+human_models/wavg
+```
+
+```{toctree}
+:hidden:
 :caption: Networks & Demand
 
 network_and_demand/networks
