@@ -61,7 +61,7 @@ action_reward_observation/observations
 :hidden:
 :caption: Tutorials
 
-tutorials/Quickstart
+tutorials/1_Quickstart_TrafficEnvironment
 tutorials/2_medium_network
 tutorials/3_bigger_network
 tutorials/4_big_scale_network
