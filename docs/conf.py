@@ -52,6 +52,8 @@ myst_enable_extensions = [
     "colon_fence",
 ]
 
+suppress_warnings = ["myst.header"]
+
 autodoc_default_options = {
     "members": True,
     #"undoc-members": False,  # Exclude undocumented methods
