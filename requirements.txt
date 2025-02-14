@@ -9,6 +9,7 @@ pettingzoo==1.24.3
 polars==1.16.0
 prettytable==3.12.0
 pytest==8.3.4
+requests=2.31.0
 seaborn==0.13.2
 tensordict==0.6.0
 torch==2.5.1
