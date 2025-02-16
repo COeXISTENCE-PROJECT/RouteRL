@@ -41,12 +41,25 @@ for episode in range(human_learning_episodes): # human learning
 
 env.mutation() # some human agents transition to AV agents
 
-for agent in env.agent_iter(): # pettingzoo stepping loop
-    observation, reward, termination, truncation, info = env.last()
+collector = SyncDataCollector(env, policy, ...)  # collects experience by running the policy in the environment (TorchRL)
 
-    action = policy.sample() # we consider that we have a trained policy
+# training of the autonomous vehicles while human agents follow fixed decisions learned in their training phase.
+for tensordict_data in enumerate(collector):
+        
+    # update the policies of the learning agents
+    for _ in range(num_epochs):
+      subdata = replay_buffer.sample()
+      loss_vals = loss_module(subdata)
 
-    env.step(action)
+      optimizer.step()
+    collector.update_policy_weights_()
+
+policy.eval() # set the policy into evaluation mode
+
+# Testing phase using the already trained policy
+num_episodes = 100
+for episode in range(num_episodes):
+    env.rollout(len(env.machine_agents), policy=qnet_explore)
  
 env.plot_results() # plot the results
 env.stop_simulation() # stop the connection with SUMO
