@@ -43,7 +43,7 @@ env.mutation() # some human agents transition to AV agents
 
 collector = SyncDataCollector(env, policy, ...)  # collects experience by running the policy in the environment (TorchRL)
 
-# training of the autonomous vehicles while human agents follow fixed decisions learned in their training phase.
+# training of the autonomous vehicles; human agents follow fixed decisions learned in their training phase
 for tensordict_data in enumerate(collector):
         
     # update the policies of the learning agents
@@ -56,7 +56,7 @@ for tensordict_data in enumerate(collector):
 
 policy.eval() # set the policy into evaluation mode
 
-# Testing phase using the already trained policy
+# testing phase using the already trained policy
 num_episodes = 100
 for episode in range(num_episodes):
     env.rollout(len(env.machine_agents), policy=qnet_explore)
