@@ -43,8 +43,8 @@ env.mutation() # some human agents transition to AV agents
 
 collector = SyncDataCollector(env, policy, ...)  # collects experience by running the policy in the environment (TorchRL)
 
-# training of the autonomous vehicles; human agents follow fixed decisions learned in their training phase
-for tensordict_data in enumerate(collector):
+# training of the autonomous vehicles; human agents follow fixed decisions learned in their learning phase
+for tensordict_data in collector:
         
     # update the policies of the learning agents
     for _ in range(num_epochs):
