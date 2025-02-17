@@ -55,7 +55,7 @@ class TrafficEnvironment(AECEnv):
             Whether to generate paths. Defaults to ``True``.
         **kwargs (dict, optional): 
             User-defined parameter overrides. These override default values 
-            from ``params.json`` and allow customization of the environment.
+            from ``params.json`` and allow experiment configuration.
             
     .. warning::
         Set ``create_agents`` to ``False`` only if there is a custom agent data provided.\n
@@ -226,6 +226,10 @@ class TrafficEnvironment(AECEnv):
             |-- training_records/
             |   |-- agents.csv      % your custom demand, conforming to the structure
         
+        .. warning::
+            Demand data in ``agents.csv`` should be aligned with the specified 
+            experiment settings (e.g., number of agents, number of origins and destinations, etc.).
+            
         .. code-block:: python
         
             >>> env = TrafficEnvironment(
@@ -255,6 +259,14 @@ class TrafficEnvironment(AECEnv):
             |   |-- 0_0.png 
             |   |-- ...             % visuals of generated paths for each OD
             |   |-- ...             % to be populated after the experiment
+            
+        .. warning::
+            Same approach does not translate to path generation.\n
+            ``paths.csv`` is mainly used for visualization purposes. 
+            For SUMO to operate correctly, a ``route.rou.xml`` 
+            should be generated inside the ``routerl/networks/<net_name>/`` folder.\n
+            It is advised to generate paths in each experiment providing a random seed,
+            or set ``create_paths=False`` only when above criteria is met.
 
     Attributes:
         day (int): Current day index in the simulation.
