@@ -11,7 +11,7 @@
 
 <!-- start intro -->
 
-RouteRL is a novel framework that integrates MARL with a microscopic traffic simulation, [SUMO](https://sumo.dlr.de/docs/index.html), facilitating the testing and development of efficient route choice strategies. The proposed framework simulates the daily route choices of driver agents in a city, including two types: 
+RouteRL is a novel framework that integrates Multi-Agent Reinforcement Learning (MARL) with a microscopic traffic simulation, [SUMO](https://sumo.dlr.de/docs/index.html), facilitating the testing and development of efficient route choice strategies. The proposed framework simulates the daily route choices of driver agents in a city, including two types: 
 - human drivers, emulated using discrete choice models,
 - and AVs, modeled as MARL agents optimizing their policies for a predefined objective.
 
@@ -30,6 +30,7 @@ RouteRL aims to advance research in MARL, traffic assignment problems, social re
 For more details, check the documentation [online](https://coexistence-project.github.io/RouteRL/).
 
 ## RouteRL usage and functionalities at glance
+This is a simplified pseudocode for sample integration with TorchRL to implement standard MARL algorithm.
 
 ```python
 env = TrafficEnvironment(seed=42, **env_params) # initialize the traffic environment
