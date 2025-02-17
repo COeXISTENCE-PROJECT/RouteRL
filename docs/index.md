@@ -27,18 +27,9 @@ install/install.md
 documentation/pz_env
 documentation/simulator
 documentation/machine_agents
-documentation/human_agents
 documentation/observations
-```
-
-```{toctree}
-:hidden:
-:caption: Human Learning Models
-
-human_models/base
-human_models/gawron
-human_models/culo
-human_models/wavg
+documentation/human_agents
+documentation/human_models.md
 ```
 
 ```{toctree}

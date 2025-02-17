@@ -1,8 +1,0 @@
-# Base Model
-
-```{eval-rst}
-.. autoclass:: routerl.human_learning.learning_model.BaseLearningModel
-    :members:
-    :exclude-members: _private_method
-    :no-index:
-```
