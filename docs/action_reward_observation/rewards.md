@@ -5,7 +5,7 @@ firstpage:
 
 # Rewards
 
-The reward for human agents is defined as the negative of their travel time. The reward for autonomous vehicles (AVs) can vary depending on their specific behavior.
+The rewards of the human agents is defined as the negative of their travel time. The reward of the autonomous vehicles (AVs) can vary depending on their specific behavior.
 
 ## Defining Automated Vehicles Behavior Through Reward Formulations
 
