@@ -33,14 +33,18 @@ logger.setLevel(logging.WARNING)
 
 
 class TrafficEnvironment(AECEnv):
-    """A PettingZoo AECEnv interface for optimal route choice using SUMO simulator.
-    
+    """
+    A PettingZoo AECEnv interface for optimal route choice using SUMO simulator. 
     This environment is designed for the training of human agents (rational decision-makers) 
     and machine agents (reinforcement learning agents).
-
+    
     See `SUMO <https://sumo.dlr.de/docs/>`_ for details on SUMO. \n
     See `PettingZoo <https://pettingzoo.farama.org/>`_ for details on PettingZoo. 
     
+    .. note::
+        Users can configure the experiment with keyword arguments, see the structure below. 
+        Moreover, users can provide custom demand data in ``training_records/agents.csv``.
+
     Args:
         seed (int, optional): 
             Random seed for reproducibility. Defaults to ``23423``.
@@ -49,16 +53,24 @@ class TrafficEnvironment(AECEnv):
             If ``False``, agents data must be provided in ``training_records/agents.csv``.
         create_paths (bool, optional):
             Whether to generate paths. Defaults to ``True``.
-            **Warning:** Set to ``False`` only if paths are already generated.
         **kwargs (dict, optional): 
             User-defined parameter overrides. These override default values 
             from ``params.json`` and allow customization of the environment.
+            
+    .. warning::
+        Set ``create_agents`` to ``False`` only if there is a custom agent data provided.\n
+        If ``create_agents == False``, agents data must be provided in ``training_records/agents.csv``.\n
+        See snippets below.
+    
+    .. warning::
+        Set ``create_paths`` to ``False`` only if paths are already generated.\n 
+        Users are advised to generate paths in each experiment, providing a random seed for reproducibility.
     
     .. container:: kwargs-box
     
         Keyword Args:
             agent_parameters (dict, optional):
-                Agent settings.
+                **Agent settings.**
                 
                 num_agents (int, default=100):
                     Total number of agents.
@@ -70,13 +82,15 @@ class TrafficEnvironment(AECEnv):
                     Machine agent settings.
                     
                     behavior (str, default="selfish"):
-                        Route choice behavior (options: ``selfish``, ``social``, ``altruistic``, ``malicious``, ``competitive``, ``collaborative``).
-                    
+                        Route choice behavior.
+                        Options: ``selfish``, ``social``, ``altruistic``, ``malicious``, ``competitive``, ``collaborative``.
+                        
                     observed_span (int, default=300):
                         Time window considered for observations.
                         
                     observation_type (str, default="previous_agents_plus_start_time"):
-                        Type of observation. Options: ``previous_agents``, ``previous_agents_plus_start_time``.
+                        Type of observation.
+                        Options: ``previous_agents``, ``previous_agents_plus_start_time``.
 
                 human_parameters (dict, optional): 
                     Human agent settings.
@@ -100,13 +114,13 @@ class TrafficEnvironment(AECEnv):
                         Number of past experiences retained.
 
             environment_parameters (dict, optional):
-                Environment settings.
+                **Environment settings.**
                 
                 number_of_days (int, default=1):
                     Number of days in the scenario.
 
             simulator_parameters (dict, optional): 
-                SUMO simulator settings.
+                **SUMO simulator settings.**
                 
                 network_name (str, default="csomor"):
                     Network name (e.g., ``arterial``, ``cologne``, ``grid``).
@@ -118,28 +132,28 @@ class TrafficEnvironment(AECEnv):
                     SUMO execution mode (``sumo`` or ``sumo-gui``).
 
             path_generation_parameters (dict, optional):
-                Path generation settings.
+                **Path generation settings.**
                 
                 number_of_paths (int, default=3):
                     Number of routes per OD.
                     
                 beta (float, default=-3.0):
-                    Sensitivity to travel time in path choice.
+                    Sensitivity to travel time in path generation.
                     
                 weight (str, default="time"):
-                    Optimization criterion (e.g., ``time``).
+                    Optimization criterion.
                     
                 num_samples (int, default=100):
                     Number of samples for path generation.
                     
                 origins (str | list[str], default="default"):
-                    Origin points.
+                    Origin points from the network. (e.g., ``["-25166682#0", "-4936412"]``)
                     
                 destinations (str | list[str], default="default"):
-                    Destination points.
+                    Destination points from the network. (e.g., ``["-115604057#1", "-279952229#4"]``)
 
             plotter_parameters (dict, optional): 
-                Plotting & logging settings.
+                **Plotting & logging settings.**
                 
                 records_folder (str, default="training_records"):
                     Directory for training records.
@@ -157,12 +171,28 @@ class TrafficEnvironment(AECEnv):
                     Phase names for labeling phase markers.
     
     Example usage:
+        
         >>> env = TrafficEnvironment(
-        ...     seed=42, 
-        ...     create_agents=False, 
-        ...     environment_parameters={"number_of_days": 5},
-        ...     agent_parameters={"num_agents": 50},
-        ...     simulator_parameters={"sumo_type": "sumo-gui"}
+        ...     seed=42,
+        ...     agent_parameters={
+        ...         "num_agents": 5, 
+        ...         "new_machines_after_mutation": 1, 
+        ...         "machine_parameters": {
+        ...             "behavior": "selfish"
+        ...             }},
+        ...     simulator_parameters={"sumo_type": "sumo-gui"},
+        ...     path_generation_parameters={"number_of_paths": 2}
+        ... )
+        
+        >>> env = TrafficEnvironment(
+        ...     create_agents=False, # Agents data provided in training_records/agents.csv
+        ...     agent_parameters={
+        ...         "new_machines_after_mutation": 10, 
+        ...         "machine_parameters": {
+        ...             "behavior": "selfish"
+        ...             }},
+        ...     simulator_parameters={"network_name": "arterial"},
+        ...     path_generation_parameters={"number_of_paths": 3}
         ... )
 
     Attributes:
