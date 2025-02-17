@@ -38,7 +38,7 @@ class TrafficEnvironment(AECEnv):
     This environment is designed for the training of human agents (rational decision-makers) 
     and machine agents (reinforcement learning agents).
 
-    See `SUMO <https://sumo.dlr.de/docs/>`_ for details on SUMO.
+    See `SUMO <https://sumo.dlr.de/docs/>`_ for details on SUMO. \n
     See `PettingZoo <https://pettingzoo.farama.org/>`_ for details on PettingZoo. 
     
     Args:

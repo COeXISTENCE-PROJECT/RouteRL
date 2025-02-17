@@ -7,11 +7,9 @@ from routerl.keychain import Keychain as kc
 
 
 class BaseLearningModel(ABC):
-    """This is an abstract base class for the learning models used to train the human and machine agents.
-
-    Methods:
-        act: selects an action based on the current state and cost.
-        learn: trains the model on a batch of states and actions.
+    """
+    This is an abstract base class for the learning models used to train the human and machine agents.\n
+    Users can create their own learning models by inheriting from this class.
     """
 
     def __init__(self):
@@ -42,19 +40,19 @@ class BaseLearningModel(ABC):
 
 
 class Gawron(BaseLearningModel):
-    """The Gawron learning model.
-
+    """
+    The Gawron learning model. This model is based on: `Gawron (1998) <https://kups.ub.uni-koeln.de/9257/>`_\n
+    In summary, it iteratively shifts the cost expectations towards the received reward.\n
+    For decision-making, calculates action utilities based on the ``beta`` parameter and cost expectations, and selects the action with the lowest utility.
+    
     Args:
         params (dict): A dictionary containing model parameters.
-        initial_knowledge (list or array): Initial knowledge or costs for actions.
+        initial_knowledge (list or array): Initial knowledge of cost expectations.
     Attributes:
         beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
         alpha_zero (float): Agent's adaptation to new experiences.
         alpha_j (float): Weight for previous cost expectation (1 - ALPHA_ZERO).
         cost (np.ndarray): Agent's cost expectations for each option.
-    Methods:
-        act: selects an action based on the current state and cost.
-        learn: trains the model on a batch of states and actions.
     """
 
     def __init__(self, params, initial_knowledge):
@@ -72,16 +70,15 @@ class Gawron(BaseLearningModel):
         self.cost = np.array(initial_knowledge, dtype=float)
 
     def act(self, state) -> int:
-        """Selects an action based on the current state and cost.
+        """Selects an action based on the cost expectations.
 
         Args:
-            state (string): The current state of the environment.
+            state (Any): The current state of the environment (not used).
         Returns:
             action (int): The index of the selected action.
         """
 
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
-        # fixme rename action
         action =  utilities.index(min(utilities))
         return action   
 
@@ -89,7 +86,7 @@ class Gawron(BaseLearningModel):
         """Updates the cost associated with the taken action based on the received reward.
 
         Args:
-            state (string): The current state of the environment.
+            state (string): The current state of the environment (not used).
             action (int): The action that was taken.
             reward (float): The reward received after taking the action.
         Returns:
@@ -100,19 +97,19 @@ class Gawron(BaseLearningModel):
 
 
 class Culo(BaseLearningModel):
-    """The Culo learning model.
+    """
+    The CUmulative LOgit learning model. This model is based on: `Li et al. (2024) <https://pubsonline.informs.org/doi/abs/10.1287/trsc.2023.0132/>`_.\n
+    In summary, it updates its cost expectations by iteratively accumulating perceived rewards.\n
+    For decision-making, calculates action utilities based on the ``beta`` parameter and cost expectations, and selects the action with the lowest utility.
 
     Args:
         params (dict): A dictionary containing model parameters.
-        initial_knowledge (list or array): Initial knowledge or costs for actions.
+        initial_knowledge (list or array): Initial knowledge of cost expectations.
     Attributes:
         beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
         alpha_zero (float): Agent's adaptation to new experiences.
         alpha_j (float): Weight for previous cost expectation (constant = 1).
         cost (np.ndarray): Agent's cost expectations for each option.
-    Methods:
-        act: selects an action based on the current state and cost.
-        learn: trains the model on a batch of states and actions.
     """
 
     def __init__(self, params, initial_knowledge):
@@ -130,10 +127,10 @@ class Culo(BaseLearningModel):
         self.cost = np.array(initial_knowledge, dtype=float)
 
     def act(self, state) -> int:
-        """Selects an action based on the current state and cost.
+        """Selects an action based on the cost expectations.
 
         Args:
-            state (string): The current state of the environment.
+            state (Any): The current state of the environment (not used).
         Returns:
             action (int): The index of the selected action.
         """
@@ -146,7 +143,7 @@ class Culo(BaseLearningModel):
         """Updates the cost associated with the taken action based on the received reward.
 
         Args:
-            state (string): The current state of the environment.
+            state (Any): The current state of the environment (not used).
             action (int): The action that was taken.
             reward (float): The reward received after taking the action.
         Returns:
@@ -157,22 +154,22 @@ class Culo(BaseLearningModel):
 
 
 class WeightedAverage(BaseLearningModel):
-    """Weighted Average model.
+    """
+    Weighted Average learning model. Theory based on: `Cascetta (2009) <https://link.springer.com/book/10.1007/978-0-387-75857-2/>`_.\n
+    In summary, the model uses the reward and a weighted average of the past cost expectations to update the current cost expectation.\n
+    For decision-making, calculates action utilities based on the ``beta`` parameter and cost expectations, and selects the action with the lowest utility.
+    
 
     Args:
         params (dict): A dictionary containing model parameters.
-        initial_knowledge (list or array): Initial knowledge or costs for actions.
+        initial_knowledge (list or array): Initial knowledge of cost expectations.
     Attributes:
         beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
         alpha_zero (float): Agent's adaptation to new experiences.
         alpha_j (float): Weight for previous cost expectation (1 - ALPHA_ZERO).
-        remember (string): Memory size
+        remember (string): Memory size.
         cost (np.ndarray): Agent's cost expectations for each option.
         memory (list(list)): A list of lists containing the memory of each state.
-    Methods:
-        act: selects an action based on the current state and cost.
-        learn: trains the model on a batch of states and actions.
-        create_memory: creates 2 dim memory table.
     """
 
     def __init__(self, params, initial_knowledge):
@@ -187,10 +184,10 @@ class WeightedAverage(BaseLearningModel):
         self.create_memory()
 
     def act(self, state) -> int:
-        """Selects an action based on the current state and cost.
+        """Selects an action based on the cost expectations.
 
         Args:
-            state (string): The current state of the environment.
+            state (Any): The current state of the environment (not used).
         Returns:
             action (int): The index of the selected action.
         """
@@ -203,7 +200,7 @@ class WeightedAverage(BaseLearningModel):
         """Updates the cost associated with the taken action based on the received reward.
 
         Args:
-            state (string): The current state of the environment.
+            state (Any): The current state of the environment (not used).
             action (int): The action that was taken.
             reward (float): The reward received after taking the action.
         Returns:
@@ -231,7 +228,8 @@ class WeightedAverage(BaseLearningModel):
         
 
     def create_memory(self) -> None:
-        """Creates 2 dim memory table.
+        """
+        Creates a memory of previous cost expectations.
 
         Returns:
             None
