@@ -49,7 +49,7 @@ class Gawron(BaseLearningModel):
         params (dict): A dictionary containing model parameters.
         initial_knowledge (list or array): Initial knowledge of cost expectations.
     Attributes:
-        beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
+        beta (float): A parameter representing deviations in individual decision-making.
         alpha_zero (float): Agent's adaptation to new experiences.
         alpha_j (float): Weight for previous cost expectation (1 - ALPHA_ZERO).
         cost (np.ndarray): Agent's cost expectations for each option.
@@ -106,7 +106,7 @@ class Culo(BaseLearningModel):
         params (dict): A dictionary containing model parameters.
         initial_knowledge (list or array): Initial knowledge of cost expectations.
     Attributes:
-        beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
+        beta (float): A parameter representing deviations in individual decision-making.
         alpha_zero (float): Agent's adaptation to new experiences.
         alpha_j (float): Weight for previous cost expectation (constant = 1).
         cost (np.ndarray): Agent's cost expectations for each option.
@@ -164,7 +164,7 @@ class WeightedAverage(BaseLearningModel):
         params (dict): A dictionary containing model parameters.
         initial_knowledge (list or array): Initial knowledge of cost expectations.
     Attributes:
-        beta (float): random number between BETA-beta_randomness and BETA+beta_randomness.
+        beta (float): A parameter representing deviations in individual decision-making.
         alpha_zero (float): Agent's adaptation to new experiences.
         alpha_j (float): Weight for previous cost expectation (1 - ALPHA_ZERO).
         remember (string): Memory size.
