@@ -170,30 +170,91 @@ class TrafficEnvironment(AECEnv):
                 phase_names (list[str], default=["Human learning", "Mutation - Machine learning"]):
                     Phase names for labeling phase markers.
     
-    Example usage:
+    Usage:
         
-        >>> env = TrafficEnvironment(
-        ...     seed=42,
-        ...     agent_parameters={
-        ...         "num_agents": 5, 
-        ...         "new_machines_after_mutation": 1, 
-        ...         "machine_parameters": {
-        ...             "behavior": "selfish"
-        ...             }},
-        ...     simulator_parameters={"sumo_type": "sumo-gui"},
-        ...     path_generation_parameters={"number_of_paths": 2}
-        ... )
+        .. rubric:: Case 1
         
-        >>> env = TrafficEnvironment(
-        ...     create_agents=False, # Agents data provided in training_records/agents.csv
-        ...     agent_parameters={
-        ...         "new_machines_after_mutation": 10, 
-        ...         "machine_parameters": {
-        ...             "behavior": "selfish"
-        ...             }},
-        ...     simulator_parameters={"network_name": "arterial"},
-        ...     path_generation_parameters={"number_of_paths": 3}
-        ... )
+        .. code-block:: text
+        
+            % Your file structure in the beginning
+            project_directory/
+            |-- your_script.py
+            
+        .. code-block:: python
+        
+            >>> # Environment initialization
+            ... env = TrafficEnvironment(
+            ...     seed=42,
+            ...     agent_parameters={
+            ...         "num_agents": 5, 
+            ...         "new_machines_after_mutation": 1, 
+            ...         "machine_parameters": {
+            ...             "behavior": "selfish"
+            ...             }},
+            ...     simulator_parameters={"sumo_type": "sumo-gui"},
+            ...     path_generation_parameters={"number_of_paths": 2}
+            ... )
+            
+        .. code-block:: text
+        
+            % File structure after the initialization:
+            project_directory/
+            |-- your_script.py
+            |-- training_records/
+            |   |-- agents.csv
+            |   |-- paths.csv
+            |   |-- detector/
+            |   |   |--             % to be populated during simulation
+            |   |-- episodes/
+            |   |   |--             % to be populated during simulation
+            |-- plots/
+            |   |-- 0_0.png 
+            |   |-- ...             % visuals of generated paths for each OD
+            |   |-- ...             % to be populated after the experiment
+            
+        .. raw:: html
+
+            <hr style="border:1px solid #ccc; margin: 20px 0;">
+        
+        .. rubric:: Case 2
+        
+        .. code-block:: text
+        
+            % Your file structure in the beginning
+            project_directory/
+            |-- your_script.py
+            |-- training_records/
+            |   |-- agents.csv      % your custom demand, conforming to the structure
+        
+        .. code-block:: python
+        
+            >>> env = TrafficEnvironment(
+            ...     create_agents=False, # Environment will use your agent data
+            ...     agent_parameters={
+            ...         "new_machines_after_mutation": 10, 
+            ...         "machine_parameters": {
+            ...             "behavior": "selfish"
+            ...             }},
+            ...     simulator_parameters={"network_name": "arterial"},
+            ...     path_generation_parameters={"number_of_paths": 3}
+            ... )
+            
+        .. code-block:: text
+        
+            % File structure after the initialization:
+            project_directory/
+            |-- your_script.py
+            |-- training_records/
+            |   |-- agents.csv      % stays the same, used for agent generation
+            |   |-- paths.csv
+            |   |-- detector/
+            |   |   |--             % to be populated during simulation
+            |   |-- episodes/
+            |   |   |--             % to be populated during simulation
+            |-- plots/
+            |   |-- 0_0.png 
+            |   |-- ...             % visuals of generated paths for each OD
+            |   |-- ...             % to be populated after the experiment
 
     Attributes:
         day (int): Current day index in the simulation.
