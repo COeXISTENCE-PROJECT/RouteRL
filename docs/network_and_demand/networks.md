@@ -1,5 +1,5 @@
 ---
-title: Networks
+title: Networks & Demand
 firstpage:
 ---
 
@@ -76,3 +76,7 @@ For a detailed definition of the network names and their corresponding keychain:
         <figcaption style="text-align: center;">Grid 6 Network</figcaption>
     </figure>
 </div>
+
+# Demand
+
+The [`agent_generation.py`](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/environment/agent_generation.py) file defines the network demand for each experiment by specifying the number of agents, their origins, destinations, and start times.

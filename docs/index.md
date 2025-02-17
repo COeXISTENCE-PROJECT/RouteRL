@@ -46,7 +46,6 @@ human_models/wavg
 :caption: Networks & Demand
 
 network_and_demand/networks
-network_and_demand/demand
 ```
 
 ```{toctree}
