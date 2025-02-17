@@ -2,7 +2,7 @@
 
 # RouteRL
 
-[![Tutorials Tests](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml/badge.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/tree/main/notebooks)
+[![Tutorial Tests](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml/badge.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml)
 [![Online Documentation](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/documentation.yml/badge.svg)](https://coexistence-project.github.io/RouteRL/)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/LICENSE.txt)
 
@@ -30,7 +30,7 @@ RouteRL aims to advance research in MARL, traffic assignment problems, social re
 For more details, check the documentation [online](https://coexistence-project.github.io/RouteRL/).
 
 ## RouteRL usage and functionalities at glance
-This is a simplified pseudocode for sample integration with TorchRL to implement standard MARL algorithm.
+This is a simplified code of a possible standard \ac{MARL} algorithm implementation via TorchRL.
 
 ```python
 env = TrafficEnvironment(seed=42, **env_params) # initialize the traffic environment
