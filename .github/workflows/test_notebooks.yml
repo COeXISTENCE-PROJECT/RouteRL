@@ -48,6 +48,7 @@ jobs:
 
       - name: Run tutorial tests
         run: |
+          py.test --nbval-lax tutorials/1_Quickstart_TraffficEnvironment_Introduction --current-env
           py.test --nbval-lax tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms --current-env
           py.test --nbval-lax tutorials/3_BiggerNetwork_IndependentAgents --current-env
         
