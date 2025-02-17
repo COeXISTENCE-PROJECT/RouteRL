@@ -9,7 +9,7 @@ To create a new observation function, you must define a class that inherits from
 ## Observations Class
 
 ```{eval-rst}
-.. autoclass:: routerl.environment.observations.Observations
+.. autoclass:: routerl.environment.Observations
     :members:
     :exclude-members: _private_method
     :no-index:
