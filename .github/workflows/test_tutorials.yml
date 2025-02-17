@@ -1,18 +1,6 @@
 name: Tutorial Tests
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'tutorials/**'
-
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'tutorials/**'
-
   workflow_dispatch:
 
 jobs:
