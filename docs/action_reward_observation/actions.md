@@ -5,7 +5,7 @@ firstpage:
 
 # Actions
 
-The action space includes discrete route options, generated with dedicated path generator [JanuX](https://github.com/COeXISTENCE-PROJECT/JanuX) to connect specific origin and destination points.
+The action space consists of discrete route options, generated with a dedicated path generator, [JanuX](https://github.com/COeXISTENCE-PROJECT/JanuX), to connect specific origin and destination points.
 
 Example of the 5 available routes generated from the [Ingolstadt](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/tutorials/3_BiggerNetwork_IndependentAgents/README.md) network.
 
