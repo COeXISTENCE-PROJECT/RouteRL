@@ -45,15 +45,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          python -m pip install jupyter pytest nbval
           python -m pip install -r requirements.txt
 
       - name: Run tutorial
-        working-directory: tutorials/scripts/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms
         run: |
-          python qmix_mutation.py || EXITCODE=$?
-          if [ $EXITCODE -ne 0 ]; then
-            echo "### ERROR ###: Python version ${{ matrix.python-version }} failed to run (exit code $EXITCODE)."
-          else
-            echo "### SUCCESS ###: Tutorial ran successfully on Python ${{ matrix.python-version }}."
-          fi
-          exit 0
+          py.test --nbval-lax tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/qmix_mutation --current-env
