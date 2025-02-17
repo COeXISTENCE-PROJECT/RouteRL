@@ -29,8 +29,8 @@ RouteRL aims to advance research in MARL, traffic assignment problems, social re
 
 For more details, check the documentation [online](https://coexistence-project.github.io/RouteRL/).
 
-## RouteRL usage and functionalities at glance
-This is a simplified code of a possible standard \ac{MARL} algorithm implementation via TorchRL.
+## RouteRL usage and functionalities at a glance
+The following is a simplified code of a possible standard MARL algorithm implementation via TorchRL.
 
 ```python
 env = TrafficEnvironment(seed=42, **env_params) # initialize the traffic environment
