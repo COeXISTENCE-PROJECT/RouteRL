@@ -37,7 +37,7 @@ dependencies = [
 ]
 
 [tool.setuptools.package-data]
-"*" = ["*.json", "*.xml"]
+"*" = ["*.json", "*.xml", "*.sumocfg"]
 
 [project.urls]
 repository = "https://github.com/COeXISTENCE-PROJECT/RouteRL"
