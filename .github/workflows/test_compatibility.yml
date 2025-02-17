@@ -50,4 +50,4 @@ jobs:
 
       - name: Run tutorial
         run: |
-          py.test --nbval-lax tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/qmix_mutation --current-env
+          py.test --nbval-lax tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/qmix_mutation.ipynb --current-env
