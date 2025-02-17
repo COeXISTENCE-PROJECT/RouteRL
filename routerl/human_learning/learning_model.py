@@ -8,7 +8,7 @@ from routerl.keychain import Keychain as kc
 
 class BaseLearningModel(ABC):
     """
-    This is an abstract base class for the learning models used to train the human and machine agents.\n
+    This is an abstract base class for the learning models used to model human learning and decision-making.\n
     Users can create their own learning models by inheriting from this class.
     """
 
