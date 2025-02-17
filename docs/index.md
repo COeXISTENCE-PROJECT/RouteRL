@@ -35,6 +35,7 @@ documentation/observations
 :hidden:
 :caption: Human Learning Models
 
+human_models/base
 human_models/gawron
 human_models/culo
 human_models/wavg
