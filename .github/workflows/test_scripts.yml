@@ -1,0 +1,37 @@
+name: Script Tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-scripts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Python Setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install SUMO
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sumo sumo-tools sumo-doc
+          echo "SUMO_HOME=/usr/share/sumo" >> $GITHUB_ENV
+          echo "/usr/share/sumo/bin" >> $GITHUB_PATH
+
+      - name: Verify SUMO installation
+        run: |
+          echo "SUMO_HOME is set to $SUMO_HOME"
+          sumo --version
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Run script tests
+        run: pytest -rs tests/test_scripts.py
