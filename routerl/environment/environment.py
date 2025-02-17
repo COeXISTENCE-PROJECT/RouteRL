@@ -57,118 +57,109 @@ class TrafficEnvironment(AECEnv):
             User-defined parameter overrides. These override default values 
             from ``params.json`` and allow experiment configuration.
             
-    .. warning::
-        Set ``create_agents`` to ``False`` only if there is a custom agent data provided.\n
-        If ``create_agents == False``, agents data must be provided in ``training_records/agents.csv``.\n
-        See snippets below.
+
+    Keyword arguments (see the usage below):
     
-    .. warning::
-        Set ``create_paths`` to ``False`` only if paths are already generated.\n 
-        Users are advised to generate paths in each experiment, providing a random seed for reproducibility.
-    
-    .. container:: kwargs-box
-    
-        Keyword Args:
-            agent_parameters (dict, optional):
-                **Agent settings.**
+        - agent_parameters (dict, optional):
+            Agent settings.
+            
+            - num_agents (int, default=100):
+                Total number of agents.
+            
+            - new_machines_after_mutation (int, default=25):
+                Number of humans converted to machines.
+            
+            - machine_parameters (**dict**):
+                Machine agent settings.
                 
-                num_agents (int, default=100):
-                    Total number of agents.
-                
-                new_machines_after_mutation (int, default=25):
-                    Number of humans converted to machines.
-                
-                machine_parameters (dict):
-                    Machine agent settings.
+                - behavior (str, default="selfish"):
+                    Route choice behavior.
+                    Options: ``selfish``, ``social``, ``altruistic``, ``malicious``, ``competitive``, ``collaborative``.
                     
-                    behavior (str, default="selfish"):
-                        Route choice behavior.
-                        Options: ``selfish``, ``social``, ``altruistic``, ``malicious``, ``competitive``, ``collaborative``.
-                        
-                    observed_span (int, default=300):
-                        Time window considered for observations.
-                        
-                    observation_type (str, default="previous_agents_plus_start_time"):
-                        Type of observation.
-                        Options: ``previous_agents``, ``previous_agents_plus_start_time``.
+                - observed_span (int, default=300):
+                    Time window considered for observations.
+                    
+                - observation_type (str, default="previous_agents_plus_start_time"):
+                    Type of observation.
+                    Options: ``previous_agents``, ``previous_agents_plus_start_time``.
 
-                human_parameters (dict, optional): 
-                    Human agent settings.
+            - human_parameters (**dict**): 
+                Human agent settings.
+                
+                - model (str, default="culo"):
+                    Decision-making model (options: ``gawron``, ``culo``, ``w_avg``).
                     
-                    model (str, default="culo"):
-                        Decision-making model (options: ``gawron``, ``culo``, ``w_avg``).
-                        
-                    alpha_j (float, default=0.5):
-                        Cost expectation coefficient (0-1 range).
-                        
-                    alpha_zero (float, default=0.5):
-                        Sensitivity to new experiences.
-                        
-                    beta (float, default=-1.5):
-                        Decision randomness parameter.
-                        
-                    beta_randomness (float, default=0.1):
-                        Variability in ``beta`` among the human population.
-                        
-                    remember (int, default=3):
-                        Number of past experiences retained.
+                - alpha_j (float, default=0.5):
+                    Cost expectation coefficient (0-1 range).
+                    
+                - alpha_zero (float, default=0.5):
+                    Sensitivity to new experiences.
+                    
+                - beta (float, default=-1.5):
+                    Decision randomness parameter.
+                    
+                - beta_randomness (float, default=0.1):
+                    Variability in ``beta`` among the human population.
+                    
+                - remember (int, default=3):
+                    Number of past experiences retained.
 
-            environment_parameters (dict, optional):
-                **Environment settings.**
-                
-                number_of_days (int, default=1):
-                    Number of days in the scenario.
+        - environment_parameters (dict, optional):
+            Environment settings.
+            
+            - number_of_days (int, default=1):
+                Number of days in the scenario.
 
-            simulator_parameters (dict, optional): 
-                **SUMO simulator settings.**
-                
-                network_name (str, default="csomor"):
-                    Network name (e.g., ``arterial``, ``cologne``, ``grid``).
-                
-                simulation_timesteps (int, default=180):
-                    Total simulation time in seconds.
-                
-                sumo_type (str, default="sumo"):
-                    SUMO execution mode (``sumo`` or ``sumo-gui``).
+        - simulator_parameters (dict, optional): 
+            **SUMO simulator settings.**
+            
+            - network_name (str, default="csomor"):
+                Network name (e.g., ``arterial``, ``cologne``, ``grid``).
+            
+            - simulation_timesteps (int, default=180):
+                Total simulation time in seconds.
+            
+            - sumo_type (str, default="sumo"):
+                SUMO execution mode (``sumo`` or ``sumo-gui``).
 
-            path_generation_parameters (dict, optional):
-                **Path generation settings.**
+        - path_generation_parameters (dict, optional):
+            Path generation settings.
+            
+            - number_of_paths (int, default=3):
+                Number of routes per OD.
                 
-                number_of_paths (int, default=3):
-                    Number of routes per OD.
-                    
-                beta (float, default=-3.0):
-                    Sensitivity to travel time in path generation.
-                    
-                weight (str, default="time"):
-                    Optimization criterion.
-                    
-                num_samples (int, default=100):
-                    Number of samples for path generation.
-                    
-                origins (str | list[str], default="default"):
-                    Origin points from the network. (e.g., ``["-25166682#0", "-4936412"]``)
-                    
-                destinations (str | list[str], default="default"):
-                    Destination points from the network. (e.g., ``["-115604057#1", "-279952229#4"]``)
+            - beta (float, default=-3.0):
+                Sensitivity to travel time in path generation.
+                
+            - weight (str, default="time"):
+                Optimization criterion.
+                
+            - num_samples (int, default=100):
+                Number of samples for path generation.
+                
+            - origins (str | list[str], default="default"):
+                Origin points from the network. (e.g., ``["-25166682#0", "-4936412"]``)
+                
+            - destinations (str | list[str], default="default"):
+                Destination points from the network. (e.g., ``["-115604057#1", "-279952229#4"]``)
 
-            plotter_parameters (dict, optional): 
-                **Plotting & logging settings.**
+        - plotter_parameters (dict, optional): 
+            Plotting & logging settings.
+            
+            - records_folder (str, default="training_records"):
+                Directory for training records.
                 
-                records_folder (str, default="training_records"):
-                    Directory for training records.
-                    
-                plots_folder (str, default="plots"):
-                    Directory for plots.
-                    
-                smooth_by (int, default=50): 
-                    Smoothing parameter for plots.
-                    
-                phases (list[int], default=[0, 100]):
-                    X-axis positions for phase markers.
-                    
-                phase_names (list[str], default=["Human learning", "Mutation - Machine learning"]):
-                    Phase names for labeling phase markers.
+            - plots_folder (str, default="plots"):
+                Directory for plots.
+                
+            - smooth_by (int, default=50): 
+                Smoothing parameter for plots.
+                
+            - phases (list[int], default=[0, 100]):
+                X-axis positions for phase markers.
+                
+            - phase_names (list[str], default=["Human learning", "Mutation - Machine learning"]):
+                Phase names for labeling phase markers.
     
     Usage:
         
