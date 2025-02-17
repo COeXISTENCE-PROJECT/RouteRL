@@ -60,7 +60,7 @@ policy.eval() # set the policy into evaluation mode
 # testing phase using the already trained policy
 num_episodes = 100
 for episode in range(num_episodes):
-    env.rollout(len(env.machine_agents), policy=qnet_explore)
+    env.rollout(len(env.machine_agents), policy=policy)
  
 env.plot_results() # plot the results
 env.stop_simulation() # stop the connection with SUMO
