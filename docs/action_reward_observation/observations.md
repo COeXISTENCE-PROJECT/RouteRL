@@ -47,13 +47,13 @@ o_{\mathcal{A}_j-1}
 \end{bmatrix}
 $$
 
-where each element \( o_i \) is defined as:
+where each element $o_i$ is defined as:
 
 $$
 o_i = \sum_{\substack{j \in \mathcal{A}_i \\ t_j < t_{\text{agent}}}} 1
 $$
 
-- \( \mathbf{o} \) is the observation vector of size \( \mathcal{A}_j + 1 \).
-- The **first element** \( t_{\text{agent}} \) represents the start time of the given agent.
-- Each subsequent element \( o_i \) represents the number of agents that selected route \( i \) in the current episode and have a start time earlier than \( t_{\text{agent}} \).
-- The summation iterates over all agents \( j \) who chose route \( i \) (denoted as \( j \in \mathcal{A}_i \)), ensuring that only those with **earlier start times** are counted.
+- $\mathbf{o}$ is the observation vector of size $\mathcal{A}_j + 1$.
+- The **first element** $t_{\text{agent}}$ represents the start time of the given agent.
+- Each subsequent element $o_i$ represents the number of agents that selected route $i$ in the current episode and have a start time earlier than $t_{\text{agent}}$.
+- The summation iterates over all agents $j$ who chose route $i$ (denoted as $j \in \mathcal{A}_i$), ensuring that only those with **earlier start times** are counted.
