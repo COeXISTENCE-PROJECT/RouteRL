@@ -44,13 +44,13 @@ class TrafficEnvironment(AECEnv):
     .. note::
         Users can configure the experiment with keyword arguments, see the structure below. 
         Moreover, users can provide custom demand data in ``training_records/agents.csv``.
+        You can refer to the structure of such a file `here <https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/docs/_static/agents_example.csv>`_.
 
     Args:
         seed (int, optional): 
             Random seed for reproducibility. Defaults to ``23423``.
         create_agents (bool, optional):
             Whether to create agent data. Defaults to ``True``.
-            If ``False``, agents data must be provided in ``training_records/agents.csv``.
         create_paths (bool, optional):
             Whether to generate paths. Defaults to ``True``.
         **kwargs (dict, optional): 
