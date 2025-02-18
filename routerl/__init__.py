@@ -14,6 +14,8 @@ Some example imports:
     from routerl.environment import PreviousAgentStart
 """
 
+__version__ = "1.0.0"
+
 from .keychain import Keychain
 
 from .environment import (
