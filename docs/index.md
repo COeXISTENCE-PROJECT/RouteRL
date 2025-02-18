@@ -62,5 +62,6 @@ tutorials/4_big_scale_network
 :hidden:
 :caption: Development
 
+diagrams/body.md
 Github <https://github.com/COeXISTENCE-PROJECT/Milestone-One>
 ```
