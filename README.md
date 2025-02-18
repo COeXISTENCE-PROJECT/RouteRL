@@ -2,6 +2,8 @@
 
 # RouteRL
 
+> Multi-Agent Reinforcement Learning (MARL) framework for route-choice behaviour of Connected Autonomous Vehicles (CAVs)
+
 [![Tutorial Tests](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml/badge.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml)
 [![Online Documentation](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/documentation.yml/badge.svg)](https://coexistence-project.github.io/RouteRL/)
 [![License](https://img.shields.io/badge/license-MIT-purple)](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/LICENSE.txt)
