@@ -1,2 +1,0 @@
-routerl/networks/manhattan/manhattan.rou.xml filter=lfs diff=lfs merge=lfs -text
-routerl/networks/manhattan/manhattan.net.xml filter=lfs diff=lfs merge=lfs -text
