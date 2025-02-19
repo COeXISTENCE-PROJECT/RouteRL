@@ -104,4 +104,9 @@ and click *Reproducible Run*.
  
 <!-- end installation -->  
 
+---
+### Credits
+
+`RouteRL` is part of [COeXISTENCE](https://www.rafalkucharskilab.pl/research/coexistence/) ERC Starting Grant (grant agreement No 101075838) and is a team work at Jagiellonian University in Kraków, Poland by: Onur Akman and Anastasia Psarou (main contributors) supperted by Grzegorz Jamroz, Zoltan Varga, Łukasz Gorczyca, Michał Hoffman and others, within the research group of [Rafał Kucharski]((https://www.rafalkucharskilab.pl).
+
 
