@@ -1,0 +1,25 @@
+cff-version: 1.0.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Akman"
+  given-names: "Ahmet Onur"
+  orcid: "https://orcid.org/0009-0006-4461-5025"
+- family-names: "Psarou"
+  given-names: "Anastasia"
+  orcid: "https://orcid.org/0009-0008-3314-4429"
+- family-names: "Gorczyca"
+  given-names: "Łukasz"
+  orcid: "https://orcid.org/0009-0009-7381-0251"
+- family-names: Zoltán György
+  given-names: Varga
+  orcid: "https://orcid.org/0009-0005-9917-1284"
+- family-names: Jamróz
+  given-names: Grzegorz
+  orcid: "https://orcid.org/0009-0004-7451-1484"
+- family-names: Kucharski
+  given-names: Rafał
+  orcid: "https://orcid.org/0000-0002-9767-8883"
+title: "RouteRL"
+version: 1.0.0
+date-released: 2025-02-21
+url: "https://github.com/COeXISTENCE-PROJECT/RouteRL"
