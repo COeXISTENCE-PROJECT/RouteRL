@@ -91,7 +91,7 @@ env.stop_simulation() # stop the connection with SUMO
 <!-- start installation -->
 
 - **Prerequisite**: Make sure you have SUMO installed in your system. This procedure should be carried out separately, by following the instructions provided [here](https://sumo.dlr.de/docs/Installing/index.html).
-- **Option 1**: Install the latest stable version from PyPI:  
+- **Option 1**: Install the latest stable version from [PyPI](https://pypi.org/project/routerl/):  
   ```
     pip install routerl
   ```
@@ -102,12 +102,14 @@ env.stop_simulation() # stop the connection with SUMO
     pip install -r requirements.txt
   ```
 
-- **Option 3**: We have a demonstration script encapsulated in a [**CodeOcean**](https://codeocean.com/explore?page=1&filter=all) capsule. This capsule allows testing RouteRL's capabilities without the need for any local installation or dependency management.
+## Reproducibility capsule
+ 
+We have an experiment script encapsulated in a **CodeOcean** capsule. This capsule allows demonstrating RouteRL's capabilities **without the need for SUMO installation or dependency management**.
   1. Visit the [capsule link](https://codeocean.com/capsule/6105686/tree/v1).
   2. Create a free CodeOcean account (if you don’t have one).
   3. Click **Reproducible Run** to execute the code in a controlled and reproducible environment.
  
-<!-- end installation -->  
+<!-- end installation -->
 
 ---
 ### Credits
