@@ -9,7 +9,7 @@
 [![License](https://img.shields.io/badge/license-MIT-purple)](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/LICENSE.txt)
 [![PyPI Version](https://img.shields.io/badge/pypi-1.0.0-orange)](https://pypi.org/project/routerl/)
 [![Coverage](https://img.shields.io/badge/python-3.8_%7C_3.9_%7C_3.10_%7C_3.11_%7C_3.12_%7C_3.13-blue)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_compatibility.yml)
-[![Open in Code Ocean](https://codeocean.com/codeocean-assets/badge/open-in-code-ocean.svg)](https://codeocean.com/capsule/4698774/tree)
+[![Open in Code Ocean](https://codeocean.com/codeocean-assets/badge/open-in-code-ocean.svg)](https://codeocean.com/capsule/6105686/tree/v1)
 
 
 <p align="center">
@@ -103,7 +103,7 @@ env.stop_simulation() # stop the connection with SUMO
   ```
 
 - **Option 3**: We have a demonstration script encapsulated in a [**CodeOcean**](https://codeocean.com/explore?page=1&filter=all) capsule. This capsule allows testing RouteRL's capabilities without the need for any local installation or dependency management.
-  1. Visit the [capsule link](https://codeocean.com/capsule/4698774/tree).
+  1. Visit the [capsule link](https://codeocean.com/capsule/6105686/tree/v1).
   2. Create a free CodeOcean account (if you don’t have one).
   3. Click **Reproducible Run** to execute the code in a controlled and reproducible environment.
  
