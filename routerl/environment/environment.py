@@ -121,6 +121,9 @@ class TrafficEnvironment(AECEnv):
             
             - sumo_type (str, default="sumo"):
                 SUMO execution mode (``sumo`` or ``sumo-gui``).
+                
+            - stuck_time (int, default=600):
+                Number of seconds to tolerate before `teleporting` a stopped vehicle to resolve gridlocks.
 
         - path_generation_parameters (dict, optional):
             Path generation settings.
