@@ -40,6 +40,7 @@
         "network_name" : "csomor",
         "simulation_timesteps" : 180,
         "sumo_type" : "sumo",
+        "stuck_time" : 600,
 
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "plots_folder": "${plotter_parameters.plots_folder}",
@@ -52,9 +53,12 @@
         "beta" : -3,
         "weight" : "time",
         "num_samples" : 100,
+        "visualize_paths" : true,
 
         "origins" : "default",
-        "destinations" : "default"
+        "destinations" : "default",
+
+        "records_folder" : "${plotter_parameters.records_folder}"
     }, 
 
     "plotter_parameters":

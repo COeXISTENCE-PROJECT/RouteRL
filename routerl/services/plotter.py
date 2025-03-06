@@ -709,7 +709,7 @@ def plotter(params = None):
         logging.warning(f"No parameters provided for plotter, "
                         f"using default parameters. This may result in incorrect plots.")
         curr_dir = os.path.dirname(os.path.realpath(__file__))
-        params_path = os.path.join(curr_dir, f'../environment/{kc.PARAMS_FILE}')
+        params_path = os.path.join(curr_dir, f'../environment/{kc.DEFAULTS_FILE}')
         params = get_params(params_path)
         params = params[kc.PLOTTER]
 

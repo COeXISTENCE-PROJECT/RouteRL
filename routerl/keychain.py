@@ -7,7 +7,7 @@ class Keychain:
 
     ################ PARAMETER ACCESS KEYS ####################
     
-    PARAMS_FILE = "params.json"
+    DEFAULTS_FILE = "defaults.json"
     PLOTTER_CONFIG_FILE = "plotter_config.json"
 
     AGENTS = "agent_parameters"
@@ -42,6 +42,7 @@ class Keychain:
     NETWORK_NAME = "network_name"
     SUMO_TYPE = "sumo_type"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
+    STUCK_TIME = "stuck_time"
 
     ### Plotter
     RECORDS_FOLDER = "records_folder"
@@ -60,8 +61,7 @@ class Keychain:
     DESTINATIONS = "destinations"
     WEIGHT = "weight"
     NUM_SAMPLES = "num_samples"
-    MAX_PATH_LENGTH = "max_path_length"
-    ROUTE_UTILITY_COEFFS = "route_utility_coeffs"
+    VISUALIZE_PATHS = "visualize_paths"
 
     ###########################################################
     
