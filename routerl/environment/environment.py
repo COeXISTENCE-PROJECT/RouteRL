@@ -55,7 +55,7 @@ class TrafficEnvironment(AECEnv):
             Whether to generate paths. Defaults to ``True``.
         **kwargs (dict, optional): 
             User-defined parameter overrides. These override default values 
-            from ``params.json`` and allow experiment configuration.
+            from ``defaults.json`` and allow experiment configuration.
             
 
     Keyword arguments (see the usage below):
@@ -286,8 +286,8 @@ class TrafficEnvironment(AECEnv):
         self.render_mode = None
 
         # Read default parameters, update w #TODO kwargs
-        params_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), kc.PARAMS_FILE)
-        params = get_params(params_path, resolve=True, update=kwargs)
+        defaults_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), kc.DEFAULTS_FILE)
+        params = get_params(defaults_path, resolve=True, update=kwargs)
 
         self.environment_params = params[kc.ENVIRONMENT]
         self.simulation_params = params[kc.SIMULATOR]
@@ -583,13 +583,18 @@ class TrafficEnvironment(AECEnv):
                            kc.AGENT_START_TIME: agent.start_time}
             self.simulator.add_vehicle(action_dict)
             self.episode_actions[agent.id] = action_dict
-        timestep, arrivals = self.simulator.step()
+        timestep, arrivals, teleported = self.simulator.step()
 
         travel_times = dict()
         for veh_id in arrivals:
             agent_id = int(veh_id)
             travel_times[agent_id] = ({kc.TRAVEL_TIME:
                                            (timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0})
+            travel_times[agent_id].update(self.episode_actions[agent_id])
+            
+        for veh_id in teleported:
+            agent_id = int(veh_id)
+            travel_times[agent_id] = ({kc.TRAVEL_TIME: self.simulator.simulation_length / 60.0})
             travel_times[agent_id].update(self.episode_actions[agent_id])
 
         return travel_times.values()

@@ -45,6 +45,7 @@ class SumoSimulator():
         self.sumo_type           = params[kc.SUMO_TYPE]
         self.number_of_paths     = params[kc.NUMBER_OF_PATHS]
         self.simulation_length   = params[kc.SIMULATION_TIMESTEPS]
+        self.stuck_time          = params[kc.STUCK_TIME]
 
         curr_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -88,6 +89,7 @@ class SumoSimulator():
         self.detectors_name = self._get_detectors()
         self.timestep = 0
         self.route_id_cache = dict()
+        self.waiting_vehicles = dict()
 
         logging.info("[SUCCESS] Simulator is ready to simulate!")
 
@@ -115,7 +117,11 @@ class SumoSimulator():
         origins = path_gen_params[kc.ORIGINS]
         destinations = path_gen_params[kc.DESTINATIONS]
         
-        # Generate paths
+        # Get demand
+        demand_df = pd.read_csv(os.path.join(params[kc.RECORDS_FOLDER], kc.AGENTS_CSV_FILE_NAME))
+        demands = list(zip(demand_df[kc.AGENT_ORIGIN], demand_df[kc.AGENT_DESTINATION]))
+        demands = list(set(demands))
+        
         path_gen_kwargs = {
             "number_of_paths": path_gen_params[kc.NUMBER_OF_PATHS],
             "random_seed": self.seed,
@@ -124,26 +130,38 @@ class SumoSimulator():
             "weight": path_gen_params[kc.WEIGHT],
             "verbose": False
         }
-        routes = jx.basic_generator(network, origins, destinations, as_df=True, calc_free_flow=True, **path_gen_kwargs)
+        
+        routes = pd.DataFrame(columns=["origins", "destinations", "path", "free_flow_time"])
+        for demand in demands:
+            routes_df = jx.basic_generator(network=network, origins=[origins[demand[0]]], destinations=[destinations[demand[1]]], 
+                                                            as_df=True, calc_free_flow=True, **path_gen_kwargs)
+            routes = pd.concat([routes, routes_df], ignore_index=True)
+            
         self._save_paths_to_disc(routes, origins, destinations)
         
-        # Save paths visualizations
-        path_visuals_path = params[kc.PLOTS_FOLDER]
-        os.makedirs(path_visuals_path, exist_ok=True)
-        # Visualize paths and save figures
-        for origin_idx, origin in enumerate(origins):
-            for dest_idx, destination in enumerate(destinations):
-                # Filter routes for the current origin-destination pair
-                routes_to_show = (routes[(routes["origins"] == origin_idx)
-                                         & (routes["destinations"] == dest_idx)]['path'])
-                routes_to_show = [route.split(" ") for route in routes_to_show]
-                # Specify the save path and title for the figure
-                fig_save_path = os.path.join(path_visuals_path, f"{origin_idx}_{dest_idx}.png")
-                title=f"Origin: {origin_idx} ({origin}), Destination: {dest_idx} ({destination})"
-                # Show the routes
-                jx.show_multi_routes(self.nod_file_path, self.edge_file_path,
-                                    routes_to_show, origin, destination, 
-                                    show=False, save_file_path=fig_save_path, title=title)
+        if path_gen_params[kc.VISUALIZE_PATHS]:
+            # Save paths visualizations
+            path_visuals_path = params[kc.PLOTS_FOLDER]
+            os.makedirs(path_visuals_path, exist_ok=True)
+            # Visualize paths and save figures
+            for origin_idx, origin in enumerate(origins):
+                for dest_idx, destination in enumerate(destinations):
+                    if not (origin_idx, dest_idx) in demands:
+                        continue
+                    # Filter routes for the current origin-destination pair
+                    routes_to_show = (routes[(routes["origins"] == origin_idx)
+                                            & (routes["destinations"] == dest_idx)]['path'])
+                    routes_to_show = [route.split(" ") for route in routes_to_show]
+                    # Specify the save path and title for the figure
+                    fig_save_path = os.path.join(path_visuals_path, f"{origin_idx}_{dest_idx}.png")
+                    title=f"Origin: {origin_idx} ({origin}), Destination: {dest_idx} ({destination})"
+                    # Show the routes
+                    try:
+                        jx.show_multi_routes(self.nod_file_path, self.edge_file_path,
+                                            routes_to_show, origin, destination, 
+                                            show=False, save_file_path=fig_save_path, title=title)
+                    except:
+                        logging.warning(f"Could not visualize routes for {origin} to {destination}.")
 
     def _save_paths_to_disc(self, routes_df: pd.DataFrame, origins: list, destinations: list) -> None:
 
@@ -250,6 +268,7 @@ class SumoSimulator():
                                    self.sumo_config_path])
 
         self.timestep = 0
+        self.waiting_vehicles = dict()
         return det_dict
 
     ################################
@@ -276,6 +295,7 @@ class SumoSimulator():
                                          routeID=route_id,
                                          depart=str(act_dict[kc.AGENT_START_TIME]),
                                          typeID=kind)
+        self.waiting_vehicles[str(act_dict[kc.AGENT_ID])] = 0
 
     def step(self) -> tuple:
         """Advances the SUMO simulation by one timestep and retrieves information
@@ -286,8 +306,25 @@ class SumoSimulator():
             arrivals (list): List of vehicle IDs that arrived at their destinations during the current timestep.
         """
    
-        arrivals = self.sumo_connection.simulation.getArrivedIDList()
+        arrivals = list(self.sumo_connection.simulation.getArrivedIDList())
+        for arr in arrivals:
+            self.waiting_vehicles.pop(arr, None)
+        
+        # Teleport vehicles that are stuck
+        teleported = list()
+        for veh_id in self.waiting_vehicles.copy():
+            if self.sumo_connection.vehicle.getSpeed(veh_id) == 0:
+                self.waiting_vehicles[veh_id] += 1
+                if self.waiting_vehicles[veh_id] > self.stuck_time:
+                    self.sumo_connection.vehicle.remove(veh_id)
+                    logging.info(f"Timestep #{self.timestep}: Teleporting {veh_id} due to being stuck for {self.waiting_vehicles[veh_id]} seconds.")
+                    teleported.append(veh_id)
+                    self.waiting_vehicles.pop(veh_id, None)
+            else:
+                self.waiting_vehicles[veh_id] = 0
+                
+        # Advance the simulation by one timestep       
         self.sumo_connection.simulationStep()
         self.timestep += 1
         
-        return self.timestep, arrivals
+        return self.timestep, arrivals, teleported
