@@ -117,10 +117,13 @@ class SumoSimulator():
         origins = path_gen_params[kc.ORIGINS]
         destinations = path_gen_params[kc.DESTINATIONS]
         
-        # Get demand
-        demand_df = pd.read_csv(os.path.join(params[kc.RECORDS_FOLDER], kc.AGENTS_CSV_FILE_NAME))
-        demands = list(zip(demand_df[kc.AGENT_ORIGIN], demand_df[kc.AGENT_DESTINATION]))
-        demands = list(set(demands))
+        # Get demand, if exists
+        try:
+            demand_df = pd.read_csv(os.path.join(params[kc.RECORDS_FOLDER], kc.AGENTS_CSV_FILE_NAME))
+            demands = list(zip(demand_df[kc.AGENT_ORIGIN], demand_df[kc.AGENT_DESTINATION]))
+            demands = list(set(demands))
+        except FileNotFoundError:
+            demands = None
         
         path_gen_kwargs = {
             "number_of_paths": path_gen_params[kc.NUMBER_OF_PATHS],
@@ -131,11 +134,14 @@ class SumoSimulator():
             "verbose": False
         }
         
-        routes = pd.DataFrame(columns=["origins", "destinations", "path", "free_flow_time"])
-        for demand in demands:
-            routes_df = jx.basic_generator(network=network, origins=[origins[demand[0]]], destinations=[destinations[demand[1]]], 
-                                                            as_df=True, calc_free_flow=True, **path_gen_kwargs)
-            routes = pd.concat([routes, routes_df], ignore_index=True)
+        if demands is None:
+            routes = jx.basic_generator(network, origins, destinations, as_df=True, calc_free_flow=True, **path_gen_kwargs)
+        else:
+            routes = pd.DataFrame(columns=["origins", "destinations", "path", "free_flow_time"])
+            for demand in demands:
+                routes_df = jx.basic_generator(network=network, origins=[origins[demand[0]]], destinations=[destinations[demand[1]]], 
+                                                                as_df=True, calc_free_flow=True, **path_gen_kwargs)
+                routes = pd.concat([routes, routes_df], ignore_index=True)
             
         self._save_paths_to_disc(routes, origins, destinations)
         
@@ -146,7 +152,7 @@ class SumoSimulator():
             # Visualize paths and save figures
             for origin_idx, origin in enumerate(origins):
                 for dest_idx, destination in enumerate(destinations):
-                    if not (origin_idx, dest_idx) in demands:
+                    if (demands is not None) and (not (origin_idx, dest_idx) in demands):
                         continue
                     # Filter routes for the current origin-destination pair
                     routes_to_show = (routes[(routes["origins"] == origin_idx)
