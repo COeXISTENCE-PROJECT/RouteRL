@@ -31,6 +31,8 @@ class SumoSimulator():
             Dictionary of parameters for the SUMO environment. specified `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_.
         seed (int): 
             Random seed for reproducibility.
+        using_custom_demand (bool):
+            Flag to indicate whether user provides custom travel demand data.
         
     Attributes:
         network_name: Network name.
@@ -40,7 +42,7 @@ class SumoSimulator():
         timestep: Time step being simulated within the day.
     """
 
-    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423):
+    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423, using_custom_demand: bool = False) -> None:
         self.network_name        = params[kc.NETWORK_NAME]
         self.sumo_type           = params[kc.SUMO_TYPE]
         self.number_of_paths     = params[kc.NUMBER_OF_PATHS]
@@ -83,10 +85,11 @@ class SumoSimulator():
         confirm_env_variable(kc.ENV_VAR, append="tools")
 
         if path_gen_params is not None:
-            self._get_paths(params, path_gen_params)
+            self._get_paths(params, path_gen_params, using_custom_demand)
             logging.info("[SUCCESS] Path generation completed.")
         self._check_paths_ready()
         self.detectors_name = self._get_detectors()
+        
         self.timestep = 0
         self.route_id_cache = dict()
         self.waiting_vehicles = dict()
@@ -108,7 +111,7 @@ class SumoSimulator():
                 "to the environment under path_generation_parameters"
             )
             
-    def _get_paths(self, params: dict, path_gen_params: dict) -> None:
+    def _get_paths(self, params: dict, path_gen_params: dict, using_custom_demand: bool) -> None:
 
         # Build the network
         network = jx.build_digraph(self.conn_file_path, self.edge_file_path, self.routes_xml_path)
@@ -117,12 +120,12 @@ class SumoSimulator():
         origins = path_gen_params[kc.ORIGINS]
         destinations = path_gen_params[kc.DESTINATIONS]
         
-        # Get demand, if exists
-        try:
+        # Get demand, if using custom demand
+        if using_custom_demand:
             demand_df = pd.read_csv(os.path.join(params[kc.RECORDS_FOLDER], kc.AGENTS_CSV_FILE_NAME))
             demands = list(zip(demand_df[kc.AGENT_ORIGIN], demand_df[kc.AGENT_DESTINATION]))
             demands = list(set(demands))
-        except FileNotFoundError:
+        else:
             demands = None
         
         path_gen_kwargs = {
@@ -145,11 +148,10 @@ class SumoSimulator():
             
         self._save_paths_to_disc(routes, origins, destinations)
         
+        # Visualize paths and save figures
         if path_gen_params[kc.VISUALIZE_PATHS]:
-            # Save paths visualizations
             path_visuals_path = params[kc.PLOTS_FOLDER]
             os.makedirs(path_visuals_path, exist_ok=True)
-            # Visualize paths and save figures
             for origin_idx, origin in enumerate(origins):
                 for dest_idx, destination in enumerate(destinations):
                     if (demands is not None) and (not (origin_idx, dest_idx) in demands):

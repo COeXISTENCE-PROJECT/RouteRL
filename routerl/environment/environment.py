@@ -145,6 +145,9 @@ class TrafficEnvironment(AECEnv):
                 
             - destinations (str | list[str], default="default"):
                 Destination points from the network. (e.g., ``["-115604057#1", "-279952229#4"]``)
+                
+            - visualize_paths (bool, default=True):
+                Whether to visualize generated paths. Visuals will be saved in the ``plotter_parameters/plots_folder``.
 
         - plotter_parameters (dict, optional): 
             Plotting & logging settings.
@@ -288,7 +291,7 @@ class TrafficEnvironment(AECEnv):
         super().__init__()
         self.render_mode = None
 
-        # Read default parameters, update w #TODO kwargs
+        # Read default parameters, update with kwargs
         defaults_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), kc.DEFAULTS_FILE)
         params = get_params(defaults_path, resolve=True, update=kwargs)
 
@@ -309,7 +312,7 @@ class TrafficEnvironment(AECEnv):
         self._set_seed(seed)
 
         self.recorder = Recorder(self.plotter_params)
-        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed)
+        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents)
 
         self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed)
         self.machine_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_MACHINE]
