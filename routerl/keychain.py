@@ -34,6 +34,7 @@ class Keychain:
     OBSERVATION_TYPE = "observation_type"
     PREVIOUS_AGENTS = "previous_agents"
     PREVIOUS_AGENTS_PLUS_START_TIME = "previous_agents_plus_start_time"
+    GROUP_VICINITY = "group_vicinity"
 
     ### Environment
     NUMBER_OF_DAYS = "number_of_days"

@@ -503,7 +503,7 @@ class TrafficEnvironment(AECEnv):
     ### Mutation function ###
     #########################
 
-    def mutation(self, disable_human_learning: bool = True, mutation_start_percentile: int = 75) -> None:
+    def mutation(self, disable_human_learning: bool = True, mutation_start_percentile: int = 25) -> None:
         """Perform mutation by converting selected human agents into machine agents.
 
         This method identifies a subset of human agents that start after the 25th percentile of start times of
@@ -625,7 +625,10 @@ class TrafficEnvironment(AECEnv):
     def _assign_rewards(self) -> None:
 
         for agent in self.all_agents:
-            reward = agent.get_reward(self.travel_times_list)
+            if agent.kind == 'Human':
+                reward = agent.get_reward(self.travel_times_list)
+            else:
+                reward = agent.get_reward(self.travel_times_list, group_vicinity=self.agent_params[kc.MACHINE_PARAMETERS][kc.GROUP_VICINITY])
 
             # Add the reward in the travel_times_list
             for agent_entry in self.travel_times_list:
