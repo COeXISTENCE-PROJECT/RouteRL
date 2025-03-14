@@ -14,11 +14,24 @@
         "human_parameters" :
         {
             "model" : "culo",
-            "alpha_j": 0.5,
-            "alpha_zero": 0.5,
-            "beta" : -1.5,
-            "beta_randomness" : 0.1,
-            "remember" : 3
+
+            "noise_weight_agent" : 0.2,
+            "noise_weight_path" : 0.6,
+            "noise_weight_day" : 0.2,
+
+            "beta" : -1.0,
+            "beta_k_i_variability" : 0.0,
+            "epsilon_i_variability" : 0.0,
+            "epsilon_k_i_variability" : 0.0,
+            "epsilon_k_i_t_variability" : 0.0,
+
+            "greedy" : 1.0,
+            "gamma_c" : 0.0,
+            "gamma_u" : 0.0,
+            "remember" : 1,
+
+            "alpha_zero" : 0.2,
+            "alphas" : [0.8]  
         },
 
         "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",
