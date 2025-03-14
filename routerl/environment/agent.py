@@ -37,6 +37,7 @@ class BaseAgent(ABC):
         self.destination = destination
         self.behavior = behavior
         self.last_action = 0
+        self.default_action = None
 
     @property
     @abstractmethod
@@ -171,7 +172,8 @@ class HumanAgent(BaseAgent):
         Returns:
             int: The action of the agent.
         """
-
+        if self.default_action is not None:
+            return self.default_action
         return self.model.act(observation)
 
     def learn(self, action, observation) -> None:
