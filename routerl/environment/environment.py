@@ -86,23 +86,50 @@ class TrafficEnvironment(AECEnv):
             - human_parameters (**dict**): 
                 Human agent settings.
                 
-                - model (str, default="culo"):
-                    Decision-making model (options: ``gawron``, ``culo``, ``w_avg``).
+                - model (str, default="gawron"):
+                    Decision-making model (options: ``probabilistic``, ``gawron``, ``weighted``).
                     
-                - alpha_j (float, default=0.5):
-                    Cost expectation coefficient (0-1 range).
+                - noise_weight_agent (float, default=0.2):
+                    Agent noise weight in the error term composition.
                     
-                - alpha_zero (float, default=0.5):
-                    Sensitivity to new experiences.
+                - noise_weight_path (float, default=0.6):
+                    Path noise weight in the error term composition.
                     
-                - beta (float, default=-1.5):
-                    Decision randomness parameter.
+                - noise_weight_day (float, default=0.2):
+                    Day noise weight in the error term composition.
                     
-                - beta_randomness (float, default=0.1):
-                    Variability in ``beta`` among the human population.
+                - beta (float, default=-1.0):
+                    **Negative value**, multiplier of reward (travel time) used in utility, determines sensitivity.
                     
-                - remember (int, default=3):
-                    Number of past experiences retained.
+                - beta_k_i_variability (float, default=0):
+                    Variance of normal distribution for which ``beta_k_i`` is drawn (computed in utility).
+                    
+                - epsilon_i_variability (float, default=0):
+                    Variance of normal distribution from which error terms are drawn, first term.
+                    
+                - epsilon_k_i_variability (float, default=0):
+                    Variance of normal distribution from which error terms are drawn, second term.
+                    
+                - epsilon_k_i_t_variability (float, default=0):
+                    Variance of normal distribution from which error terms are drawn, third term. These three terms must sum to 1.
+                    
+                - greedy (float, default=1.0):
+                    1 - exploration_rate, probability with which the choice are rational (argmax(U)) and not probabilistic (random).
+                    
+                - gamma_c (float, default=0):
+                    Bounded rationality component. Expressed as relative increase in costs/utilities below which user do not change behaviour (do not notice it).
+                    
+                - gamma_u (float, default=0):
+                    Bounded rationality component. Expressed as relative increase in costs/utilities below which user do not change behaviour (do not notice it).
+                
+                - remember (int, default=1):
+                    Number of days remembered to learn from.
+                    
+                - alpha_zero (float, default=0.2):
+                    Weight with which the recent experience is carried forward in learning.
+                    
+                - alphas (list[float], default=[0.8]):
+                    Vector of weights for historically recorded reward in weighted average, **needs to be size of** ``remember``.
 
         - environment_parameters (dict, optional):
             Environment settings.
@@ -111,7 +138,7 @@ class TrafficEnvironment(AECEnv):
                 Number of days in the scenario.
 
         - simulator_parameters (dict, optional): 
-            **SUMO simulator settings.**
+            SUMO simulator settings.
             
             - network_name (str, default="csomor"):
                 Network name (e.g., ``arterial``, ``cologne``, ``grid``).
