@@ -172,8 +172,8 @@ class HumanAgent(BaseAgent):
         Returns:
             int: The action of the agent.
         """
-        if default_action is not None:
-            return default_action
+        if self.default_action is not None:
+            return self.default_action
         return self.model.act(observation)
 
     def learn(self, action, observation) -> None:
