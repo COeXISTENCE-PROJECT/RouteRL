@@ -48,11 +48,11 @@ class GeneralModel(BaseLearningModel):
 
     * The variability (non-determinism) can be controlled at several levels:
         - ``epsilon_i_variability``, ``epsilon_k_i_variability``, ``epsilon_k_i_t_variability`` :
-                variance of normal distriburion from which error terms are drawn
+                variance of normal distribution from which error terms are drawn.
         - ``beta_k_i_variability`` : 
-                variance of normal distribution for which ``$beta_k_i$`` is drawn (computed in utility)
+                variance of normal distribution for which ``$beta_k_i$`` is drawn (computed in utility).
         - ``noise_weight_agent``, ``noise_weight_path``, ``noise_weight_day`` : 
-                relative weights for the error term composition
+                relative weights for the error term composition.
 
     * The parameters of the model are:
         - ``beta``                  :   
@@ -62,7 +62,7 @@ class GeneralModel(BaseLearningModel):
         - ``gamma_u``, ``gamma_c``  :   
                 bounded rationality components. Expressed as relative increase in costs/utilities below which user do not change behaviour (do not notice it)
         - ``alpha_zero``            :   
-                weight witch which the recent experience is carried forward in learning
+                weight with which the recent experience is carried forward in learning
         - ``remember``              :   
                 number of days remembered to learn
         - ``alphas``                :   
