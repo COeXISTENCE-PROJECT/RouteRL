@@ -95,10 +95,11 @@ class Keychain:
     SELFISH = "selfish"
     COMPETITIVE = "competitive"
     COLLABORATIVE = "collaborative"
+    COOPERATIVE = "cooperative"
     SOCIAL = "social"
     ALTRUISTIC = "altruistic"
     MALICIOUS = "malicious"
-    BEHAVIORS = [SELFISH, COMPETITIVE, COLLABORATIVE, SOCIAL, ALTRUISTIC, MALICIOUS]
+    BEHAVIORS = [SELFISH, COMPETITIVE, COLLABORATIVE, COOPERATIVE, SOCIAL, ALTRUISTIC, MALICIOUS]
 
     # Model encodings
     GAWRON = "gawron"

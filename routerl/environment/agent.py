@@ -379,6 +379,8 @@ class MachineAgent(BaseAgent):
             a, b, c, d = -2, 0, 1, 0
         elif self.behavior == kc.COLLABORATIVE:
             a, b, c, d = -0.5, -0.5, 0, 0
+        elif self.behavior == kc.COOPERATIVE:
+            a, b, c, d = 0, -1, 0, 0
         elif self.behavior == kc.SOCIAL:
             a, b, c, d = -0.5, 0, 0, -0.5
         elif self.behavior == kc.ALTRUISTIC:
