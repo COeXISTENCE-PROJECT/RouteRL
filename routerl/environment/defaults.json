@@ -13,7 +13,7 @@
 
         "human_parameters" :
         {
-            "model" : "culo",
+            "model" : "gawron",
 
             "noise_weight_agent" : 0.2,
             "noise_weight_path" : 0.6,
