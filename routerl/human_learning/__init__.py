@@ -1,7 +1,7 @@
 from .learning_model import (
-    Gawron,
-    Culo,
-    WeightedAverage
+    GawronModel,
+    ProbabilisticModel,
+    WeightedModel
 )
 
 from .registry import get_learning_model
