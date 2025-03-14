@@ -524,12 +524,9 @@ class TrafficEnvironment(AECEnv):
 
         # Mutate to a human that starts after the 25% of the rest of the vehicles
         start_times = [human.start_time for human in self.human_agents]
-        print("start_times are: ", start_times, "\n\n")
         percentile = np.percentile(start_times, mutation_start_percentile)
-        print("percentile is: ", percentile, "\n\n")
 
         filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile]
-        print("filtered_human_agents are: ", filtered_human_agents, "\n\n")
         #filtered_human_agents = [human for human in self.human_agents]
 
         number_of_machines_to_be_added = self.agent_params[kc.NEW_MACHINES_AFTER_MUTATION]
