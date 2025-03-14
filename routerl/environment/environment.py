@@ -503,7 +503,7 @@ class TrafficEnvironment(AECEnv):
     ### Mutation function ###
     #########################
 
-    def mutation(self, disable_human_learning: bool = True) -> None:
+    def mutation(self, disable_human_learning: bool = True, mutation_start_percentile: int = 75) -> None:
         """Perform mutation by converting selected human agents into machine agents.
 
         This method identifies a subset of human agents that start after the 25th percentile of start times of
@@ -523,11 +523,14 @@ class TrafficEnvironment(AECEnv):
         logging.info("There were %s human agents.\n", len(self.human_agents))
 
         # Mutate to a human that starts after the 25% of the rest of the vehicles
-        #start_times = [human.start_time for human in self.human_agents]
-        #percentile_25 = np.percentile(start_times, 25)
+        start_times = [human.start_time for human in self.human_agents]
+        print("start_times are: ", start_times, "\n\n")
+        percentile = np.percentile(start_times, mutation_start_percentile)
+        print("percentile is: ", percentile, "\n\n")
 
-        #filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile_25]
-        filtered_human_agents = [human for human in self.human_agents]
+        filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile]
+        print("filtered_human_agents are: ", filtered_human_agents, "\n\n")
+        #filtered_human_agents = [human for human in self.human_agents]
 
         number_of_machines_to_be_added = self.agent_params[kc.NEW_MACHINES_AFTER_MUTATION]
         random_humans_deleted = []
