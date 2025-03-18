@@ -124,7 +124,7 @@ class GeneralModel(BaseLearningModel):
         """
         select path from action space based on learned expected costs"""
         # for each path you multiply the expected costs with path-specific beta (drawn at init) and add the noise (computed from 3 components in `get_noises`)
-        utilities = [self.beta_k_i[i]* self.costs[i] + noise for i,noise in enumerate(self.get_noises())] 
+        utilities = [self.beta_k_i[i]* (self.costs[i] + self.mean_time* noise) for i,noise in enumerate(self.get_noises())] 
         if self.first_day or abs(self.last_action["utility"] - utilities[self.last_action['action']])/self.last_action["utility"] >= self.gamma_u: #bounded rationality
             if np.random.random() < self.greedy:
                 action = int(np.argmax(utilities)) # greedy choice 
