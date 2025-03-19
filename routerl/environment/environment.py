@@ -782,7 +782,7 @@ class TrafficEnvironment(AECEnv):
         cost_tables = [
             {
                 kc.AGENT_ID: agent.id,
-                kc.COST_TABLE: getattr(agent.model, 'cost', zero_space) if hasattr(agent, 'model') else zero_space
+                kc.COST_TABLE: getattr(agent.model, 'costs', zero_space) if hasattr(agent, 'model') else zero_space
             }
             for agent in dc_agents
         ]

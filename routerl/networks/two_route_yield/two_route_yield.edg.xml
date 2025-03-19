@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-02-05 13:39:29 by Eclipse SUMO netconvert Version 1.19.0
+<!-- generated on 2025-02-26 11:16:10 by Eclipse SUMO netconvert Version 1.19.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
-        <sumo-net-file value="two_route_yield.net.xml"/>
+        <sumo-net-file value="network_without_second_lane.net.xml"/>
     </input>
 
     <output>
@@ -33,10 +33,11 @@
 -->
 
 <edges version="1.16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/edges_file.xsd">
-    <edge id="E0" from="J0" to="J1" priority="-1" numLanes="1" speed="13.89"/>
-    <edge id="E1" from="J1" to="J2" priority="-1" numLanes="1" speed="13.89"/>
+    <edge id="E0" from="J0" to="J1" priority="-1" numLanes="2" speed="13.89"/>
+    <edge id="E1" from="J1" to="J6" priority="-1" numLanes="1" speed="13.89"/>
     <edge id="E2" from="J2" to="J3" priority="-1" numLanes="1" speed="13.89"/>
     <edge id="E3" from="J1" to="J4" priority="-1" numLanes="1" speed="13.89"/>
     <edge id="E4" from="J4" to="J5" priority="-1" numLanes="1" speed="13.89"/>
     <edge id="E5" from="J5" to="J2" priority="-1" numLanes="1" speed="13.89"/>
+    <edge id="E7" from="J6" to="J2" priority="-1" numLanes="1" speed="13.89"/>
 </edges>
