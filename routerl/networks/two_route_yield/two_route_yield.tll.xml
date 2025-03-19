@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-02-05 13:39:29 by Eclipse SUMO netconvert Version 1.19.0
+<!-- generated on 2025-02-26 11:16:10 by Eclipse SUMO netconvert Version 1.19.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
-        <sumo-net-file value="two_route_yield.net.xml"/>
+        <sumo-net-file value="network_without_second_lane.net.xml"/>
     </input>
 
     <output>
