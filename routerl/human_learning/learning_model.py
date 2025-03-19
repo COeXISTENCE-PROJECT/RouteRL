@@ -123,7 +123,7 @@ class GeneralModel(BaseLearningModel):
                'alphas': self.alphas}
         print('learning prior:' + str(log))
       
-        if abs(self.costs[action]-reward/self.costs[action])>=self.gamma_c: #learn only if relative difference in rewards is above gamma_c
+        if abs((self.costs[action]-reward)/self.costs[action])>=self.gamma_c: #learn only if relative difference in rewards is above gamma_c
             weight_normalization_factor = 1/(self.alpha_zero+ sum([self.alphas[i] for i,j in enumerate(self.memory[action])])) # needed to make sure weights are always summed to 1
             self.costs[action] = weight_normalization_factor * self.alpha_zero* self.costs[action] #experience weights
             self.costs[action] += sum([weight_normalization_factor * self.alphas[i]*self.memory[action][i] for i,j in enumerate(self.memory[action])]) # weighted average of historical rewards
