@@ -137,8 +137,6 @@ class GeneralModel(BaseLearningModel):
                'alpha_zero': self.alpha_zero,
                'alphas': self[alphas],
                'weight_normalization_factor' : weight_normalization_factor}
-        print('learning prior:' + str(log))
-
         print('learning after:' + str(log))
 
     def act(self, state):  
@@ -146,6 +144,11 @@ class GeneralModel(BaseLearningModel):
         select path from action space based on learned expected costs"""
         # for each path you multiply the expected costs with path-specific beta (drawn at init) and add the noise (computed from 3 components in `get_noises`)
         utilities = [self.beta_k_i[i] * (self.costs[i] + self.mean_time * noise) for i, noise in enumerate(self.get_noises())]
+        log = {'utilities': utilities, 
+               'self.beta_k_i':self.beta_k_i,
+               'costs':self.costs}
+        print('I act based on those utilities:' + str(log))
+        
         if self.first_day or abs(self.last_action["utility"] - utilities[self.last_action['action']])/self.last_action["utility"] >= self.gamma_u: #bounded rationality
             print("I act")
             if np.random.random() < self.greedy:
