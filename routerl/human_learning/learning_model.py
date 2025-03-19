@@ -113,12 +113,33 @@ class GeneralModel(BaseLearningModel):
         update 'costs' of 'action' after receiving a 'reward'
         """
         self.memory[action].append(reward) #add recent reward to memory (of rewards)
+
+        log = {'action': action, 
+               'reward':reward,
+               'costs':self.costs,
+               'gamma_c': self.gamma_c,
+               'alpha_zero': self.alpha_zero,
+               'alphas': self[alphas],
+               'weight_normalization_factor' : weight_normalization_factor}
+        print('learning prior:' + str(log))
       
         if abs(self.costs[action]-reward)/self.costs[action]>=self.gamma_c: #learn only if relative difference in rewards is above gamma_c
             weight_normalization_factor = 1/(self.alpha_zero+ sum([self.alphas[i] for i,j in enumerate(self.memory[action])])) # needed to make sure weights are always summed to 1
             self.costs[action] = weight_normalization_factor * self.alpha_zero* self.costs[action] #experience weights
             self.costs[action] += sum([weight_normalization_factor * self.alphas[i]*self.memory[action][i] for i,j in enumerate(self.memory[action])]) # weighted average of historical rewards
-   
+        else:
+            print("I don't learn")
+
+        log = {'action': action, 
+               'reward':reward,
+               'costs':self.costs,
+               'gamma_c': self.gamma_c,
+               'alpha_zero': self.alpha_zero,
+               'alphas': self[alphas],
+               'weight_normalization_factor' : weight_normalization_factor}
+        print('learning prior:' + str(log))
+
+        print('learning after:' + str(log))
 
     def act(self, state):  
         """
@@ -126,11 +147,14 @@ class GeneralModel(BaseLearningModel):
         # for each path you multiply the expected costs with path-specific beta (drawn at init) and add the noise (computed from 3 components in `get_noises`)
         utilities = [self.beta_k_i[i] * (self.costs[i] + self.mean_time * noise) for i, noise in enumerate(self.get_noises())]
         if self.first_day or abs(self.last_action["utility"] - utilities[self.last_action['action']])/self.last_action["utility"] >= self.gamma_u: #bounded rationality
+            print("I act")
             if np.random.random() < self.greedy:
                 action = int(np.argmax(utilities)) # greedy choice
             else:
+                 print("I act random")
                  action = np.random.choice(self.action_space)  # random choice
         else:
+            print("I do not act")
             action = self.last_action['action']    
         self.first_day = False
         self.last_action = {"action": action, "utility": utilities[action]}
@@ -143,6 +167,13 @@ class GeneralModel(BaseLearningModel):
         returns vector of errors
         """
         daily_noise = np.random.normal(0,self.random_term_day, size= self.action_space)
+        noise = [self.noise_weight_agent * self.random_term_agent + 
+                self.noise_weight_path * self.random_term_path[k] + 
+                self.noise_weight_day * daily_noise[k]
+                    for k,_ in enumerate(self.costs)]
+        print("this is my noise: ")
+        print(noise)
+
         return [self.noise_weight_agent * self.random_term_agent + 
                 self.noise_weight_path * self.random_term_path[k] + 
                 self.noise_weight_day * daily_noise[k]
