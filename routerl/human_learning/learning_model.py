@@ -94,6 +94,7 @@ class GeneralModel(BaseLearningModel):
         self.random_term_day = params[kc.EPSILON_K_I_T_VARIABILITY] # \vareps_{k,i,t}
 
         self.greedy = params[kc.GREEDY] # probability that agent will make a greedy choice (and not random exploration)
+        print("self.greedy")
 
         self.gamma_c = params[kc.GAMMA_C] # bounded rationality on costs (relative)
         self.gamma_u = params[kc.GAMMA_U] # bounded rationality on utilities (relative)
@@ -157,7 +158,7 @@ class GeneralModel(BaseLearningModel):
         print('I act based on those utilities:' + str(log))
         
         if self.first_day or abs(self.last_action["utility"] - utilities[self.last_action['action']])/self.last_action["utility"] >= self.gamma_u: #bounded rationality
-            print("I act")
+            print("I act", self.greedy)
             if np.random.random() < self.greedy:
                 action = int(np.argmax(utilities)) # greedy choice
             else:

@@ -3,6 +3,7 @@ from .learning_model import (
     ProbabilisticModel,
     WeightedModel,
     RandomModel,
+    GeneralModel,
     AONModel
 )
 

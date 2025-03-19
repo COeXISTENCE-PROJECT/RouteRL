@@ -116,6 +116,7 @@ class Keychain:
     PROBABILISTIC = "probabilistic"
     WEIGHTED = "weighted"
     RANDOM = "random"
+    GENERAL_MODEL = "general_model"
     AON = "aon"
     HUMAN_MODELS = [GAWRON, PROBABILISTIC, WEIGHTED, RANDOM, AON]
     

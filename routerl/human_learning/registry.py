@@ -2,6 +2,7 @@ from routerl.keychain import Keychain as kc
 
 from routerl.human_learning import (
     GawronModel,
+    GeneralModel,
     ProbabilisticModel,
     WeightedModel,
     RandomModel,
@@ -23,6 +24,8 @@ def get_learning_model(params, initial_knowledge):
     model = params[kc.MODEL]
     if model == kc.GAWRON:
         return GawronModel(params, initial_knowledge)
+    if model == kc.GENERAL_MODEL:
+        return GeneralModel(params, initial_knowledge)
     elif model == kc.PROBABILISTIC:
         return ProbabilisticModel(params, initial_knowledge)
     elif model == kc.WEIGHTED:
