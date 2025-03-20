@@ -77,7 +77,7 @@ class GeneralModel(BaseLearningModel):
         initial knowledge shall come from SUMO - free flow travel time (or utilities)
         """
         super().__init__()
-        self.costs = np.array(initial_knowledge, dtype=float) # cost matrix
+        self.costs = - np.array(initial_knowledge, dtype=float) # cost matrix
         self.action_space = len(self.costs) # number of paths
         self.mean_time = np.mean(self.costs) # mean free flow travel time over paths - possibly useful to normalize errors
         
