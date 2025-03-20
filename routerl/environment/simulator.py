@@ -267,6 +267,7 @@ class SumoSimulator():
         det_dict = {name: None for name in self.detectors_name}
         for det_name in self.detectors_name:
             det_dict[det_name]  = self.sumo_connection.inductionloop.getIntervalVehicleNumber(f"{det_name}_det")
+        #det_dict = self.retrieve_detector_data()
 
         self.sumo_connection.load(["--seed",
                                    str(self.seed),
@@ -282,6 +283,29 @@ class SumoSimulator():
     ################################
     ######### SIMULATION ###########
     ################################
+
+    def retrieve_detector_data(self) -> dict:
+        det_dict = {name: None for name in self.detectors_name}
+        for det_name in self.detectors_name:
+            det_dict[det_name]  = self.sumo_connection.inductionloop.getIntervalVehicleNumber(f"{det_name}_det")
+            #print("det_dict name is: ", det_dict[det_name], "\n\n\n")
+
+        det_dict2 = {name: None for name in self.detectors_name}
+
+        for det_name in self.detectors_name:
+            vehicle_time = self.sumo_connection.inductionloop.getTimeSinceDetection(f"{det_name}_det")
+            mean_speed = self.sumo_connection.inductionloop.getLastStepMeanSpeed(f"{det_name}_det")
+            
+            # Consider vehicles stopped if mean speed is close to zero and vehicles are present
+            print("vehicle number is: ", vehicle_time, mean_speed)
+            #stopped_vehicles = vehicle_count if mean_speed <= 0.1 else 0
+            #det_dict2[det_name] = stopped_vehicles
+
+        print(det_dict2)  # Dictionary with stopped vehicle counts per detector
+        # This will show how many vehicles are stopped at each detector
+
+
+        return det_dict
 
     def add_vehicle(self, act_dict: dict) -> None:
         """Adds a vehicle to the SUMO simulation environment with the specified route and parameters.

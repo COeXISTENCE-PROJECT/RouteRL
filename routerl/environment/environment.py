@@ -19,7 +19,7 @@ import threading
 from routerl.environment import generate_agents
 from routerl.environment import SumoSimulator
 from routerl.environment import MachineAgent
-from routerl.environment import PreviousAgentStart, PreviousAgentStartPlusStartTime, Observations
+from routerl.environment import PreviousAgentStart, PreviousAgentStartPlusStartTime, PreviousAgentStartPlusStartTimeDetectorData, Observations
 from routerl.keychain import Keychain as kc
 from routerl.services import plotter
 from routerl.services import Recorder
@@ -380,7 +380,6 @@ class TrafficEnvironment(AECEnv):
 
         ## Initialize the observation object
         self.observation_obj = self.get_observation_function()
-
         self._observation_spaces = self.observation_obj.observation_space()
 
         self._action_spaces = {
@@ -481,6 +480,7 @@ class TrafficEnvironment(AECEnv):
                 self.terminations = {agent: not (self.day % self.number_of_days) for agent in self.agents}
                 self.infos = {agent: {} for agent in self.agents}
                 self.observations = self.observation_obj(self.all_agents)
+                print("Observations are: ", self.observations)
                 self._reset_episode()
             else:
                 # no rewards are allocated until all players give an action
@@ -523,8 +523,7 @@ class TrafficEnvironment(AECEnv):
         Returns:
             self.observation_obj.agent_observations(agent) (np.ndarray): The observations for the specified agent.
         """
-
-        return self.observation_obj.agent_observations(agent)
+        return self.observation_obj.agent_observations(agent, self.all_agents)
 
     #########################
     ### Mutation function ###
@@ -854,5 +853,11 @@ class TrafficEnvironment(AECEnv):
                                       self.human_agents,
                                       self.simulation_params,
                                       self.agent_params)
+        elif observation_type == kc.PREVIOUS_AGENTS_PLUS_START_TIME_DETECTOR_DATA:
+            return PreviousAgentStartPlusStartTimeDetectorData(self.machine_agents,
+                                      self.human_agents,
+                                      self.simulation_params,
+                                      self.agent_params,
+                                      self.simulator)
         else:
             raise ValueError('[MODEL INVALID] Unrecognized observation type: ' + observation_type)

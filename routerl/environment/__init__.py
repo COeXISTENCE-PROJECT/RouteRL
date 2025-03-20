@@ -10,5 +10,6 @@ from .simulator import SumoSimulator
 from .observations import Observations
 from .observations import PreviousAgentStart
 from .observations import PreviousAgentStartPlusStartTime
+from .observations import PreviousAgentStartPlusStartTimeDetectorData
 
 from .environment import TrafficEnvironment
