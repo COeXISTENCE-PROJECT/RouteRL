@@ -94,7 +94,7 @@ class GeneralModel(BaseLearningModel):
         self.random_term_day = params[kc.EPSILON_K_I_T_VARIABILITY] # \vareps_{k,i,t}
 
         self.greedy = params[kc.GREEDY] # probability that agent will make a greedy choice (and not random exploration)
-        print("self.greedy")
+        #print("self.greedy")
 
         self.gamma_c = params[kc.GAMMA_C] # bounded rationality on costs (relative)
         self.gamma_u = params[kc.GAMMA_U] # bounded rationality on utilities (relative)
@@ -121,7 +121,7 @@ class GeneralModel(BaseLearningModel):
                'gamma_c': self.gamma_c,
                'alpha_zero': self.alpha_zero,
                'alphas': self.alphas}
-        print('learning prior:' + str(log))
+        #print('learning prior:' + str(log))
       
         if abs((self.costs[action]-reward)/self.costs[action])>=self.gamma_c: #learn only if relative difference in rewards is above gamma_c
             weight_normalization_factor = 1/(self.alpha_zero+ sum([self.alphas[i] for i,j in enumerate(self.memory[action])])) # needed to make sure weights are always summed to 1
@@ -136,7 +136,7 @@ class GeneralModel(BaseLearningModel):
                'alphas': self.alphas,
                'weight_normalization_factor' : weight_normalization_factor}
         else:
-            print("I don't learn")
+            #print("I don't learn")
 
             log = {'action': action, 
                'reward':reward,
@@ -145,7 +145,7 @@ class GeneralModel(BaseLearningModel):
                'alpha_zero': self.alpha_zero,
                'alphas': self.alphas}
         
-        print('learning after:' + str(log))
+        #print('learning after:' + str(log))
 
     def act(self, state):  
         """
@@ -155,17 +155,17 @@ class GeneralModel(BaseLearningModel):
         log = {'utilities': utilities, 
                'self.beta_k_i':self.beta_k_i,
                'costs':self.costs}
-        print('I act based on those utilities:' + str(log))
+        #print('I act based on those utilities:' + str(log))
         
         if self.first_day or abs(self.last_action["utility"] - utilities[self.last_action['action']])/self.last_action["utility"] >= self.gamma_u: #bounded rationality
-            print("I act", self.greedy)
+            #print("I act", self.greedy)
             if np.random.random() < self.greedy:
                 action = int(np.argmax(utilities)) # greedy choice
             else:
-                 print("I act random")
+                 #print("I act random")
                  action = np.random.choice(self.action_space)  # random choice
         else:
-            print("I do not act")
+            #print("I do not act")
             action = self.last_action['action']    
         self.first_day = False
         self.last_action = {"action": action, "utility": utilities[action]}
@@ -182,8 +182,8 @@ class GeneralModel(BaseLearningModel):
                 self.noise_weight_path * self.random_term_path[k] + 
                 self.noise_weight_day * daily_noise[k]
                     for k,_ in enumerate(self.costs)]
-        print("this is my noise: ")
-        print(noise)
+        #print("this is my noise: ")
+        #print(noise)
 
         return [self.noise_weight_agent * self.random_term_agent + 
                 self.noise_weight_path * self.random_term_path[k] + 
