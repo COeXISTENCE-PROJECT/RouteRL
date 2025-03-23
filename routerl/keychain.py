@@ -58,6 +58,7 @@ class Keychain:
     ### Plotter
     RECORDS_FOLDER = "records_folder"
     PLOTS_FOLDER = "plots_folder"
+    PLOT_CHOICES = "plot_choices"
     PHASES = "phases"
     PHASE_NAMES = "phase_names"
     SMOOTH_BY = "smooth_by"

@@ -58,6 +58,7 @@ class Plotter:
         self.colors = []
 
         self.params = params
+        self.plot_choices = params[kc.PLOT_CHOICES]
         self.phases = params[kc.PHASES]
         self.phase_names = params[kc.PHASE_NAMES]
         self.smooth_by = params[kc.SMOOTH_BY]
@@ -88,13 +89,21 @@ class Plotter:
         """
 
         self.saved_episodes = self._get_episodes()
-        self.visualize_mean_rewards()
-        self.visualize_mean_travel_times()
-        self.visualize_tt_distributions()
-        self.visualize_actions()
-        self.visualize_action_shifts()
-        self.visualize_sim_length()
-        self.visualize_losses()
+        
+        if self.plot_choices[0]:
+            self.visualize_mean_rewards()
+        if self.plot_choices[1]:
+            self.visualize_mean_travel_times()
+        if self.plot_choices[2]:
+            self.visualize_tt_distributions()
+        if self.plot_choices[3]:
+            self.visualize_actions()
+        if self.plot_choices[4]:
+            self.visualize_action_shifts()
+        if self.plot_choices[5]:
+            self.visualize_sim_length()
+        if self.plot_choices[6]:
+            self.visualize_losses()
 
     def _get_episodes(self) -> list[int]:
         """Get the episodes data

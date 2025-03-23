@@ -185,6 +185,9 @@ class TrafficEnvironment(AECEnv):
             - plots_folder (str, default="plots"):
                 Directory for plots.
                 
+            - plot_choices (list[bool], default=[True, True, True, True, True, True, True]):
+                Selection of plots to be generated. In order: Mean rewards, mean travel times, travel time distributions, action changes, group-wise action changes, simulation length, losses.
+                
             - smooth_by (int, default=50): 
                 Smoothing parameter for plots.
                 
