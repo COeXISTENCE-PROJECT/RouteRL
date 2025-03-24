@@ -5,6 +5,8 @@ Observation functions for RL agents (AVs).
 from gymnasium.spaces import Box
 import numpy as np
 from abc import ABC, abstractmethod
+import os
+import pandas as pd
 from typing import List, Dict, Any, Union
 
 from routerl.keychain import Keychain as kc
@@ -275,6 +277,7 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
         machine_agents_list: List[Any],
         human_agents_list: List[Any],
         simulation_params: Dict[str, Any],
+        plotter_params: Dict[str, Any],
         agent_params: Dict[str, Any],
         simulator: SumoSimulator
     ) -> None:
@@ -292,6 +295,7 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
         super().__init__(machine_agents_list, human_agents_list)
         self.simulation_params = simulation_params
         self.agent_params = agent_params
+        self.plotter_params = plotter_params
         self.observations = self.reset_observation()
         self.agent_vectors = {}
         self.simulator = simulator
@@ -304,23 +308,6 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
         Returns:
             Dict[str, Any]: A dictionary of observations keyed by agent IDs.
         """
-        for machine in self.machine_agents_list:
-            observation = np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32)
-
-            for agent in all_agents:
-                if (machine.id != agent.id and
-                    machine.origin == agent.origin and
-                    machine.destination == agent.destination and
-                    machine.start_time > agent.start_time):
-                    
-                    observation[agent.last_action] += 1
-
-            self.observations[str(machine.id)] = np.concatenate(
-                [
-                    np.array([machine.start_time], dtype=np.int32),  # Start time as scalar
-                    observation  # Vector of observations
-                ]
-            )
 
         return self.observations
 
@@ -342,7 +329,8 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
             str(agent.id): np.concatenate(  # Combine start_time and vector into a single array
                 [
                     np.array([agent.start_time], dtype=np.int32),  # Start time as scalar
-                    self.agent_vectors[agent]  # Vector as array
+                    self.agent_vectors[agent],  # Vector as array
+                    np.array([0, 0], dtype=np.int32) # Detectors data is zero
                 ]
             )
             for agent in self.machine_agents_list
@@ -358,7 +346,7 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
             Dict[str, Box]: A dictionary where keys are agent IDs and values are Gym spaces.
         """
 
-        total_size = 1 + self.simulation_params[kc.NUMBER_OF_PATHS]
+        total_size = 1 + self.simulation_params[kc.NUMBER_OF_PATHS] + 2 # 2 detectors data are used here
 
         return {
             str(agent.id): Box(
@@ -381,12 +369,25 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
         for machine in self.machine_agents_list:
             if machine.id == int(agent_id):
                 break
-
-        #det_dict = self.simulator.retrieve_detector_data()
-        #print("Inside observations : ", det_dict, "\n\n")
             
         observation = np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32)
 
+        file_path = f"{self.plotter_params[kc.RECORDS_FOLDER] + '/' + kc.DETECTOR_STOPPED_VEHICLES}/stopped_vehicles{self.simulator.timestep}.csv"
+
+        # If the file doesn't exist, fallback to previous timestep
+        if not os.path.isfile(file_path):
+            file_path = f"{self.plotter_params[kc.RECORDS_FOLDER] + '/' + kc.DETECTOR_STOPPED_VEHICLES}/stopped_vehicles{self.simulator.timestep - 1}.csv"
+
+        df = pd.read_csv(file_path)
+
+        # Filter and count vehicles per detector
+        # In the TRY network I am interested on the detectors E1 and E7
+        e7_count = df[df["detector"] == "E7_det"]["vehicle_id"].nunique()
+        e1_count = df[df["detector"] == "E1_det"]["vehicle_id"].nunique()
+
+        detector_data_array = np.array([e7_count, e1_count])
+
+        # Calculate the decisions of the vehicles that have start time smaller than the start time of the specific agent.
         for agent in all_agents:
             if (machine.id != agent.id and
                 machine.origin == agent.origin and
@@ -395,8 +396,12 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
                 
                 observation[agent.last_action] += 1
 
-        observation = np.concatenate(([machine.start_time], observation))
+        observation = np.concatenate(([machine.start_time], observation, detector_data_array))
 
-        #print("observation is: ", observation, machine, "\n\n")
+        self.observations[str(machine.id)] = observation
+
+        print("observation is: ", observation, machine.start_time, self.simulator.timestep, "\n\n\n")
+
+        print("observation is: ", self.observations, machine, "\n\n")
         
         return observation

@@ -3,6 +3,7 @@ PettingZoo environment for optimal route choice using SUMO simulator.
 
 """
 
+import glob
 import os
 
 from copy import copy
@@ -316,6 +317,7 @@ class TrafficEnvironment(AECEnv):
                  seed: int = 23423,
                  create_agents: bool = True,
                  create_paths: bool = True,
+                 save_detectors_info: bool = False,
                  **kwargs) -> None:
 
         super().__init__()
@@ -336,13 +338,14 @@ class TrafficEnvironment(AECEnv):
         self.human_learning = True
         self.machine_same_start_time = []
         self.actions_timestep = []
+        self.save_detectors_info = save_detectors_info
 
         self.number_of_days = self.environment_params[kc.NUMBER_OF_DAYS]
         self.action_space_size = self.environment_params[kc.ACTION_SPACE_SIZE]
         self._set_seed(seed)
 
         self.recorder = Recorder(self.plotter_params)
-        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents)
+        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents, save_detectors_info)
 
         self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed)
         self.machine_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_MACHINE]
@@ -617,7 +620,10 @@ class TrafficEnvironment(AECEnv):
                            kc.AGENT_START_TIME: agent.start_time}
             self.simulator.add_vehicle(action_dict)
             self.episode_actions[agent.id] = action_dict
-        timestep, arrivals, teleported = self.simulator.step()
+        timestep, stopped_vehicles_info, arrivals, teleported = self.simulator.step()
+
+        if self.save_detectors_info == True:
+            self._save_detectors_info(stopped_vehicles_info)
 
         travel_times = dict()
         for veh_id in arrivals:
@@ -632,6 +638,18 @@ class TrafficEnvironment(AECEnv):
             travel_times[agent_id].update(self.episode_actions[agent_id])
 
         return travel_times.values()
+    
+    def _save_detectors_info(self, stopped_vehicles_info):
+        folder = self.plotter_params[kc.RECORDS_FOLDER] + '/' + kc.DETECTOR_STOPPED_VEHICLES
+        os.makedirs(folder, exist_ok=True)
+
+        if (self.simulator.timestep == 1):
+             [os.remove(f) for f in glob.glob(f"{folder}/*.csv")]
+
+        csv_file_path = f"{folder}/stopped_vehicles{self.simulator.timestep - 1}.csv"
+
+        df = pd.DataFrame(stopped_vehicles_info, columns=["time", "detector", "vehicle_id"])
+        df.to_csv(csv_file_path, index=False)
 
     def _reset_episode(self) -> None:
 
@@ -856,9 +874,13 @@ class TrafficEnvironment(AECEnv):
                                       self.simulation_params,
                                       self.agent_params)
         elif observation_type == kc.PREVIOUS_AGENTS_PLUS_START_TIME_DETECTOR_DATA:
+            if self.save_detectors_info == False:
+                raise Exception("Detector info saving is disabled. Please set 'self.save_detectors_info = True' to proceed or change the observation type.")
+            
             return PreviousAgentStartPlusStartTimeDetectorData(self.machine_agents,
                                       self.human_agents,
                                       self.simulation_params,
+                                      self.plotter_params,
                                       self.agent_params,
                                       self.simulator)
         else:

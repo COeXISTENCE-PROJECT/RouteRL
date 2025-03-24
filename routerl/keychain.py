@@ -156,6 +156,7 @@ class Keychain:
     
     EPISODES_LOGS_FOLDER = "episodes"
     DETECTOR_LOGS_FOLDER = "detector"
+    DETECTOR_STOPPED_VEHICLES = "detectors_stopped_vehicles"
     LOSSES_LOG_FILE_NAME = "losses.txt"
 
     REWARDS_PLOT_FILE_NAME = "rewards.png"

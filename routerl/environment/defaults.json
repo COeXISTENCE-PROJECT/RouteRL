@@ -8,7 +8,7 @@
         {
             "behavior" : "selfish",
             "observed_span" : 300,
-            "observation_type" : "previous_agents_plus_start_time_detector_data",
+            "observation_type" : "previous_agents_plus_start_time",
             "group_vicinity": false
         },
 

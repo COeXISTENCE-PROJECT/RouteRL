@@ -42,7 +42,7 @@ class SumoSimulator():
         timestep: Time step being simulated within the day.
     """
 
-    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423, using_custom_demand: bool = False) -> None:
+    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423, using_custom_demand: bool = False, save_detectors_info : bool = False) -> None:
         self.network_name        = params[kc.NETWORK_NAME]
         self.sumo_type           = params[kc.SUMO_TYPE]
         self.number_of_paths     = params[kc.NUMBER_OF_PATHS]
@@ -81,6 +81,7 @@ class SumoSimulator():
         self.seed = seed
         self.sumo_id = f"{random.randint(0, 1000)}"
         self.sumo_connection = None
+        self.save_detectors_info = save_detectors_info
 
         confirm_env_variable(kc.ENV_VAR, append="tools")
 
@@ -221,7 +222,7 @@ class SumoSimulator():
         with open(self.det_xml_save_path, "w") as det:
             print("""<additional>""", file=det)
             for det_id in detectors_name:
-                print(f"<inductionLoop id=\"{det_id}_det\" lane=\"{det_id}_0\" pos=\"-5\" file=\"NUL\" friendlyPos=\"True\"/>",
+                print(f"<laneAreaDetector id=\"{det_id}_det\" lane=\"{det_id}_0\" pos=\"-5\" file=\"NUL\" friendlyPos=\"True\"/>",
                       file=det)
             print("</additional>", file=det)
             
@@ -266,8 +267,7 @@ class SumoSimulator():
 
         det_dict = {name: None for name in self.detectors_name}
         for det_name in self.detectors_name:
-            det_dict[det_name]  = self.sumo_connection.inductionloop.getIntervalVehicleNumber(f"{det_name}_det")
-        #det_dict = self.retrieve_detector_data()
+            det_dict[det_name]  = self.sumo_connection.lanearea.getIntervalVehicleNumber(f"{det_name}_det")
 
         self.sumo_connection.load(["--seed",
                                    str(self.seed),
@@ -284,28 +284,23 @@ class SumoSimulator():
     ######### SIMULATION ###########
     ################################
 
-    def retrieve_detector_data(self) -> dict:
-        det_dict = {name: None for name in self.detectors_name}
-        for det_name in self.detectors_name:
-            det_dict[det_name]  = self.sumo_connection.inductionloop.getIntervalVehicleNumber(f"{det_name}_det")
-            #print("det_dict name is: ", det_dict[det_name], "\n\n\n")
-
-        det_dict2 = {name: None for name in self.detectors_name}
+    def retrieve_detector_data(self) -> None:
+        """Return information about whether an a vehicle stopped in a detector."""
+        self.stopped_vehicles_info = []
 
         for det_name in self.detectors_name:
-            vehicle_time = self.sumo_connection.inductionloop.getTimeSinceDetection(f"{det_name}_det")
-            mean_speed = self.sumo_connection.inductionloop.getLastStepMeanSpeed(f"{det_name}_det")
-            
-            # Consider vehicles stopped if mean speed is close to zero and vehicles are present
-            print("vehicle number is: ", vehicle_time, mean_speed)
-            #stopped_vehicles = vehicle_count if mean_speed <= 0.1 else 0
-            #det_dict2[det_name] = stopped_vehicles
+            det_id = f"{det_name}_det"
+            veh_ids = traci.lanearea.getLastStepVehicleIDs(det_id)
 
-        print(det_dict2)  # Dictionary with stopped vehicle counts per detector
-        # This will show how many vehicles are stopped at each detector
-
-
-        return det_dict
+            for veh_id in veh_ids:
+                speed = traci.vehicle.getSpeed(veh_id)
+                if speed < 0.1:
+                    self.stopped_vehicles_info.append({
+                    "time": self.timestep,
+                    "detector": det_id,
+                    "vehicle_id": veh_id
+                })
+                    
 
     def add_vehicle(self, act_dict: dict) -> None:
         """Adds a vehicle to the SUMO simulation environment with the specified route and parameters.
@@ -357,6 +352,13 @@ class SumoSimulator():
                 
         # Advance the simulation by one timestep       
         self.sumo_connection.simulationStep()
+
+        # Retrieve information about the detectors
+        if self.save_detectors_info == True:
+            self.retrieve_detector_data()
+        else:
+            self.stopped_vehicles_info = None
+
         self.timestep += 1
         
-        return self.timestep, arrivals, teleported
+        return self.timestep, self.stopped_vehicles_info, arrivals, teleported
