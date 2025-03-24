@@ -173,7 +173,7 @@ class PreviousAgentStartPlusStartTime(Observations):
             Dict[str, Any]: A dictionary of observations keyed by agent IDs.
         """
 
-        for machine in self.machine_agents_list:
+        """for machine in self.machine_agents_list:
             observation = np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32)
 
             for agent in all_agents:
@@ -189,7 +189,7 @@ class PreviousAgentStartPlusStartTime(Observations):
                     np.array([machine.start_time], dtype=np.int32),  # Start time as scalar
                     observation  # Vector of observations
                 ]
-            )
+            )"""
 
         return self.observations
 
@@ -239,7 +239,7 @@ class PreviousAgentStartPlusStartTime(Observations):
             for agent in self.machine_agents_list
         }
     
-    def agent_observations(self, agent_id: str, all_agents: List[Any]) -> np.ndarray:
+    def agent_observations(self, agent_id: str, all_agents: List[Any], agent_selection: str) -> np.ndarray:
         """Retrieve the observation for a specific agent.
 
         Args:
@@ -250,18 +250,26 @@ class PreviousAgentStartPlusStartTime(Observations):
         for machine in self.machine_agents_list:
             if machine.id == int(agent_id):
                 break
+
+        if agent_id != agent_selection:
+            # TODO: make this line more general
+            array = [0, 0]
+            observation = np.concatenate((np.array([machine.start_time]), array))
             
-        observation = np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32)
+        else:
+            observation = np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32)
 
-        for agent in all_agents:
-            if (machine.id != agent.id and
-                machine.origin == agent.origin and
-                machine.destination == agent.destination and
-                machine.start_time > agent.start_time):
-                
-                observation[agent.last_action] += 1
+            for agent in all_agents:
+                if (machine.id != agent.id and
+                    machine.origin == agent.origin and
+                    machine.destination == agent.destination and
+                    machine.start_time > agent.start_time):
+                    
+                    observation[agent.last_action] += 1
 
-        observation = np.concatenate(([machine.start_time], observation))
+            observation = np.concatenate(([machine.start_time], observation))
+
+        self.observations[str(machine.id)] = observation
         
         return observation
     
@@ -358,7 +366,7 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
             for agent in self.machine_agents_list
         }
     
-    def agent_observations(self, agent_id: str, all_agents: List[Any]) -> np.ndarray:
+    def agent_observations(self, agent_id: str, all_agents: List[Any], agent_selection: str) -> np.ndarray:
         """Retrieve the observation for a specific agent.
 
         Args:
@@ -366,39 +374,59 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
         Returns:
             np.ndarray: The observation array for the specified agent.
         """
+
         for machine in self.machine_agents_list:
             if machine.id == int(agent_id):
                 break
+
+        # If the agent hasn't steped yet return an "empty observation"
+        # The agent hasn't acted yet so only the start time is meaningful
+        if agent_id != agent_selection and machine.start_time < self.simulator.timestep:
+            print("inside if")
+            # TODO: make this line more general
+            array = [0, 0, 0, 0]
+            observation = np.concatenate((np.array([machine.start_time]), array))
+
+            self.observations[str(machine.id)] = observation
+
+            print("observation is: ", observation, machine.start_time, self.simulator.timestep, "\n\n\n")
+
+        # The observation wasn't calculated before
+        elif machine.start_time == self.simulator.timestep:
+            print("inside elif")
             
-        observation = np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32)
+            observation = np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32)
 
-        file_path = f"{self.plotter_params[kc.RECORDS_FOLDER] + '/' + kc.DETECTOR_STOPPED_VEHICLES}/stopped_vehicles{self.simulator.timestep}.csv"
+            file_path = f"{self.plotter_params[kc.RECORDS_FOLDER] + '/' + kc.DETECTOR_STOPPED_VEHICLES}/stopped_vehicles{self.simulator.timestep}.csv"
 
-        # If the file doesn't exist, fallback to previous timestep
-        if not os.path.isfile(file_path):
-            file_path = f"{self.plotter_params[kc.RECORDS_FOLDER] + '/' + kc.DETECTOR_STOPPED_VEHICLES}/stopped_vehicles{self.simulator.timestep - 1}.csv"
+            # If the file doesn't exist, fallback to previous timestep
+            if not os.path.isfile(file_path):
+                file_path = f"{self.plotter_params[kc.RECORDS_FOLDER] + '/' + kc.DETECTOR_STOPPED_VEHICLES}/stopped_vehicles{self.simulator.timestep - 1}.csv"
 
-        df = pd.read_csv(file_path)
+            df = pd.read_csv(file_path)
 
-        # Filter and count vehicles per detector
-        # In the TRY network I am interested on the detectors E1 and E7
-        e7_count = df[df["detector"] == "E7_det"]["vehicle_id"].nunique()
-        e1_count = df[df["detector"] == "E1_det"]["vehicle_id"].nunique()
+            # Filter and count vehicles per detector
+            # In the TRY network I am interested on the detectors E1 and E7
+            e7_count = df[df["detector"] == "E7_det"]["vehicle_id"].nunique()
+            e1_count = df[df["detector"] == "E1_det"]["vehicle_id"].nunique()
 
-        detector_data_array = np.array([e7_count, e1_count])
+            detector_data_array = np.array([e7_count, e1_count])
 
-        # Calculate the decisions of the vehicles that have start time smaller than the start time of the specific agent.
-        for agent in all_agents:
-            if (machine.id != agent.id and
-                machine.origin == agent.origin and
-                machine.destination == agent.destination and
-                machine.start_time > agent.start_time):
-                
-                observation[agent.last_action] += 1
+            # Calculate the decisions of the vehicles that have start time smaller than the start time of the specific agent.
+            for agent in all_agents:
+                if (machine.id != agent.id and
+                    machine.origin == agent.origin and
+                    machine.destination == agent.destination and
+                    machine.start_time > agent.start_time):
+                    
+                    observation[agent.last_action] += 1
 
-        observation = np.concatenate(([machine.start_time], observation, detector_data_array))
+            observation = np.concatenate(([machine.start_time], observation, detector_data_array))
 
-        self.observations[str(machine.id)] = observation
+            self.observations[str(machine.id)] = observation
+
+        else:
+            observation = self.observations[str(machine.id)]
 
         print("observation is: ", observation, machine.start_time, self.simulator.timestep, "\n\n\n")
 

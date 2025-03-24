@@ -528,7 +528,18 @@ class TrafficEnvironment(AECEnv):
         Returns:
             self.observation_obj.agent_observations(agent) (np.ndarray): The observations for the specified agent.
         """
-        return self.observation_obj.agent_observations(agent, self.all_agents)
+        """for machine in self.machine_agents:
+            if str(machine.id) == agent:
+                break
+
+        # If the agent hasn't steped yet return an "empty observation"
+        # The agent hasn't acted yet so only the start time is meaningful
+        if agent != self.agent_selection:
+            array = np.zeros(self._observation_spaces[agent].shape[0] - 1)
+            observation = np.concatenate((np.array([machine.start_time]), array))
+            return observation"""
+        
+        return self.observation_obj.agent_observations(agent, self.all_agents, self.agent_selection)
 
     #########################
     ### Mutation function ###
