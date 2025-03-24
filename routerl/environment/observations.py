@@ -382,8 +382,8 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
             if machine.id == int(agent_id):
                 break
 
-        det_dict = self.simulator.retrieve_detector_data()
-        print("Inside observations : ", det_dict, "\n\n")
+        #det_dict = self.simulator.retrieve_detector_data()
+        #print("Inside observations : ", det_dict, "\n\n")
             
         observation = np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32)
 
@@ -397,6 +397,6 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
 
         observation = np.concatenate(([machine.start_time], observation))
 
-        print("observation is: ", observation, machine, "\n\n")
+        #print("observation is: ", observation, machine, "\n\n")
         
         return observation

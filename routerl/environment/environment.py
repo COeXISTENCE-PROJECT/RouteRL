@@ -483,7 +483,6 @@ class TrafficEnvironment(AECEnv):
                 self.terminations = {agent: not (self.day % self.number_of_days) for agent in self.agents}
                 self.infos = {agent: {} for agent in self.agents}
                 self.observations = self.observation_obj(self.all_agents)
-                print("Observations are: ", self.observations)
                 self._reset_episode()
             else:
                 # no rewards are allocated until all players give an action
