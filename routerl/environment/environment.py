@@ -675,6 +675,10 @@ class TrafficEnvironment(AECEnv):
                                                                      self.all_agents,
                                                                      detectors_dict))
         recording_task.start()
+        
+        # Reset observations
+        if len(self.machine_agents) > 0:
+            self.observations = self.observation_obj.reset_observation()
 
         self.travel_times_list = []
         self.episode_actions = dict()

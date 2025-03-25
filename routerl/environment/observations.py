@@ -217,6 +217,8 @@ class PreviousAgentStartPlusStartTime(Observations):
             for agent in self.machine_agents_list
         }
 
+        self.observations = obs
+
         return obs
 
     def observation_space(self) -> Dict[str, Box]:
@@ -343,6 +345,8 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
             )
             for agent in self.machine_agents_list
         }
+
+        self.observations = obs
 
         return obs
 
