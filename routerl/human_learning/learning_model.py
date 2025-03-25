@@ -194,17 +194,6 @@ class GeneralModel(BaseLearningModel):
 """
 Library of specific models implementations
 """
-class ProbabilisticModel(GeneralModel):
-    """
-    Purely random choice decision model to be used as a baseline. It randomly selects an action from the action space.\n
-    
-    Args:
-        params (dict): A dictionary containing model parameters.
-        initial_knowledge (list or array): Initial knowledge of cost expectations.
-    """
-    def __init__(self, params, initial_knowledge):
-        params[kc.GREEDY] = 0
-        super().__init__(params, initial_knowledge)
 
 class GawronModel(GeneralModel):
     """
@@ -264,7 +253,7 @@ class RandomModel(GeneralModel):
 
 class AONModel(GeneralModel):
     """
-    Activate on nodes decision model. This model always selects the path with the lowest initial cost,
+    All-or-Nothing decision model. This model always selects the path with the lowest initial cost,
     meaning it behaves as a shortest-path router based on the given
     initial knowledge.
 

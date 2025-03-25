@@ -1,6 +1,5 @@
 from .learning_model import (
     GawronModel,
-    ProbabilisticModel,
     WeightedModel,
     RandomModel,
     GeneralModel,

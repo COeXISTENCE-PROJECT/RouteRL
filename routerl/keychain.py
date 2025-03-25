@@ -115,12 +115,11 @@ class Keychain:
 
     # Model encodings
     GAWRON = "gawron"
-    PROBABILISTIC = "probabilistic"
     WEIGHTED = "weighted"
     RANDOM = "random"
     GENERAL_MODEL = "general_model"
     AON = "aon"
-    HUMAN_MODELS = [GAWRON, PROBABILISTIC, WEIGHTED, RANDOM, AON]
+    HUMAN_MODELS = [GAWRON, WEIGHTED, RANDOM, AON]
     
     # Network names
     ARTERIAL = "arterial"
