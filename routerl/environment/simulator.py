@@ -10,6 +10,8 @@ import random
 import pandas as pd
 import traci
 
+from concurrent.futures import ProcessPoolExecutor, as_completed
+
 from routerl.keychain import Keychain as kc
 from routerl.utilities import confirm_env_variable
 
@@ -142,10 +144,12 @@ class SumoSimulator():
             routes = jx.basic_generator(network, origins, destinations, as_df=True, calc_free_flow=True, **path_gen_kwargs)
         else:
             routes = pd.DataFrame(columns=["origins", "destinations", "path", "free_flow_time"])
-            for demand in demands:
-                routes_df = jx.basic_generator(network=network, origins=[origins[demand[0]]], destinations=[destinations[demand[1]]], 
-                                                                as_df=True, calc_free_flow=True, **path_gen_kwargs)
-                routes = pd.concat([routes, routes_df], ignore_index=True)
+            with ProcessPoolExecutor() as executor:
+                futures = [executor.submit(self._route_gen_process, network, demands, origins, destinations, idx, path_gen_kwargs) for idx in range(len(demands))]
+                for i, future in enumerate(as_completed(futures), 1):
+                    #print(f"\r{i}/{len(demands)} - {demands[i]}", end="")
+                    routes_df = future.result()
+                    routes = pd.concat([routes, routes_df], ignore_index=True)
             
         self._save_paths_to_disc(routes, origins, destinations)
         
@@ -153,6 +157,10 @@ class SumoSimulator():
         if path_gen_params[kc.VISUALIZE_PATHS]:
             path_visuals_path = params[kc.PLOTS_FOLDER]
             os.makedirs(path_visuals_path, exist_ok=True)
+            
+            with ProcessPoolExecutor() as executor:
+                futures = [executor.submit(self._route_vis_process, demands, origin_idx, dest_idx, origin, destination, routes, path_visuals_path) for origin_idx, origin in enumerate(origins) for dest_idx, destination in enumerate(destinations)]
+            """
             for origin_idx, origin in enumerate(origins):
                 for dest_idx, destination in enumerate(destinations):
                     if (demands is not None) and (not (origin_idx, dest_idx) in demands):
@@ -171,6 +179,39 @@ class SumoSimulator():
                                             show=False, save_file_path=fig_save_path, title=title)
                     except:
                         logging.warning(f"Could not visualize routes for {origin} to {destination}.")
+            """
+                        
+                        
+    def _route_gen_process(self, network, demands, origins, destinations, demand_idx, path_gen_kwargs):
+        origin = origins[demands[demand_idx][0]]
+        destination = destinations[demands[demand_idx][1]]
+        #path_gen_kwargs["tolerate_num_iterations"] = path_gen_kwargs["num_samples"] * 5
+        return jx.extended_generator(
+            network=network,
+            origins=[origin],
+            destinations=[destination],
+            as_df=True,
+            calc_free_flow=True,
+            **path_gen_kwargs
+        )
+        
+    def _route_vis_process(self, demands, origin_idx, dest_idx, origin, destination, routes, path_visuals_path):
+        if (demands is not None) and (not (origin_idx, dest_idx) in demands):
+            return
+        # Filter routes for the current origin-destination pair
+        routes_to_show = (routes[(routes["origins"] == origin_idx)
+                                & (routes["destinations"] == dest_idx)]['path'])
+        routes_to_show = [route.split(" ") for route in routes_to_show]
+        # Specify the save path and title for the figure
+        fig_save_path = os.path.join(path_visuals_path, f"{origin_idx}_{dest_idx}.png")
+        title=f"Origin: {origin_idx} ({origin}), Destination: {dest_idx} ({destination})"
+        # Show the routes
+        try:
+            jx.show_multi_routes(self.nod_file_path, self.edge_file_path,
+                                routes_to_show, origin, destination, 
+                                show=False, save_file_path=fig_save_path, title=title)
+        except:
+            logging.warning(f"Could not visualize routes for {origin} to {destination}.")
 
     def _save_paths_to_disc(self, routes_df: pd.DataFrame, origins: list, destinations: list) -> None:
 
