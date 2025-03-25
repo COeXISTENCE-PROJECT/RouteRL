@@ -8,10 +8,10 @@ RouteRL provides a catalog of human learning and decision-making models, includi
 ```
 
 ---
-### Probabilistic Model
+### Random Model
 
 ```{eval-rst}
-.. autoclass:: routerl.human_learning.ProbabilisticModel
+.. autoclass:: routerl.human_learning.RandomModel
     :members:
     :exclude-members: _private_method
     :no-index:

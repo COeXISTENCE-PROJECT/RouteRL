@@ -88,7 +88,7 @@ class TrafficEnvironment(AECEnv):
                 Human agent settings.
                 
                 - model (str, default="gawron"):
-                    Decision-making model (options: ``probabilistic``, ``gawron``, ``weighted``).
+                    Decision-making model (options: ``random``, ``gawron``, ``weighted``).
                     
                 - noise_weight_agent (float, default=0.2):
                     Agent noise weight in the error term composition.
