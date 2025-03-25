@@ -528,16 +528,16 @@ class TrafficEnvironment(AECEnv):
         Returns:
             self.observation_obj.agent_observations(agent) (np.ndarray): The observations for the specified agent.
         """
-        """for machine in self.machine_agents:
+        for machine in self.machine_agents:
             if str(machine.id) == agent:
                 break
 
-        # If the agent hasn't steped yet return an "empty observation"
+        # If the agent's turn hasn't come and the start time is bigger than the simulator timestep return an "empty observation"
         # The agent hasn't acted yet so only the start time is meaningful
-        if agent != self.agent_selection:
+        if agent != self.agent_selection and machine.start_time > self.simulator.timestep:
             array = np.zeros(self._observation_spaces[agent].shape[0] - 1)
             observation = np.concatenate((np.array([machine.start_time]), array))
-            return observation"""
+            return observation
         
         return self.observation_obj.agent_observations(agent, self.all_agents, self.agent_selection)
 

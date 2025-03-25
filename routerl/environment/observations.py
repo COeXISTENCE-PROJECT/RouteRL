@@ -251,11 +251,11 @@ class PreviousAgentStartPlusStartTime(Observations):
             if machine.id == int(agent_id):
                 break
 
+        # If the agent has already acted, return the observation that was previously calculated
         if agent_id != agent_selection:
-            # TODO: make this line more general
-            array = [0, 0]
-            observation = np.concatenate((np.array([machine.start_time]), array))
-            
+            observation = self.observations[str(machine.id)]   
+
+        # If the agent is about to act calculate its observation
         else:
             observation = np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32)
 
@@ -269,7 +269,7 @@ class PreviousAgentStartPlusStartTime(Observations):
 
             observation = np.concatenate(([machine.start_time], observation))
 
-        self.observations[str(machine.id)] = observation
+            self.observations[str(machine.id)] = observation
         
         return observation
     
@@ -381,18 +381,22 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
 
         # If the agent hasn't steped yet return an "empty observation"
         # The agent hasn't acted yet so only the start time is meaningful
-        if agent_id != agent_selection and machine.start_time < self.simulator.timestep:
-            print("inside if")
+        if agent_id != agent_selection: #and machine.start_time < self.simulator.timestep:
+
+            observation = self.observations[str(machine.id)]
+
+            """print("inside if")
             # TODO: make this line more general
             array = [0, 0, 0, 0]
             observation = np.concatenate((np.array([machine.start_time]), array))
 
-            self.observations[str(machine.id)] = observation
+            self.observations[str(machine.id)] = observation"""
 
             print("observation is: ", observation, machine.start_time, self.simulator.timestep, "\n\n\n")
 
         # The observation wasn't calculated before
-        elif machine.start_time == self.simulator.timestep:
+        #elif machine.start_time == self.simulator.timestep:
+        else:
             print("inside elif")
             
             observation = np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32)
@@ -410,6 +414,9 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
             e7_count = df[df["detector"] == "E7_det"]["vehicle_id"].nunique()
             e1_count = df[df["detector"] == "E1_det"]["vehicle_id"].nunique()
 
+            if e7_count != 0 or e1_count != 0:
+                print("\n\n\nFound count\n\n\n")
+
             detector_data_array = np.array([e7_count, e1_count])
 
             # Calculate the decisions of the vehicles that have start time smaller than the start time of the specific agent.
@@ -425,8 +432,8 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
 
             self.observations[str(machine.id)] = observation
 
-        else:
-            observation = self.observations[str(machine.id)]
+        """else:
+            observation = self.observations[str(machine.id)]"""
 
         print("observation is: ", observation, machine.start_time, self.simulator.timestep, "\n\n\n")
 
