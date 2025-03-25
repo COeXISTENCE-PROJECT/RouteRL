@@ -186,8 +186,8 @@ class TrafficEnvironment(AECEnv):
             - plots_folder (str, default="plots"):
                 Directory for plots.
                 
-            - plot_choices (list[bool], default=[True, True, True, True, True, True, True]):
-                Selection of plots to be generated. In order: Mean rewards, mean travel times, travel time distributions, action changes, group-wise action changes, simulation length, losses.
+            - plot_choices (str, default="all"):
+                Selection of plots to be generated. Options: ``none``, ``basic``, ``all``.
                 
             - smooth_by (int, default=50): 
                 Smoothing parameter for plots.
@@ -638,10 +638,11 @@ class TrafficEnvironment(AECEnv):
 
         travel_times = dict()
         for veh_id in arrivals:
-            agent_id = int(veh_id)
-            travel_times[agent_id] = ({kc.TRAVEL_TIME:
-                                           (timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0})
-            travel_times[agent_id].update(self.episode_actions[agent_id])
+            if veh_id not in teleported:
+                agent_id = int(veh_id)
+                travel_times[agent_id] = ({kc.TRAVEL_TIME:
+                                            (timestep - self.episode_actions[agent_id][kc.AGENT_START_TIME]) / 60.0})
+                travel_times[agent_id].update(self.episode_actions[agent_id])
             
         for veh_id in teleported:
             agent_id = int(veh_id)

@@ -90,20 +90,19 @@ class Plotter:
 
         self.saved_episodes = self._get_episodes()
         
-        if self.plot_choices[0]:
+        if self.plot_choices == kc.PLOT_ALL:
             self.visualize_mean_rewards()
-        if self.plot_choices[1]:
             self.visualize_mean_travel_times()
-        if self.plot_choices[2]:
             self.visualize_tt_distributions()
-        if self.plot_choices[3]:
             self.visualize_actions()
-        if self.plot_choices[4]:
             self.visualize_action_shifts()
-        if self.plot_choices[5]:
             self.visualize_sim_length()
-        if self.plot_choices[6]:
             self.visualize_losses()
+        elif self.plot_choices == kc.PLOT_BASIC:
+            self.visualize_mean_rewards()
+            self.visualize_mean_travel_times()
+        elif self.plot_choices != kc.PLOT_NONE:
+            logging.warning(f"Plot choice mode {self.plot_choices} is not recognised. Options: {kc.PLOT_ALL}, {kc.PLOT_BASIC}, {kc.PLOT_NONE}")
 
     def _get_episodes(self) -> list[int]:
         """Get the episodes data

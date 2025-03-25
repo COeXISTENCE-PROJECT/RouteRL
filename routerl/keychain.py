@@ -133,6 +133,11 @@ class Keychain:
     MANHATTAN = "manhattan"
     NETWORK_NAMES = [ARTERIAL, COLOGNE, CSOMOR, GRID, INGOLSTADT, NGUYEN, ORTUZAR, TWO_ROUTE_YIELD, MANHATTAN]
     
+    # Plot choice modes
+    PLOT_NONE = "none"
+    PLOT_ALL = "all"
+    PLOT_BASIC = "basic"
+    
     ###########################################################
 
     ####################### FILE PATHS ########################

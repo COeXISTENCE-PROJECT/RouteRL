@@ -80,7 +80,7 @@
         "records_folder": "training_records",
         "plots_folder": "plots",
 
-        "plot_choices" : [true, true, true, true, true, true, true],
+        "plot_choices" : "all",
         "smooth_by" : 50,
         "phases" : [0, 100],
         "phase_names" : [
