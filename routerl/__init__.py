@@ -22,7 +22,8 @@ from .environment import (
     generate_agents,
     generate_agent_data,
     SumoSimulator,
-    TrafficEnvironment
+    TrafficEnvironment,
+    MachineAgent
 )
 
 from .human_learning import (
