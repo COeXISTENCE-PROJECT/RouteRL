@@ -136,6 +136,7 @@ class HumanAgent(BaseAgent):
         kind = kc.TYPE_HUMAN
         behavior = kc.SELFISH
         super().__init__(id, kind, start_time, origin, destination, behavior)
+        self.initial_knowledge = initial_knowledge
         self.model = get_learning_model(params, initial_knowledge)
         self.last_reward = None
 
