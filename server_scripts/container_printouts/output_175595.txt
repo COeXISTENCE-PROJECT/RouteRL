@@ -1,0 +1,631 @@
+--- Installing dependencies ---
+Defaulting to user installation because normal site-packages is not writeable
+
+[notice] A new release of pip is available: 24.2 -> 24.3.1
+[notice] To update, run: pip install --upgrade pip
+ERROR: Could not open requirements file: [Errno 2] No such file or directory: 'requirements.txt'
+--- Running main.py ---
+[I 2024-12-13 12:40:59,431] A new study created in memory with name: no-name-37f38455-a151-4cac-9c59-5fde7a448166
+[I 2024-12-13 12:54:00,085] Trial 0 finished with value: -0.10483333468437195 and parameters: {'lr': 0.01, 'gamma': 0.6, 'max_grad_norm': 1.5, 'lmbda': 1.0, 'clip_epsilon': 0.2, 'entropy_coef': 0.0}. Best is trial 0 with value: -0.10483333468437195.
+[I 2024-12-13 13:06:42,951] Trial 1 finished with value: -0.11026666313409805 and parameters: {'lr': 0.001, 'gamma': 0.9, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.2, 'entropy_coef': 0.0}. Best is trial 0 with value: -0.10483333468437195.
+[I 2024-12-13 13:18:58,776] Trial 2 finished with value: -0.11096667498350143 and parameters: {'lr': 1e-07, 'gamma': 0.6, 'max_grad_norm': 1.0, 'lmbda': 0.9, 'clip_epsilon': 0.2, 'entropy_coef': 0.0}. Best is trial 0 with value: -0.10483333468437195.
+[I 2024-12-13 13:31:18,729] Trial 3 finished with value: -0.11133332550525665 and parameters: {'lr': 1e-05, 'gamma': 0.75, 'max_grad_norm': 0.5, 'lmbda': 0.85, 'clip_epsilon': 0.3, 'entropy_coef': 0.001}. Best is trial 0 with value: -0.10483333468437195.
+[I 2024-12-13 13:44:13,953] Trial 4 finished with value: -0.11283333599567413 and parameters: {'lr': 0.01, 'gamma': 0.8, 'max_grad_norm': 1.0, 'lmbda': 1.0, 'clip_epsilon': 0.2, 'entropy_coef': 0.001}. Best is trial 0 with value: -0.10483333468437195.
+[I 2024-12-13 13:56:33,568] Trial 5 finished with value: -0.11755000054836273 and parameters: {'lr': 1e-06, 'gamma': 0.8, 'max_grad_norm': 2.0, 'lmbda': 0.85, 'clip_epsilon': 0.3, 'entropy_coef': 0.001}. Best is trial 0 with value: -0.10483333468437195.
+[I 2024-12-13 14:09:36,376] Trial 6 finished with value: -0.12183333188295364 and parameters: {'lr': 0.01, 'gamma': 0.9, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.1, 'entropy_coef': 0.001}. Best is trial 0 with value: -0.10483333468437195.
+[I 2024-12-13 14:22:22,972] Trial 7 finished with value: -0.11999998986721039 and parameters: {'lr': 0.01, 'gamma': 0.7, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.1, 'entropy_coef': 0.001}. Best is trial 0 with value: -0.10483333468437195.
+[I 2024-12-13 14:34:20,852] Trial 8 finished with value: -0.11468333750963211 and parameters: {'lr': 1e-07, 'gamma': 0.9, 'max_grad_norm': 1.5, 'lmbda': 0.85, 'clip_epsilon': 0.2, 'entropy_coef': 0.01}. Best is trial 0 with value: -0.10483333468437195.
+[I 2024-12-13 14:46:44,101] Trial 9 finished with value: -0.10998333990573883 and parameters: {'lr': 0.001, 'gamma': 0.85, 'max_grad_norm': 0.5, 'lmbda': 0.85, 'clip_epsilon': 0.2, 'entropy_coef': 0.0}. Best is trial 0 with value: -0.10483333468437195.
+[I 2024-12-13 14:58:55,450] Trial 10 finished with value: -0.10951666533946991 and parameters: {'lr': 0.0001, 'gamma': 0.6, 'max_grad_norm': 1.5, 'lmbda': 1.0, 'clip_epsilon': 0.1, 'entropy_coef': 0.0001}. Best is trial 0 with value: -0.10483333468437195.
+[I 2024-12-13 15:11:05,649] Trial 11 finished with value: -0.11210000514984131 and parameters: {'lr': 0.0001, 'gamma': 0.6, 'max_grad_norm': 1.5, 'lmbda': 1.0, 'clip_epsilon': 0.1, 'entropy_coef': 0.0001}. Best is trial 0 with value: -0.10483333468437195.
+[I 2024-12-13 15:23:16,099] Trial 12 finished with value: -0.11181666702032089 and parameters: {'lr': 0.0001, 'gamma': 0.6, 'max_grad_norm': 1.5, 'lmbda': 1.0, 'clip_epsilon': 0.1, 'entropy_coef': 0.0001}. Best is trial 0 with value: -0.10483333468437195.
+[I 2024-12-13 15:35:22,604] Trial 13 finished with value: -0.10456666350364685 and parameters: {'lr': 0.0001, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 1.0, 'clip_epsilon': 0.1, 'entropy_coef': 0.0001}. Best is trial 13 with value: -0.10456666350364685.
+[I 2024-12-13 15:47:23,286] Trial 14 finished with value: -0.1112833246588707 and parameters: {'lr': 1e-06, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 1.0, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 13 with value: -0.10456666350364685.
+[I 2024-12-13 15:59:25,492] Trial 15 finished with value: -0.10686665773391724 and parameters: {'lr': 1e-05, 'gamma': 0.95, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.2, 'entropy_coef': 0.0001}. Best is trial 13 with value: -0.10456666350364685.
+[I 2024-12-13 16:11:34,323] Trial 16 finished with value: -0.10466667264699936 and parameters: {'lr': 0.0001, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 1.0, 'clip_epsilon': 0.1, 'entropy_coef': 0.0}. Best is trial 13 with value: -0.10456666350364685.
+[I 2024-12-13 16:23:42,954] Trial 17 finished with value: -0.10559999197721481 and parameters: {'lr': 0.0001, 'gamma': 0.99, 'max_grad_norm': 1.0, 'lmbda': 1.0, 'clip_epsilon': 0.1, 'entropy_coef': 0.0}. Best is trial 13 with value: -0.10456666350364685.
+[I 2024-12-13 16:35:52,281] Trial 18 finished with value: -0.10705000162124634 and parameters: {'lr': 0.0001, 'gamma': 0.99, 'max_grad_norm': 0.5, 'lmbda': 1.0, 'clip_epsilon': 0.1, 'entropy_coef': 0.0001}. Best is trial 13 with value: -0.10456666350364685.
+[I 2024-12-13 16:48:00,320] Trial 19 finished with value: -0.10589999705553055 and parameters: {'lr': 0.0001, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.1, 'entropy_coef': 0.01}. Best is trial 13 with value: -0.10456666350364685.
+[I 2024-12-13 17:00:07,770] Trial 20 finished with value: -0.10516667366027832 and parameters: {'lr': 0.0001, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 1.0, 'clip_epsilon': 0.1, 'entropy_coef': 0.0001}. Best is trial 13 with value: -0.10456666350364685.
+[I 2024-12-13 17:12:49,843] Trial 21 finished with value: -0.12216667085886002 and parameters: {'lr': 0.01, 'gamma': 0.85, 'max_grad_norm': 1.5, 'lmbda': 1.0, 'clip_epsilon': 0.1, 'entropy_coef': 0.0}. Best is trial 13 with value: -0.10456666350364685.
+[I 2024-12-13 17:25:33,903] Trial 22 finished with value: -0.12416666746139526 and parameters: {'lr': 0.01, 'gamma': 0.95, 'max_grad_norm': 1.5, 'lmbda': 1.0, 'clip_epsilon': 0.2, 'entropy_coef': 0.0}. Best is trial 13 with value: -0.10456666350364685.
+[I 2024-12-13 17:37:45,019] Trial 23 finished with value: -0.10885000973939896 and parameters: {'lr': 0.0001, 'gamma': 0.75, 'max_grad_norm': 1.5, 'lmbda': 1.0, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 13 with value: -0.10456666350364685.
+[I 2024-12-13 17:49:43,935] Trial 24 finished with value: -0.11411666125059128 and parameters: {'lr': 1e-06, 'gamma': 0.7, 'max_grad_norm': 1.5, 'lmbda': 1.0, 'clip_epsilon': 0.1, 'entropy_coef': 0.0}. Best is trial 13 with value: -0.10456666350364685.
+[I 2024-12-13 18:01:46,512] Trial 25 finished with value: -0.10206666588783264 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 1.0, 'clip_epsilon': 0.2, 'entropy_coef': 0.0}. Best is trial 25 with value: -0.10206666588783264.
+[I 2024-12-13 18:13:49,426] Trial 26 finished with value: -0.10508333146572113 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 0.5, 'lmbda': 1.0, 'clip_epsilon': 0.1, 'entropy_coef': 0.0}. Best is trial 25 with value: -0.10206666588783264.
+[I 2024-12-13 18:25:51,988] Trial 27 finished with value: -0.10258334130048752 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.1, 'entropy_coef': 0.0001}. Best is trial 25 with value: -0.10206666588783264.
+[I 2024-12-13 18:37:55,382] Trial 28 finished with value: -0.10298334062099457 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 25 with value: -0.10206666588783264.
+[I 2024-12-13 18:49:59,101] Trial 29 finished with value: -0.10348333418369293 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 25 with value: -0.10206666588783264.
+[I 2024-12-13 19:02:04,161] Trial 30 finished with value: -0.1039833277463913 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 25 with value: -0.10206666588783264.
+[I 2024-12-13 19:14:08,586] Trial 31 finished with value: -0.10106666386127472 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 31 with value: -0.10106666386127472.
+[I 2024-12-13 19:26:11,106] Trial 32 finished with value: -0.10086666792631149 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 32 with value: -0.10086666792631149.
+[I 2024-12-13 19:38:16,882] Trial 33 finished with value: -0.10118333250284195 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 32 with value: -0.10086666792631149.
+[I 2024-12-13 19:50:22,351] Trial 34 finished with value: -0.11318334192037582 and parameters: {'lr': 1e-05, 'gamma': 0.75, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 32 with value: -0.10086666792631149.
+[I 2024-12-13 20:02:26,161] Trial 35 finished with value: -0.1092333272099495 and parameters: {'lr': 1e-05, 'gamma': 0.8, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 32 with value: -0.10086666792631149.
+[I 2024-12-13 20:14:27,994] Trial 36 finished with value: -0.09830000251531601 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 20:26:50,079] Trial 37 finished with value: -0.11169999837875366 and parameters: {'lr': 0.001, 'gamma': 0.95, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 20:38:48,852] Trial 38 finished with value: -0.11305000633001328 and parameters: {'lr': 1e-07, 'gamma': 0.7, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 20:50:53,445] Trial 39 finished with value: -0.11169999837875366 and parameters: {'lr': 1e-05, 'gamma': 0.9, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 21:02:55,644] Trial 40 finished with value: -0.10774999111890793 and parameters: {'lr': 1e-05, 'gamma': 0.85, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 21:14:58,977] Trial 41 finished with value: -0.10409999638795853 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.0, 'lmbda': 0.95, 'clip_epsilon': 0.2, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 21:27:05,388] Trial 42 finished with value: -0.10066667199134827 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 21:39:08,733] Trial 43 finished with value: -0.11179999262094498 and parameters: {'lr': 1e-05, 'gamma': 0.8, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 21:51:15,050] Trial 44 finished with value: -0.10066667199134827 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 22:03:14,668] Trial 45 finished with value: -0.11791666597127914 and parameters: {'lr': 1e-07, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.85, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 22:15:36,446] Trial 46 finished with value: -0.10980000346899033 and parameters: {'lr': 0.001, 'gamma': 0.9, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 22:27:42,420] Trial 47 finished with value: -0.10361666232347488 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 22:39:45,813] Trial 48 finished with value: -0.11025000363588333 and parameters: {'lr': 1e-05, 'gamma': 0.6, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 22:51:45,745] Trial 49 finished with value: -0.11630000174045563 and parameters: {'lr': 1e-06, 'gamma': 0.75, 'max_grad_norm': 1.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 23:03:51,757] Trial 50 finished with value: -0.10296666622161865 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.85, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 23:15:58,513] Trial 51 finished with value: -0.10379999876022339 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 23:28:00,997] Trial 52 finished with value: -0.10076667368412018 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 23:40:04,595] Trial 53 finished with value: -0.10300000011920929 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-13 23:52:11,322] Trial 54 finished with value: -0.10270000249147415 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 0.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 00:04:16,910] Trial 55 finished with value: -0.1018500030040741 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 00:16:15,125] Trial 56 finished with value: -0.11338333040475845 and parameters: {'lr': 1e-07, 'gamma': 0.85, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 00:28:39,062] Trial 57 finished with value: -0.11180000007152557 and parameters: {'lr': 0.001, 'gamma': 0.7, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 00:41:21,538] Trial 58 finished with value: -0.11800000071525574 and parameters: {'lr': 0.01, 'gamma': 0.99, 'max_grad_norm': 1.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 00:53:26,837] Trial 59 finished with value: -0.10860000550746918 and parameters: {'lr': 1e-05, 'gamma': 0.8, 'max_grad_norm': 2.0, 'lmbda': 0.85, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 01:05:25,791] Trial 60 finished with value: -0.11311666667461395 and parameters: {'lr': 1e-06, 'gamma': 0.6, 'max_grad_norm': 0.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 01:17:29,940] Trial 61 finished with value: -0.10300000756978989 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 01:29:33,454] Trial 62 finished with value: -0.10246666520833969 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 01:41:38,990] Trial 63 finished with value: -0.10361666232347488 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 01:53:44,107] Trial 64 finished with value: -0.10303333401679993 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 02:05:48,127] Trial 65 finished with value: -0.10618333518505096 and parameters: {'lr': 1e-05, 'gamma': 0.95, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.2, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 02:17:54,106] Trial 66 finished with value: -0.10339999198913574 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 02:30:39,313] Trial 67 finished with value: -0.11883332580327988 and parameters: {'lr': 0.01, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 02:42:41,775] Trial 68 finished with value: -0.10510000586509705 and parameters: {'lr': 1e-05, 'gamma': 0.9, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 02:54:46,246] Trial 69 finished with value: -0.10448332875967026 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 0.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 03:06:50,719] Trial 70 finished with value: -0.10831666737794876 and parameters: {'lr': 1e-05, 'gamma': 0.75, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 03:18:57,606] Trial 71 finished with value: -0.10300000756978989 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 03:31:03,450] Trial 72 finished with value: -0.10173333436250687 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 03:43:06,693] Trial 73 finished with value: -0.10105000436306 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 03:55:11,558] Trial 74 finished with value: -0.1023000106215477 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 04:07:15,762] Trial 75 finished with value: -0.10301666706800461 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.2, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 04:19:11,860] Trial 76 finished with value: -0.113066665828228 and parameters: {'lr': 1e-07, 'gamma': 0.99, 'max_grad_norm': 1.0, 'lmbda': 0.85, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 04:31:34,764] Trial 77 finished with value: -0.10768333077430725 and parameters: {'lr': 0.001, 'gamma': 0.7, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 04:43:36,170] Trial 78 finished with value: -0.1148499920964241 and parameters: {'lr': 1e-06, 'gamma': 0.85, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 04:55:40,601] Trial 79 finished with value: -0.10499998927116394 and parameters: {'lr': 1e-05, 'gamma': 0.95, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 05:07:42,063] Trial 80 finished with value: -0.10086666792631149 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 05:19:45,801] Trial 81 finished with value: -0.1048833355307579 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 05:31:50,697] Trial 82 finished with value: -0.10334999114274979 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 05:43:55,938] Trial 83 finished with value: -0.10463333129882812 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 05:56:04,837] Trial 84 finished with value: -0.10276667028665543 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 06:08:08,452] Trial 85 finished with value: -0.10155000537633896 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 06:20:12,775] Trial 86 finished with value: -0.11198333650827408 and parameters: {'lr': 1e-05, 'gamma': 0.6, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.2, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 06:32:21,883] Trial 87 finished with value: -0.10414999723434448 and parameters: {'lr': 0.0001, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 06:44:58,151] Trial 88 finished with value: -0.10466667264699936 and parameters: {'lr': 0.01, 'gamma': 0.8, 'max_grad_norm': 1.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 06:57:03,199] Trial 89 finished with value: -0.10734999179840088 and parameters: {'lr': 1e-05, 'gamma': 0.9, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 07:09:07,159] Trial 90 finished with value: -0.10946666449308395 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 0.5, 'lmbda': 0.85, 'clip_epsilon': 0.1, 'entropy_coef': 0.01}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 07:21:10,550] Trial 91 finished with value: -0.09951665997505188 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 07:33:14,548] Trial 92 finished with value: -0.10266666114330292 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 36 with value: -0.09830000251531601.
+[I 2024-12-14 07:45:18,466] Trial 93 finished with value: -0.09643332660198212 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 07:57:25,105] Trial 94 finished with value: -0.10106666386127472 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 08:09:31,339] Trial 95 finished with value: -0.10046667605638504 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 08:21:37,994] Trial 96 finished with value: -0.10300000011920929 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 08:33:36,652] Trial 97 finished with value: -0.11201666295528412 and parameters: {'lr': 1e-07, 'gamma': 0.75, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 08:45:41,820] Trial 98 finished with value: -0.10346666723489761 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 08:58:06,958] Trial 99 finished with value: -0.1049666702747345 and parameters: {'lr': 0.001, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 09:10:09,329] Trial 100 finished with value: -0.11691666394472122 and parameters: {'lr': 1e-06, 'gamma': 0.85, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 09:22:17,058] Trial 101 finished with value: -0.10296666622161865 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 09:34:22,266] Trial 102 finished with value: -0.1022166758775711 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 09:46:27,695] Trial 103 finished with value: -0.10323333740234375 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 09:58:29,986] Trial 104 finished with value: -0.10281666368246078 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 10:10:33,881] Trial 105 finished with value: -0.1116499975323677 and parameters: {'lr': 1e-05, 'gamma': 0.7, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 10:22:42,551] Trial 106 finished with value: -0.10246667265892029 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 10:34:50,640] Trial 107 finished with value: -0.10513333231210709 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 1.0, 'clip_epsilon': 0.1, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 10:47:04,609] Trial 108 finished with value: -0.10721666365861893 and parameters: {'lr': 0.0001, 'gamma': 0.95, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.2, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 10:59:11,600] Trial 109 finished with value: -0.10533333569765091 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 0.5, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 11:11:16,277] Trial 110 finished with value: -0.11160000413656235 and parameters: {'lr': 1e-05, 'gamma': 0.6, 'max_grad_norm': 1.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 11:23:24,863] Trial 111 finished with value: -0.10155000537633896 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 11:35:32,246] Trial 112 finished with value: -0.10270000249147415 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 11:47:40,786] Trial 113 finished with value: -0.10126666724681854 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 11:59:49,823] Trial 114 finished with value: -0.10470000654459 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 12:11:53,157] Trial 115 finished with value: -0.10663332790136337 and parameters: {'lr': 1e-05, 'gamma': 0.8, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 12:24:29,823] Trial 116 finished with value: -0.10483332723379135 and parameters: {'lr': 0.01, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.85, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 12:36:34,020] Trial 117 finished with value: -0.10450000315904617 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 12:48:39,230] Trial 118 finished with value: -0.10300000011920929 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 13:00:43,806] Trial 119 finished with value: -0.10748333483934402 and parameters: {'lr': 1e-05, 'gamma': 0.9, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 13:12:50,699] Trial 120 finished with value: -0.10306666791439056 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 13:25:17,280] Trial 121 finished with value: -0.09965000301599503 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 13:37:35,052] Trial 122 finished with value: -0.10341667383909225 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 13:49:38,861] Trial 123 finished with value: -0.10323333740234375 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 14:01:44,379] Trial 124 finished with value: -0.10251668095588684 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+
+
+PPO Optuna
+
+
+
+
+PPO Optuna
+
+
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[I 2024-12-14 14:13:40,126] Trial 125 finished with value: -0.11095000058412552 and parameters: {'lr': 1e-07, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 14:26:00,560] Trial 126 finished with value: -0.10738333314657211 and parameters: {'lr': 0.001, 'gamma': 0.75, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 14:38:01,831] Trial 127 finished with value: -0.10266666859388351 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 14:50:02,217] Trial 128 finished with value: -0.11080000549554825 and parameters: {'lr': 1e-06, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.2, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 15:02:08,719] Trial 129 finished with value: -0.10393333435058594 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 1.0, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 15:14:12,512] Trial 130 finished with value: -0.10946665704250336 and parameters: {'lr': 1e-05, 'gamma': 0.85, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.1, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 15:26:17,963] Trial 131 finished with value: -0.10480000078678131 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 15:38:24,766] Trial 132 finished with value: -0.10498333722352982 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 15:50:31,931] Trial 133 finished with value: -0.10263333469629288 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 16:02:34,358] Trial 134 finished with value: -0.10930000245571136 and parameters: {'lr': 1e-05, 'gamma': 0.7, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 16:14:40,041] Trial 135 finished with value: -0.10151667147874832 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 16:26:47,255] Trial 136 finished with value: -0.10189999639987946 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 0.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 16:38:50,767] Trial 137 finished with value: -0.1077333316206932 and parameters: {'lr': 1e-05, 'gamma': 0.95, 'max_grad_norm': 1.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 16:50:59,887] Trial 138 finished with value: -0.10371667146682739 and parameters: {'lr': 0.0001, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 17:03:06,479] Trial 139 finished with value: -0.10316666960716248 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.85, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 17:15:49,975] Trial 140 finished with value: -0.12016665935516357 and parameters: {'lr': 0.01, 'gamma': 0.6, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 17:27:53,040] Trial 141 finished with value: -0.10455000400543213 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 17:39:56,011] Trial 142 finished with value: -0.10168333351612091 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 17:52:00,551] Trial 143 finished with value: -0.10333334654569626 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 18:04:05,689] Trial 144 finished with value: -0.10266666114330292 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 18:16:09,290] Trial 145 finished with value: -0.109866663813591 and parameters: {'lr': 1e-05, 'gamma': 0.8, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 18:28:14,026] Trial 146 finished with value: -0.10076667368412018 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 18:40:18,546] Trial 147 finished with value: -0.10178332775831223 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 18:52:24,076] Trial 148 finished with value: -0.10053333640098572 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 19:04:30,155] Trial 149 finished with value: -0.10526666790246964 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 19:16:35,229] Trial 150 finished with value: -0.10899999737739563 and parameters: {'lr': 1e-05, 'gamma': 0.9, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 19:28:41,348] Trial 151 finished with value: -0.10323333740234375 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 19:40:46,229] Trial 152 finished with value: -0.10170000046491623 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 19:52:52,714] Trial 153 finished with value: -0.10284999758005142 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 20:04:51,149] Trial 154 finished with value: -0.10764999687671661 and parameters: {'lr': 1e-07, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 20:16:55,422] Trial 155 finished with value: -0.1004333421587944 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 20:29:00,591] Trial 156 finished with value: -0.10066665709018707 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 20:41:05,210] Trial 157 finished with value: -0.10733332484960556 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.1, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 20:53:25,841] Trial 158 finished with value: -0.10370000451803207 and parameters: {'lr': 0.001, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.2, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 21:05:27,539] Trial 159 finished with value: -0.11048334091901779 and parameters: {'lr': 1e-06, 'gamma': 0.75, 'max_grad_norm': 0.5, 'lmbda': 1.0, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 21:17:35,087] Trial 160 finished with value: -0.10231666266918182 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 21:29:39,818] Trial 161 finished with value: -0.10066667199134827 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 21:41:45,259] Trial 162 finished with value: -0.1034500002861023 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 21:53:51,005] Trial 163 finished with value: -0.10294999927282333 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 22:05:56,182] Trial 164 finished with value: -0.10076667368412018 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 22:18:03,564] Trial 165 finished with value: -0.10031666606664658 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 22:30:07,701] Trial 166 finished with value: -0.10275000333786011 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 22:42:12,885] Trial 167 finished with value: -0.10481666773557663 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 22:54:17,432] Trial 168 finished with value: -0.10275000333786011 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 23:06:22,441] Trial 169 finished with value: -0.10801666229963303 and parameters: {'lr': 1e-05, 'gamma': 0.85, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 23:18:25,564] Trial 170 finished with value: -0.10939999669790268 and parameters: {'lr': 1e-05, 'gamma': 0.7, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 23:30:30,226] Trial 171 finished with value: -0.10543333739042282 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 23:42:37,090] Trial 172 finished with value: -0.10296666622161865 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-14 23:54:41,244] Trial 173 finished with value: -0.10381666570901871 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 00:06:48,361] Trial 174 finished with value: -0.10175000131130219 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 00:19:01,624] Trial 175 finished with value: -0.11136665940284729 and parameters: {'lr': 0.0001, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.85, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 00:31:06,658] Trial 176 finished with value: -0.10616666078567505 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 00:43:09,701] Trial 177 finished with value: -0.10270000249147415 and parameters: {'lr': 1e-05, 'gamma': 0.95, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 00:55:15,782] Trial 178 finished with value: -0.1033666655421257 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 01:07:55,813] Trial 179 finished with value: -0.10516667366027832 and parameters: {'lr': 0.01, 'gamma': 0.99, 'max_grad_norm': 1.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 01:19:58,461] Trial 180 finished with value: -0.11000000685453415 and parameters: {'lr': 1e-05, 'gamma': 0.6, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 01:32:01,080] Trial 181 finished with value: -0.1033666655421257 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 01:44:06,557] Trial 182 finished with value: -0.10231667757034302 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 01:56:10,117] Trial 183 finished with value: -0.10275000333786011 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 02:08:11,557] Trial 184 finished with value: -0.09991666674613953 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 02:20:15,914] Trial 185 finished with value: -0.10388333350419998 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 02:32:20,260] Trial 186 finished with value: -0.10395000129938126 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 02:44:23,814] Trial 187 finished with value: -0.10146667063236237 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[SUCCESS] Added module directory: /usr/share/sumo/tools
+ Retrying in 1 seconds
+[CONFIRMED] Environment variable exists: SUMO_HOME
+[I 2024-12-15 02:56:29,953] Trial 188 finished with value: -0.10823334008455276 and parameters: {'lr': 1e-05, 'gamma': 0.8, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 03:08:33,246] Trial 189 finished with value: -0.10468332469463348 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.2, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 03:20:38,389] Trial 190 finished with value: -0.105766661465168 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.9, 'clip_epsilon': 0.1, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 03:32:44,631] Trial 191 finished with value: -0.10246666520833969 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 03:44:52,986] Trial 192 finished with value: -0.10076668113470078 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 03:56:58,504] Trial 193 finished with value: -0.10095000267028809 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 04:09:03,299] Trial 194 finished with value: -0.10300000011920929 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 04:21:07,151] Trial 195 finished with value: -0.1009666696190834 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 04:33:12,578] Trial 196 finished with value: -0.10579999536275864 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 04:45:17,538] Trial 197 finished with value: -0.10691667348146439 and parameters: {'lr': 1e-05, 'gamma': 0.9, 'max_grad_norm': 2.0, 'lmbda': 1.0, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 04:57:15,661] Trial 198 finished with value: -0.11191666126251221 and parameters: {'lr': 1e-07, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 05:09:35,165] Trial 199 finished with value: -0.10456666350364685 and parameters: {'lr': 0.001, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 05:21:34,939] Trial 200 finished with value: -0.11681666225194931 and parameters: {'lr': 1e-06, 'gamma': 0.75, 'max_grad_norm': 0.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 05:33:37,477] Trial 201 finished with value: -0.10066666454076767 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 05:45:43,666] Trial 202 finished with value: -0.1028333306312561 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 05:57:47,229] Trial 203 finished with value: -0.09986665844917297 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 06:09:50,154] Trial 204 finished with value: -0.1007833331823349 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 06:21:56,481] Trial 205 finished with value: -0.10651665925979614 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 06:33:59,984] Trial 206 finished with value: -0.1029166653752327 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 06:46:04,967] Trial 207 finished with value: -0.10244999080896378 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 06:58:09,078] Trial 208 finished with value: -0.10586667060852051 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 07:10:12,475] Trial 209 finished with value: -0.10173332691192627 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 07:22:16,320] Trial 210 finished with value: -0.1109333336353302 and parameters: {'lr': 1e-05, 'gamma': 0.85, 'max_grad_norm': 1.0, 'lmbda': 0.85, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 07:34:21,763] Trial 211 finished with value: -0.10293332487344742 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 07:46:24,214] Trial 212 finished with value: -0.10315000265836716 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 07:58:26,122] Trial 213 finished with value: -0.10180000215768814 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 08:10:30,370] Trial 214 finished with value: -0.1023833379149437 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 08:22:35,103] Trial 215 finished with value: -0.10468333214521408 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 08:34:45,008] Trial 216 finished with value: -0.10730000585317612 and parameters: {'lr': 0.0001, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 08:46:48,453] Trial 217 finished with value: -0.10478333383798599 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.9, 'clip_epsilon': 0.3, 'entropy_coef': 0.001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 08:58:53,587] Trial 218 finished with value: -0.10166666656732559 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 09:10:58,639] Trial 219 finished with value: -0.10178333520889282 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 09:23:42,435] Trial 220 finished with value: -0.11166667193174362 and parameters: {'lr': 0.01, 'gamma': 0.7, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 09:35:50,383] Trial 221 finished with value: -0.10019999742507935 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 09:47:58,285] Trial 222 finished with value: -0.10140000283718109 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 10:00:05,826] Trial 223 finished with value: -0.10246666520833969 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 10:12:10,302] Trial 224 finished with value: -0.10160000622272491 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 10:24:13,751] Trial 225 finished with value: -0.10281667858362198 and parameters: {'lr': 1e-05, 'gamma': 0.95, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 10:36:31,163] Trial 226 finished with value: -0.10286667197942734 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 10:48:58,068] Trial 227 finished with value: -0.1031000092625618 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 1.5, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 11:01:02,075] Trial 228 finished with value: -0.11124999821186066 and parameters: {'lr': 1e-05, 'gamma': 0.6, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.1, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 11:13:05,330] Trial 229 finished with value: -0.10193333774805069 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.2, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 11:25:11,780] Trial 230 finished with value: -0.10296666622161865 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 11:37:18,003] Trial 231 finished with value: -0.10456666350364685 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 11:49:22,911] Trial 232 finished with value: -0.10088333487510681 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 12:01:30,895] Trial 233 finished with value: -0.10335000604391098 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 12:13:35,849] Trial 234 finished with value: -0.10498333722352982 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 12:25:42,714] Trial 235 finished with value: -0.10225000232458115 and parameters: {'lr': 1e-05, 'gamma': 0.99, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.0001}. Best is trial 93 with value: -0.09643332660198212.
+[I 2024-12-15 12:37:49,181] Trial 236 finished with value: -0.10730000585317612 and parameters: {'lr': 1e-05, 'gamma': 0.8, 'max_grad_norm': 2.0, 'lmbda': 0.95, 'clip_epsilon': 0.3, 'entropy_coef': 0.01}. Best is trial 93 with value: -0.09643332660198212.
