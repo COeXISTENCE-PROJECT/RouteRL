@@ -48,6 +48,7 @@ class Keychain:
 
     ### Environment
     NUMBER_OF_DAYS = "number_of_days"
+    SAVE_EVERY = "save_every"
 
     ### Simulator
     NETWORK_NAME = "network_name"

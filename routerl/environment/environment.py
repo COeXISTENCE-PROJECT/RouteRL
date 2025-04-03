@@ -137,6 +137,9 @@ class TrafficEnvironment(AECEnv):
             
             - number_of_days (int, default=1):
                 Number of days in the scenario.
+                
+            - save_every (int, default=1):
+                Save the episode data to disk every X days.
 
         - simulator_parameters (dict, optional): 
             SUMO simulator settings.
@@ -341,6 +344,7 @@ class TrafficEnvironment(AECEnv):
         self.save_detectors_info = save_detectors_info
 
         self.number_of_days = self.environment_params[kc.NUMBER_OF_DAYS]
+        self.save_every = self.environment_params[kc.SAVE_EVERY]
         self.action_space_size = self.environment_params[kc.ACTION_SPACE_SIZE]
         self._set_seed(seed)
 
@@ -671,11 +675,12 @@ class TrafficEnvironment(AECEnv):
             self._agent_selector = agent_selector(self.possible_agents)
             self.agent_selection = self._agent_selector.next()
 
-        recording_task = threading.Thread(target=self._record, args=(self.day,
-                                                                     self.travel_times_list,
-                                                                     self.all_agents,
-                                                                     detectors_dict))
-        recording_task.start()
+        if self.day % self.save_every == 0:
+            recording_task = threading.Thread(target=self._record, args=(self.day,
+                                                                        self.travel_times_list,
+                                                                        self.all_agents,
+                                                                        detectors_dict))
+            recording_task.start()
         
         # Reset observations
         if len(self.machine_agents) > 0:

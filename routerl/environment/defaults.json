@@ -45,6 +45,7 @@
     "environment_parameters":
     {
         "number_of_days" : 1,
+        "save_every" : 1,
 
         "action_space_size" : "${path_generation_parameters.number_of_paths}"
     },
