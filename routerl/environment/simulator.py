@@ -305,9 +305,10 @@ class SumoSimulator():
             det_dict (dict[str, float]): dictionary with detector data.
         """
 
-        det_dict = {name: None for name in self.detectors_name}
-        for det_name in self.detectors_name:
-            det_dict[det_name]  = self.sumo_connection.lanearea.getIntervalVehicleNumber(f"{det_name}_det")
+        det_dict = {name: 0 for name in self.detectors_name}
+        if self.save_detectors_info:
+            for det_name in self.detectors_name:
+                det_dict[det_name]  = self.sumo_connection.lanearea.getIntervalVehicleNumber(f"{det_name}_det")
 
         self.sumo_connection.load(["--seed",
                                    str(self.seed),
