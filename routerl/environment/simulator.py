@@ -75,7 +75,8 @@ class SumoSimulator():
                                                 kc.DETECTORS_XML_PATH).replace("$net$", self.network_name)
         self.default_od_path     = os.path.join(curr_dir,
                                                 kc.DEFAULT_ODS_PATH)
-        
+        self.sumo_save_path      = os.path.join(curr_dir, 
+                                                "../../training_records/SUMO_output") #TODO - unhardcode this
         self.paths_csv_file_path = os.path.join(params[kc.RECORDS_FOLDER], kc.PATHS_CSV_FILE_NAME)
 
         random.seed(seed)
@@ -94,6 +95,7 @@ class SumoSimulator():
         self.detectors_name = self._get_detectors()
         
         self.timestep = 0
+        self.runs = 0
         self.route_id_cache = dict()
         self.waiting_vehicles = dict()
 
@@ -278,12 +280,27 @@ class SumoSimulator():
         Returns:
             None
         """
+        
+        self.runs += 1
+
+        individual_sumo_stats_file = os.path.join(self.sumo_save_path,
+                                                  f"detailed_sumo_stats_{self.runs}.xml")
+        
+        combined_sumo_stats_file = os.path.join(self.sumo_save_path,
+                                                f"sumo_stats_{self.runs}.xml")
+
+        print(individual_sumo_stats_file, combined_sumo_stats_file)
 
         sumo_cmd = [self.sumo_type,"--seed",
                     str(self.seed),
                     "--fcd-output",
                     self.sumo_fcd,
-                    "-c", self.sumo_config_path]
+                    "-c", self.sumo_config_path, 
+                    "--statistic-output",
+                    combined_sumo_stats_file,
+                    "--tripinfo-output",
+                    individual_sumo_stats_file,
+                    ]
         traci.start(sumo_cmd, label=self.sumo_id)
         self.sumo_connection = traci.getConnection(self.sumo_id)
 
@@ -310,12 +327,25 @@ class SumoSimulator():
             for det_name in self.detectors_name:
                 det_dict[det_name]  = self.sumo_connection.lanearea.getIntervalVehicleNumber(f"{det_name}_det")
 
+        self.runs += 1
+
+        individual_sumo_stats_file = os.path.join(self.sumo_save_path,
+                                                  f"detailed_sumo_stats_{self.runs}.xml")
+        
+        combined_sumo_stats_file = os.path.join(self.sumo_save_path,
+                                                f"sumo_stats_{self.runs}.xml")
+
         self.sumo_connection.load(["--seed",
                                    str(self.seed),
                                    "--fcd-output",
                                    self.sumo_fcd,
                                    '-c',
-                                   self.sumo_config_path])
+                                   self.sumo_config_path,
+                                   "--statistic-output",
+                                   combined_sumo_stats_file,
+                                   "--tripinfo-output",
+                                   individual_sumo_stats_file])
+        
 
         self.timestep = 0
         self.waiting_vehicles = dict()
