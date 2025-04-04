@@ -28,9 +28,11 @@ class Recorder:
 
         self.episodes_folder = make_dir([self.records_folder, kc.EPISODES_LOGS_FOLDER])
         self.detector_folder = make_dir([self.records_folder, kc.DETECTOR_LOGS_FOLDER])
+        self.sumo_folder = make_dir([self.records_folder, kc.SUMO_LOGS_FOLDER])
 
         self._clear_records(self.episodes_folder)
         self._clear_records(self.detector_folder)
+        self._clear_records(self.sumo_folder)
         
         self.loss_file_path = self._get_txt_file_path(kc.LOSSES_LOG_FILE_NAME)
         logging.info(f"[SUCCESS] Recorder is now here to record!")

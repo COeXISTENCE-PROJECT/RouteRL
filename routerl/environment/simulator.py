@@ -76,7 +76,7 @@ class SumoSimulator():
         self.default_od_path     = os.path.join(curr_dir,
                                                 kc.DEFAULT_ODS_PATH)
         self.sumo_save_path      = os.path.join(curr_dir, 
-                                                "../../training_records/SUMO_output") #TODO - unhardcode this
+                                                "../../training_records/", kc.SUMO_LOGS_FOLDER) #TODO change path to dynamic
         self.paths_csv_file_path = os.path.join(params[kc.RECORDS_FOLDER], kc.PATHS_CSV_FILE_NAME)
 
         random.seed(seed)
