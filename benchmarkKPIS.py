@@ -58,8 +58,8 @@ def load_general_SUMO(file) -> pd.DataFrame:
     except ValueError:
         pass
 
-    print(df.shape)
-    print(df)
+    # print(df.shape)
+    # print(df)
     
     return df
 
@@ -78,6 +78,26 @@ def load_detailed_SUMO(file) -> pd.DataFrame:
     df = pd.DataFrame(data)    
     
     # print(df.shape)
+    
+    df = flatten_by_id(df)
+    
+    # print(df.shape)
+    
+    return df
+
+def load_routeRL(file) -> pd.DataFrame:
+    """
+    Load RouteRL output file and return a DataFrame.
+    """
+    
+    # load the csv file
+    df = pd.read_csv(file)
+    
+    # convert to numeric
+    try:
+        df = df.apply(pd.to_numeric)
+    except ValueError:
+        pass
     
     df = flatten_by_id(df)
     
@@ -110,7 +130,7 @@ def load_episode(results_path: str, episode: int) -> pd.DataFrame:
 
     for root, dirs, files in os.walk(Detectors_path):
         for file in files:
-            if file.endswith("ep" + str(episode) + ".xml"):
+            if file.endswith("ep" + str(episode) + ".csv"):
                 Detectors_files.append(os.path.join(root, file))
 
     dfs = []
@@ -125,7 +145,9 @@ def load_episode(results_path: str, episode: int) -> pd.DataFrame:
             dfs.append(df)
             
     for file in RouteRL_files:
-        pass 
+        df = load_routeRL(file)
+        print("RouteRL file loaded.")
+        dfs.append(df)
 
     for file in Detectors_files:
         pass
@@ -140,6 +162,35 @@ def load_episode(results_path: str, episode: int) -> pd.DataFrame:
             
     return df
 
+
+def add_benchmark_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Add benchmark columns to the DataFrame.
+    """
+    
+    # here add whatever columns you want to add
+    
+    return df
+
+
+def collect_KPIs(path, n_episodes):
+    """
+    Collect KPIs of the experiment.
+    """
+    
+    df = pd.DataFrame()
+    
+    for i in range(1, n_episodes + 1):
+        # add new rows to the DataFrame
+        df = pd.concat([df, load_episode(path, i)], ignore_index=True)
+    
+    # add benchmark columns
+    df = add_benchmark_columns(df)
+    
+    return df
+
+
+
 mock_path = "training_records"
 
 if __name__ == "__main__":
@@ -149,4 +200,5 @@ if __name__ == "__main__":
     for i in range(1,10):
         # add new rows to the DataFrame
         df = pd.concat([df, load_episode(mock_path, i)], ignore_index=True)
-    print(df)        
+        
+    print(df.shape)        
