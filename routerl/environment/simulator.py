@@ -51,30 +51,41 @@ class SumoSimulator():
         self.simulation_length   = params[kc.SIMULATION_TIMESTEPS]
         self.stuck_time          = params[kc.STUCK_TIME]
 
-        curr_dir = os.path.dirname(os.path.abspath(__file__))
+        if self.network_name in kc.NETWORK_NAMES:
+            curr_dir = os.path.dirname(os.path.abspath(__file__))
 
-        self.network_folder      = os.path.join(curr_dir,
-                                                kc.NETWORK_FOLDER).replace("$net$", self.network_name)
-        self.sumo_config_path    = os.path.join(curr_dir,
-                                                kc.SUMO_CONFIG_PATH).replace("$net$", self.network_name)
-        self.routes_xml_path     = os.path.join(curr_dir,
-                                                kc.ROU_FILE_PATH).replace("$net$", self.network_name)
-        self.sumo_fcd            = os.path.join(curr_dir,
-                                                kc.SUMO_FCD).replace("$net$", self.network_name)
-        self.detector_save_path  = os.path.join(curr_dir,
-                                                kc.DETECTORS_CSV_PATH).replace("$net$", self.network_name)
-        self.conn_file_path      = os.path.join(curr_dir,
-                                                kc.CONNECTION_FILE_PATH).replace("$net$", self.network_name)
-        self.edge_file_path      = os.path.join(curr_dir,
-                                                kc.EDGE_FILE_PATH).replace("$net$", self.network_name)
-        self.nod_file_path       = os.path.join(curr_dir,
-                                                kc.NOD_FILE_PATH).replace("$net$", self.network_name)
-        self.rou_xml_save_path   = os.path.join(curr_dir,
-                                                kc.ROUTE_XML_PATH).replace("$net$", self.network_name)
-        self.det_xml_save_path   = os.path.join(curr_dir,
-                                                kc.DETECTORS_XML_PATH).replace("$net$", self.network_name)
-        self.default_od_path     = os.path.join(curr_dir,
-                                                kc.DEFAULT_ODS_PATH)
+            self.network_folder      = os.path.join(curr_dir,
+                                                    kc.NETWORK_FOLDER).replace("$net$", self.network_name)
+            self.sumo_config_path    = os.path.join(curr_dir,
+                                                    kc.SUMO_CONFIG_PATH).replace("$net$", self.network_name)
+            self.routes_xml_path     = os.path.join(curr_dir,
+                                                    kc.ROU_FILE_PATH).replace("$net$", self.network_name)
+            self.sumo_fcd            = os.path.join(curr_dir,
+                                                    kc.SUMO_FCD).replace("$net$", self.network_name)
+            self.detector_save_path  = os.path.join(curr_dir,
+                                                    kc.DETECTORS_CSV_PATH).replace("$net$", self.network_name)
+            self.conn_file_path      = os.path.join(curr_dir,
+                                                    kc.CONNECTION_FILE_PATH).replace("$net$", self.network_name)
+            self.edge_file_path      = os.path.join(curr_dir,
+                                                    kc.EDGE_FILE_PATH).replace("$net$", self.network_name)
+            self.nod_file_path       = os.path.join(curr_dir,
+                                                    kc.NOD_FILE_PATH).replace("$net$", self.network_name)
+            self.rou_xml_save_path   = os.path.join(curr_dir,
+                                                    kc.ROUTE_XML_PATH).replace("$net$", self.network_name)
+            self.det_xml_save_path   = os.path.join(curr_dir,
+                                                    kc.DETECTORS_XML_PATH).replace("$net$", self.network_name)
+        else:
+            self.network_folder      = self.network_name
+            self.sumo_config_path    = os.path.join(self.network_folder, self.network_name + ".sumocfg")
+            self.routes_xml_path     = os.path.join(self.network_folder, self.network_name + ".rou.xml")
+            self.sumo_fcd            = os.path.join(self.network_folder, "fcd.xml")
+            self.detector_save_path  = os.path.join(self.network_folder, "detectors.csv")
+            self.conn_file_path      = os.path.join(self.network_folder, self.network_name + ".con.xml")
+            self.edge_file_path      = os.path.join(self.network_folder, self.network_name + ".edg.xml")
+            self.nod_file_path       = os.path.join(self.network_folder, self.network_name + ".nod.xml")
+            self.rou_xml_save_path   = os.path.join(self.network_folder, "route.rou.xml")
+            self.det_xml_save_path   = os.path.join(self.network_folder, "det.add.xml")
+            
         self.sumo_save_path      = os.path.join(params[kc.RECORDS_FOLDER], kc.SUMO_LOGS_FOLDER) #TODO change path to dynamic
         self.paths_csv_file_path = os.path.join(params[kc.RECORDS_FOLDER], kc.PATHS_CSV_FILE_NAME)
 

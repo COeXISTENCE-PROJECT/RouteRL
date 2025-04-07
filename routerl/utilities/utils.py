@@ -37,7 +37,7 @@ def update_params(old_params: dict, new_params: dict):
 def resolve_ods(params):
     curr_dir = os.path.dirname(os.path.abspath(__file__))
     default_od_path = os.path.join(curr_dir, kc.DEFAULT_ODS_PATH)
-    default_ods = read_json(default_od_path)[params[kc.SIMULATOR][kc.NETWORK_NAME]]
+    default_ods = read_json(default_od_path).get(params[kc.SIMULATOR][kc.NETWORK_NAME], {})
     if params[kc.PATH_GEN][kc.ORIGINS] == "default":
         params[kc.PATH_GEN][kc.ORIGINS] = default_ods[kc.ORIGINS]
     if params[kc.PATH_GEN][kc.DESTINATIONS] == "default":
