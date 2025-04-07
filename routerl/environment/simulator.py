@@ -75,8 +75,7 @@ class SumoSimulator():
                                                 kc.DETECTORS_XML_PATH).replace("$net$", self.network_name)
         self.default_od_path     = os.path.join(curr_dir,
                                                 kc.DEFAULT_ODS_PATH)
-        self.sumo_save_path      = os.path.join(curr_dir, 
-                                                "../../training_records/", kc.SUMO_LOGS_FOLDER) #TODO change path to dynamic
+        self.sumo_save_path      = os.path.join(params[kc.RECORDS_FOLDER], kc.SUMO_LOGS_FOLDER) #TODO change path to dynamic
         self.paths_csv_file_path = os.path.join(params[kc.RECORDS_FOLDER], kc.PATHS_CSV_FILE_NAME)
 
         random.seed(seed)
@@ -288,8 +287,6 @@ class SumoSimulator():
         
         combined_sumo_stats_file = os.path.join(self.sumo_save_path,
                                                 f"sumo_stats_{self.runs}.xml")
-
-        print(individual_sumo_stats_file, combined_sumo_stats_file)
 
         sumo_cmd = [self.sumo_type,"--seed",
                     str(self.seed),
