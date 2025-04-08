@@ -35,6 +35,10 @@ def update_params(old_params: dict, new_params: dict):
 
 
 def resolve_ods(params):
+    if not (params[kc.SIMULATOR][kc.NETWORK_NAME] in kc.NETWORK_NAMES):
+        if params[kc.PATH_GEN][kc.ORIGINS] == "default" or params[kc.PATH_GEN][kc.DESTINATIONS] == "default":
+            raise ValueError("Cannot use default origins/destinations with custom network.")
+        return params
     curr_dir = os.path.dirname(os.path.abspath(__file__))
     default_od_path = os.path.join(curr_dir, kc.DEFAULT_ODS_PATH)
     default_ods = read_json(default_od_path).get(params[kc.SIMULATOR][kc.NETWORK_NAME], {})

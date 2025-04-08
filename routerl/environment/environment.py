@@ -145,7 +145,10 @@ class TrafficEnvironment(AECEnv):
             SUMO simulator settings.
             
             - network_name (str, default="csomor"):
-                Network name (e.g., ``arterial``, ``cologne``, ``grid``).
+                Network name (e.g., ``arterial``, ``cologne``, ``grid``)
+                
+            - custom_network_folder (str, default="NA"):
+                In case of custom network, specify the folder name.
             
             - simulation_timesteps (int, default=180):
                 Total simulation time in seconds.

@@ -52,6 +52,7 @@ class Keychain:
 
     ### Simulator
     NETWORK_NAME = "network_name"
+    CUSTOM_NETWORK_FOLDER = "custom_network_folder"
     SUMO_TYPE = "sumo_type"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
     STUCK_TIME = "stuck_time"

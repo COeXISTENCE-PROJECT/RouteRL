@@ -53,6 +53,7 @@
     "simulator_parameters":
     {
         "network_name" : "csomor",
+        "custom_network_folder" : "NA",
         "simulation_timesteps" : 180,
         "sumo_type" : "sumo",
         "stuck_time" : 600,

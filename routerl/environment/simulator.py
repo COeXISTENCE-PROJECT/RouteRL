@@ -75,7 +75,7 @@ class SumoSimulator():
             self.det_xml_save_path   = os.path.join(curr_dir,
                                                     kc.DETECTORS_XML_PATH).replace("$net$", self.network_name)
         else:
-            self.network_folder      = self.network_name
+            self.network_folder      = params[kc.CUSTOM_NETWORK_FOLDER] if params[kc.CUSTOM_NETWORK_FOLDER] != "NA" else self.network_name
             self.sumo_config_path    = os.path.join(self.network_folder, self.network_name + ".sumocfg")
             self.routes_xml_path     = os.path.join(self.network_folder, self.network_name + ".rou.xml")
             self.sumo_fcd            = os.path.join(self.network_folder, "fcd.xml")
@@ -275,7 +275,7 @@ class SumoSimulator():
         with open(self.det_xml_save_path, "w") as det:
             print("""<additional>""", file=det)
             for det_id in detectors_name:
-                print(f"<laneAreaDetector id=\"{det_id}_det\" lane=\"{det_id}_0\" pos=\"-5\" length=\"5.00\" file=\"NUL\" friendlyPos=\"True\"/>", file=det)
+                print(f"<laneAreaDetector id=\"{det_id}_det\" lane=\"{det_id}_0\" pos=\"0\" length=\"5.00\" file=\"NUL\" friendlyPos=\"True\"/>", file=det)
             print("</additional>", file=det)
             
         return detectors_name
