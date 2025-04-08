@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-04-08 12:37:16 by Eclipse SUMO netconvert Version 1.19.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="saint_arnoult/saint_arnoult.net.xml"/>
+    </input>
+
+    <output>
+        <plain-output-prefix value="saint_arnoult/saint_arnoult"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="0"/>
+    </processing>
+
+    <tls_building>
+        <tls.ignore-internal-junction-jam value="1"/>
+    </tls_building>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="5"/>
+        <junctions.limit-turn-speed value="5.50"/>
+        <rectangular-lane-cut value="0"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="0"/>
+    </pedestrian>
+
+</configuration>
+-->
+
+<tlLogics version="1.16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tllogic_file.xsd">
+    <tlLogic id="1171046121" type="static" programID="0" offset="0">
+        <phase duration="82" state="GG"/>
+        <phase duration="3"  state="yy"/>
+        <phase duration="5"  state="rr"/>
+    </tlLogic>
+    <tlLogic id="171982021" type="static" programID="0" offset="0">
+        <phase duration="78" state="GGggGGgG"/>
+        <phase duration="3"  state="yyggyygy"/>
+        <phase duration="6"  state="rrGGrrGr"/>
+        <phase duration="3"  state="rryyrryr"/>
+    </tlLogic>
+    <tlLogic id="7931925645" type="static" programID="0" offset="0">
+        <phase duration="82" state="GG"/>
+        <phase duration="3"  state="yy"/>
+        <phase duration="5"  state="rr"/>
+    </tlLogic>
+
+    <connection from="-659283000#10" to="-659283000#8" fromLane="0" toLane="0" tl="7931925645" linkIndex="0"/>
+    <connection from="-697042776#1" to="623959719" fromLane="0" toLane="0" tl="171982021" linkIndex="0"/>
+    <connection from="-697042776#1" to="42762429" fromLane="0" toLane="0" tl="171982021" linkIndex="1"/>
+    <connection from="-697042776#1" to="687927789#0" fromLane="0" toLane="0" tl="171982021" linkIndex="2"/>
+    <connection from="-697042776#1" to="697042776#0" fromLane="0" toLane="0" tl="171982021" linkIndex="3"/>
+    <connection from="-71324343#11" to="-71324343#10" fromLane="0" toLane="0" tl="1171046121" linkIndex="1"/>
+    <connection from="526439431#1" to="687927789#0" fromLane="0" toLane="0" tl="171982021" linkIndex="4"/>
+    <connection from="526439431#1" to="697042776#0" fromLane="0" toLane="0" tl="171982021" linkIndex="5"/>
+    <connection from="526439431#1" to="623959719" fromLane="1" toLane="0" tl="171982021" linkIndex="6"/>
+    <connection from="526439431#1" to="42762429" fromLane="1" toLane="1" tl="171982021" linkIndex="7"/>
+    <connection from="659283000#8" to="659283000#9" fromLane="0" toLane="0" tl="7931925645" linkIndex="1"/>
+    <connection from="71324343#9" to="71324343#11" fromLane="0" toLane="0" tl="1171046121" linkIndex="0"/>
+</tlLogics>
