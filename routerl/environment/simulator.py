@@ -275,7 +275,7 @@ class SumoSimulator():
         with open(self.det_xml_save_path, "w") as det:
             print("""<additional>""", file=det)
             for det_id in detectors_name:
-                print(f"<laneAreaDetector id=\"{det_id}_det\" lane=\"{det_id}_0\" pos=\"0\" length=\"5.00\" file=\"NUL\" friendlyPos=\"True\"/>", file=det)
+                print(f"<laneAreaDetector id=\"{det_id}_det\" lane=\"{det_id}_0\" pos=\"0\" length=\"1.00\" file=\"NUL\" friendlyPos=\"True\"/>", file=det)
             print("</additional>", file=det)
             
         return detectors_name
