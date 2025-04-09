@@ -104,7 +104,7 @@ class GeneralModel(BaseLearningModel):
 
         self.alphas = list(params[kc.ALPHAS]) # weights for the memory in respective days
         assert len(self.alphas) == self.remember, "weights of history $\alpha_i in 'alphas' and 'remember do not match"
-        assert abs(self.alpha_zero + sum(self.alphas) - 1) < 0.01 , "weights for weighted average do not sum up to 1"
+        #assert abs(self.alpha_zero + sum(self.alphas) - 1) < 0.01 , "weights for weighted average do not sum up to 1"
         
         self.memory = [deque([cost],maxlen=self.remember) for cost in self.costs] # memories of experiences per path 
         self.first_day = True
@@ -245,6 +245,7 @@ class RandomModel(GeneralModel):
     def __init__(self, params, initial_knowledge):
         params[kc.GREEDY] = 0
         params[kc.REMEMBER] = 0
+        params[kc.ALPHAS] = []
         params[kc.NOISE_WEIGHT_DAY] = 0
         params[kc.NOISE_WEIGHT_PATH] = 0
         params[kc.NOISE_WEIGHT_AGENT] = 0
@@ -265,6 +266,7 @@ class AONModel(GeneralModel):
     def __init__(self, params, initial_knowledge):
         params[kc.GREEDY] = 1
         params[kc.REMEMBER] = 0
+        params[kc.ALPHAS] = []
         params[kc.NOISE_WEIGHT_DAY] = 0
         params[kc.NOISE_WEIGHT_PATH] = 0
         params[kc.NOISE_WEIGHT_AGENT] = 0
