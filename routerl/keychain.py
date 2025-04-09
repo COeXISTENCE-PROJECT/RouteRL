@@ -44,6 +44,7 @@ class Keychain:
     PREVIOUS_AGENTS = "previous_agents"
     PREVIOUS_AGENTS_PLUS_START_TIME = "previous_agents_plus_start_time"
     PREVIOUS_AGENTS_PLUS_START_TIME_DETECTOR_DATA = "previous_agents_plus_start_time_detector_data"
+    PREVIOUS_AGENTS_PLUS_START_TIME_MARGINAL_COST = "previous_agents_plus_start_time_marginal_cost"
     GROUP_VICINITY = "group_vicinity"
 
     ### Environment

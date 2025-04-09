@@ -422,3 +422,153 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
             self.observations[str(machine.id)] = observation
 
         return observation
+
+
+class PreviousAgentStartPlusStartTimeMarginalCost(Observations):
+    """Observes the number of agents with the same origin-destination and start time within a threshold
+    and includes the start of the specific agent as well.
+    """
+
+    def __init__(
+        self,
+        machine_agents_list: List[Any],
+        human_agents_list: List[Any],
+        simulation_params: Dict[str, Any],
+        agent_params: Dict[str, Any],
+    ) -> None:
+        """Initialize the observation function.
+
+        Args:
+            machine_agents_list (List[Any]): List of machine agents.
+            human_agents_list (List[Any]): List of human agents.
+            simulation_params (Dict[str, Any]): Dictionary of simulation parameters.
+            agent_params (Dict[str, Any]): Dictionary of agent parameters.
+        Returns:
+            None
+        """
+
+        super().__init__(machine_agents_list, human_agents_list)
+        self.simulation_params = simulation_params
+        self.agent_params = agent_params
+        self.observations = self.reset_observation()
+        self.agent_vectors = {}
+
+    def __call__(self, all_agents: List[Any]) -> Dict[str, Any]:
+        """Generate observations for all agents.
+
+        Args:
+            all_agents (List[Any]): List of all agents.
+        Returns:
+            Dict[str, Any]: A dictionary of observations keyed by agent IDs.
+        """
+        return self.observations
+
+    def reset_observation(self) -> Dict[str, np.ndarray]:
+        """Reset observations to the initial state.
+
+        Returns:
+            obs (Dict[str, np.ndarray]): A dictionary of initial observations for all machine agents.
+        """
+
+        # Initialize agent vectors as zero arrays
+        self.agent_vectors = {
+            agent: np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32)
+            for agent in self.machine_agents_list
+        }
+        
+        # Gather observations in a consistent format
+        obs = {
+            str(agent.id): np.concatenate(  # Combine start_time and vector into a single array
+                [
+                    np.array([agent.start_time], dtype=np.int32),  # Start time as scalar
+                    self.agent_vectors[agent]  # Vector as array
+                ]
+            )
+            for agent in self.machine_agents_list
+        }
+
+        self.observations = obs
+
+        return obs
+    
+    def compute_marginal_cost(self, agent_id, all_agents, travel_times_list):
+        from .environment import TrafficEnvironment ## added here because there was circular import problem
+
+        print(all_agents, "\n\n\n", all_agents[0].start_time, "\n\n\n")
+
+        for machine in self.machine_agents_list:
+            if machine.id == int(agent_id):
+                break
+        
+        agents_to_calculate_marginal_cost = []
+
+        for agent in all_agents:
+            if agent.kind == kc.TYPE_MACHINE and agent.start_time < machine.start_time:
+                agents_to_calculate_marginal_cost.append(agent)
+
+
+        
+        print(agents_to_calculate_marginal_cost)
+
+        #env = TrafficEnvironment(seed=66, create_agents=False, create_paths=True)
+        #env.reset()
+            
+
+        return 
+
+    def observation_space(self) -> Dict[str, Box]:
+        """
+        Define the observation space for each machine agent.
+
+        Returns:
+            Dict[str, Box]: A dictionary where keys are agent IDs and values are Gym spaces.
+        """
+
+        total_size = 1 + self.simulation_params[kc.NUMBER_OF_PATHS]
+
+        return {
+            str(agent.id): Box(
+                low=0,
+                high=np.inf,
+                shape=(total_size,),  # Combined size for start_time and vector
+                dtype=np.float32
+            )
+            for agent in self.machine_agents_list
+        }
+    
+    def agent_observations(self, agent_id: str, all_agents: List[Any], agent_selection: str, travel_times_list: List[Any]) -> np.ndarray:
+        """Retrieve the observation for a specific agent.
+
+        Args:
+            agent_id (str): The ID of the agent.
+        Returns:
+            np.ndarray: The observation array for the specified agent.
+        """
+        self.compute_marginal_cost(agent_id, all_agents, travel_times_list)
+
+        for machine in self.machine_agents_list:
+            if machine.id == int(agent_id):
+                break
+
+        # If the agent has already acted, return the observation that was previously calculated
+        if agent_id != agent_selection:
+            observation = self.observations[str(machine.id)]   
+
+        # If the agent is about to act calculate its observation
+        else:
+            observation = np.zeros(self.simulation_params[kc.NUMBER_OF_PATHS], dtype=np.int32)
+
+            for agent in all_agents:
+                if (machine.id != agent.id and
+                    machine.origin == agent.origin and
+                    machine.destination == agent.destination and
+                    machine.start_time > agent.start_time):
+                    
+                    observation[agent.last_action] += 1
+
+            observation = np.concatenate(([machine.start_time], observation))
+
+            self.observations[str(machine.id)] = observation
+        
+        return observation
+    

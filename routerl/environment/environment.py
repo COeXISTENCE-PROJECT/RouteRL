@@ -20,7 +20,8 @@ import threading
 from routerl.environment import generate_agents
 from routerl.environment import SumoSimulator
 from routerl.environment import MachineAgent
-from routerl.environment import PreviousAgentStart, PreviousAgentStartPlusStartTime, PreviousAgentStartPlusStartTimeDetectorData, Observations
+from routerl.environment import PreviousAgentStart, PreviousAgentStartPlusStartTime 
+from routerl.environment import PreviousAgentStartPlusStartTimeDetectorData, PreviousAgentStartPlusStartTimeMarginalCost, Observations
 from routerl.keychain import Keychain as kc
 from routerl.services import plotter
 from routerl.services import Recorder
@@ -546,6 +547,12 @@ class TrafficEnvironment(AECEnv):
             observation = np.concatenate((np.array([machine.start_time]), array))
             return observation
         
+        params = self.agent_params[kc.MACHINE_PARAMETERS]
+        observation_type = params[kc.OBSERVATION_TYPE]
+
+        if observation_type == kc.PREVIOUS_AGENTS_PLUS_START_TIME_MARGINAL_COST:
+            return self.observation_obj.agent_observations(agent, self.all_agents, self.agent_selection, self.travel_times_list)
+        
         return self.observation_obj.agent_observations(agent, self.all_agents, self.agent_selection)
 
     #########################
@@ -907,5 +914,10 @@ class TrafficEnvironment(AECEnv):
                                       self.plotter_params,
                                       self.agent_params,
                                       self.simulator)
+        elif observation_type == kc.PREVIOUS_AGENTS_PLUS_START_TIME_MARGINAL_COST:
+            return PreviousAgentStartPlusStartTimeMarginalCost(self.machine_agents,
+                                      self.human_agents,
+                                      self.simulation_params,
+                                      self.agent_params)
         else:
             raise ValueError('[MODEL INVALID] Unrecognized observation type: ' + observation_type)
