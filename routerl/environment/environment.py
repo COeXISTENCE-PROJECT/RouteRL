@@ -325,6 +325,7 @@ class TrafficEnvironment(AECEnv):
                  create_agents: bool = True,
                  create_paths: bool = True,
                  save_detectors_info: bool = False,
+                 marginal_cost: bool = False,
                  **kwargs) -> None:
 
         super().__init__()
@@ -346,13 +347,16 @@ class TrafficEnvironment(AECEnv):
         self.machine_same_start_time = []
         self.actions_timestep = []
         self.save_detectors_info = save_detectors_info
+        self.marginal_cost = marginal_cost
 
         self.number_of_days = self.environment_params[kc.NUMBER_OF_DAYS]
         self.save_every = self.environment_params[kc.SAVE_EVERY]
         self.action_space_size = self.environment_params[kc.ACTION_SPACE_SIZE]
         self._set_seed(seed)
+        self.recorder = None
 
-        self.recorder = Recorder(self.plotter_params)
+        if marginal_cost == False:
+            self.recorder = Recorder(self.plotter_params)
         self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents, save_detectors_info)
 
         self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed)
@@ -407,14 +411,14 @@ class TrafficEnvironment(AECEnv):
     ######## Control methods #######
     ################################
 
-    def start(self) -> None:
+    def start(self, use_subprocess=False) -> None:
         """Start the connection with SUMO.
         
         Returns:
             None
         """
 
-        self.simulator.start()
+        self.simulator.start(use_subprocess)
 
     def reset(self, seed: int = None, options: dict = None) -> tuple:
         """Resets the environment.
@@ -476,6 +480,11 @@ class TrafficEnvironment(AECEnv):
                 return
 
             agent = self.agent_selection
+            
+            for machine in self.machine_agents:
+                if machine.id == int(agent):
+                    machine.last_action = machine_action
+                    break
 
             # The cumulative reward of the last agent must be 0
             self._cumulative_rewards[agent] = 0
@@ -685,7 +694,7 @@ class TrafficEnvironment(AECEnv):
             self._agent_selector = agent_selector(self.possible_agents)
             self.agent_selection = self._agent_selector.next()
 
-        if self.day % self.save_every == 0:
+        if self.day % self.save_every == 0 & self.marginal_cost == False: #In the case where we compute the marginal cost matrix we do not need to record. 
             recording_task = threading.Thread(target=self._record, args=(self.day,
                                                                         self.travel_times_list,
                                                                         self.all_agents,
@@ -837,7 +846,8 @@ class TrafficEnvironment(AECEnv):
             for agent in dc_agents
         ]
 
-        self.recorder.record(dc_episode, dc_ep_observations, cost_tables, dc_detectors)
+        if self.recorder != None:
+            self.recorder.record(dc_episode, dc_ep_observations, cost_tables, dc_detectors)
 
     def plot_results(self) -> None:
         """Method that plot the results of the simulation.

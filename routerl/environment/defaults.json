@@ -3,6 +3,7 @@
     {
         "num_agents" : 100,
         "new_machines_after_mutation": 25,
+        "agents_csv_file_name": "agents.csv",
 
         "machine_parameters" :
         {
@@ -74,7 +75,8 @@
         "origins" : "default",
         "destinations" : "default",
 
-        "records_folder" : "${plotter_parameters.records_folder}"
+        "records_folder" : "${plotter_parameters.records_folder}",
+        "agents_csv_file_name": "agents.csv"
     }, 
 
     "plotter_parameters":

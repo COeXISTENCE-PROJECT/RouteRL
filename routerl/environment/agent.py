@@ -175,7 +175,9 @@ class HumanAgent(BaseAgent):
         """
         if self.default_action is not None:
             return self.default_action
-        return self.model.act(observation)
+        
+        self.last_action = self.model.act(observation)
+        return self.last_action
 
     def learn(self, action, observation) -> None:
         """Updates the agent's knowledge based on the action taken and the resulting observations.

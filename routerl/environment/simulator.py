@@ -8,7 +8,9 @@ import janux as jx
 import logging
 import random
 import pandas as pd
+import subprocess
 import traci
+import time
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
@@ -95,6 +97,7 @@ class SumoSimulator():
         self.sumo_id = f"{random.randint(0, 1000)}"
         self.sumo_connection = None
         self.save_detectors_info = save_detectors_info
+        self.subprocess = False
 
         confirm_env_variable(kc.ENV_VAR, append="tools")
 
@@ -137,7 +140,7 @@ class SumoSimulator():
         
         # Get demand, if using custom demand
         if using_custom_demand:
-            demand_df = pd.read_csv(os.path.join(params[kc.RECORDS_FOLDER], kc.AGENTS_CSV_FILE_NAME))
+            demand_df = pd.read_csv(os.path.join(params[kc.RECORDS_FOLDER], path_gen_params[kc.AGENTS_CSV_FILE_NAME]))
             demands = list(zip(demand_df[kc.AGENT_ORIGIN], demand_df[kc.AGENT_DESTINATION]))
             demands = list(set(demands))
         else:
@@ -284,7 +287,7 @@ class SumoSimulator():
     ######## SUMO CONTROL ##########
     ################################
 
-    def start(self) -> None:
+    def start(self, use_subprocess=False) -> None:
         """Starts the SUMO simulation with the specified configuration.
 
         Returns:
@@ -299,19 +302,36 @@ class SumoSimulator():
         combined_sumo_stats_file = os.path.join(self.sumo_save_path,
                                                 f"sumo_stats_{self.runs}.xml")
 
-        sumo_cmd = [self.sumo_type,"--seed",
-                    str(self.seed),
-                    "--fcd-output",
-                    self.sumo_fcd,
-                    "-c", self.sumo_config_path, 
-                    "--statistic-output",
-                    combined_sumo_stats_file,
-                    "--tripinfo-output",
-                    individual_sumo_stats_file,
-                    "--no-warnings"
-                    ]
-        traci.start(sumo_cmd, label=self.sumo_id)
-        self.sumo_connection = traci.getConnection(self.sumo_id)
+        if use_subprocess == False:
+            sumo_cmd = [self.sumo_type,"--seed",
+                        str(self.seed),
+                        "--fcd-output",
+                        self.sumo_fcd,
+                        "-c", self.sumo_config_path, 
+                        "--statistic-output",
+                        combined_sumo_stats_file,
+                        "--tripinfo-output",
+                        individual_sumo_stats_file,
+                        "--no-warnings"
+                        ]
+            traci.start(sumo_cmd, label=self.sumo_id)
+            self.sumo_connection = traci.getConnection(self.sumo_id)
+        else:
+            port = 8814
+            sumo_cmd = [self.sumo_type,"--seed",
+                        str(self.seed),
+                        "--fcd-output",
+                        self.sumo_fcd,
+                        "-c", self.sumo_config_path, 
+                        "--remote-port", str(port),
+                        "--no-warnings"
+                        ]
+            self.sumo_subprocess = subprocess.Popen(sumo_cmd)
+            time.sleep(1)
+            self.sumo_subprocess_connection = traci.connect(port=port)
+
+            self.subprocess = True
+
 
     def stop(self) -> None:
         """Stops and closes the SUMO simulation.
@@ -319,8 +339,11 @@ class SumoSimulator():
         Returns:
             None
         """
-
-        self.sumo_connection.close()
+        if self.subprocess:
+            #self.sumo_subprocess_connection.terminate()
+            self.sumo_subprocess_connection.close()
+        else:
+            self.sumo_connection.close()
 
     def reset(self) -> dict:
         """ Resets the SUMO simulation to its initial state.
@@ -330,35 +353,35 @@ class SumoSimulator():
         Returns:
             det_dict (dict[str, float]): dictionary with detector data.
         """
+        if self.subprocess == False:
+            det_dict = {name: 0 for name in self.detectors_name}
+            if self.save_detectors_info:
+                for det_name in self.detectors_name:
+                    det_dict[det_name]  = self.sumo_connection.lanearea.getIntervalVehicleNumber(f"{det_name}_det")
 
-        det_dict = {name: 0 for name in self.detectors_name}
-        if self.save_detectors_info:
-            for det_name in self.detectors_name:
-                det_dict[det_name]  = self.sumo_connection.lanearea.getIntervalVehicleNumber(f"{det_name}_det")
+            self.runs += 1
 
-        self.runs += 1
+            individual_sumo_stats_file = os.path.join(self.sumo_save_path,
+                                                    f"detailed_sumo_stats_{self.runs}.xml")
+            
+            combined_sumo_stats_file = os.path.join(self.sumo_save_path,
+                                                    f"sumo_stats_{self.runs}.xml")
 
-        individual_sumo_stats_file = os.path.join(self.sumo_save_path,
-                                                  f"detailed_sumo_stats_{self.runs}.xml")
-        
-        combined_sumo_stats_file = os.path.join(self.sumo_save_path,
-                                                f"sumo_stats_{self.runs}.xml")
+            self.sumo_connection.load(["--seed",
+                                    str(self.seed),
+                                    "--fcd-output",
+                                    self.sumo_fcd,
+                                    '-c',
+                                    self.sumo_config_path,
+                                    "--statistic-output",
+                                    combined_sumo_stats_file,
+                                    "--tripinfo-output",
+                                    individual_sumo_stats_file])
+            
 
-        self.sumo_connection.load(["--seed",
-                                   str(self.seed),
-                                   "--fcd-output",
-                                   self.sumo_fcd,
-                                   '-c',
-                                   self.sumo_config_path,
-                                   "--statistic-output",
-                                   combined_sumo_stats_file,
-                                   "--tripinfo-output",
-                                   individual_sumo_stats_file])
-        
-
-        self.timestep = 0
-        self.waiting_vehicles = dict()
-        return det_dict
+            self.timestep = 0
+            self.waiting_vehicles = dict()
+            return det_dict
 
     ################################
     ######### SIMULATION ###########
@@ -398,11 +421,19 @@ class SumoSimulator():
                 act_dict[kc.ACTION]),
                 f'{act_dict[kc.AGENT_ORIGIN]}_{act_dict[kc.AGENT_DESTINATION]}_{act_dict[kc.ACTION]}'))
         kind = act_dict[kc.AGENT_KIND]
-        self.sumo_connection.vehicle.add(vehID=str(act_dict[kc.AGENT_ID]),
-                                         routeID=route_id,
-                                         depart=str(act_dict[kc.AGENT_START_TIME]),
-                                         typeID=kind)
-        self.waiting_vehicles[str(act_dict[kc.AGENT_ID])] = 0
+        if self.subprocess == False:
+            self.sumo_connection.vehicle.add(vehID=str(act_dict[kc.AGENT_ID]),
+                                            routeID=route_id,
+                                            depart=str(act_dict[kc.AGENT_START_TIME]),
+                                            typeID=kind)
+            self.waiting_vehicles[str(act_dict[kc.AGENT_ID])] = 0
+        else:
+            self.sumo_subprocess_connection.vehicle.add(vehID=str(act_dict[kc.AGENT_ID]),
+                                            routeID=route_id,
+                                            depart=str(act_dict[kc.AGENT_START_TIME]),
+                                            typeID=kind)
+            
+            self.waiting_vehicles[str(act_dict[kc.AGENT_ID])] = 0
 
     def step(self) -> tuple:
         """Advances the SUMO simulation by one timestep and retrieves information
@@ -412,33 +443,62 @@ class SumoSimulator():
             self.timestep (int): The current simulation timestep.
             arrivals (list): List of vehicle IDs that arrived at their destinations during the current timestep.
         """
-   
-        arrivals = list(self.sumo_connection.simulation.getArrivedIDList())
-        for arr in arrivals:
-            self.waiting_vehicles.pop(arr, None)
-        
-        # Teleport vehicles that are stuck
-        teleported = list()
-        for veh_id in self.waiting_vehicles.copy():
-            if self.sumo_connection.vehicle.getSpeed(veh_id) == 0:
-                self.waiting_vehicles[veh_id] += 1
-                if self.waiting_vehicles[veh_id] > self.stuck_time:
-                    self.sumo_connection.vehicle.remove(veh_id)
-                    logging.info(f"Timestep #{self.timestep}: Teleporting {veh_id} due to being stuck for {self.waiting_vehicles[veh_id]} seconds.")
-                    teleported.append(veh_id)
-                    self.waiting_vehicles.pop(veh_id, None)
+        if self.subprocess == False:
+            arrivals = list(self.sumo_connection.simulation.getArrivedIDList())
+            for arr in arrivals:
+                self.waiting_vehicles.pop(arr, None)
+            
+            # Teleport vehicles that are stuck
+            teleported = list()
+            for veh_id in self.waiting_vehicles.copy():
+                if self.sumo_connection.vehicle.getSpeed(veh_id) == 0:
+                    self.waiting_vehicles[veh_id] += 1
+                    if self.waiting_vehicles[veh_id] > self.stuck_time:
+                        self.sumo_connection.vehicle.remove(veh_id)
+                        logging.info(f"Timestep #{self.timestep}: Teleporting {veh_id} due to being stuck for {self.waiting_vehicles[veh_id]} seconds.")
+                        teleported.append(veh_id)
+                        self.waiting_vehicles.pop(veh_id, None)
+                else:
+                    self.waiting_vehicles[veh_id] = 0
+                    
+            # Advance the simulation by one timestep       
+            self.sumo_connection.simulationStep()
+
+            # Retrieve information about the detectors
+            if self.save_detectors_info == True:
+                self.retrieve_detector_data()
             else:
-                self.waiting_vehicles[veh_id] = 0
-                
-        # Advance the simulation by one timestep       
-        self.sumo_connection.simulationStep()
+                self.stopped_vehicles_info = None
 
-        # Retrieve information about the detectors
-        if self.save_detectors_info == True:
-            self.retrieve_detector_data()
+            self.timestep += 1
+
         else:
-            self.stopped_vehicles_info = None
+            arrivals = list(self.sumo_subprocess_connection.simulation.getArrivedIDList())
+            for arr in arrivals:
+                self.waiting_vehicles.pop(arr, None)
+            
+            # Teleport vehicles that are stuck
+            teleported = list()
+            for veh_id in self.waiting_vehicles.copy():
+                if self.sumo_subprocess_connection.vehicle.getSpeed(veh_id) == 0:
+                    self.waiting_vehicles[veh_id] += 1
+                    if self.waiting_vehicles[veh_id] > self.stuck_time:
+                        self.sumo_subprocess_connection.vehicle.remove(veh_id)
+                        logging.info(f"Timestep #{self.timestep}: Teleporting {veh_id} due to being stuck for {self.waiting_vehicles[veh_id]} seconds.")
+                        teleported.append(veh_id)
+                        self.waiting_vehicles.pop(veh_id, None)
+                else:
+                    self.waiting_vehicles[veh_id] = 0
+                    
+            # Advance the simulation by one timestep       
+            self.sumo_subprocess_connection.simulationStep()
 
-        self.timestep += 1
+            # Retrieve information about the detectors
+            if self.save_detectors_info == True:
+                self.retrieve_detector_data()
+            else:
+                self.stopped_vehicles_info = None
+
+            self.timestep += 1
         
         return self.timestep, self.stopped_vehicles_info, arrivals, teleported

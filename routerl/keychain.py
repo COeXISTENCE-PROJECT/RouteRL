@@ -146,7 +146,7 @@ class Keychain:
     ####################### FILE PATHS ########################
     
     PATHS_CSV_FILE_NAME = "paths.csv"
-    AGENTS_CSV_FILE_NAME = "agents.csv"
+    AGENTS_CSV_FILE_NAME = "agents_csv_file_name"
     
     NETWORK_FOLDER = "../networks/$net$/"
     CONNECTION_FILE_PATH = "../networks/$net$/$net$.con.xml"

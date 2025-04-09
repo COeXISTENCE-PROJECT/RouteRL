@@ -45,7 +45,7 @@ def generate_agents(params, free_flow_times, generate_data, seed=23423) -> list:
         agents_data_df = generate_agent_data(params, seed)
     else:
         # Load agent data
-        agents_csv_path = os.path.join(params[kc.RECORDS_FOLDER], kc.AGENTS_CSV_FILE_NAME)
+        agents_csv_path = os.path.join(params[kc.RECORDS_FOLDER], params[kc.AGENTS_CSV_FILE_NAME])
         agents_data_df = pd.read_csv(agents_csv_path)
 
     # Getting parameters
@@ -125,7 +125,7 @@ def generate_agent_data(params, seed=23423) -> pd.DataFrame:
         agents_df.loc[id] = agent_dict
         
     # Saving the generated agents to a csv file
-    agents_csv_path = os.path.join(params[kc.RECORDS_FOLDER], kc.AGENTS_CSV_FILE_NAME)
+    agents_csv_path = os.path.join(params[kc.RECORDS_FOLDER], params[kc.AGENTS_CSV_FILE_NAME])
     agents_csv_path = str(agents_csv_path)
     agents_df.to_csv(agents_csv_path, index=False)
     
