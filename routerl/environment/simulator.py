@@ -275,7 +275,7 @@ class SumoSimulator():
         with open(self.det_xml_save_path, "w") as det:
             print("""<additional>""", file=det)
             for det_id in detectors_name:
-                print(f"<laneAreaDetector id=\"{det_id}_det\" lane=\"{det_id}_0\" pos=\"0\" length=\"5.00\" file=\"NUL\" friendlyPos=\"True\"/>", file=det)
+                print(f"<laneAreaDetector id=\"{det_id}_det\" lane=\"{det_id}_0\" pos=\"0.05\" length=\"0.11\" file=\"NUL\" friendlyPos=\"True\"/>", file=det)
             print("</additional>", file=det)
             
         return detectors_name
@@ -308,6 +308,7 @@ class SumoSimulator():
                     combined_sumo_stats_file,
                     "--tripinfo-output",
                     individual_sumo_stats_file,
+                    "--no-warnings"
                     ]
         traci.start(sumo_cmd, label=self.sumo_id)
         self.sumo_connection = traci.getConnection(self.sumo_id)
