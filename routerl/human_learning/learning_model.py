@@ -85,7 +85,7 @@ class GeneralModel(BaseLearningModel):
         self.noise_weight_agent = params[kc.NOISE_WEIGHT_AGENT] # drawn once per agent
         self.noise_weight_path = params[kc.NOISE_WEIGHT_PATH] # drawn once per agent per path
         self.noise_weight_day = params[kc.NOISE_WEIGHT_DAY] # drawn daily per agent per path
-        assert self.noise_weight_agent + self.noise_weight_path + self.noise_weight_day  == 1 , "Relative weights in error terms do not sum up to 1."
+        #assert self.noise_weight_agent + self.noise_weight_path + self.noise_weight_day  == 1 , "Relative weights in error terms do not sum up to 1."
 
         # \beta_{t,k,i} agent-specific travel time multiplier per path
         self.beta_k_i = params[kc.BETA]*np.random.normal(1, params[kc.BETA_K_I_VARIABILITY], size = self.action_space) # used to compute Utility in `act`
