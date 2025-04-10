@@ -108,6 +108,7 @@ def load_routeRL(file) -> pd.DataFrame:
 
 def load_episode(results_path: str, episode: int) -> pd.DataFrame:
     
+    print("loading episode: ", episode)
     SUMO_path = os.path.join(results_path, "SUMO_output")
     RouteRL_path = os.path.join(results_path, "episodes")
     Detectors_path = os.path.join(results_path, "detectors")
@@ -167,15 +168,24 @@ def add_benchmark_columns(df: pd.DataFrame) -> pd.DataFrame:
     """
     Add benchmark columns to the DataFrame.
     """
+    n_agents = df["vehicleTripStatistics_count"][0]
     
-    # here add whatever columns you want to add
+    new_columns = {}
+    for i in range(n_agents):
+        col = (df[f"agent_{i}_action"] != df[f"agent_{i}_action"].shift(1)).astype(int)
+        new_columns[f"agent_{i}_action_change"] = col
+    
+    # add the new columns to the DataFrame
+    df = pd.concat([df, pd.DataFrame(new_columns)], axis=1)
+
+
     
     return df
 
 
-def collect_KPIs(path, n_episodes):
+def collect_to_single_CSV(path, n_episodes, save_path="KPIs.csv"):
     """
-    Collect KPIs of the experiment.
+    Collect KPIs of the experiment to the single CSV file.
     """
     
     df = pd.DataFrame()
@@ -187,18 +197,84 @@ def collect_KPIs(path, n_episodes):
     # add benchmark columns
     df = add_benchmark_columns(df)
     
+    df.to_csv(save_path, index=False)
+    
     return df
 
 
+def extract_KPIs(path):
+    """
+    Extract KPIs from the DataFrame.
+    """
+    
+    df = pd.read_csv(path)
+    
+    # mean CAV time in last 100 episodes
+    rho = df[:-100]
+    
+    # extract KPIs of the experiment    
+    KPIs = {}
+    
+    return KPIs
 
+def clearSumoFiles(path):
+    file_id = 1
+    episode = 1
+    
+    file_name = "detailed_sumo_stats"
+    
+    while True:
+        # check if file exists
+        file_path = os.path.join(path, f"{file_name}_{episode}.xml")
+        if os.path.exists(file_path):
+            # read xml file and check if <tripinfos> is empty (no <tripinfo> elements)
+            tree = ET.parse(file_path)
+            root = tree.getroot()
+            if len(root.findall("tripinfo")) == 0:
+                # remove the file
+                os.remove(file_path)
+                print(f"Removed empty file: {file_path}")
+            else:
+                # rename to the next file_id
+                new_file_path = os.path.join(path, f"{file_name}_{file_id}.xml")
+                os.rename(file_path, new_file_path)
+                print(f"Renamed file {file_path} to {new_file_path}")
+                file_id += 1
+        else:
+            break
+        episode += 1
+        
+    file_id = 1
+    episode = 1
+    
+    file_name = "sumo_stats"
+    
+    while True:
+        # check if file exists
+        file_path = os.path.join(path, f"{file_name}_{episode}.xml")
+        if os.path.exists(file_path):
+            # read xml file and check if <vehicle loaded=0> 
+            tree = ET.parse(file_path)
+            root = tree.getroot()
+            vehicle = root.find("vehicles")
+            if vehicle is not None and vehicle.attrib.get("loaded") == "0":
+                # remove the file
+                os.remove(file_path)
+                print(f"Removed empty file: {file_path}")
+            else:
+                # rename to the next file_id
+                new_file_path = os.path.join(path, f"{file_name}_{file_id}.xml")
+                os.rename(file_path, new_file_path)
+                print(f"Renamed file {file_path} to {new_file_path}")
+                file_id += 1
+        else:
+            break
+        episode += 1
+    
 mock_path = "training_records"
 
 if __name__ == "__main__":
     
-    #example usage:
-    df = pd.DataFrame()
-    for i in range(1,10):
-        # add new rows to the DataFrame
-        df = pd.concat([df, load_episode(mock_path, i)], ignore_index=True)
-        
-    print(df.shape)        
+    clearSumoFiles(mock_path + "/SUMO_output")
+    
+    collect_to_single_CSV(mock_path, 100)   
