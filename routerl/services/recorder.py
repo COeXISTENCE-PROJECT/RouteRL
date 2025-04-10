@@ -151,16 +151,19 @@ class Recorder:
 
 
     def remember_marginal_costs(self, marginal_cost_calculation: dict, episode: int, machine_agents: list) -> None:
-        print(marginal_cost_calculation, "\n")
+        """Savr the marginal cost matrices
 
-        # Step 1: Sort machine_agents by start_time
+        Args:
+            marginal_cost_calculation: dictionary that contains the cost of each agent to each agent
+            episode: episode, 
+            machine_agents: machine_agents
+        """
+        # Save the agents based on their start time
         sorted_agents = sorted(machine_agents, key=lambda agent: agent.start_time)
 
-        # Step 2: Build ordered list of machine names using sorted agent IDs
         sorted_ids = [agent.id for agent in sorted_agents]
         sorted_machine_names = [f"Machine {id_}" for id_ in sorted_ids]
 
-        # Step 3: Build rows with values from 'data'
         formatted_rows = []
         for row_id in sorted_ids:
             row_label = f"Machine {row_id}"
@@ -172,16 +175,12 @@ class Recorder:
             full_row["ID"] = row_label
             formatted_rows.append(full_row)
 
-        # Step 4: Create the DataFrame
         pl_df = pl.DataFrame(formatted_rows)
 
-        # Step 5: Reorder columns to match the same sorted agent order
         column_order = ["ID"] + [col for col in sorted_machine_names if col in pl_df.columns]
         if "ID" in pl_df.columns:
             pl_df = pl_df.select(column_order)
 
-        print(pl_df)
-        # Step 5: Save to CSV
         filename = f"marginal_cost_matrix_{episode}.csv"
         pl_df.write_csv(make_dir(self.marginal_cost_folder, filename))
 
