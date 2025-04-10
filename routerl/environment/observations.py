@@ -424,6 +424,10 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
         return observation
 
 
+
+################ Under work below ################
+##################################################
+
 class PreviousAgentStartPlusStartTimeMarginalCost(Observations):
     """Observes the number of agents with the same origin-destination and start time within a threshold
     and includes the start of the specific agent as well.
@@ -497,6 +501,11 @@ class PreviousAgentStartPlusStartTimeMarginalCost(Observations):
         #print(all_agents, "\n\n\n", all_agents[0].start_time, "\n\n\n")
         print("I am agent ", agent_id, "\n\n\n")
 
+        
+        """for agent in all_agents:
+            print("all_agents are: ", agent, "\n\n\n")
+        print("Travel time list is: ", travel_times_list, "\n\n\n")"""
+
         for machine in self.machine_agents_list:
             if machine.id == int(agent_id):
                 break
@@ -510,18 +519,20 @@ class PreviousAgentStartPlusStartTimeMarginalCost(Observations):
         print("agents to calculate marginal cost", agents_to_calculate_marginal_cost, "\n\n\n")
         
         ## Delete each agent from the environment
-        for agent in agents_to_calculate_marginal_cost:
+        for machine_agent in agents_to_calculate_marginal_cost:
             df = pd.read_csv(os.path.join(self.agent_params[kc.RECORDS_FOLDER], self.agent_params[kc.AGENTS_CSV_FILE_NAME]))
 
             df["id"] = df["id"].astype(int)
-            df = df[df["id"] != int(agent.id)]
+            df = df[df["id"] != int(machine_agent.id)]
 
             df.to_csv(os.path.join(self.agent_params[kc.RECORDS_FOLDER], "agents2.csv"), index=False)
 
             actions = []
             for index, row in df.iterrows():
-                for agent in all_agents:
-                    if agent.start_time < machine.start_time and row['id'] == agent.id:
+                for agent in all_agents: ## all_agents doesn't have the correct actions of the agents
+                    #if agent.start_time < machine.start_time and row['id'] == agent.id:
+                    if row['id'] == agent.id:
+                        #print("Append action ", agent.last_action, "for agent", agent.id)
                         actions.append(agent.last_action)
                     
             print("actions are: ", actions, "\n\n\n")
@@ -561,7 +572,7 @@ class PreviousAgentStartPlusStartTimeMarginalCost(Observations):
                 },
                 "simulator_parameters" : {
                     "network_name" : "two_route_yield",
-                    "sumo_type" : "sumo",
+                    "sumo_type" : "sumo-gui",
                 },  
                 "plotter_parameters" : {
                     "smooth_by" : 50,
@@ -582,13 +593,24 @@ class PreviousAgentStartPlusStartTimeMarginalCost(Observations):
             env = TrafficEnvironment(seed=42, create_agents=False, create_paths=True, marginal_cost=True, **env_params)
             env.start(use_subprocess=True)
 
-            for agent, action in zip(all_agents, actions):
+            for agent, action in zip(env.all_agents, actions):
                 agent.default_action = action
-
+                print("agent action that was just used: ", action, agent.kind)
+            print("Step inside observations\n\n")
             env.step()
 
+            original_travel_times = {entry['id']: entry for entry in travel_times_list}
+            simulated_travel_times = {entry['id']: entry for entry in env.travel_times_list}
+
+            """for entry in travel_times_list:
+                if entry['id'] == agent_id:
+                    return entry['travel_time']"""
+            ## Does not take the correct action
             print("\nafter one step\n", env.travel_times_list, "\n\n\n")
-            print("after env.step\n")   
+            print("Initial travel_time_list is: ", travel_times_list, "\n\n\n")
+            #print("after env.step\n")"""   
+
+            ##
 
             env.stop_simulation() 
             print("Simulation is over\n\n")

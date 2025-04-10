@@ -29,10 +29,12 @@ class Recorder:
         self.episodes_folder = make_dir([self.records_folder, kc.EPISODES_LOGS_FOLDER])
         self.detector_folder = make_dir([self.records_folder, kc.DETECTOR_LOGS_FOLDER])
         self.sumo_folder = make_dir([self.records_folder, kc.SUMO_LOGS_FOLDER])
+        self.marginal_cost_folder = make_dir([self.records_folder, kc.MARGINAL_COST_MATRIX])
 
         self._clear_records(self.episodes_folder)
         self._clear_records(self.detector_folder)
         self._clear_records(self.sumo_folder)
+        self._clear_records(self.marginal_cost_folder)
         
         self.loss_file_path = self._get_txt_file_path(kc.LOSSES_LOG_FILE_NAME)
         logging.info(f"[SUCCESS] Recorder is now here to record!")
@@ -146,3 +148,41 @@ class Recorder:
             with open(self.loss_file_path, "w") as file:
                 for m_l in mean_losses:
                     file.write(f"{m_l}\n")
+
+
+    def remember_marginal_costs(self, marginal_cost_calculation: dict, episode: int, machine_agents: list) -> None:
+        print(marginal_cost_calculation, "\n")
+
+        # Step 1: Sort machine_agents by start_time
+        sorted_agents = sorted(machine_agents, key=lambda agent: agent.start_time)
+
+        # Step 2: Build ordered list of machine names using sorted agent IDs
+        sorted_ids = [agent.id for agent in sorted_agents]
+        sorted_machine_names = [f"Machine {id_}" for id_ in sorted_ids]
+
+        # Step 3: Build rows with values from 'data'
+        formatted_rows = []
+        for row_id in sorted_ids:
+            row_label = f"Machine {row_id}"
+            row_data = marginal_cost_calculation.get(row_id, {})
+            cleaned_row_data = {str(k): v for k, v in row_data.items()}
+
+            # Fill in all columns in the sorted order, use None if missing
+            full_row = {col: cleaned_row_data.get(col, None) for col in sorted_machine_names}
+            full_row["ID"] = row_label
+            formatted_rows.append(full_row)
+
+        # Step 4: Create the DataFrame
+        pl_df = pl.DataFrame(formatted_rows)
+
+        # Step 5: Reorder columns to match the same sorted agent order
+        column_order = ["ID"] + [col for col in sorted_machine_names if col in pl_df.columns]
+        if "ID" in pl_df.columns:
+            pl_df = pl_df.select(column_order)
+
+        print(pl_df)
+        # Step 5: Save to CSV
+        filename = f"marginal_cost_matrix_{episode}.csv"
+        pl_df.write_csv(make_dir(self.marginal_cost_folder, filename))
+
+        return

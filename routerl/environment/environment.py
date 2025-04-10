@@ -325,7 +325,8 @@ class TrafficEnvironment(AECEnv):
                  create_agents: bool = True,
                  create_paths: bool = True,
                  save_detectors_info: bool = False,
-                 marginal_cost: bool = False,
+                 second_sumo: bool = False,
+                 marginal_cost_calculation: bool = False,
                  **kwargs) -> None:
 
         super().__init__()
@@ -347,7 +348,8 @@ class TrafficEnvironment(AECEnv):
         self.machine_same_start_time = []
         self.actions_timestep = []
         self.save_detectors_info = save_detectors_info
-        self.marginal_cost = marginal_cost
+        self.second_sumo = second_sumo
+        self.marginal_cost_calculation = marginal_cost_calculation
 
         self.number_of_days = self.environment_params[kc.NUMBER_OF_DAYS]
         self.save_every = self.environment_params[kc.SAVE_EVERY]
@@ -355,7 +357,7 @@ class TrafficEnvironment(AECEnv):
         self._set_seed(seed)
         self.recorder = None
 
-        if marginal_cost == False:
+        if second_sumo == False:
             self.recorder = Recorder(self.plotter_params)
         self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents, save_detectors_info)
 
@@ -517,7 +519,8 @@ class TrafficEnvironment(AECEnv):
             self.simulation_loop(machine_action=0, machine_id=0)
             self.day = self.day + 1
             self._assign_rewards()
-            self._reset_episode()
+            if self.second_sumo == False:
+                self._reset_episode()
 
     def close(self) -> None:
         """Not implemented.
@@ -688,13 +691,22 @@ class TrafficEnvironment(AECEnv):
 
     def _reset_episode(self) -> None:
 
+        # Save the marginal cost matrices
+        if self.marginal_cost_calculation == True and self.machine_agents:
+            marginal_cost_calculation = {}
+
+            for machine in self.machine_agents:
+                cost = machine.calculate_marginal_cost(self.all_agents, self.travel_times_list)
+                marginal_cost_calculation[machine.id] = cost
+            self.recorder.remember_marginal_costs(marginal_cost_calculation, self.day, self.machine_agents)
+
         detectors_dict = self.simulator.reset()
 
         if self.possible_agents:
             self._agent_selector = agent_selector(self.possible_agents)
             self.agent_selection = self._agent_selector.next()
 
-        if self.day % self.save_every == 0 & self.marginal_cost == False: #In the case where we compute the marginal cost matrix we do not need to record. 
+        if self.day % self.save_every == 0 & self.second_sumo == False: #In the case where we compute the marginal cost matrix we do not need to record. 
             recording_task = threading.Thread(target=self._record, args=(self.day,
                                                                         self.travel_times_list,
                                                                         self.all_agents,
@@ -763,7 +775,6 @@ class TrafficEnvironment(AECEnv):
                 for human in self.human_agents:
                     if human.start_time == self.simulator.timestep:
                         action = human.act(0)
-                        human.last_action = action
                         self.actions_timestep.append((human, action))
 
             for machine in self.machine_agents:

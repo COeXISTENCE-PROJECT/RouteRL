@@ -10,7 +10,9 @@
             "behavior" : "selfish",
             "observed_span" : 300,
             "observation_type" : "previous_agents_plus_start_time",
-            "group_vicinity": false
+            "group_vicinity": false,
+            "records_folder" : "training_records",
+            "agents_csv_file_name": "agents.csv"
         },
 
         "human_parameters" :

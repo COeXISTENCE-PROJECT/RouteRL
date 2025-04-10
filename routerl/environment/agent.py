@@ -4,6 +4,8 @@ from an origin to a destination in the simulation.
 """
 
 import numpy as np
+import os
+import pandas as pd
 
 from abc import ABC, abstractmethod
 
@@ -175,7 +177,6 @@ class HumanAgent(BaseAgent):
         """
         if self.default_action is not None:
             return self.default_action
-        
         self.last_action = self.model.act(observation)
         return self.last_action
 
@@ -241,6 +242,7 @@ class MachineAgent(BaseAgent):
         behavior = params[kc.BEHAVIOR]
         super().__init__(id, kind, start_time, origin, destination, behavior)
         self.observed_span = params[kc.OBSERVED_SPAN]
+        self.params = params
         self.action_space_size = action_space_size
         self.state_size = action_space_size * 2
         self.model = None
@@ -296,6 +298,117 @@ class MachineAgent(BaseAgent):
         """
 
         return None
+    
+    def get_travel_time_by_id(self, travel_times_list, agent_id):
+        for entry in travel_times_list:
+            if entry['id'] == agent_id:
+                return entry['travel_time']
+        return None  
+    
+    def calculate_marginal_cost(self, all_agents, travel_times_list):
+        from .environment import TrafficEnvironment ## added here because there was circular import problem
+
+        # Marginal cost
+        self.impact = {}
+        
+        # Calculate the marginal cost on the agent from other AV agents
+        agents_to_calculate_marginal_cost = []
+        for agent in all_agents:
+            if agent.kind == kc.TYPE_MACHINE:
+                agents_to_calculate_marginal_cost.append(agent)
+        
+        ## Delete each agent from the environment
+        for machine_agent in agents_to_calculate_marginal_cost:
+            # Read the agents already in the simulation
+            df = pd.read_csv(os.path.join(self.params[kc.RECORDS_FOLDER], self.params[kc.AGENTS_CSV_FILE_NAME]))
+
+            # Delete from the agents list the specific chosen agent
+            df["id"] = df["id"].astype(int)
+            df = df[df["id"] != int(machine_agent.id)]
+
+            # Save the new agent list for the new environment run
+            df.to_csv(os.path.join(self.params[kc.RECORDS_FOLDER], "agents2.csv"), index=False)
+
+            # Save the actions of the agents that will run in the new simulation
+            actions = []
+            for index, row in df.iterrows():
+                for agent in all_agents: ## all_agents doesn't have the correct actions of the agents
+                    if row['id'] == agent.id:
+                        actions.append(agent.last_action)
+                    
+            env_params = {
+                "agent_parameters" : {
+                    "new_machines_after_mutation": 10,
+                    "agents_csv_file_name": "agents2.csv",
+
+                    "human_parameters" :
+                    {
+                        "model" : "general_model",
+
+                        "noise_weight_agent" : 0,
+                        "noise_weight_path" : 0.8,
+                        "noise_weight_day" : 0.2,
+
+                        "beta" : -1,
+                        "beta_k_i_variability" : 0.1,
+                        "epsilon_i_variability" : 0.1,
+                        "epsilon_k_i_variability" : 0.1,
+                        "epsilon_k_i_t_variability" : 0.1,
+
+                        "greedy" : 0.9,
+                        "gamma_c" : 0.0,
+                        "gamma_u" : 0.0,
+                        "remember" : 1,
+
+                        "alpha_zero" : 0.8,
+                        "alphas" : [0.2]  
+                    },
+                    "machine_parameters" :
+                    {
+                        "behavior" : "cooperative",
+                        "observation_type" : "previous_agents_plus_start_time",
+                    }
+                },
+                "simulator_parameters" : {
+                    "network_name" : "two_route_yield",
+                    "sumo_type" : "sumo",
+                },  
+                "plotter_parameters" : {
+                    "smooth_by" : 50,
+                    "phase_names" : [
+                        "Human learning", 
+                        "Mutation - Machine learning",
+                        "Testing phase"
+                    ]
+                },
+                "path_generation_parameters":
+                {
+                    "number_of_paths" : 4,
+                    "beta" : -.5,
+                    "visualize_paths" : True
+                }
+            }
+
+            env = TrafficEnvironment(seed=42, create_agents=False, create_paths=False, second_sumo=True, **env_params)
+            env.start(use_subprocess=True)
+
+            for agent, action in zip(env.all_agents, actions):
+                agent.default_action = action
+
+            env.step()
+
+            ## Compare the initial travel time with the simulation travel time
+            initial_time = self.get_travel_time_by_id(travel_times_list, self.id)
+            after_step_time = self.get_travel_time_by_id(env.travel_times_list, self.id)
+
+            if initial_time is not None and after_step_time is not None:
+                difference = after_step_time - initial_time
+                self.impact[machine_agent] = difference
+
+            env.stop_simulation() 
+        
+        return self.impact
+
 
     def get_state(self, observation: list[dict]) -> list[int]:
         """Generates the current state representation based on recent observations of agents navigating
