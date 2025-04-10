@@ -305,7 +305,7 @@ class MachineAgent(BaseAgent):
                 return entry['travel_time']
         return None  
     
-    def calculate_marginal_cost(self, all_agents, travel_times_list):
+    def calculate_marginal_cost(self, all_agents, travel_times_list, kwargs):
         from .environment import TrafficEnvironment ## added here because there was circular import problem
 
         # Marginal cost
@@ -336,60 +336,10 @@ class MachineAgent(BaseAgent):
                     if row['id'] == agent.id:
                         actions.append(agent.last_action)
                     
-            env_params = {
-                "agent_parameters" : {
-                    "new_machines_after_mutation": 10,
-                    "agents_csv_file_name": "agents2.csv",
-
-                    "human_parameters" :
-                    {
-                        "model" : "general_model",
-
-                        "noise_weight_agent" : 0,
-                        "noise_weight_path" : 0.8,
-                        "noise_weight_day" : 0.2,
-
-                        "beta" : -1,
-                        "beta_k_i_variability" : 0.1,
-                        "epsilon_i_variability" : 0.1,
-                        "epsilon_k_i_variability" : 0.1,
-                        "epsilon_k_i_t_variability" : 0.1,
-
-                        "greedy" : 0.9,
-                        "gamma_c" : 0.0,
-                        "gamma_u" : 0.0,
-                        "remember" : 1,
-
-                        "alpha_zero" : 0.8,
-                        "alphas" : [0.2]  
-                    },
-                    "machine_parameters" :
-                    {
-                        "behavior" : "cooperative",
-                        "observation_type" : "previous_agents_plus_start_time",
-                    }
-                },
-                "simulator_parameters" : {
-                    "network_name" : "two_route_yield",
-                    "sumo_type" : "sumo",
-                },  
-                "plotter_parameters" : {
-                    "smooth_by" : 50,
-                    "phase_names" : [
-                        "Human learning", 
-                        "Mutation - Machine learning",
-                        "Testing phase"
-                    ]
-                },
-                "path_generation_parameters":
-                {
-                    "number_of_paths" : 4,
-                    "beta" : -.5,
-                    "visualize_paths" : True
-                }
-            }
-
-            env = TrafficEnvironment(seed=42, create_agents=False, create_paths=False, second_sumo=True, **env_params)
+            ## Pass the same argument with the difference that the agent data is in agents2.csv
+            kwargs["agent_parameters"]["agents_csv_file_name"] = "agents2.csv"   
+            env = TrafficEnvironment(seed=42, create_agents=False, create_paths=False, second_sumo=True, **kwargs)
+            
             env.start(use_subprocess=True)
 
             for agent, action in zip(env.all_agents, actions):

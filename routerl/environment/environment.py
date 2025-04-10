@@ -335,8 +335,10 @@ class TrafficEnvironment(AECEnv):
         # Read default parameters, update with kwargs
         defaults_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), kc.DEFAULTS_FILE)
         params = get_params(defaults_path, resolve=True, update=kwargs)
+        self.kwargs = kwargs
 
         self.environment_params = params[kc.ENVIRONMENT]
+        self.params = params
         self.simulation_params = params[kc.SIMULATOR]
         self.agent_params = params[kc.AGENTS]
         self.plotter_params = params[kc.PLOTTER]
@@ -696,7 +698,7 @@ class TrafficEnvironment(AECEnv):
             marginal_cost_calculation = {}
 
             for machine in self.machine_agents:
-                cost = machine.calculate_marginal_cost(self.all_agents, self.travel_times_list)
+                cost = machine.calculate_marginal_cost(self.all_agents, self.travel_times_list, self.kwargs)
                 marginal_cost_calculation[machine.id] = cost
             self.recorder.remember_marginal_costs(marginal_cost_calculation, self.day, self.machine_agents)
 
