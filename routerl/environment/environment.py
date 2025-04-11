@@ -633,6 +633,75 @@ class TrafficEnvironment(AECEnv):
 
         self._initialize_machine_agents()
 
+
+    def mutation_odd_id_agents(self, disable_human_learning: bool = True, mutation_start_percentile: int = 25) -> None:
+        """Perform mutation by converting selected human agents into machine agents.
+
+        This method identifies a subset of human agents that start after the 25th percentile of start times of
+        other vehicles, removes a specified number of these agents, and replaces them with machine agents.
+
+        Args:
+            disable_human_learning (bool, optional): Boolean flag to disable human agents.
+            
+        Returns:
+            None
+            
+        Raises:
+            ValueError: If there are insufficient human agents available for mutation.
+        """
+
+        logging.info("Mutation is about to happen!\n")
+        logging.info("There were %s human agents.\n", len(self.human_agents))
+
+        # Mutate to a human that starts after the 25% of the rest of the vehicles
+        start_times = [human.start_time for human in self.human_agents]
+        percentile = np.percentile(start_times, mutation_start_percentile)
+
+        #filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile]
+        #filtered_human_agents = [human for human in self.human_agents]
+
+        number_of_machines_to_be_added = self.agent_params[kc.NEW_MACHINES_AFTER_MUTATION]
+        random_humans_deleted = []
+
+        every_two_humans = []
+        number_of_machines_to_be_added = self.agent_params[kc.NEW_MACHINES_AFTER_MUTATION]
+
+        for i in range(len(self.human_agents)):
+            if len(every_two_humans) >= number_of_machines_to_be_added:
+                break
+
+            if i % 2 != 0 and i > 2: ## So that there are 3 human agents before all the AVs
+                every_two_humans.append(self.human_agents[i])
+
+
+        if len(every_two_humans) < number_of_machines_to_be_added:
+            raise ValueError(
+                f"Insufficient human agents for mutation. Required: {number_of_machines_to_be_added}, "
+                f"Available: {len(every_two_humans)}.\n"
+                f"Decrease the number of machines to be added after the mutation.\n"
+            )
+
+        for human in every_two_humans:
+                self.human_agents.remove(human)
+
+                random_humans_deleted.append(human)
+                self.machine_agents.append(MachineAgent(human.id,
+                                                        human.start_time,
+                                                        human.origin, 
+                                                        human.destination, 
+                                                        self.agent_params[kc.MACHINE_PARAMETERS], 
+                                                        self.simulation_params[kc.NUMBER_OF_PATHS]))
+                self.possible_agents.append(str(human.id))
+
+        self.n_agents = len(self.possible_agents)
+        self.all_agents = self.machine_agents + self.human_agents
+
+        if disable_human_learning:  self.human_learning = False
+
+        logging.info(f"Now there are {len(self.human_agents)} human agents.")
+
+        self._initialize_machine_agents()
+
     #########################
     ##### Help functions ####
     #########################
