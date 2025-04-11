@@ -637,8 +637,8 @@ class TrafficEnvironment(AECEnv):
     def mutation_odd_id_agents(self, disable_human_learning: bool = True, mutation_start_percentile: int = 25) -> None:
         """Perform mutation by converting selected human agents into machine agents.
 
-        This method identifies a subset of human agents that start after the 25th percentile of start times of
-        other vehicles, removes a specified number of these agents, and replaces them with machine agents.
+        This method identifies the human agents that have odd ids, 
+        removes a specified number of these agents, and replaces them with machine agents.
 
         Args:
             disable_human_learning (bool, optional): Boolean flag to disable human agents.
@@ -653,16 +653,7 @@ class TrafficEnvironment(AECEnv):
         logging.info("Mutation is about to happen!\n")
         logging.info("There were %s human agents.\n", len(self.human_agents))
 
-        # Mutate to a human that starts after the 25% of the rest of the vehicles
-        start_times = [human.start_time for human in self.human_agents]
-        percentile = np.percentile(start_times, mutation_start_percentile)
-
-        #filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile]
-        #filtered_human_agents = [human for human in self.human_agents]
-
-        number_of_machines_to_be_added = self.agent_params[kc.NEW_MACHINES_AFTER_MUTATION]
         random_humans_deleted = []
-
         every_two_humans = []
         number_of_machines_to_be_added = self.agent_params[kc.NEW_MACHINES_AFTER_MUTATION]
 
