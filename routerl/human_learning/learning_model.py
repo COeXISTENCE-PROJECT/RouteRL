@@ -157,7 +157,7 @@ class GeneralModel(BaseLearningModel):
                'costs':self.costs}
         #print('I act based on those utilities:' + str(log))
         
-        if self.first_day or abs(self.last_action["utility"] - utilities[self.last_action['action']])/self.last_action["utility"] >= self.gamma_u: #bounded rationality
+        if self.first_day or abs((self.last_action["utility"] - utilities[self.last_action['action']])/self.last_action["utility"]) >= self.gamma_u: #bounded rationality
             #print("I act", self.greedy)
             if np.random.random() < self.greedy:
                 action = int(np.argmax(utilities)) # greedy choice
