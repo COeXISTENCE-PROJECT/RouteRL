@@ -238,13 +238,9 @@ class TestModel(GeneralModel):
     """
     This converges to the similar costs on OD pairs - gives quite a lot of variability, but at the expectation it converges
 
-
     """
 
     def __init__(self, params, initial_knowledge):
-        
-        
-
         params[kc.NOISE_WEIGHT_AGENT] = 0
         params[kc.NOISE_WEIGHT_PATH] = 0.8
         params[kc.NOISE_WEIGHT_DAY] = 0.2
