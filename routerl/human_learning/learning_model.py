@@ -79,7 +79,7 @@ class GeneralModel(BaseLearningModel):
         super().__init__()
         self.costs = - np.array(initial_knowledge, dtype=float) # cost matrix
         self.action_space = len(self.costs) # number of paths
-        self.mean_time = np.mean(self.costs) # mean free flow travel time over paths - possibly useful to normalize errors
+        self.mean_time = abs(np.mean(self.costs)) # mean free flow travel time over paths - possibly useful to normalize errors
         
         # weights of respective componenets of error term (should sum to one)
         self.noise_weight_agent = params[kc.NOISE_WEIGHT_AGENT] # drawn once per agent
@@ -114,58 +114,25 @@ class GeneralModel(BaseLearningModel):
         update 'costs' of 'action' after receiving a 'reward'
         """
         self.memory[action].append(reward) #add recent reward to memory (of rewards)
-
-        log = {'action': action, 
-               'reward':reward,
-               'costs':self.costs,
-               'gamma_c': self.gamma_c,
-               'alpha_zero': self.alpha_zero,
-               'alphas': self.alphas}
-        #print('learning prior:' + str(log))
       
         if abs((self.costs[action]-reward)/self.costs[action])>=self.gamma_c: #learn only if relative difference in rewards is above gamma_c
             weight_normalization_factor = 1/(self.alpha_zero+ sum([self.alphas[i] for i,j in enumerate(self.memory[action])])) # needed to make sure weights are always summed to 1
             self.costs[action] = weight_normalization_factor * self.alpha_zero* self.costs[action] #experience weights
             self.costs[action] += sum([weight_normalization_factor * self.alphas[i]*self.memory[action][i] for i,j in enumerate(self.memory[action])]) # weighted average of historical rewards
 
-            log = {'action': action, 
-               'reward':reward,
-               'costs':self.costs,
-               'gamma_c': self.gamma_c,
-               'alpha_zero': self.alpha_zero,
-               'alphas': self.alphas,
-               'weight_normalization_factor' : weight_normalization_factor}
-        else:
-            #print("I don't learn")
-
-            log = {'action': action, 
-               'reward':reward,
-               'costs':self.costs,
-               'gamma_c': self.gamma_c,
-               'alpha_zero': self.alpha_zero,
-               'alphas': self.alphas}
-        
-        #print('learning after:' + str(log))
 
     def act(self, state):  
         """
         select path from action space based on learned expected costs"""
         # for each path you multiply the expected costs with path-specific beta (drawn at init) and add the noise (computed from 3 components in `get_noises`)
         utilities = [self.beta_k_i[i] * (self.costs[i] + self.mean_time * noise) for i, noise in enumerate(self.get_noises())]
-        log = {'utilities': utilities, 
-               'self.beta_k_i':self.beta_k_i,
-               'costs':self.costs}
-        #print('I act based on those utilities:' + str(log))
         
-        if self.first_day or abs((self.last_action["utility"] - utilities[self.last_action['action']])/self.last_action["utility"]) >= self.gamma_u: #bounded rationality
-            #print("I act", self.greedy)
+        if self.first_day or abs((self.last_action["utility"] - utilities[self.last_action['action']]/self.last_action["utility"])) >= self.gamma_u: #bounded rationality
             if np.random.random() < self.greedy:
                 action = int(np.argmax(utilities)) # greedy choice
             else:
-                 #print("I act random")
                  action = np.random.choice(self.action_space)  # random choice
         else:
-            #print("I do not act")
             action = self.last_action['action']    
         self.first_day = False
         self.last_action = {"action": action, "utility": utilities[action]}
@@ -178,12 +145,6 @@ class GeneralModel(BaseLearningModel):
         returns vector of errors
         """
         daily_noise = np.random.normal(0,self.random_term_day, size= self.action_space)
-        noise = [self.noise_weight_agent * self.random_term_agent + 
-                self.noise_weight_path * self.random_term_path[k] + 
-                self.noise_weight_day * daily_noise[k]
-                    for k,_ in enumerate(self.costs)]
-        #print("this is my noise: ")
-        #print(noise)
 
         return [self.noise_weight_agent * self.random_term_agent + 
                 self.noise_weight_path * self.random_term_path[k] + 
@@ -207,10 +168,10 @@ class GawronModel(GeneralModel):
     """
     # classic 0.8 - 0.2 exponential smoothing/markov/gawron
     def __init__(self, params, initial_knowledge):
-        params[kc.REMEMBER] = 1
-        params[kc.ALPHA_ZERO] = 0.2
-        params[kc.ALPHAS] = [0.8]
-        params[kc.GREEDY] = 1
+        # params[kc.REMEMBER] = 1
+        # params[kc.ALPHA_ZERO] = 0.2
+        # params[kc.ALPHAS] = [0.8]
+        # params[kc.GREEDY] = 1
         super().__init__(params, initial_knowledge)
 
 class WeightedModel(GeneralModel):
@@ -271,3 +232,39 @@ class AONModel(GeneralModel):
         params[kc.BETA] = -1
         params[kc.BETA_K_I_VARIABILITY] = 0
         super().__init__(params, initial_knowledge)
+
+
+class TestModel(GeneralModel):
+    """
+    This converges to the similar costs on OD pairs - gives quite a lot of variability, but at the expectation it converges
+
+
+    """
+
+    def __init__(self, params, initial_knowledge):
+        
+        
+
+        params[kc.NOISE_WEIGHT_AGENT] = 0
+        params[kc.NOISE_WEIGHT_PATH] = 0.8
+        params[kc.NOISE_WEIGHT_DAY] = 0.2
+
+        params[kc.BETA] = -1
+
+        params[kc.BETA_K_I_VARIABILITY] = 0.03
+
+        params[kc.EPSILON_I_VARIABILITY] = 0
+        params[kc.EPSILON_K_I_VARIABILITY] = 0.05
+        params[kc.EPSILON_K_I_T_VARIABILITY] = 0.05
+
+        params[kc.GREEDY] = 0.7
+        params[kc.GAMMA_C] = 0.1
+        params[kc.GAMMA_U] = 0
+        params[kc.REMEMBER] = 3
+
+        params[kc.ALPHA_ZERO] = 6
+        params[kc.ALPHAS] = [0.2,0.1,0.1]
+
+        super().__init__(params, initial_knowledge)
+
+"noise_weight_agent" : 0,
