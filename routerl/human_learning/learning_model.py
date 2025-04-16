@@ -267,4 +267,3 @@ class TestModel(GeneralModel):
 
         super().__init__(params, initial_knowledge)
 
-"noise_weight_agent" : 0,
