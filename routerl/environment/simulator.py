@@ -56,39 +56,28 @@ class SumoSimulator():
 
             self.network_folder      = os.path.join(curr_dir,
                                                     kc.NETWORK_FOLDER).replace("$net$", self.network_name)
-            self.sumo_config_path    = os.path.join(curr_dir,
-                                                    kc.SUMO_CONFIG_PATH).replace("$net$", self.network_name)
+            self.network_file_path   = os.path.join(curr_dir,
+                                                    kc.NETWORK_FILE_PATH).replace("$net$", self.network_name)
             self.routes_xml_path     = os.path.join(curr_dir,
                                                     kc.ROU_FILE_PATH).replace("$net$", self.network_name)
-            self.sumo_fcd            = os.path.join(curr_dir,
-                                                    kc.SUMO_FCD).replace("$net$", self.network_name)
-            self.detector_save_path  = os.path.join(curr_dir,
-                                                    kc.DETECTORS_CSV_PATH).replace("$net$", self.network_name)
             self.conn_file_path      = os.path.join(curr_dir,
                                                     kc.CONNECTION_FILE_PATH).replace("$net$", self.network_name)
             self.edge_file_path      = os.path.join(curr_dir,
                                                     kc.EDGE_FILE_PATH).replace("$net$", self.network_name)
             self.nod_file_path       = os.path.join(curr_dir,
                                                     kc.NOD_FILE_PATH).replace("$net$", self.network_name)
-            self.rou_xml_save_path   = os.path.join(curr_dir,
-                                                    kc.ROUTE_XML_PATH).replace("$net$", self.network_name)
-            self.det_xml_save_path   = os.path.join(curr_dir,
-                                                    kc.DETECTORS_XML_PATH).replace("$net$", self.network_name)
         else:
             self.network_folder      = params[kc.CUSTOM_NETWORK_FOLDER] if params[kc.CUSTOM_NETWORK_FOLDER] != "NA" else self.network_name
-            self.sumo_config_path    = os.path.join(self.network_folder, self.network_name + ".sumocfg")
             self.routes_xml_path     = os.path.join(self.network_folder, self.network_name + ".rou.xml")
-            self.sumo_fcd            = os.path.join(self.network_folder, "fcd.xml")
-            self.detector_save_path  = os.path.join(self.network_folder, "detectors.csv")
             self.conn_file_path      = os.path.join(self.network_folder, self.network_name + ".con.xml")
             self.edge_file_path      = os.path.join(self.network_folder, self.network_name + ".edg.xml")
             self.nod_file_path       = os.path.join(self.network_folder, self.network_name + ".nod.xml")
-            self.rou_xml_save_path   = os.path.join(self.network_folder, "route.rou.xml")
-            self.det_xml_save_path   = os.path.join(self.network_folder, "det.add.xml")
-            
-        self.sumo_save_path      = os.path.join(params[kc.RECORDS_FOLDER], kc.SUMO_LOGS_FOLDER) #TODO change path to dynamic
-        self.paths_csv_file_path = os.path.join(params[kc.RECORDS_FOLDER], kc.PATHS_CSV_FILE_NAME)
-
+          
+        self.det_xml_save_path       = os.path.join(params[kc.RECORDS_FOLDER], kc.DETECTORS_XML_FILE_NAME)
+        self.paths_csv_file_path     = os.path.join(params[kc.RECORDS_FOLDER], kc.PATHS_CSV_FILE_NAME)
+        self.rou_xml_save_path       = os.path.join(params[kc.RECORDS_FOLDER], kc.ROUTE_XML_FILE_NAME)
+        self.sumo_save_path          = os.path.join(params[kc.RECORDS_FOLDER], kc.SUMO_LOGS_FOLDER)
+        
         random.seed(seed)
 
         self.seed = seed
@@ -197,7 +186,6 @@ class SumoSimulator():
     def _route_gen_process(self, network, demands, origins, destinations, demand_idx, path_gen_kwargs):
         origin = origins[demands[demand_idx][0]]
         destination = destinations[demands[demand_idx][1]]
-        #path_gen_kwargs["tolerate_num_iterations"] = path_gen_kwargs["num_samples"] * 5
         return jx.extended_generator(
             network=network,
             origins=[origin],
@@ -269,9 +257,6 @@ class SumoSimulator():
         paths_list = [path.split(" ") for path in paths_df["path"].values]
         detectors_name = sorted(list(set([node for path in paths_list for node in path])))
         
-        detectors_df = pd.DataFrame({"name": detectors_name})
-        detectors_df.to_csv(self.detector_save_path, index=False)
-        
         with open(self.det_xml_save_path, "w") as det:
             print("""<additional>""", file=det)
             for det_id in detectors_name:
@@ -299,17 +284,23 @@ class SumoSimulator():
         combined_sumo_stats_file = os.path.join(self.sumo_save_path,
                                                 f"sumo_stats_{self.runs}.xml")
 
-        sumo_cmd = [self.sumo_type,"--seed",
-                    str(self.seed),
-                    "--fcd-output",
-                    self.sumo_fcd,
-                    "-c", self.sumo_config_path, 
-                    "--statistic-output",
-                    combined_sumo_stats_file,
-                    "--tripinfo-output",
-                    individual_sumo_stats_file,
-                    "--no-warnings"
-                    ]
+        sumo_cmd = [
+            self.sumo_type,
+            "--seed",
+            str(self.seed),
+            "--net-file",
+            self.network_file_path,
+            "--additional-files",
+            f"{self.det_xml_save_path},{self.rou_xml_save_path}",
+            "--no-step-log",
+            "true",
+            "--time-to-teleport",
+            "-1",
+            "--statistic-output",
+            combined_sumo_stats_file,
+            "--tripinfo-output",
+            individual_sumo_stats_file
+            ]
         traci.start(sumo_cmd, label=self.sumo_id)
         self.sumo_connection = traci.getConnection(self.sumo_id)
 
@@ -343,17 +334,25 @@ class SumoSimulator():
         
         combined_sumo_stats_file = os.path.join(self.sumo_save_path,
                                                 f"sumo_stats_{self.runs}.xml")
-
-        self.sumo_connection.load(["--seed",
-                                   str(self.seed),
-                                   "--fcd-output",
-                                   self.sumo_fcd,
-                                   '-c',
-                                   self.sumo_config_path,
-                                   "--statistic-output",
-                                   combined_sumo_stats_file,
-                                   "--tripinfo-output",
-                                   individual_sumo_stats_file])
+        
+        sumo_cmd = [
+            "--seed",
+            str(self.seed),
+            "--net-file",
+            self.network_file_path,
+            "--additional-files",
+            f"{self.det_xml_save_path},{self.rou_xml_save_path}",
+            "--no-step-log",
+            "true",
+            "--time-to-teleport",
+            "-1",
+            "--statistic-output",
+            combined_sumo_stats_file,
+            "--tripinfo-output",
+            individual_sumo_stats_file
+            ]
+        
+        self.sumo_connection.load(sumo_cmd)
         
 
         self.timestep = 0

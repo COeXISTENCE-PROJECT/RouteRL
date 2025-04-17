@@ -145,19 +145,18 @@ class Keychain:
 
     ####################### FILE PATHS ########################
     
-    PATHS_CSV_FILE_NAME = "paths.csv"
+    PATHS_CSV_FILE_NAME = "routes.csv"
     AGENTS_CSV_FILE_NAME = "agents.csv"
+    ROUTE_XML_FILE_NAME = "route.rou.xml"
+    DETECTORS_XML_FILE_NAME = "det.add.xml"
     
     NETWORK_FOLDER = "../networks/$net$/"
+    NETWORK_FILE_PATH = "../networks/$net$/$net$.net.xml"
     CONNECTION_FILE_PATH = "../networks/$net$/$net$.con.xml"
     EDGE_FILE_PATH = "../networks/$net$/$net$.edg.xml"
     NOD_FILE_PATH = "../networks/$net$/$net$.nod.xml"
     SUMO_CONFIG_PATH = "../networks/$net$/$net$.sumocfg"
     ROU_FILE_PATH = "../networks/$net$/$net$.rou.xml"
-    SUMO_FCD = "../networks/$net$/fcd.xml"
-    ROUTE_XML_PATH = "../networks/$net$/route.rou.xml"
-    DETECTORS_XML_PATH = "../networks/$net$/det.add.xml"
-    DETECTORS_CSV_PATH = "../networks/$net$/detectors.csv"
     
     DEFAULT_ODS_PATH = "../networks/default_ods.json"
     
