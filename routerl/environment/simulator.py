@@ -68,6 +68,7 @@ class SumoSimulator():
                                                     kc.NOD_FILE_PATH).replace("$net$", self.network_name)
         else:
             self.network_folder      = params[kc.CUSTOM_NETWORK_FOLDER] if params[kc.CUSTOM_NETWORK_FOLDER] != "NA" else self.network_name
+            self.network_file_path   = os.path.join(self.network_folder, self.network_name + ".net.xml")
             self.routes_xml_path     = os.path.join(self.network_folder, self.network_name + ".rou.xml")
             self.conn_file_path      = os.path.join(self.network_folder, self.network_name + ".con.xml")
             self.edge_file_path      = os.path.join(self.network_folder, self.network_name + ".edg.xml")
