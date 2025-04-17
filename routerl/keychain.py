@@ -121,7 +121,8 @@ class Keychain:
     RANDOM = "random"
     GENERAL_MODEL = "general_model"
     AON = "aon"
-    HUMAN_MODELS = [GAWRON, WEIGHTED, RANDOM, AON]
+    BENCHMARK_HUMAN = "benchmark_human"
+    HUMAN_MODELS = [GAWRON, WEIGHTED, RANDOM, AON, BENCHMARK_HUMAN]
     
     # Network names
     ARTERIAL = "arterial"

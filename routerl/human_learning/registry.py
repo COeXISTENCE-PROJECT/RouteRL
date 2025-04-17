@@ -5,7 +5,8 @@ from routerl.human_learning import (
     GeneralModel,
     WeightedModel,
     RandomModel,
-    AONModel
+    AONModel,
+    BenchmarkHumanModel
 )
 
 def get_learning_model(params, initial_knowledge):
@@ -31,5 +32,7 @@ def get_learning_model(params, initial_knowledge):
         return RandomModel(params, initial_knowledge)
     elif model == kc.AON:
         return AONModel(params, initial_knowledge)
+    elif model == kc.BENCHMARK_HUMAN:
+        return BenchmarkHumanModel(params, initial_knowledge)
     else:
         raise ValueError('[MODEL INVALID] Unrecognized model: ' + model)
