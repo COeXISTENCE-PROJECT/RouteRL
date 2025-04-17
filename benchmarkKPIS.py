@@ -22,6 +22,9 @@ def get_episodes(episodes_folder: str) -> list[int]:
             eps.append(episode)
     else:
         raise FileNotFoundError(f"Episodes folder does not exist!")
+
+    eps = [ep for ep in eps if ep % 5 == 0]  # faster
+
     return sorted(eps)
 
 
@@ -147,7 +150,11 @@ def load_routeRL(file) -> pd.DataFrame:
     """
 
     # load the csv file
-    df = pd.read_csv(file)
+    try:
+        df = pd.read_csv(file)
+    except pd.errors.ParserError:
+        print(f"Error parsing file: {file}")
+        return pd.DataFrame()
 
     # convert to numeric
     try:
@@ -164,7 +171,7 @@ def load_routeRL(file) -> pd.DataFrame:
 
 def load_episode(results_path: str, episode: int) -> pd.DataFrame:
 
-    if episode % 50 == 0:
+    if episode % 100 == 0:
         print("loading episode: ", episode)
     SUMO_path = os.path.join(results_path, "SUMO_output")
     RouteRL_path = os.path.join(results_path, "episodes")
@@ -322,6 +329,27 @@ def extract_KPIs(path, config):
     mean_TT_all = np.mean(df["vehicleTripStatistics_totalTravelTime"])
     mean_TT_all = mean_TT_all / (len(CAV_ids) + len(human_ids))
     # extract KPIs of the experiment
+
+    avg_route_length = np.mean(df["vehicleTripStatistics_routeLength"])
+
+    avg_speed = np.mean(df["vehicleTripStatistics_speed"])
+
+    
+    min_human_times = [np.min(df[f"agent_{id}_duration"]) for id in human_ids]
+
+    min_CAV_times = [np.min(df[f"agent_{id}_duration"]) for id in CAV_ids]
+
+    max_human_times = [np.max(df[f"agent_{id}_duration"]) for id in human_ids]
+
+    max_CAV_times = [np.max(df[f"agent_{id}_duration"]) for id in CAV_ids]
+
+    mean_human_diff = np.mean(
+        [max_human_times[i] - min_human_times[i] for i in range(len(min_human_times))]
+    )
+    mean_CAV_diff = np.mean(
+        [max_CAV_times[i] - min_CAV_times[i] for i in range(len(min_CAV_times))]
+    )
+
     KPIs = {}
 
     KPIs["rho"] = rho
@@ -333,8 +361,30 @@ def extract_KPIs(path, config):
     KPIs["Effect_of_change"] = tau_b / rho
     KPIs["Effect_of_remaining"] = tau_b / tau
     KPIs["mean_TT_all"] = mean_TT_all
+    KPIs["avg_speed"] = avg_speed
+    KPIs["avg_route_length"] = avg_route_length
+    KPIs["mean_human_diff"] = mean_human_diff
+    KPIs["mean_CAV_diff"] = mean_CAV_diff
 
-    return KPIs
+    # now KPIs that are not a single value but a list of values
+
+    instability_humans = df[
+        [f"agent_{id}_action_change" for id in human_ids]
+    ].sum(axis=1).tolist()
+    instability_CAVs = df[
+        [f"agent_{id}_action_change" for id in CAV_ids]
+    ].sum(axis=1).tolist()
+
+    avg_time_lost = df["vehicleTripStatistics_timeLoss"] + df["vehicleTripStatistics_departDelay"]
+    avg_time_lost = avg_time_lost.tolist()
+
+    vector_KPIs = [
+        instability_humans,
+        instability_CAVs,
+        avg_time_lost,
+    ]
+
+    return KPIs, vector_KPIs
 
 
 def clear_SUMO_files(path, ep_path):
@@ -348,17 +398,21 @@ def clear_SUMO_files(path, ep_path):
         file_path = os.path.join(path, f"{file_name}_{episode}.xml")
         if os.path.exists(file_path):
             # read xml file and check if <tripinfos> is empty (no <tripinfo> elements)
-            tree = ET.parse(file_path)
+            try:
+                tree = ET.parse(file_path)
+            except ET.ParseError:
+                print(f"Error parsing XML file: {file_path}")
+                break
             root = tree.getroot()
             if len(root.findall("tripinfo")) == 0:
                 # remove the file
                 os.remove(file_path)
-                print(f"Removed empty file: {file_path}")
+                # print(f"Removed empty file: {file_path}")
             else:
                 # rename to the next file_id
                 new_file_path = os.path.join(path, f"{file_name}_{file_id}.xml")
                 os.rename(file_path, new_file_path)
-                print(f"Renamed file {file_path} to {new_file_path}")
+                # print(f"Renamed file {file_path} to {new_file_path}")
                 file_id += 1
         else:
             break
@@ -374,18 +428,22 @@ def clear_SUMO_files(path, ep_path):
         file_path = os.path.join(path, f"{file_name}_{episode}.xml")
         if os.path.exists(file_path):
             # read xml file and check if <vehicle loaded=0>
-            tree = ET.parse(file_path)
+            try:
+                tree = ET.parse(file_path)
+            except ET.ParseError:
+                print(f"Error parsing XML file: {file_path}")
+                break
             root = tree.getroot()
             vehicle = root.find("vehicles")
             if vehicle is not None and vehicle.attrib.get("loaded") == "0":
                 # remove the file
                 os.remove(file_path)
-                print(f"Removed empty file: {file_path}")
+                # print(f"Removed empty file: {file_path}")
             else:
                 # rename to the next file_id
                 new_file_path = os.path.join(path, f"{file_name}_{file_id}.xml")
                 os.rename(file_path, new_file_path)
-                print(f"Renamed file {file_path} to {new_file_path}")
+                # print(f"Renamed file {file_path} to {new_file_path}")
                 file_id += 1
         else:
             break
@@ -398,7 +456,7 @@ def clear_SUMO_files(path, ep_path):
             episode = int(file.split("_")[-1].split(".")[0])
             if episode not in episodes:
                 os.remove(os.path.join(path, file))
-                print(f"Removed file: {file}")
+                # print(f"Removed file: {file}")
 
 
 mock_path = "records/gar_aon/gar_aon_43"
@@ -416,13 +474,13 @@ if __name__ == "__main__":
             data_path = os.path.join(root, exp_id)
             break
 
-    clear_SUMO_files(
-        os.path.join(data_path, "SUMO_output"), os.path.join(data_path, "episodes")
-    )
+    # clear_SUMO_files(
+    #     os.path.join(data_path, "SUMO_output"), os.path.join(data_path, "episodes")
+    # )
 
-    collect_to_single_CSV(data_path, os.path.join(data_path, "combined_data.csv"))
+    # collect_to_single_CSV(data_path, os.path.join(data_path, "combined_data.csv"))
 
-    KPIs = extract_KPIs(
+    KPIs, vector_KPIs = extract_KPIs(
         os.path.join(data_path, "combined_data.csv"),
         {
             "human_learning_episodes": 500,
@@ -435,3 +493,12 @@ if __name__ == "__main__":
     KPIs_df = pd.DataFrame(KPIs, index=[0])
     KPIs_df.to_csv(os.path.join(data_path, "BenchmarkKPIs.csv"), index=False)
     print(KPIs_df)
+
+    # save vector KPIs to csv
+    vector_KPIs_df = pd.DataFrame(vector_KPIs).T
+    vector_KPIs_df.columns = [
+        "instability_humans",
+        "instability_CAVs",
+        "avg_time_lost",
+    ]
+    vector_KPIs_df.to_csv(os.path.join(data_path, "VectorKPIs.csv"), index=False)
