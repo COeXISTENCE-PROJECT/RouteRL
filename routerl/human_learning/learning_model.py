@@ -246,20 +246,19 @@ class BenchmarkHumanModel(GeneralModel):
         params[kc.NOISE_WEIGHT_DAY] = 0.2
 
         params[kc.BETA] = -1
-
-        params[kc.BETA_K_I_VARIABILITY] = 0.03
+        params[kc.BETA_K_I_VARIABILITY] = 0.01
 
         params[kc.EPSILON_I_VARIABILITY] = 0
         params[kc.EPSILON_K_I_VARIABILITY] = 0.05
         params[kc.EPSILON_K_I_T_VARIABILITY] = 0.05
 
-        params[kc.GREEDY] = 0.7
-        params[kc.GAMMA_C] = 0.1
+        params[kc.GREEDY] = 0.6
+        params[kc.GAMMA_C] = 0.05
         params[kc.GAMMA_U] = 0
         params[kc.REMEMBER] = 3
 
-        params[kc.ALPHA_ZERO] = 6
-        params[kc.ALPHAS] = [0.2,0.1,0.1]
+        params[kc.ALPHA_ZERO] = 0.8
+        params[kc.ALPHAS] = [0.1, 0.05, 0.05]
 
         super().__init__(params, initial_knowledge)
 
