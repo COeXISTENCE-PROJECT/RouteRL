@@ -6,6 +6,7 @@ PettingZoo environment for optimal route choice using SUMO simulator.
 import glob
 import os
 
+from concurrent.futures import ThreadPoolExecutor
 from copy import copy
 from copy import deepcopy as dc
 from gymnasium.spaces import Discrete
@@ -15,7 +16,6 @@ import logging
 import numpy as np
 import pandas as pd
 import random
-import threading
 
 from routerl.environment import generate_agents
 from routerl.environment import SumoSimulator
@@ -366,6 +366,9 @@ class TrafficEnvironment(AECEnv):
         logging.info(f"There are {len(self.human_agents)} human and {len(self.machine_agents)} machine agents.")
 
         self.episode_actions = dict()
+        
+        self.executor = ThreadPoolExecutor(max_workers=1)
+        self.pending_futures = []
 
     def __str__(self):
         message = f"TrafficEnvironment with {len(self.all_agents)} agents.\
@@ -525,6 +528,9 @@ class TrafficEnvironment(AECEnv):
         """
 
         self.simulator.stop()
+        for future in self.pending_futures:
+            future.result()
+        self.executor.shutdown(wait=True)
 
     def observe(self, agent: str) -> np.ndarray:
         """Retrieve the observations for a specific agent.
@@ -678,11 +684,9 @@ class TrafficEnvironment(AECEnv):
             self.agent_selection = self._agent_selector.next()
 
         if self.day % self.save_every == 0:
-            recording_task = threading.Thread(target=self._record, args=(self.day,
-                                                                        self.travel_times_list,
-                                                                        self.all_agents,
-                                                                        detectors_dict))
-            recording_task.start()
+            dc_episode, dc_ep_observations, dc_agents, dc_detectors = dc(self.day), dc(self.travel_times_list), dc(self.all_agents), dc(detectors_dict)
+            recording_task = self.executor.submit(self._record, dc_episode, dc_ep_observations, dc_agents, dc_detectors)
+            self.pending_futures.append(recording_task)
         
         # Reset observations
         if len(self.machine_agents) > 0:
@@ -817,19 +821,15 @@ class TrafficEnvironment(AECEnv):
     ############################
 
     def _record(self, episode: int, ep_observations: dict, agents: list, detectors_dict: dict) -> None:
-
-        dc_episode, dc_ep_observations, dc_agents, dc_detectors = dc(episode), dc(ep_observations), dc(agents), dc(detectors_dict)
         zero_space = [0] * self.action_space_size
-
         cost_tables = [
             {
                 kc.AGENT_ID: agent.id,
                 kc.COST_TABLE: getattr(agent.model, 'costs', zero_space) if hasattr(agent, 'model') else zero_space
             }
-            for agent in dc_agents
+            for agent in agents
         ]
-
-        self.recorder.record(dc_episode, dc_ep_observations, cost_tables, dc_detectors)
+        self.recorder.record(episode, ep_observations, cost_tables, detectors_dict)
 
     def plot_results(self) -> None:
         """Method that plot the results of the simulation.
