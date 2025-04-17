@@ -559,7 +559,8 @@ class TrafficEnvironment(AECEnv):
         other vehicles, removes a specified number of these agents, and replaces them with machine agents.
 
         Args:
-            disable_human_learning (bool, optional): Boolean flag to disable human agents.
+            disable_human_learning (bool, default=True): Boolean flag to disable human agents.
+            mutation_start_percentile (int, default=25): The percentile threshold for selecting human agents for mutation. Set to -1 to disable this filter.
             
         Returns:
             None
@@ -571,15 +572,14 @@ class TrafficEnvironment(AECEnv):
         logging.info("Mutation is about to happen!\n")
         logging.info("There were %s human agents.\n", len(self.human_agents))
 
-        # Mutate to a human that starts after the 25% of the rest of the vehicles
-        start_times = [human.start_time for human in self.human_agents]
-        percentile = np.percentile(start_times, mutation_start_percentile)
-
-        filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile]
-        #filtered_human_agents = [human for human in self.human_agents]
+        if mutation_start_percentile == -1:
+            filtered_human_agents = self.human_agents.copy()
+        else:
+            start_times = [human.start_time for human in self.human_agents]
+            percentile = np.percentile(start_times, mutation_start_percentile)
+            filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile]
 
         number_of_machines_to_be_added = self.agent_params[kc.NEW_MACHINES_AFTER_MUTATION]
-        random_humans_deleted = []
 
         if len(filtered_human_agents) < number_of_machines_to_be_added:
             raise ValueError(
@@ -594,7 +594,6 @@ class TrafficEnvironment(AECEnv):
             self.human_agents.remove(random_human)
             filtered_human_agents.remove(random_human)
 
-            random_humans_deleted.append(random_human)
             self.machine_agents.append(MachineAgent(random_human.id,
                                                     random_human.start_time,
                                                     random_human.origin,
