@@ -20,7 +20,7 @@
             "noise_weight_path" : 0.6,
             "noise_weight_day" : 0.2,
 
-            "beta" : -1.0,
+            "beta" : 1.0,
             "beta_k_i_variability" : 0.0,
             "epsilon_i_variability" : 0.0,
             "epsilon_k_i_variability" : 0.0,
