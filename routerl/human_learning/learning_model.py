@@ -229,7 +229,7 @@ class AONModel(GeneralModel):
         params[kc.NOISE_WEIGHT_DAY] = 0
         params[kc.NOISE_WEIGHT_PATH] = 0
         params[kc.NOISE_WEIGHT_AGENT] = 0
-        params[kc.BETA] = -1
+        params[kc.BETA] = 1
         params[kc.BETA_K_I_VARIABILITY] = 0
         super().__init__(params, initial_knowledge)
 
@@ -245,7 +245,7 @@ class BenchmarkHumanModel(GeneralModel):
         params[kc.NOISE_WEIGHT_PATH] = 0.8
         params[kc.NOISE_WEIGHT_DAY] = 0.2
 
-        params[kc.BETA] = -1
+        params[kc.BETA] = 1
         params[kc.BETA_K_I_VARIABILITY] = 0.01
 
         params[kc.EPSILON_I_VARIABILITY] = 0
