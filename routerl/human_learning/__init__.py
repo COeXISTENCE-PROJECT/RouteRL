@@ -1,6 +1,8 @@
 from .learning_model import (
+    AON,
     Gawron,
     Culo,
+    Random,
     WeightedAverage
 )
 

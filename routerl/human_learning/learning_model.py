@@ -92,7 +92,6 @@ class Gawron(BaseLearningModel):
         Returns:
             None
         """
-
         self.cost[action] = (self.alpha_j * self.cost[action]) + (self.alpha_zero * reward)
 
 
@@ -238,3 +237,82 @@ class WeightedAverage(BaseLearningModel):
         for i in range(len(self.cost)):
             for _ in range(self.remember):
                 self.memory[i].append(self.cost[i])
+                
+                
+class Random(BaseLearningModel):
+    """
+    Random learning model. This model selects actions randomly without any learning or cost expectations.\n
+    It is useful for testing and debugging purposes.
+
+    Args:
+        params (dict): A dictionary containing model parameters.
+        initial_knowledge (list or array): Initial knowledge of cost expectations.
+    Attributes:
+        cost (np.ndarray): Agent's cost expectations for each option.
+    """
+
+    def __init__(self, params, initial_knowledge):
+        super().__init__()
+        self.cost = np.array(initial_knowledge, dtype=float)
+        
+    def act(self, state) -> int:
+        """Selects an action randomly.
+
+        Args:
+            state (Any): The current state of the environment (not used).
+        Returns:
+            action (int): The index of the selected action.
+        """
+
+        action = random.randint(0, len(self.cost) - 1)
+        return action
+    
+    def learn(self, state, action, reward) -> None:
+        """Does not learn or update any cost expectations.
+
+        Args:
+            state (Any): The current state of the environment (not used).
+            action (int): The action that was taken.
+            reward (float): The reward received after taking the action.
+        Returns:
+            None
+        """
+        pass
+    
+class AON(BaseLearningModel):
+    """
+    AON learning model. This model does not learn, but selects the action with the lowest cost expectation.\n
+    It is useful for testing and debugging purposes.
+    Args:
+        params (dict): A dictionary containing model parameters.
+        initial_knowledge (list or array): Initial knowledge of cost expectations.
+    Attributes:
+        cost (np.ndarray): Agent's cost expectations for each option.
+    """
+    def __init__(self, params, initial_knowledge):
+        super().__init__()
+        self.cost = np.array(initial_knowledge, dtype=float)
+        
+    def act(self, state) -> int:
+        """Selects the action with the lowest cost expectation.
+
+        Args:
+            state (Any): The current state of the environment (not used).
+        Returns:
+            action (int): The index of the selected action.
+        """
+
+        action = int(np.argmin(self.cost))
+        return action
+    
+    def learn(self, state, action, reward) -> None:
+        """Does not learn or update any cost expectations.
+
+        Args:
+            state (Any): The current state of the environment (not used).
+            action (int): The action that was taken.
+            reward (float): The reward received after taking the action.
+        Returns:
+            None
+        """
+        pass

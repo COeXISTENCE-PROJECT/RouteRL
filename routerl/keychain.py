@@ -107,9 +107,11 @@ class Keychain:
     BEHAVIORS = [SELFISH, COMPETITIVE, COLLABORATIVE, COOPERATIVE, SOCIAL, ALTRUISTIC, MALICIOUS]
 
     # Model encodings
+    AON = "aon"
     GAWRON = "gawron"
     CULO = "culo"
-    W_AVG = "w_avg"
+    RANDOM = "random"
+    W_AVG = "weighted"
     HUMAN_MODELS = [GAWRON, CULO, W_AVG]
     
     # Network names
