@@ -112,7 +112,7 @@ class Keychain:
     CULO = "culo"
     RANDOM = "random"
     W_AVG = "weighted"
-    HUMAN_MODELS = [GAWRON, CULO, W_AVG]
+    HUMAN_MODELS = [AON, GAWRON, CULO, RANDOM, W_AVG]
     
     # Network names
     ARTERIAL = "arterial"
