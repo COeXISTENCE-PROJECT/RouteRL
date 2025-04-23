@@ -71,6 +71,7 @@ def generate_agents(params, free_flow_times, generate_data, seed=23423) -> list:
         elif row_dict[kc.AGENT_KIND] == kc.TYPE_HUMAN:
             agent_params = params[kc.HUMAN_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
+            initial_knowledge = [-1 * item for item in initial_knowledge]
             agents.append(HumanAgent(id,
                                      start_time,
                                      origin,

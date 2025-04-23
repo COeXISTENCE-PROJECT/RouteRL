@@ -1,12 +1,11 @@
 from routerl.keychain import Keychain as kc
 
 from routerl.human_learning import (
-    GawronModel,
-    GeneralModel,
-    WeightedModel,
-    RandomModel,
-    AONModel,
-    BenchmarkHumanModel
+    AON,
+    Gawron,
+    Culo,
+    Random,
+    WeightedAverage
 )
 
 def get_learning_model(params, initial_knowledge):
@@ -22,17 +21,15 @@ def get_learning_model(params, initial_knowledge):
     """
 
     model = params[kc.MODEL]
-    if model == kc.GAWRON:
-        return GawronModel(params, initial_knowledge)
-    if model == kc.GENERAL_MODEL:
-        return GeneralModel(params, initial_knowledge)
-    elif model == kc.WEIGHTED:
-        return WeightedModel(params, initial_knowledge)
+    if model == kc.AON:
+        return AON(params, initial_knowledge)
+    elif model == kc.GAWRON:
+        return Gawron(params, initial_knowledge)
+    elif model == kc.CULO:
+        return Culo(params, initial_knowledge)
     elif model == kc.RANDOM:
-        return RandomModel(params, initial_knowledge)
-    elif model == kc.AON:
-        return AONModel(params, initial_knowledge)
-    elif model == kc.BENCHMARK_HUMAN:
-        return BenchmarkHumanModel(params, initial_knowledge)
+        return Random(params, initial_knowledge)
+    elif model == kc.W_AVG:
+        return WeightedAverage(params, initial_knowledge)
     else:
         raise ValueError('[MODEL INVALID] Unrecognized model: ' + model)

@@ -1,10 +1,9 @@
 from .learning_model import (
-    GawronModel,
-    WeightedModel,
-    RandomModel,
-    GeneralModel,
-    AONModel,
-    BenchmarkHumanModel
+    AON,
+    Gawron,
+    Culo,
+    Random,
+    WeightedAverage
 )
 
 from .registry import get_learning_model

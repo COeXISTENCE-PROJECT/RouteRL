@@ -23,20 +23,11 @@ class Keychain:
     ACTION_SPACE_SIZE = "action_space_size"
     # Human
     MODEL = "model"
-    NOISE_WEIGHT_AGENT = "noise_weight_agent"
-    NOISE_WEIGHT_PATH = "noise_weight_path"
-    NOISE_WEIGHT_DAY = "noise_weight_day"
     BETA = "beta"
-    BETA_K_I_VARIABILITY = "beta_k_i_variability"
-    EPSILON_I_VARIABILITY = "epsilon_i_variability"
-    EPSILON_K_I_VARIABILITY = "epsilon_k_i_variability"
-    EPSILON_K_I_T_VARIABILITY = "epsilon_k_i_t_variability"
-    GREEDY = "greedy"
-    GAMMA_C = "gamma_c"
-    GAMMA_U = "gamma_u"
-    REMEMBER = "remember"
+    BETA_RANDOMNESS = "beta_randomness"
+    ALPHA_J = "alpha_j"
     ALPHA_ZERO = "alpha_zero"
-    ALPHAS = "alphas"
+    REMEMBER = "remember"
     # Machine
     BEHAVIOR = "behavior"
     OBSERVED_SPAN = "observed_span"
@@ -116,13 +107,12 @@ class Keychain:
     BEHAVIORS = [SELFISH, COMPETITIVE, COLLABORATIVE, COOPERATIVE, SOCIAL, ALTRUISTIC, MALICIOUS]
 
     # Model encodings
-    GAWRON = "gawron"
-    WEIGHTED = "weighted"
-    RANDOM = "random"
-    GENERAL_MODEL = "general_model"
     AON = "aon"
-    BENCHMARK_HUMAN = "benchmark_human"
-    HUMAN_MODELS = [GAWRON, WEIGHTED, RANDOM, AON, BENCHMARK_HUMAN]
+    GAWRON = "gawron"
+    CULO = "culo"
+    RANDOM = "random"
+    W_AVG = "weighted"
+    HUMAN_MODELS = [AON, GAWRON, CULO, RANDOM, W_AVG]
     
     # Network names
     ARTERIAL = "arterial"
