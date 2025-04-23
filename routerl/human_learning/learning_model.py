@@ -302,7 +302,7 @@ class AON(BaseLearningModel):
             action (int): The index of the selected action.
         """
 
-        action = int(np.argmin(self.cost))
+        action = int(np.argmax(self.cost))
         return action
     
     def learn(self, state, action, reward) -> None:
