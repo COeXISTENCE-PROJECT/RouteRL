@@ -3,7 +3,7 @@ janux>=1.0.0
 matplotlib>=3.9.3
 numpy>=2.0.2
 pandas>=2.2.3
-pettingzoo==1.24.*
+pettingzoo>=1.24.0<=1.24.3
 polars>=1.16.0
 prettytable>=3.12.0
 pytest>=8.3.4
