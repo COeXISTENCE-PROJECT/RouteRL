@@ -429,8 +429,10 @@ class TrafficEnvironment(AECEnv):
             observations (dict): observations.
             infos (dict): dictionary of information for the agents.
         """
-
         self.episode_actions = dict()
+        self.travel_times_list = list()
+        self.actions_timestep = list()
+        self.machine_same_start_time = list()
         self.simulator.reset()
         self.agents = copy(self.possible_agents)
         self.terminations = {agent: False for agent in self.possible_agents}
@@ -439,7 +441,6 @@ class TrafficEnvironment(AECEnv):
         self.infos = {agent: {} for agent in self.possible_agents}
         self.rewards = {agent: 0 for agent in self.possible_agents}
         self.rewards_humans = {agent.id: 0 for agent in self.human_agents}
-        self.travel_times_list = []
 
         if len(self.machine_agents) > 0:
             self._agent_selector = agent_selector(self.possible_agents)
