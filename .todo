@@ -1,2 +1,0 @@
-1. dir SUMO_output is not cleaned before start of the simulation
-2. what to do with episode.csv files - should they be in the same csv as sumofiles?

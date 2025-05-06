@@ -1,9 +1,9 @@
-gymnasium>=1.0.0
+gymnasium==1.0.0
 janux>=1.0.0
 matplotlib>=3.9.3
 numpy>=2.0.2
 pandas>=2.2.3
-pettingzoo>=1.24.0<=1.24.3
+pettingzoo==1.24.3
 polars==1.27.1
 prettytable>=3.12.0
 pytest>=8.3.4
@@ -13,4 +13,4 @@ tensordict==0.7.0
 torch>=2.6.0
 torchrl==0.7.0
 tqdm>=4.67.1
-traci>=1.21.0
+traci==1.21.0
