@@ -115,7 +115,7 @@ We have an experiment script encapsulated in a **CodeOcean** capsule. This capsu
 ---
 ### Credits
 
-`RouteRL` is part of [COeXISTENCE](https://www.rafalkucharskilab.pl/research/coexistence/) (ERC Starting Grant, grant agreement No 101075838) and is a team work at Jagiellonian University in Kraków, Poland by: [Ahmet Onur Akman](https://github.com/aonurakman) and [Anastasia Psarou](https://github.com/AnastasiaPsarou) (main contributors) supported by [Grzegorz Jamroz](https://github.com/GrzegorzJamroz), [Zoltán Varga](https://github.com/kistref), [Łukasz Gorczyca](https://github.com/Limexcyan), [Michał Hoffman](https://github.com/Crackhoff) and others, within the research group of [Rafał Kucharski](https://www.rafalkucharskilab.pl).
+`RouteRL` is part of [COeXISTENCE](https://www.rafalkucharskilab.pl/research/coexistence/) (ERC Starting Grant, grant agreement No 101075838) and is a team work at Jagiellonian University in Kraków, Poland by: [Ahmet Onur Akman](https://github.com/aonurakman) and [Anastasia Psarou](https://github.com/AnastasiaPsarou) (main contributors) supported by [Grzegorz Jamroz](https://github.com/GrzegorzJamroz), [Zoltán Varga](https://github.com/kistref), [Łukasz Gorczyca](https://github.com/Limexcyan), [Michał Hoffmann](https://github.com/Crackhoff) and others, within the research group of [Rafał Kucharski](https://www.rafalkucharskilab.pl).
 
 <p align="center">
   <img src="docs/_static/credits.png" width="50%"/>
