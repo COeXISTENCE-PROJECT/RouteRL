@@ -553,24 +553,25 @@ class TrafficEnvironment(AECEnv):
         Returns:
             self.observation_obj.agent_observations(agent) (np.ndarray): The observations for the specified agent.
         """
+
         for machine in self.machine_agents:
             if str(machine.id) == agent:
                 break
 
         # If the agent's turn hasn't come and the start time is bigger than the simulator timestep return an "empty observation"
         # The agent hasn't acted yet so only the start time is meaningful
-        if agent != self.agent_selection and machine.start_time > self.simulator.timestep:
-            array = np.zeros(self._observation_spaces[agent].shape[0] - 1)
-            observation = np.concatenate((np.array([machine.start_time]), array))
+        if agent != self.agent_selection:# and machine.start_time > self.simulator.timestep:
+            array = np.zeros(self._observation_spaces[agent].shape[0])
+            observation = np.array(array)
             return observation
         
         params = self.agent_params[kc.MACHINE_PARAMETERS]
         observation_type = params[kc.OBSERVATION_TYPE]
 
         if observation_type == kc.PREVIOUS_AGENTS_PLUS_START_TIME_MARGINAL_COST:
-            return self.observation_obj.agent_observations(agent, self.all_agents, self.agent_selection, self.travel_times_list)
+            return self.observation_obj.agent_observations(agent, self.all_agents, self.travel_times_list)
         
-        return self.observation_obj.agent_observations(agent, self.all_agents, self.agent_selection)
+        return self.observation_obj.agent_observations(agent, self.all_agents)
 
     #########################
     ### Mutation function ###

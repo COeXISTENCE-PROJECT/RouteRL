@@ -319,6 +319,7 @@ class MachineAgent(BaseAgent):
 
         # Marginal cost
         self.impact = {}
+        #print("Travel time list is: ", travel_times_list, "\n\n")
         
         # Calculate the marginal cost on the agent from other AV agents
         agents_to_calculate_marginal_cost = []
@@ -332,7 +333,7 @@ class MachineAgent(BaseAgent):
                 self.impact[machine_agent] = 0
                 continue
 
-            print("I want to calculate the impact of agent ", machine_agent, "on my agent ", self.id)
+            #print("I want to calculate the impact of agent ", machine_agent, "on my agent ", self.id)
 
             # Read the agents already in the simulation
             df = pd.read_csv(os.path.join(self.params[kc.RECORDS_FOLDER], self.params[kc.AGENTS_CSV_FILE_NAME]))
@@ -538,10 +539,10 @@ class MachineAgent(BaseAgent):
         
         a, b, c, d = self.rewards_coefs
         agent_reward  = a * own_tt + b * group_tt + c * others_tt + d * all_tt
-        total_impact = self.include_impact_in_reward()
+        #total_impact = self.include_impact_in_reward()
 
         #print("Reward before", agent_reward, "total_impact", total_impact, "\n\n")
-        agent_reward = agent_reward + 0.1 * total_impact
+        agent_reward = agent_reward #+ 0.1 * total_impact
         #print("reward_after", agent_reward)
         return agent_reward
 
