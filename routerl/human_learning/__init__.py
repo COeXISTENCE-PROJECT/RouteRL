@@ -9,3 +9,4 @@ from .learning_model import (
 from .registry import get_learning_model
 
 from .dqn import DQN
+from .mappo import MAPPO
