@@ -142,6 +142,7 @@ class HumanAgent(BaseAgent):
         self.initial_knowledge = initial_knowledge
         self.model = get_learning_model(params, initial_knowledge)
         self.last_reward = None
+        self.last_obs = 0
 
     def __repr__(self):
         return f"Human {self.id}"
@@ -165,7 +166,6 @@ class HumanAgent(BaseAgent):
         Returns:
             None
         """
-
         self._last_reward = reward
 
     def act(self, observation) -> int:  
@@ -179,6 +179,7 @@ class HumanAgent(BaseAgent):
         if self.default_action is not None:
             return self.default_action
         self.last_action = self.model.act(observation)
+        self.last_obs = observation
         return self.last_action
 
     def learn(self, action, observation) -> None:
@@ -193,7 +194,7 @@ class HumanAgent(BaseAgent):
 
         reward = self.get_reward(observation)
         self.last_reward = reward
-        self.model.learn(None, action, reward)
+        self.model.learn(self.last_obs, action, reward)
 
     def get_state(self, _) -> None:
         """Returns the current state of the agent.
@@ -203,7 +204,6 @@ class HumanAgent(BaseAgent):
         Returns:
             None
         """
-
         return None
 
     def get_reward(self, observation: list[dict]) -> float:
@@ -301,7 +301,9 @@ class MachineAgent(BaseAgent):
         return None
     
     def get_travel_time_by_id(self, travel_times_list, agent_id):
+        #print("\n\n\nInside get travel time by id\n\n\n")
         for entry in travel_times_list:
+            #print("entry is: ", entry['id'], agent_id, entry)
             if entry['id'] == agent_id:
                 return entry['travel_time']
         return None  
@@ -329,7 +331,7 @@ class MachineAgent(BaseAgent):
         
         ## Delete each agent from the environment
         for machine_agent in agents_to_calculate_marginal_cost:
-            if machine_agent == self.id:
+            if machine_agent.id == self.id:
                 self.impact[machine_agent] = 0
                 continue
 
@@ -399,7 +401,9 @@ class MachineAgent(BaseAgent):
             print("Travel times after: ", env.travel_times_list[machine_agent.id], "\n\n")"""
 
             ## Compare the initial travel time with the simulation travel time
+            #print("travel_times_list is: ", travel_times_list)
             initial_time = self.get_travel_time_by_id(travel_times_list, self.id)
+            #print("env.travel_times_list is: ", env.travel_times_list)
             after_step_time = self.get_travel_time_by_id(env.travel_times_list, self.id)
 
             #print("initial_time is: ", initial_time, "after step time", after_step_time)
@@ -409,6 +413,7 @@ class MachineAgent(BaseAgent):
                 #print("The difference is: ", difference, "\n\n\n")
                 self.impact[machine_agent] = difference
             else:
+                #print("I am agent", self.id, "something is None", initial_time, after_step_time, "\n\n")
                 self.impact[machine_agent] = 0.0
 
             #print("Impact is: ", self.impact, "\n\n\n")
@@ -539,10 +544,12 @@ class MachineAgent(BaseAgent):
         
         a, b, c, d = self.rewards_coefs
         agent_reward  = a * own_tt + b * group_tt + c * others_tt + d * all_tt
-        #total_impact = self.include_impact_in_reward()
+        #total_impact = self.include_impact_in_reward() #normalize it
 
-        #print("Reward before", agent_reward, "total_impact", total_impact, "\n\n")
-        agent_reward = agent_reward #+ 0.1 * total_impact
+        #print("Reward before", agent_reward, "halfed reward:", (agent_reward/2), "total_impact", total_impact, "\n\n")
+        #if total_impact < (agent_reward / 2):
+        #    agent_reward = agent_reward + 0.5 * total_impact #keep only the total_impact
+
         #print("reward_after", agent_reward)
         return agent_reward
 

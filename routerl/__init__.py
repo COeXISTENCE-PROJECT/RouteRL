@@ -27,7 +27,8 @@ from .environment import (
 )
 
 from .human_learning import (
-    get_learning_model
+    get_learning_model,
+    DQN
 )
 
 from .services import (
