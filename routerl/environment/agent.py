@@ -249,6 +249,7 @@ class MachineAgent(BaseAgent):
         self.model = None
         self.last_reward = None
         self.rewards_coefs = self._get_reward_coefs()
+        self.marginal_calculation = False
 
     def __repr__(self) -> str:
         machine_id = f"Machine {self.id}"
@@ -317,11 +318,8 @@ class MachineAgent(BaseAgent):
     def calculate_marginal_cost(self, all_agents, travel_times_list, kwargs):
         from .environment import TrafficEnvironment ## added here because there was circular import problem
 
-        #print("I am agent ", self.id)
-
         # Marginal cost
         self.impact = {}
-        #print("Travel time list is: ", travel_times_list, "\n\n")
         
         # Calculate the marginal cost on the agent from other AV agents
         agents_to_calculate_marginal_cost = []
@@ -334,8 +332,6 @@ class MachineAgent(BaseAgent):
             if machine_agent.id == self.id:
                 self.impact[machine_agent] = 0
                 continue
-
-            #print("I want to calculate the impact of agent ", machine_agent, "on my agent ", self.id)
 
             # Read the agents already in the simulation
             df = pd.read_csv(os.path.join(self.params[kc.RECORDS_FOLDER], self.params[kc.AGENTS_CSV_FILE_NAME]))
@@ -353,17 +349,13 @@ class MachineAgent(BaseAgent):
                 for agent in all_agents: ## all_agents doesn't have the correct actions of the agents
                     if row['id'] == agent.id:
                         actions.append(agent.last_action)
-            
-            #print(actions)
-            #print(travel_times_list)
+
 
             actions2 = []
             for index, row in df.iterrows():
                 for agent in all_agents: ## all_agents doesn't have the correct actions of the agents
                     if row['id'] == agent.id:
                         actions2.append(self.get_action_by_id(travel_times_list, agent.id))
-
-            #print(actions2)
 
                     
             ## Pass the same argument with the difference that the agent data is in agents2.csv
@@ -378,15 +370,11 @@ class MachineAgent(BaseAgent):
 
             env.step()
 
-            #print("Machine agent is: ", machine_agent.id)
-
             agent_list = None
             for entry in travel_times_list:
                 if entry['id'] == self.id:
                     agent_list = entry
                     break
-
-            #print("Entry before is: ", entry)
 
             agent_list = None
             for entry in env.travel_times_list:
@@ -394,29 +382,16 @@ class MachineAgent(BaseAgent):
                     agent_list = entry
                     break
 
-            #print("Entry after is: ", entry)
 
-            #print(travel_times_list)
-            """print("Travel time before: ", travel_times_list[machine_agent.id])
-            print("Travel times after: ", env.travel_times_list[machine_agent.id], "\n\n")"""
-
-            ## Compare the initial travel time with the simulation travel time
-            #print("travel_times_list is: ", travel_times_list)
             initial_time = self.get_travel_time_by_id(travel_times_list, self.id)
-            #print("env.travel_times_list is: ", env.travel_times_list)
             after_step_time = self.get_travel_time_by_id(env.travel_times_list, self.id)
 
-            #print("initial_time is: ", initial_time, "after step time", after_step_time)
 
             if initial_time is not None and after_step_time is not None:
                 difference = after_step_time - initial_time
-                #print("The difference is: ", difference, "\n\n\n")
                 self.impact[machine_agent] = difference
             else:
-                #print("I am agent", self.id, "something is None", initial_time, after_step_time, "\n\n")
                 self.impact[machine_agent] = 0.0
-
-            #print("Impact is: ", self.impact, "\n\n\n")
 
             env.stop_simulation() 
 
@@ -466,8 +441,8 @@ class MachineAgent(BaseAgent):
         return warmth_agents
     
     def include_impact_in_reward(self) -> float:
-        marginal_folder = r"C:\Users\Anastasia\Documents\RouteRL_exps_benchmark\RouteRL\tutorials\two_route_net\training_records\marginal_cost_matrices"
-
+        #marginal_folder = r"C:\Users\Anastasia\Documents\RouteRL_exps_benchmark\RouteRL\tutorials\two_route_net\training_records\marginal_cost_matrices"
+        marginal_folder = self.params[kc.RECORDS_FOLDER] + '/' + self.params[kc.MARGINAL_MATRICES_FOLDER]
         
         csv_files = [f for f in os.listdir(marginal_folder) if f.endswith('.csv')]
     
@@ -544,13 +519,17 @@ class MachineAgent(BaseAgent):
         
         a, b, c, d = self.rewards_coefs
         agent_reward  = a * own_tt + b * group_tt + c * others_tt + d * all_tt
-        #total_impact = self.include_impact_in_reward() #normalize it
 
-        #print("Reward before", agent_reward, "halfed reward:", (agent_reward/2), "total_impact", total_impact, "\n\n")
-        #if total_impact < (agent_reward / 2):
-        #    agent_reward = agent_reward + 0.5 * total_impact #keep only the total_impact
+        if self.marginal_calculation:
+            print("Inside marginal cost calculation\n")
+            total_impact = self.include_impact_in_reward()
 
-        #print("reward_after", agent_reward)
+            beta = self.params[kc.MARGINAL_COST_COEFFICIENT_BETA]
+            print("beta is: ", beta, "\n\n")
+
+            if total_impact < (agent_reward / 2):
+                agent_reward = agent_reward + beta * total_impact
+
         return agent_reward
 
     def _get_reward_coefs(self) -> tuple:

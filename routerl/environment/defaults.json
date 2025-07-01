@@ -12,7 +12,9 @@
             "observation_type" : "previous_agents_plus_start_time",
             "group_vicinity": false,
             "records_folder" : "training_records",
-            "agents_csv_file_name": "agents.csv"
+            "agents_csv_file_name": "agents.csv",
+            "marginal_matrices_folder": "marginal_cost_matrices",
+            "marginal_cost_coefficient_beta": 0.5
         },
 
         "human_parameters" :

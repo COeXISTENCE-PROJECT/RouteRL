@@ -368,6 +368,8 @@ class TrafficEnvironment(AECEnv):
         self.human_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_HUMAN]
         self.possible_agents = list()
 
+        self.marginal_cost_machine_agents_flag() # Initialize marginal cost flag
+
         if len(self.machine_agents):
             self._initialize_machine_agents()
         if not self.human_agents:
@@ -630,6 +632,7 @@ class TrafficEnvironment(AECEnv):
 
         self.n_agents = len(self.possible_agents)
         self.all_agents = self.machine_agents + self.human_agents
+        self.marginal_cost_machine_agents_flag() # Initialize marginal cost flag
 
         if disable_human_learning:  self.human_learning = False
 
@@ -690,6 +693,7 @@ class TrafficEnvironment(AECEnv):
 
         self.n_agents = len(self.possible_agents)
         self.all_agents = self.machine_agents + self.human_agents
+        self.marginal_cost_machine_agents_flag() # Initialize marginal cost flag
 
         if disable_human_learning:  self.human_learning = False
 
@@ -723,6 +727,13 @@ class TrafficEnvironment(AECEnv):
                 cost = machine.calculate_marginal_cost(self.all_agents, self.travel_times_list, self.kwargs)
                 marginal_cost_calculation[machine.id] = cost
             self.recorder.remember_marginal_costs(marginal_cost_calculation, self.day, self.machine_agents)
+
+    def marginal_cost_machine_agents_flag(self) -> None:
+        """Enable marginal cost in agent's reward"""
+
+        if self.marginal_cost_calculation == True:
+            for agent in self.machine_agents:
+                agent.marginal_calculation = True
 
     def _help_step(self, actions: list[tuple]) -> dict:
 
