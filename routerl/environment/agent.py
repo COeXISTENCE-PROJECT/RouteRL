@@ -521,11 +521,9 @@ class MachineAgent(BaseAgent):
         agent_reward  = a * own_tt + b * group_tt + c * others_tt + d * all_tt
 
         if self.marginal_calculation:
-            print("Inside marginal cost calculation\n")
             total_impact = self.include_impact_in_reward()
 
             beta = self.params[kc.MARGINAL_COST_COEFFICIENT_BETA]
-            print("beta is: ", beta, "\n\n")
 
             if total_impact < (agent_reward / 2):
                 agent_reward = agent_reward + beta * total_impact
