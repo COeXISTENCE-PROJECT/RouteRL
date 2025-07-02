@@ -327,6 +327,7 @@ class TrafficEnvironment(AECEnv):
                  save_detectors_info: bool = False,
                  second_sumo: bool = False,
                  marginal_cost_calculation: bool = False,
+                 randomize_sumo_seed: bool = False,
                  **kwargs) -> None:
 
         super().__init__()
@@ -361,7 +362,7 @@ class TrafficEnvironment(AECEnv):
 
         if second_sumo == False:
             self.recorder = Recorder(self.plotter_params)
-        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents, save_detectors_info)
+        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents, save_detectors_info, randomize_sumo_seed)
 
         self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed)
         self.machine_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_MACHINE]
@@ -439,7 +440,7 @@ class TrafficEnvironment(AECEnv):
         """
 
         self.episode_actions = dict()
-        self.simulator.reset()
+        _, self.sumo_seed = self.simulator.reset()
         self.agents = copy(self.possible_agents)
         self.terminations = {agent: False for agent in self.possible_agents}
         self.truncations = {agent: False for agent in self.possible_agents}
@@ -724,7 +725,7 @@ class TrafficEnvironment(AECEnv):
             marginal_cost_calculation = {}
 
             for machine in self.machine_agents:
-                cost = machine.calculate_marginal_cost(self.all_agents, self.travel_times_list, self.kwargs)
+                cost = machine.calculate_marginal_cost(self.all_agents, self.travel_times_list, self.sumo_seed, self.kwargs)
                 marginal_cost_calculation[machine.id] = cost
             self.recorder.remember_marginal_costs(marginal_cost_calculation, self.day, self.machine_agents)
 
@@ -779,7 +780,7 @@ class TrafficEnvironment(AECEnv):
         df.to_csv(csv_file_path, index=False)
 
     def _reset_episode(self) -> None:
-        detectors_dict = self.simulator.reset()
+        detectors_dict, self.sumo_seed = self.simulator.reset()
 
         if self.possible_agents:
             self._agent_selector = agent_selector(self.possible_agents)

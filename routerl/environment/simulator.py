@@ -46,7 +46,7 @@ class SumoSimulator():
         timestep: Time step being simulated within the day.
     """
 
-    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423, using_custom_demand: bool = False, save_detectors_info : bool = False) -> None:
+    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423, using_custom_demand: bool = False, save_detectors_info : bool = False, randomize_sumo_seed : bool = False) -> None:
         self.network_name        = params[kc.NETWORK_NAME]
         self.sumo_type           = params[kc.SUMO_TYPE]
         self.number_of_paths     = params[kc.NUMBER_OF_PATHS]
@@ -98,6 +98,7 @@ class SumoSimulator():
         self.sumo_connection = None
         self.save_detectors_info = save_detectors_info
         self.subprocess = False
+        self.randomize_sumo_seed = randomize_sumo_seed
 
         confirm_env_variable(kc.ENV_VAR, append="tools")
 
@@ -293,7 +294,6 @@ class SumoSimulator():
         Returns:
             None
         """
-        
         self.runs += 1
 
         individual_sumo_stats_file = os.path.join(self.sumo_save_path,
@@ -366,9 +366,11 @@ class SumoSimulator():
             
             combined_sumo_stats_file = os.path.join(self.sumo_save_path,
                                                     f"sumo_stats_{self.runs}.xml")
+            
+            sumo_seed = random.randint(0, 1_000_000) if self.randomize_sumo_seed else self.seed # randomize sumo seed or not
 
             self.sumo_connection.load(["--seed",
-                                    str(self.seed),
+                                    str(sumo_seed),
                                     "--fcd-output",
                                     self.sumo_fcd,
                                     '-c',
@@ -381,7 +383,7 @@ class SumoSimulator():
 
             self.timestep = 0
             self.waiting_vehicles = dict()
-            return det_dict
+            return det_dict, sumo_seed
 
     ################################
     ######### SIMULATION ###########

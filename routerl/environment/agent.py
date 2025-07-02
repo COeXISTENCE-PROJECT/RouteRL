@@ -315,7 +315,7 @@ class MachineAgent(BaseAgent):
                 return entry['action']
         return None 
     
-    def calculate_marginal_cost(self, all_agents, travel_times_list, kwargs):
+    def calculate_marginal_cost(self, all_agents, travel_times_list, sumo_seed, kwargs):
         from .environment import TrafficEnvironment ## added here because there was circular import problem
 
         # Marginal cost
@@ -360,8 +360,8 @@ class MachineAgent(BaseAgent):
                     
             ## Pass the same argument with the difference that the agent data is in agents2.csv
             kwargs["agent_parameters"]["agents_csv_file_name"] = "agents2.csv"   
-            #kwargs["simulator_parameters"]["sumo_type"] = "sumo-gui"   
-            env = TrafficEnvironment(seed=42, create_agents=False, create_paths=False, second_sumo=True, **kwargs)
+            #kwargs["simulator_parameters"]["sumo_type"] = "sumo-gui" 
+            env = TrafficEnvironment(seed=sumo_seed, create_agents=False, create_paths=False, second_sumo=True, **kwargs)
             
             env.start(use_subprocess=True)
 
