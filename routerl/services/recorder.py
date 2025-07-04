@@ -1,6 +1,7 @@
 import logging
 import os
 import polars as pl
+import re
 
 from routerl.keychain import Keychain as kc
 from routerl.utilities import make_dir
@@ -151,35 +152,43 @@ class Recorder:
 
 
     def remember_marginal_costs(self, marginal_cost_calculation: dict, episode: int, machine_agents: list) -> None:
-        """Savr the marginal cost matrices
+        """Save the marginal cost matrices
 
         Args:
             marginal_cost_calculation: dictionary that contains the cost of each agent to each agent
             episode: episode, 
             machine_agents: machine_agents
         """
-        # Save the agents based on their start time
-        sorted_agents = sorted(machine_agents, key=lambda agent: agent.start_time)
+        # Save the agents based on their start time        
+        all_agent_ids = set()
+        for inner in marginal_cost_calculation.values():
+            all_agent_ids.update(inner.keys())
+        sorted_ids = sorted(all_agent_ids)
 
-        sorted_ids = [agent.id for agent in sorted_agents]
-        sorted_machine_names = [f"Machine {id_}" for id_ in sorted_ids]
+        # Build string-based machine labels for columns
+        column_labels = [f"Machine {i}" for i in sorted_ids]
 
-        formatted_rows = []
-        for row_id in sorted_ids:
-            row_label = f"Machine {row_id}"
-            row_data = marginal_cost_calculation.get(row_id, {})
-            cleaned_row_data = {str(k): v for k, v in row_data.items()}
+        # Build rows with matching column labels
+        rows = []
+        for machine in machine_agents:
+            machine_name = str(machine)  # e.g., "Machine 1"
+            inner_dict = marginal_cost_calculation.get(machine, {})
+            row = {"ID": machine_name}
+            for i in sorted_ids:
+                col_label = f"Machine {i}"
+                row[col_label] = inner_dict.get(i, 0.0)
+            rows.append(row)
 
-            # Fill in all columns in the sorted order, use None if missing
-            full_row = {col: cleaned_row_data.get(col, None) for col in sorted_machine_names}
-            full_row["ID"] = row_label
-            formatted_rows.append(full_row)
+        # Sort rows by numeric machine number in 'id' field
+        def extract_machine_number(name):
+            match = re.search(r"(\d+)", name)
+            return int(match.group(1)) if match else float('inf')
 
-        pl_df = pl.DataFrame(formatted_rows)
+        rows.sort(key=lambda r: extract_machine_number(r["ID"]))
 
-        column_order = ["ID"] + [col for col in sorted_machine_names if col in pl_df.columns]
-        if "ID" in pl_df.columns:
-            pl_df = pl_df.select(column_order)
+        # Create Polars DataFrame
+        pl_df = pl.DataFrame(rows)
+        pl_df = pl_df.select(["ID"] + column_labels)
 
         filename = f"marginal_cost_matrix_{episode}.csv"
         pl_df.write_csv(make_dir(self.marginal_cost_folder, filename))

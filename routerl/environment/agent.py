@@ -2,7 +2,7 @@
 This module contains the human and machine agent classes, which represent vehicles driving
 from an origin to a destination in the simulation.
 """
-
+from collections import defaultdict
 import numpy as np
 import os
 import pandas as pd
@@ -319,7 +319,7 @@ class MachineAgent(BaseAgent):
         from .environment import TrafficEnvironment ## added here because there was circular import problem
 
         # Marginal cost
-        self.impact = {}
+        marginal_cost_calculation = defaultdict(dict)
         
         # Calculate the marginal cost on the agent from other AV agents
         agents_to_calculate_marginal_cost = []
@@ -329,9 +329,6 @@ class MachineAgent(BaseAgent):
         
         ## Delete each agent from the environment
         for machine_agent in agents_to_calculate_marginal_cost:
-            if machine_agent.id == self.id:
-                self.impact[machine_agent] = 0
-                continue
 
             # Read the agents already in the simulation
             df = pd.read_csv(os.path.join(self.params[kc.RECORDS_FOLDER], self.params[kc.AGENTS_CSV_FILE_NAME]))
@@ -339,6 +336,7 @@ class MachineAgent(BaseAgent):
             # Delete from the agents list the specific chosen agent
             df["id"] = df["id"].astype(int)
             df = df[df["id"] != int(machine_agent.id)]
+
 
             # Save the new agent list for the new environment run
             df.to_csv(os.path.join(self.params[kc.RECORDS_FOLDER], "agents2.csv"), index=False)
@@ -370,32 +368,28 @@ class MachineAgent(BaseAgent):
 
             env.step()
 
-            agent_list = None
-            for entry in travel_times_list:
-                if entry['id'] == self.id:
-                    agent_list = entry
-                    break
+            for agent in all_agents:
+                if agent.id == machine_agent.id or agent.kind == kc.TYPE_HUMAN:
+                    if agent.kind != kc.TYPE_HUMAN:
+                        marginal_cost_calculation[agent][agent.id] = 0.0
+                        #print("Inside agent.is == machine.id", agent.id, "\n\n\n")
+                    continue
 
-            agent_list = None
-            for entry in env.travel_times_list:
-                if entry['id'] == self.id:
-                    agent_list = entry
-                    break
+                after_step_time = self.get_travel_time_by_id(env.travel_times_list, agent.id)
 
+                initial_time = self.get_travel_time_by_id(travel_times_list, agent.id)
 
-            initial_time = self.get_travel_time_by_id(travel_times_list, self.id)
-            after_step_time = self.get_travel_time_by_id(env.travel_times_list, self.id)
+                if initial_time is not None and after_step_time is not None:
+                    difference = after_step_time - initial_time
+                    #print("agent is, agent.id is: ", agent, machine_agent.id, "\n\n")
+                    marginal_cost_calculation[agent][machine_agent.id] = difference
+                else:
+                    marginal_cost_calculation[agent][machine_agent.id] = 0.0
 
-
-            if initial_time is not None and after_step_time is not None:
-                difference = after_step_time - initial_time
-                self.impact[machine_agent] = difference
-            else:
-                self.impact[machine_agent] = 0.0
 
             env.stop_simulation() 
 
-        return self.impact
+        return marginal_cost_calculation
 
 
     def get_state(self, observation: list[dict]) -> list[int]:

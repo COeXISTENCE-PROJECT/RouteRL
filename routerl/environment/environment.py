@@ -717,24 +717,6 @@ class TrafficEnvironment(AECEnv):
 
         return self.simulator.timestep, self.episode_actions.values()
     
-    def marginal_cost(self) -> None:
-        """Calculate marginal cost matrix"""
-
-        # Save the marginal cost matrices
-        if self.marginal_cost_calculation == True and self.machine_agents:
-            marginal_cost_calculation = {}
-
-            for machine in self.machine_agents:
-                cost = machine.calculate_marginal_cost(self.all_agents, self.travel_times_list, self.sumo_seed, self.kwargs)
-                marginal_cost_calculation[machine.id] = cost
-            self.recorder.remember_marginal_costs(marginal_cost_calculation, self.day, self.machine_agents)
-
-    def marginal_cost_machine_agents_flag(self) -> None:
-        """Enable marginal cost in agent's reward"""
-
-        if self.marginal_cost_calculation == True:
-            for agent in self.machine_agents:
-                agent.marginal_calculation = True
 
     def _help_step(self, actions: list[tuple]) -> dict:
 
@@ -822,6 +804,35 @@ class TrafficEnvironment(AECEnv):
             # Human learning
             elif self.human_learning:
                 agent.learn(agent.last_action, self.travel_times_list)
+    
+
+    ###################################
+    #### Marginal cost calculation ####
+    ###################################
+
+
+    def marginal_cost(self) -> None:
+        """Calculate marginal cost matrix"""
+
+        # Save the marginal cost matrices
+        if self.marginal_cost_calculation == True and self.machine_agents:
+            marginal_cost_calculation = {}
+
+            for machine in self.machine_agents:
+                continue
+
+            marginal_cost_calculation = machine.calculate_marginal_cost(self.all_agents, self.travel_times_list, self.sumo_seed, self.kwargs)
+            #print("cost is: ", marginal_cost_calculation, "\n\n\n")
+            #marginal_cost_calculation[machine.id] = cost
+            self.recorder.remember_marginal_costs(marginal_cost_calculation, self.day, self.machine_agents)
+
+    def marginal_cost_machine_agents_flag(self) -> None:
+        """Enable marginal cost in agent's reward"""
+
+        if self.marginal_cost_calculation == True:
+            for agent in self.machine_agents:
+                agent.marginal_calculation = True
+
 
     ###########################
     ##### Simulation loop #####
