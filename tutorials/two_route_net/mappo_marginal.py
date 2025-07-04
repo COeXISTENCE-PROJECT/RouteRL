@@ -16,7 +16,7 @@ from torchrl.objectives import ClipPPOLoss, ValueEstimators
 
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '../../')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 #from extended_mutation import MyExtendedMutation
 from routerl import TrafficEnvironment
