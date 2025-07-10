@@ -822,8 +822,6 @@ class TrafficEnvironment(AECEnv):
                 continue
 
             marginal_cost_calculation = machine.calculate_marginal_cost(self.all_agents, self.travel_times_list, self.sumo_seed, self.kwargs)
-            #print("cost is: ", marginal_cost_calculation, "\n\n\n")
-            #marginal_cost_calculation[machine.id] = cost
             self.recorder.remember_marginal_costs(marginal_cost_calculation, self.day, self.machine_agents)
 
     def marginal_cost_machine_agents_flag(self) -> None:

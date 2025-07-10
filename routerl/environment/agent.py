@@ -7,6 +7,7 @@ import numpy as np
 import os
 import pandas as pd
 import re
+import torch
 
 from abc import ABC, abstractmethod
 
@@ -302,9 +303,7 @@ class MachineAgent(BaseAgent):
         return None
     
     def get_travel_time_by_id(self, travel_times_list, agent_id):
-        #print("\n\n\nInside get travel time by id\n\n\n")
         for entry in travel_times_list:
-            #print("entry is: ", entry['id'], agent_id, entry)
             if entry['id'] == agent_id:
                 return entry['travel_time']
         return None  
@@ -372,7 +371,6 @@ class MachineAgent(BaseAgent):
                 if agent.id == machine_agent.id or agent.kind == kc.TYPE_HUMAN:
                     if agent.kind != kc.TYPE_HUMAN:
                         marginal_cost_calculation[agent][agent.id] = 0.0
-                        #print("Inside agent.is == machine.id", agent.id, "\n\n\n")
                     continue
 
                 after_step_time = self.get_travel_time_by_id(env.travel_times_list, agent.id)
@@ -381,11 +379,9 @@ class MachineAgent(BaseAgent):
 
                 if initial_time is not None and after_step_time is not None:
                     difference = after_step_time - initial_time
-                    #print("agent is, agent.id is: ", agent, machine_agent.id, "\n\n")
                     marginal_cost_calculation[agent][machine_agent.id] = difference
                 else:
                     marginal_cost_calculation[agent][machine_agent.id] = 0.0
-
 
             env.stop_simulation() 
 
@@ -457,21 +453,15 @@ class MachineAgent(BaseAgent):
         df = pd.read_csv(highest_file_path)
 
         machine_name = f"Machine {self.id}"
-    
-        if machine_name not in df['ID'].values:
-            raise ValueError(f"No row found for {machine_name}")
-        
-        # Find the row where 'ID' == 'Machine {self_id}'
-        row = df[df['ID'] == machine_name]
-        
-        # Optionally, drop the 'ID' column itself if you just want the numbers
-        row_values = row.drop(columns=['ID']).squeeze()
 
-        #print("agent id is: ", self.id, "row value is: ", row_values)
+        machine_name = f"Machine {self.id}"
+        if machine_name not in df.columns:
+            raise ValueError(f"No column found for {machine_name}")
 
-        total_sum = row_values.sum()
-    
-        return total_sum
+        col_values = df[machine_name]
+        total_impact = col_values.sum()
+
+        return total_impact
 
 
     def get_reward(self, observation: list[dict], group_vicinity: bool = False) -> float:
@@ -519,8 +509,8 @@ class MachineAgent(BaseAgent):
 
             beta = self.params[kc.MARGINAL_COST_COEFFICIENT_BETA]
 
-            if total_impact < (agent_reward / 2):
-                agent_reward = agent_reward + beta * total_impact
+            tahned_impact = torch.tanh(torch.tensor(total_impact))
+            agent_reward = agent_reward + beta * tahned_impact.numpy()
 
         return agent_reward
 
