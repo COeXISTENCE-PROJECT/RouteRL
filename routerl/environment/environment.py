@@ -20,7 +20,7 @@ import random
 from routerl.environment import generate_agents
 from routerl.environment import SumoSimulator
 from routerl.environment import MachineAgent
-from routerl.environment import PreviousAgentStart, PreviousAgentStartPlusStartTime, PreviousAgentStartPlusStartTimeDetectorData, Observations
+from routerl.environment.observations import *
 from routerl.keychain import Keychain as kc
 from routerl.services import plotter
 from routerl.services import Recorder
@@ -549,11 +549,10 @@ class TrafficEnvironment(AECEnv):
         # If the agent's turn hasn't come and the start time is bigger than the simulator timestep return an "empty observation"
         # The agent hasn't acted yet so only the start time is meaningful
         if agent != self.agent_selection and machine.start_time > self.simulator.timestep:
-            array = np.zeros(self._observation_spaces[agent].shape[0] - 1)
-            observation = np.concatenate((np.array([machine.start_time]), array))
+            observation = self.observation_obj.observations[agent].copy()
             return observation
         
-        return self.observation_obj.agent_observations(agent, self.all_agents, self.agent_selection)
+        return self.observation_obj.agent_observations(agent, self.all_agents, self.agent_selection, self.travel_times_list)
 
     #########################
     ### Mutation function ###
@@ -907,5 +906,10 @@ class TrafficEnvironment(AECEnv):
                                       self.plotter_params,
                                       self.agent_params,
                                       self.simulator)
+        elif observation_type == kc.COMPREHENSIVE:
+            return Comprehensive(self.machine_agents,
+                                 self.human_agents,
+                                 self.simulation_params,
+                                 self.agent_params)
         else:
             raise ValueError('[MODEL INVALID] Unrecognized observation type: ' + observation_type)

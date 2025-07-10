@@ -241,7 +241,7 @@ class PreviousAgentStartPlusStartTime(Observations):
             for agent in self.machine_agents_list
         }
     
-    def agent_observations(self, agent_id: str, all_agents: List[Any], agent_selection: str) -> np.ndarray:
+    def agent_observations(self, agent_id: str, all_agents: List[Any], agent_selection: str, travel_times: list) -> np.ndarray:
         """Retrieve the observation for a specific agent.
 
         Args:
@@ -370,7 +370,7 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
             for agent in self.machine_agents_list
         }
     
-    def agent_observations(self, agent_id: str, all_agents: List[Any], agent_selection: str) -> np.ndarray:
+    def agent_observations(self, agent_id: str, all_agents: List[Any], agent_selection: str, travel_times: list) -> np.ndarray:
         """Retrieve the observation for a specific agent.
 
         Args:
@@ -422,3 +422,140 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
             self.observations[str(machine.id)] = observation
 
         return observation
+    
+    
+class Comprehensive(Observations):
+    """Includes:
+    - ETA forecast for each path option
+    - Origin index
+    - Destination index
+    - Start time of the agent
+    """
+
+    def __init__(
+        self,
+        machine_agents_list: List[Any],
+        human_agents_list: List[Any],
+        simulation_params: Dict[str, Any],
+        agent_params: Dict[str, Any],
+    ) -> None:
+        """Initialize the observation function.
+
+        Args:
+            machine_agents_list (List[Any]): List of machine agents.
+            human_agents_list (List[Any]): List of human agents.
+            simulation_params (Dict[str, Any]): Dictionary of simulation parameters.
+            agent_params (Dict[str, Any]): Dictionary of agent parameters.
+        Returns:
+            None
+        """
+
+        super().__init__(machine_agents_list, human_agents_list)
+        self.NUM_PATHS = simulation_params[kc.NUMBER_OF_PATHS]
+        self.OBS_SIZE = 3 + self.NUM_PATHS  # Start time + origin + destination + TT EMAs
+        self.observations = self.reset_observation()
+
+    def __call__(self, all_agents: List[Any]) -> Dict[str, Any]:
+        """Generate observations for all agents.
+
+        Args:
+            all_agents (List[Any]): List of all agents.
+        Returns:
+            Dict[str, Any]: A dictionary of observations keyed by agent IDs.
+        """
+        return self.observations
+
+    def reset_observation(self) -> Dict[str, np.ndarray]:
+        """Reset observations to the initial state.
+
+        Returns:
+            obs (Dict[str, np.ndarray]): A dictionary of initial observations for all machine agents.
+        """
+        
+        obs = {
+            str(agent.id): np.concatenate(
+                [
+                    np.zeros(self.NUM_PATHS, dtype=np.float32),
+                    np.array([int(agent.origin), int(agent.destination), int(agent.start_time)], dtype=np.float32)
+                ]
+            )
+            for agent in self.machine_agents_list
+        }
+        self.observations = obs
+
+        return obs
+
+    def observation_space(self) -> Dict[str, Box]:
+        """
+        Define the observation space for each machine agent.
+
+        Returns:
+            Dict[str, Box]: A dictionary where keys are agent IDs and values are Gym spaces.
+        """
+        return {
+            str(agent.id): Box(
+                low=-1,
+                high=np.inf,
+                shape=(self.OBS_SIZE,),
+                dtype=np.float32
+            )
+            for agent in self.machine_agents_list
+        }
+    
+    def agent_observations(self, agent_id: str, all_agents: List[Any], agent_selection: str, travel_times: List[Any]) -> np.ndarray:
+        """Retrieve the observation for a specific agent.
+
+        Args:
+            agent_id (str): The ID of the agent.
+        Returns:
+            np.ndarray: The observation array for the specified agent.
+        """
+        for machine in self.machine_agents_list:
+            if machine.id == int(agent_id):
+                break
+            
+        observation = self.observations[str(machine.id)].copy()
+            
+        agent_dicts = list()
+        for entry in travel_times:
+            if entry[kc.AGENT_ID] == machine.id:
+                continue
+            elif entry[kc.AGENT_ORIGIN] == machine.origin and entry[kc.AGENT_DESTINATION] == machine.destination and entry[kc.AGENT_START_TIME] <= machine.start_time:
+                agent_dicts.append(entry.copy())
+        agent_dicts.sort(key=lambda x: x[kc.AGENT_START_TIME]+ x[kc.TRAVEL_TIME])
+        
+        tt_lists = {idx: list() for idx in range(self.NUM_PATHS)}
+        for entry in agent_dicts:
+            tt_lists[int(entry[kc.ACTION])].append(entry[kc.TRAVEL_TIME])
+        for idx in range(self.NUM_PATHS):
+            observation[idx] = self.get_ema(tt_lists[idx])
+            
+        observation = np.array(observation, dtype=np.float32)
+        self.observations[str(machine.id)] = observation.copy()
+        return observation
+    
+    
+    def get_ema(self, values, alpha=None):
+        """
+        Compute the exponential moving average (EMA) given the list of
+        observed travel times.
+
+        Args:
+            values (list[float]): Most-recent-first sequence of travel times (newest last).
+            alpha (float | None): Smoothing factor in (0, 1]. If None, use the standard rule alpha = 2 / (K + 1) with K = len(values).
+
+        Returns:
+            float: EMA of the input sequence.
+        """
+        if not values:
+            return -1
+
+        k = len(values)
+        if alpha is None:
+            alpha = 2 / (k + 1)
+
+        ema_val = values[0] # seed with oldest point
+        if k > 1:
+            for x in values[1:]:
+                ema_val = alpha * x + (1 - alpha) * ema_val
+        return ema_val
