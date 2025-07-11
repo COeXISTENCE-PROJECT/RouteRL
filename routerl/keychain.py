@@ -25,8 +25,7 @@ class Keychain:
     MODEL = "model"
     BETA = "beta"
     BETA_RANDOMNESS = "beta_randomness"
-    ALPHA_J = "alpha_j"
-    ALPHA_ZERO = "alpha_zero"
+    ALPHA = "alpha"
     REMEMBER = "remember"
     # Machine
     BEHAVIOR = "behavior"

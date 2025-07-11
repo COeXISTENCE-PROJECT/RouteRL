@@ -90,47 +90,17 @@ class TrafficEnvironment(AECEnv):
                 - model (str, default="gawron"):
                     Decision-making model (options: ``random``, ``gawron``, ``weighted``).
                     
-                - noise_weight_agent (float, default=0.2):
-                    Agent noise weight in the error term composition.
-                    
-                - noise_weight_path (float, default=0.6):
-                    Path noise weight in the error term composition.
-                    
-                - noise_weight_day (float, default=0.2):
-                    Day noise weight in the error term composition.
-                    
                 - beta (float, default=-1.0):
                     **Negative value**, multiplier of reward (travel time) used in utility, determines sensitivity.
                     
-                - beta_k_i_variability (float, default=0):
-                    Variance of normal distribution for which ``beta_k_i`` is drawn (computed in utility).
+                - beta_randomness (float, default=0.1):
+                    Agent-specific randomness in beta.
                     
-                - epsilon_i_variability (float, default=0):
-                    Variance of normal distribution from which error terms are drawn, first term.
+                - alpha (float, default=[0.2]):
+                    Human learning rate.
                     
-                - epsilon_k_i_variability (float, default=0):
-                    Variance of normal distribution from which error terms are drawn, second term.
-                    
-                - epsilon_k_i_t_variability (float, default=0):
-                    Variance of normal distribution from which error terms are drawn, third term. These three terms must sum to 1.
-                    
-                - greedy (float, default=1.0):
-                    1 - exploration_rate, probability with which the choice are rational (argmax(U)) and not probabilistic (random).
-                    
-                - gamma_c (float, default=0):
-                    Bounded rationality component. Expressed as relative increase in costs/utilities below which user do not change behaviour (do not notice it).
-                    
-                - gamma_u (float, default=0):
-                    Bounded rationality component. Expressed as relative increase in costs/utilities below which user do not change behaviour (do not notice it).
-                
-                - remember (int, default=1):
-                    Number of days remembered to learn from.
-                    
-                - alpha_zero (float, default=0.2):
-                    Weight with which the recent experience is carried forward in learning.
-                    
-                - alphas (list[float], default=[0.8]):
-                    Vector of weights for historically recorded reward in weighted average, **needs to be size of** ``remember``.
+                - remember (int, default=5):
+                    Number of previous actions to remember for learning, used in ``weighted`` model.
 
         - environment_parameters (dict, optional):
             Environment settings.

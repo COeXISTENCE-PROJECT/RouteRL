@@ -15,11 +15,10 @@
         "human_parameters" :
         {
             "model" : "gawron",
-            "alpha_j": 0.8,
-            "alpha_zero": 0.2,
+            "alpha": 0.2,
             "beta" : -1.5,
             "beta_randomness" : 0.1,
-            "remember" : 3
+            "remember" : 5
         },
 
         "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",

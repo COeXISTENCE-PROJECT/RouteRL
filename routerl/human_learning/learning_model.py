@@ -50,8 +50,7 @@ class Gawron(BaseLearningModel):
         initial_knowledge (list or array): Initial knowledge of cost expectations.
     Attributes:
         beta (float): A parameter representing deviations in individual decision-making.
-        alpha_zero (float): Agent's adaptation to new experiences.
-        alpha_j (float): Weight for previous cost expectation (1 - ALPHA_ZERO).
+        alpha (float): Agent's adaptation to new experiences.
         cost (np.ndarray): Agent's cost expectations for each option.
     """
 
@@ -62,9 +61,8 @@ class Gawron(BaseLearningModel):
         beta_randomness = params[kc.BETA_RANDOMNESS]
         self.beta = random.uniform(params[kc.BETA] - beta_randomness, params[kc.BETA] + beta_randomness)
 
-        # Learning rate components
-        self.alpha_zero = params[kc.ALPHA_ZERO]
-        self.alpha_j = 1.0 - self.alpha_zero
+        # Learning rate
+        self.alpha = params[kc.ALPHA]
 
         # Initialize cost array with initial knowledge
         self.cost = np.array(initial_knowledge, dtype=float)
@@ -79,7 +77,8 @@ class Gawron(BaseLearningModel):
         """
 
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
-        action =  utilities.index(min(utilities))
+        prob_dist = [self.calculate_prob(utilities, idx) for idx in range(len(self.cost))]
+        action = np.random.choice(list(range(len(self.cost))), p=prob_dist) 
         return action   
 
     def learn(self, state, action, reward) -> None:
@@ -92,7 +91,11 @@ class Gawron(BaseLearningModel):
         Returns:
             None
         """
-        self.cost[action] = (self.alpha_j * self.cost[action]) + (self.alpha_zero * reward)
+        self.cost[action] = ((1.0 - self.alpha) * self.cost[action]) + (self.alpha * reward)
+
+    def calculate_prob(self, utilities, n):
+        prob = utilities[n] / sum(utilities)
+        return prob
 
 
 class Culo(BaseLearningModel):
@@ -106,8 +109,7 @@ class Culo(BaseLearningModel):
         initial_knowledge (list or array): Initial knowledge of cost expectations.
     Attributes:
         beta (float): A parameter representing deviations in individual decision-making.
-        alpha_zero (float): Agent's adaptation to new experiences.
-        alpha_j (float): Weight for previous cost expectation (constant = 1).
+        alpha (float): Agent's adaptation to new experiences.
         cost (np.ndarray): Agent's cost expectations for each option.
     """
 
@@ -119,8 +121,7 @@ class Culo(BaseLearningModel):
         self.beta = random.uniform(params[kc.BETA] - beta_randomness, params[kc.BETA] + beta_randomness)
 
         # Learning rate components
-        self.alpha_zero = params[kc.ALPHA_ZERO]
-        self.alpha_j = 1
+        self.alpha = params[kc.ALPHA]
 
         # Initialize cost array with initial knowledge
         self.cost = np.array(initial_knowledge, dtype=float)
@@ -135,8 +136,9 @@ class Culo(BaseLearningModel):
         """
 
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
-        action =  utilities.index(min(utilities))
-        return action   
+        prob_dist = [self.calculate_prob(utilities, idx) for idx in range(len(self.cost))]
+        action = np.random.choice(list(range(len(self.cost))), p=prob_dist) 
+        return action  
 
     def learn(self, state, action, reward) -> None:
         """Updates the cost associated with the taken action based on the received reward.
@@ -149,7 +151,11 @@ class Culo(BaseLearningModel):
             None
         """
 
-        self.cost[action] = (self.alpha_j * self.cost[action]) + (self.alpha_zero * reward)
+        self.cost[action] = self.cost[action] + (self.alpha * reward)
+
+    def calculate_prob(self, utilities, n):
+        prob = utilities[n] / sum(utilities)
+        return prob
 
 
 class WeightedAverage(BaseLearningModel):
@@ -164,8 +170,8 @@ class WeightedAverage(BaseLearningModel):
         initial_knowledge (list or array): Initial knowledge of cost expectations.
     Attributes:
         beta (float): A parameter representing deviations in individual decision-making.
-        alpha_zero (float): Agent's adaptation to new experiences.
-        alpha_j (float): Weight for previous cost expectation (1 - ALPHA_ZERO).
+        alpha (float): Agent's adaptation to new experiences.
+        alpha_past (float): Weight for previous cost expectation (1 - ALPHA).
         remember (string): Memory size.
         cost (np.ndarray): Agent's cost expectations for each option.
         memory (list(list)): A list of lists containing the memory of each state.
@@ -175,8 +181,8 @@ class WeightedAverage(BaseLearningModel):
         super().__init__()
         beta_randomness = params[kc.BETA_RANDOMNESS]
         self.beta = random.uniform(params[kc.BETA] - beta_randomness, params[kc.BETA] + beta_randomness)
-        self.alpha_zero = params[kc.ALPHA_ZERO]
-        self.alpha_j = 1.0 - self.alpha_zero
+        self.alpha = params[kc.ALPHA]
+        self.alpha_past = 1.0 - self.alpha
         self.remember = params[kc.REMEMBER]
         self.cost = np.array(initial_knowledge, dtype=float)
         self.memory = [list() for _ in range(len(initial_knowledge))]
@@ -192,7 +198,8 @@ class WeightedAverage(BaseLearningModel):
         """
 
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
-        action =  utilities.index(min(utilities))
+        prob_dist = [self.calculate_prob(utilities, idx) for idx in range(len(self.cost))]
+        action = np.random.choice(list(range(len(self.cost))), p=prob_dist) 
         return action
 
     def learn(self, state, action, reward) -> None:
@@ -213,17 +220,17 @@ class WeightedAverage(BaseLearningModel):
         
         # Calculate the weights of the memory
         # The weights are proportional to item recency
-        alpha_j_weights = [self.alpha_j / (memory_idx + 1) for memory_idx in range(self.remember)]
-        # If remember=3 alpha_j=.5, then alpha_j_weights = [.5/1, .5/2, .5/3]. Now normalize alpha_j_weights.
-        alpha_j_normalized = [a_j / sum(alpha_j_weights) for a_j in alpha_j_weights]
+        alpha_past_weights = [self.alpha_past / (memory_idx + 1) for memory_idx in range(self.remember)]
+        # If remember=3 alpha_past=.5, then alpha_past_weights = [.5/1, .5/2, .5/3]. Now normalize alpha_past_weights.
+        alpha_past_normalized = [a_j / sum(alpha_past_weights) for a_j in alpha_past_weights]
         
         # Calculate the weighted average of the memory
         c_hat = 0
-        for memory_idx, a_j in enumerate(alpha_j_normalized):
+        for memory_idx, a_j in enumerate(alpha_past_normalized):
             c_hat += a_j * self.memory[action][memory_idx]
             
         # Update the cost expectation of the action
-        self.cost[action] = c_hat + (self.alpha_zero * reward)
+        self.cost[action] = c_hat + (self.alpha * reward)
         
 
     def create_memory(self) -> None:
@@ -237,6 +244,10 @@ class WeightedAverage(BaseLearningModel):
         for i in range(len(self.cost)):
             for _ in range(self.remember):
                 self.memory[i].append(self.cost[i])
+                
+    def calculate_prob(self, utilities, n):
+        prob = utilities[n] / sum(utilities)
+        return prob
                 
                 
 class Random(BaseLearningModel):
