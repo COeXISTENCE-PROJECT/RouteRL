@@ -438,6 +438,7 @@ class Comprehensive(Observations):
         human_agents_list: List[Any],
         simulation_params: Dict[str, Any],
         agent_params: Dict[str, Any],
+        freeflows: Dict[tuple, float]
     ) -> None:
         """Initialize the observation function.
 
@@ -453,6 +454,7 @@ class Comprehensive(Observations):
         super().__init__(machine_agents_list, human_agents_list)
         self.NUM_PATHS = simulation_params[kc.NUMBER_OF_PATHS]
         self.OBS_SIZE = 3 + self.NUM_PATHS  # Start time + origin + destination + TT EMAs
+        self.freeflows = freeflows
         self.observations = self.reset_observation()
 
     def __call__(self, all_agents: List[Any]) -> Dict[str, Any]:
@@ -471,11 +473,10 @@ class Comprehensive(Observations):
         Returns:
             obs (Dict[str, np.ndarray]): A dictionary of initial observations for all machine agents.
         """
-        
         obs = {
             str(agent.id): np.concatenate(
                 [
-                    np.zeros(self.NUM_PATHS, dtype=np.float32),
+                    np.array([self.freeflows[(agent.origin, agent.destination)]], dtype=np.float32),  # Free flow time
                     np.array([int(agent.origin), int(agent.destination), int(agent.start_time)], dtype=np.float32)
                 ]
             )
@@ -510,52 +511,61 @@ class Comprehensive(Observations):
         Returns:
             np.ndarray: The observation array for the specified agent.
         """
-        for machine in self.machine_agents_list:
-            if machine.id == int(agent_id):
-                break
+        machine = next((m for m in self.machine_agents_list if m.id == int(agent_id)), None)
+        assert machine is not None, f"Observing machine with ID {agent_id} not found."
             
         observation = self.observations[str(machine.id)].copy()
             
         agent_dicts = list()
         for entry in travel_times:
-            if entry[kc.AGENT_ID] == machine.id:
-                continue
-            elif entry[kc.AGENT_ORIGIN] == machine.origin and entry[kc.AGENT_DESTINATION] == machine.destination and entry[kc.AGENT_START_TIME] <= machine.start_time:
+            not_agent_itself = entry[kc.AGENT_ID] != machine.id
+            same_origin = entry[kc.AGENT_ORIGIN] == machine.origin
+            same_destination = entry[kc.AGENT_DESTINATION] == machine.destination
+            earlier_departure = entry[kc.AGENT_START_TIME] <= machine.start_time
+            if all((not_agent_itself, same_origin, same_destination, earlier_departure)):
                 agent_dicts.append(entry.copy())
-        agent_dicts.sort(key=lambda x: x[kc.AGENT_START_TIME]+ x[kc.TRAVEL_TIME])
+                
+        # Sort by arrival time, later arrival more impact
+        agent_dicts.sort(key=lambda x: (x[kc.AGENT_START_TIME]+ (x[kc.TRAVEL_TIME] * 60.0)))
         
         tt_lists = {idx: list() for idx in range(self.NUM_PATHS)}
         for entry in agent_dicts:
-            tt_lists[int(entry[kc.ACTION])].append(entry[kc.TRAVEL_TIME])
-        for idx in range(self.NUM_PATHS):
-            observation[idx] = self.get_ema(tt_lists[idx])
-            
-        observation = np.array(observation, dtype=np.float32)
+            path_idx = int(entry[kc.ACTION])
+            travel_time = entry[kc.TRAVEL_TIME]
+            tt_lists[path_idx].append(travel_time)
+        for i in range(self.NUM_PATHS):
+            ff_time = self.freeflows[(machine.origin, machine.destination)][i]
+            previous_tts = tt_lists[i][:]
+            observation[i] = self.get_ema(ff_time, previous_tts)
+         
+        # Every other entry in the obs is already set at reset   
+        observation = np.array(observation, dtype=np.float32) # Ensure dtype
         self.observations[str(machine.id)] = observation.copy()
         return observation
     
     
-    def get_ema(self, values, alpha=None):
+    def get_ema(self, ff_time, values, max_length=10):
         """
         Compute the exponential moving average (EMA) given the list of
         observed travel times.
 
         Args:
+            ff_time (float): Free flow time for the path.
             values (list[float]): Most-recent-first sequence of travel times (newest last).
-            alpha (float | None): Smoothing factor in (0, 1]. If None, use the standard rule alpha = 2 / (K + 1) with K = len(values).
+            max_length (int): Maximum length of the sequence to consider for EMA.
 
         Returns:
             float: EMA of the input sequence.
         """
-        if not values:
-            return -1
-
+        # Initiate from freeflow time
+        ema_val = ff_time
+        
+        values = values[-max_length:] if len(values) > max_length else values
         k = len(values)
-        if alpha is None:
-            alpha = 2 / (k + 1)
-
-        ema_val = values[0] # seed with oldest point
-        if k > 1:
-            for x in values[1:]:
-                ema_val = alpha * x + (1 - alpha) * ema_val
+        alpha = 2 / (k + 1)
+            
+        # Form the TT estimate as EMA (Later arrivals have more impact)
+        for tt in values:
+            ema_val = (alpha * tt) + ((1 - alpha) * ema_val)
+            
         return ema_val

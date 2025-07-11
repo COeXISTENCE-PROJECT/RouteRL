@@ -910,6 +910,7 @@ class TrafficEnvironment(AECEnv):
             return Comprehensive(self.machine_agents,
                                  self.human_agents,
                                  self.simulation_params,
-                                 self.agent_params)
+                                 self.agent_params,
+                                 self.get_free_flow_times())
         else:
             raise ValueError('[MODEL INVALID] Unrecognized observation type: ' + observation_type)
