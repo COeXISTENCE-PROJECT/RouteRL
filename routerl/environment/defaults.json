@@ -16,7 +16,7 @@
         {
             "model" : "gawron",
             "alpha": 0.2,
-            "beta" : -1.5,
+            "beta" : 1.5,
             "beta_randomness" : 0.1,
             "remember" : 5
         },

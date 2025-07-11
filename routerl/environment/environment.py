@@ -90,8 +90,8 @@ class TrafficEnvironment(AECEnv):
                 - model (str, default="gawron"):
                     Decision-making model (options: ``random``, ``gawron``, ``weighted``).
                     
-                - beta (float, default=-1.0):
-                    **Negative value**, multiplier of reward (travel time) used in utility, determines sensitivity.
+                - beta (float, default=1.5:
+                    **Positive value**, multiplier of reward (travel time) used in utility, determines sensitivity.
                     
                 - beta_randomness (float, default=0.1):
                     Agent-specific randomness in beta.
