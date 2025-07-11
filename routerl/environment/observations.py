@@ -476,7 +476,7 @@ class TripInfoWithETA(Observations):
         obs = {
             str(agent.id): np.concatenate(
                 [
-                    np.array([self.freeflows[(agent.origin, agent.destination)]], dtype=np.float32),  # Free flow time
+                    np.array(self.freeflows[(agent.origin, agent.destination)], dtype=np.float32),  # Free flow time
                     np.array([int(agent.origin), int(agent.destination), int(agent.start_time)], dtype=np.float32)
                 ]
             )
