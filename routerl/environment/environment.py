@@ -907,7 +907,7 @@ class TrafficEnvironment(AECEnv):
                                       self.agent_params,
                                       self.simulator)
         elif observation_type == kc.COMPREHENSIVE:
-            return Comprehensive(self.machine_agents,
+            return TripInfoWithETA(self.machine_agents,
                                  self.human_agents,
                                  self.simulation_params,
                                  self.agent_params,

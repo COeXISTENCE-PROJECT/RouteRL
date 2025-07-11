@@ -424,7 +424,7 @@ class PreviousAgentStartPlusStartTimeDetectorData(Observations):
         return observation
     
     
-class Comprehensive(Observations):
+class TripInfoWithETA(Observations):
     """Includes:
     - ETA forecast for each path option
     - Origin index

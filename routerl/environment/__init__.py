@@ -11,5 +11,6 @@ from .observations import Observations
 from .observations import PreviousAgentStart
 from .observations import PreviousAgentStartPlusStartTime
 from .observations import PreviousAgentStartPlusStartTimeDetectorData
+from .observations import TripInfoWithETA
 
 from .environment import TrafficEnvironment
