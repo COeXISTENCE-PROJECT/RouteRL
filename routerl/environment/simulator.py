@@ -50,6 +50,7 @@ class SumoSimulator():
         self.number_of_paths     = params[kc.NUMBER_OF_PATHS]
         self.simulation_length   = params[kc.SIMULATION_TIMESTEPS]
         self.stuck_time          = params[kc.STUCK_TIME]
+        self.daily_reseed        = params[kc.DAILY_RESEED]
 
         if self.network_name in kc.NETWORK_NAMES:
             curr_dir = os.path.dirname(os.path.abspath(__file__))
@@ -82,6 +83,7 @@ class SumoSimulator():
         random.seed(seed)
 
         self.seed = seed
+        self.day_seed = seed
         self.sumo_id = f"{random.randint(0, 1000)}"
         self.sumo_connection = None
         self.save_detectors_info = save_detectors_info
@@ -288,7 +290,7 @@ class SumoSimulator():
         sumo_cmd = [
             self.sumo_type,
             "--seed",
-            str(self.seed),
+            str(self.day_seed),
             "--net-file",
             self.network_file_path,
             "--additional-files",
@@ -336,9 +338,11 @@ class SumoSimulator():
         combined_sumo_stats_file = os.path.join(self.sumo_save_path,
                                                 f"sumo_stats_{self.runs}.xml")
         
+        if self.daily_reseed:   self.day_seed = random.randint(0, 1000)
+        
         sumo_cmd = [
             "--seed",
-            str(self.seed),
+            str(self.day_seed),
             "--net-file",
             self.network_file_path,
             "--additional-files",

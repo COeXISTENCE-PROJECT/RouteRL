@@ -8,7 +8,7 @@
         {
             "behavior" : "selfish",
             "observed_span" : 300,
-            "observation_type" : "previous_agents_plus_start_time",
+            "observation_type" : "trip_info_eta",
             "group_vicinity": false
         },
 
@@ -41,9 +41,10 @@
     {
         "network_name" : "csomor",
         "custom_network_folder" : "NA",
-        "simulation_timesteps" : 180,
+        "simulation_timesteps" : 3600,
         "sumo_type" : "sumo",
         "stuck_time" : 600,
+        "daily_reseed" : true,
 
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "plots_folder": "${plotter_parameters.plots_folder}",

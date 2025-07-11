@@ -80,9 +80,9 @@ class TrafficEnvironment(AECEnv):
                 - observed_span (int, default=300):
                     Time window considered for observations.
                     
-                - observation_type (str, default="previous_agents_plus_start_time"):
+                - observation_type (str, default="trip_info_eta"):
                     Type of observation.
-                    Options: ``previous_agents``, ``previous_agents_plus_start_time``.
+                    Options: ``previous_agents``, ``previous_agents_plus_start_time``, ``trip_info_eta``.
 
             - human_parameters (**dict**): 
                 Human agent settings.
@@ -150,7 +150,7 @@ class TrafficEnvironment(AECEnv):
             - custom_network_folder (str, default="NA"):
                 In case of custom network, specify the folder name.
             
-            - simulation_timesteps (int, default=180):
+            - simulation_timesteps (int, default=3600):
                 Total simulation time in seconds.
             
             - sumo_type (str, default="sumo"):
@@ -158,6 +158,9 @@ class TrafficEnvironment(AECEnv):
                 
             - stuck_time (int, default=600):
                 Number of seconds to tolerate before `teleporting` a stopped vehicle to resolve gridlocks.
+                
+            - daily_reseed (bool, default=True):
+                Whether to change SUMO seed in each reset. If ``False``, the seed will remain constant throughout the simulation.
 
         - path_generation_parameters (dict, optional):
             Path generation settings.
@@ -906,7 +909,7 @@ class TrafficEnvironment(AECEnv):
                                       self.plotter_params,
                                       self.agent_params,
                                       self.simulator)
-        elif observation_type == kc.COMPREHENSIVE:
+        elif observation_type == kc.TRIP_INFO_ETA:
             return TripInfoWithETA(self.machine_agents,
                                  self.human_agents,
                                  self.simulation_params,

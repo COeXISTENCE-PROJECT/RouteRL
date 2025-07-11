@@ -35,7 +35,7 @@ class Keychain:
     PREVIOUS_AGENTS = "previous_agents"
     PREVIOUS_AGENTS_PLUS_START_TIME = "previous_agents_plus_start_time"
     PREVIOUS_AGENTS_PLUS_START_TIME_DETECTOR_DATA = "previous_agents_plus_start_time_detector_data"
-    COMPREHENSIVE = "comprehensive"
+    TRIP_INFO_ETA = "trip_info_eta"
     GROUP_VICINITY = "group_vicinity"
 
     ### Environment
@@ -48,6 +48,7 @@ class Keychain:
     SUMO_TYPE = "sumo_type"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
     STUCK_TIME = "stuck_time"
+    DAILY_RESEED = "daily_reseed"
 
     ### Plotter
     RECORDS_FOLDER = "records_folder"
