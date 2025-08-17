@@ -160,12 +160,24 @@ class SumoSimulator():
             routes = jx.basic_generator(network, origins, destinations, as_df=True, calc_free_flow=True, **path_gen_kwargs)
         else:
             routes = pd.DataFrame(columns=["origins", "destinations", "path", "free_flow_time"])
-            with ProcessPoolExecutor() as executor:
+            
+            parts = []
+            
+            for idx in range(len(demands)):
+                routes_df = self._route_gen_process(
+                    network, demands, origins, destinations, idx, path_gen_kwargs
+                )
+                parts.append(routes_df)
+
+            if parts:  # only concat if we actually got something
+                routes = pd.concat(parts, ignore_index=True)
+
+            """with ProcessPoolExecutor() as executor:
                 futures = [executor.submit(self._route_gen_process, network, demands, origins, destinations, idx, path_gen_kwargs) for idx in range(len(demands))]
                 for i, future in enumerate(as_completed(futures), 1):
                     #print(f"\r{i}/{len(demands)} - {demands[i]}", end="")
                     routes_df = future.result()
-                    routes = pd.concat([routes, routes_df], ignore_index=True)
+                    routes = pd.concat([routes, routes_df], ignore_index=True)"""
             
         self._save_paths_to_disc(routes, origins, destinations)
         
