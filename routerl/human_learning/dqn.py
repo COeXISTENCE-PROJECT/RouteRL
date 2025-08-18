@@ -8,22 +8,32 @@ from collections import deque
 from .learning_model import BaseLearningModel
 
 class DQN(BaseLearningModel):
-    def __init__(self, state_size, action_space_size):
+    def __init__(self, state_size,
+                action_space_size,
+                epsilon=0.99,
+                epsilon_decay_rate=0.01,
+                epsilon_min=0.05,
+                memory_size=1000,
+                batch_size=32,
+                learning_rate=0.003,
+                num_hidden=2,
+                widths=(32, 64, 32),
+                device=None):
         super().__init__()
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.state_size = state_size
         self.action_space_size = action_space_size
-        self.epsilon = 0.99
-        self.epsilon_decay_rate = 0.01
-        self.epsilon_min = 0.05
-        self.memory = deque(maxlen=1000) ### WHA
-        self.batch_size = 32
-        self.learning_rate = 0.003
-        num_hidden = 2
-        widths = [32, 64, 32]
+        self.epsilon = epsilon
+        self.epsilon_decay_rate = epsilon_decay_rate
+        self.epsilon_min = epsilon_min
+        self.memory = deque(maxlen=memory_size)
+        self.batch_size = batch_size
+        self.learning_rate = learning_rate
+        self.num_hidden = num_hidden
+        self.widths = widths
 
-        
-        self.q_network = Network(self.state_size, self.action_space_size, num_hidden, widths).to(self.device)
+
+        self.q_network = Network(self.state_size, self.action_space_size, self.num_hidden, self.widths).to(self.device)
         self.optimizer = optim.Adam(self.q_network.parameters(), lr=self.learning_rate)
         self.loss_fn = nn.MSELoss()
 
