@@ -178,6 +178,7 @@ class HumanAgent(BaseAgent):
             int: The action of the agent.
         """
         if self.default_action is not None:
+            self.last_action = self.default_action
             return self.default_action
         self.last_action = self.model.act(observation)
         self.last_obs = observation
@@ -336,7 +337,6 @@ class MachineAgent(BaseAgent):
             df["id"] = df["id"].astype(int)
             df = df[df["id"] != int(machine_agent.id)]
 
-
             # Save the new agent list for the new environment run
             df.to_csv(os.path.join(self.params[kc.RECORDS_FOLDER], "agents2.csv"), index=False)
 
@@ -346,7 +346,6 @@ class MachineAgent(BaseAgent):
                 for agent in all_agents: ## all_agents doesn't have the correct actions of the agents
                     if row['id'] == agent.id:
                         actions.append(agent.last_action)
-
 
             actions2 = []
             for index, row in df.iterrows():
