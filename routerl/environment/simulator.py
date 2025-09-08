@@ -223,9 +223,17 @@ class SumoSimulator():
                         
                         
     def _route_gen_process(self, network, demands, origins, destinations, demand_idx, path_gen_kwargs):
-        origin = origins[demands[demand_idx][0]]
-        destination = destinations[demands[demand_idx][1]]
-        #path_gen_kwargs["tolerate_num_iterations"] = path_gen_kwargs["num_samples"] * 5
+        o_idx, d_idx = demands[demand_idx]
+        o_idx, d_idx = int(o_idx), int(d_idx)
+
+        # sanity checks (helpful on clusters)
+        if not (0 <= o_idx < len(origins)) or not (0 <= d_idx < len(destinations)):
+            raise ValueError(f"OD index out of bounds: ({o_idx}, {d_idx}) with "
+                            f"{len(origins)} origins and {len(destinations)} destinations")
+
+        origin = origins[o_idx]
+        destination = destinations[d_idx]
+
         return jx.extended_generator(
             network=network,
             origins=[origin],
@@ -234,6 +242,7 @@ class SumoSimulator():
             calc_free_flow=True,
             **path_gen_kwargs
         )
+
         
     def _route_vis_process(self, demands, origin_idx, dest_idx, origin, destination, routes, path_visuals_path):
         if (demands is not None) and (not (origin_idx, dest_idx) in demands):
