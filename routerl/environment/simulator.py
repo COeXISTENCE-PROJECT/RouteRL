@@ -140,10 +140,22 @@ class SumoSimulator():
         destinations = path_gen_params[kc.DESTINATIONS]
         
         # Get demand, if using custom demand
+        # I changed the code here because in the servers I had an error with float values
         if using_custom_demand:
-            demand_df = pd.read_csv(os.path.join(params[kc.RECORDS_FOLDER], path_gen_params[kc.AGENTS_CSV_FILE_NAME]))
-            demands = list(zip(demand_df[kc.AGENT_ORIGIN], demand_df[kc.AGENT_DESTINATION]))
-            demands = list(set(demands))
+            #demand_df = pd.read_csv(os.path.join(params[kc.RECORDS_FOLDER], path_gen_params[kc.AGENTS_CSV_FILE_NAME]))
+
+            demand_df = pd.read_csv(
+                os.path.join(params[kc.RECORDS_FOLDER], path_gen_params[kc.AGENTS_CSV_FILE_NAME]),
+                dtype={kc.AGENT_ORIGIN: "Int64", kc.AGENT_DESTINATION: "Int64"} 
+            )
+
+            demand_df = demand_df.dropna(subset=[kc.AGENT_ORIGIN, kc.AGENT_DESTINATION])
+
+            # coerce to plain Python ints and de-duplicate
+            demands = list({
+                (int(o), int(d))
+                for o, d in zip(demand_df[kc.AGENT_ORIGIN], demand_df[kc.AGENT_DESTINATION])
+            })
         else:
             demands = None
         
