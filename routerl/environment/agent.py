@@ -306,6 +306,7 @@ class MachineAgent(BaseAgent):
     def get_travel_time_by_id(self, travel_times_list, agent_id):
         for entry in travel_times_list:
             if entry['id'] == agent_id:
+                #print("In get travel time by id", entry['id'], agent_id, "entry tt is: ", entry['travel_time'], "\n")
                 return entry['travel_time']
         return None  
     
@@ -315,7 +316,7 @@ class MachineAgent(BaseAgent):
                 return entry['action']
         return None 
     
-    def calculate_marginal_cost(self, all_agents, travel_times_list, sumo_seed, kwargs):
+    def calculate_marginal_cost(self, all_agents, travel_times_list, sumo_seed, machines_to_all, kwargs):
         from .environment import TrafficEnvironment ## added here because there was circular import problem
 
         # Marginal cost
@@ -345,14 +346,7 @@ class MachineAgent(BaseAgent):
             for index, row in df.iterrows():
                 for agent in all_agents: ## all_agents doesn't have the correct actions of the agents
                     if row['id'] == agent.id:
-                        actions.append(agent.last_action)
-
-            actions2 = []
-            for index, row in df.iterrows():
-                for agent in all_agents: ## all_agents doesn't have the correct actions of the agents
-                    if row['id'] == agent.id:
-                        actions2.append(self.get_action_by_id(travel_times_list, agent.id))
-
+                        actions.append(int(agent.last_action))
                     
             ## Pass the same argument with the difference that the agent data is in agents2.csv
             kwargs["agent_parameters"]["agents_csv_file_name"] = "agents2.csv"   
@@ -360,17 +354,18 @@ class MachineAgent(BaseAgent):
             env = TrafficEnvironment(seed=sumo_seed, create_agents=False, create_paths=False, second_sumo=True, **kwargs)
             
             env.start(use_subprocess=True)
-
             for agent, action in zip(env.all_agents, actions):
                 agent.default_action = action
 
             env.step()
 
             for agent in all_agents:
-                if agent.id == machine_agent.id or agent.kind == kc.TYPE_HUMAN:
-                    if agent.kind != kc.TYPE_HUMAN:
-                        marginal_cost_calculation[agent][agent.id] = 0.0
-                    continue
+                if machines_to_all == False: #whether to calculate the impact of deleting a machine agent on the other machine agents
+                                             #or on human agents as well
+                    if agent.id == machine_agent.id or agent.kind == kc.TYPE_HUMAN:
+                        if agent.kind != kc.TYPE_HUMAN:
+                            marginal_cost_calculation[agent][agent.id] = 0.0
+                        continue
 
                 after_step_time = self.get_travel_time_by_id(env.travel_times_list, agent.id)
 
