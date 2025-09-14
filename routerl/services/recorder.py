@@ -151,13 +151,12 @@ class Recorder:
                     file.write(f"{m_l}\n")
 
 
-    def remember_marginal_costs(self, marginal_cost_calculation: dict, episode: int, machine_agents: list) -> None:
+    def remember_marginal_costs(self, marginal_cost_calculation: dict, episode: int) -> None:
         """Save the marginal cost matrices
 
         Args:
             marginal_cost_calculation: dictionary that contains the cost of each agent to each agent
             episode: episode, 
-            machine_agents: machine_agents
         """
         # Save the agents based on their start time        
         all_agent_ids = set()
@@ -170,7 +169,7 @@ class Recorder:
 
         # Build rows with matching column labels
         rows = []
-        for machine in machine_agents:
+        for machine in marginal_cost_calculation.keys():
             machine_name = str(machine)  # e.g., "Machine 1"
             inner_dict = marginal_cost_calculation.get(machine, {})
             row = {"ID": machine_name}

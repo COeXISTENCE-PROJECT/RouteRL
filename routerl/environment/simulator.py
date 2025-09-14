@@ -140,10 +140,22 @@ class SumoSimulator():
         destinations = path_gen_params[kc.DESTINATIONS]
         
         # Get demand, if using custom demand
+        # I changed the code here because in the servers I had an error with float values
         if using_custom_demand:
-            demand_df = pd.read_csv(os.path.join(params[kc.RECORDS_FOLDER], path_gen_params[kc.AGENTS_CSV_FILE_NAME]))
-            demands = list(zip(demand_df[kc.AGENT_ORIGIN], demand_df[kc.AGENT_DESTINATION]))
-            demands = list(set(demands))
+            #demand_df = pd.read_csv(os.path.join(params[kc.RECORDS_FOLDER], path_gen_params[kc.AGENTS_CSV_FILE_NAME]))
+
+            demand_df = pd.read_csv(
+                os.path.join(params[kc.RECORDS_FOLDER], path_gen_params[kc.AGENTS_CSV_FILE_NAME]),
+                dtype={kc.AGENT_ORIGIN: "Int64", kc.AGENT_DESTINATION: "Int64"} 
+            )
+
+            demand_df = demand_df.dropna(subset=[kc.AGENT_ORIGIN, kc.AGENT_DESTINATION])
+
+            # coerce to plain Python ints and de-duplicate
+            demands = list({
+                (int(o), int(d))
+                for o, d in zip(demand_df[kc.AGENT_ORIGIN], demand_df[kc.AGENT_DESTINATION])
+            })
         else:
             demands = None
         
@@ -160,12 +172,24 @@ class SumoSimulator():
             routes = jx.basic_generator(network, origins, destinations, as_df=True, calc_free_flow=True, **path_gen_kwargs)
         else:
             routes = pd.DataFrame(columns=["origins", "destinations", "path", "free_flow_time"])
-            with ProcessPoolExecutor() as executor:
+            
+            parts = []
+            
+            for idx in range(len(demands)):
+                routes_df = self._route_gen_process(
+                    network, demands, origins, destinations, idx, path_gen_kwargs
+                )
+                parts.append(routes_df)
+
+            if parts:  # only concat if we actually got something
+                routes = pd.concat(parts, ignore_index=True)
+
+            """with ProcessPoolExecutor() as executor:
                 futures = [executor.submit(self._route_gen_process, network, demands, origins, destinations, idx, path_gen_kwargs) for idx in range(len(demands))]
                 for i, future in enumerate(as_completed(futures), 1):
                     #print(f"\r{i}/{len(demands)} - {demands[i]}", end="")
                     routes_df = future.result()
-                    routes = pd.concat([routes, routes_df], ignore_index=True)
+                    routes = pd.concat([routes, routes_df], ignore_index=True)"""
             
         self._save_paths_to_disc(routes, origins, destinations)
         
@@ -199,9 +223,17 @@ class SumoSimulator():
                         
                         
     def _route_gen_process(self, network, demands, origins, destinations, demand_idx, path_gen_kwargs):
-        origin = origins[demands[demand_idx][0]]
-        destination = destinations[demands[demand_idx][1]]
-        #path_gen_kwargs["tolerate_num_iterations"] = path_gen_kwargs["num_samples"] * 5
+        o_idx, d_idx = demands[demand_idx]
+        o_idx, d_idx = int(o_idx), int(d_idx)
+
+        # sanity checks (helpful on clusters)
+        if not (0 <= o_idx < len(origins)) or not (0 <= d_idx < len(destinations)):
+            raise ValueError(f"OD index out of bounds: ({o_idx}, {d_idx}) with "
+                            f"{len(origins)} origins and {len(destinations)} destinations")
+
+        origin = origins[o_idx]
+        destination = destinations[d_idx]
+
         return jx.extended_generator(
             network=network,
             origins=[origin],
@@ -210,6 +242,7 @@ class SumoSimulator():
             calc_free_flow=True,
             **path_gen_kwargs
         )
+
         
     def _route_vis_process(self, demands, origin_idx, dest_idx, origin, destination, routes, path_visuals_path):
         if (demands is not None) and (not (origin_idx, dest_idx) in demands):

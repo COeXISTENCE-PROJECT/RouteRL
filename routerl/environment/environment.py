@@ -327,6 +327,7 @@ class TrafficEnvironment(AECEnv):
                  save_detectors_info: bool = False,
                  second_sumo: bool = False,
                  marginal_cost_calculation: bool = False,
+                 marginal_cost_calculation_machine_to_all: bool = False,
                  randomize_sumo_seed: bool = False,
                  **kwargs) -> None:
 
@@ -353,6 +354,7 @@ class TrafficEnvironment(AECEnv):
         self.save_detectors_info = save_detectors_info
         self.second_sumo = second_sumo
         self.marginal_cost_calculation = marginal_cost_calculation
+        self.marginal_cost_calculation_machine_to_all = marginal_cost_calculation_machine_to_all
 
         self.number_of_days = self.environment_params[kc.NUMBER_OF_DAYS]
         self.save_every = self.environment_params[kc.SAVE_EVERY]
@@ -821,10 +823,8 @@ class TrafficEnvironment(AECEnv):
             for machine in self.machine_agents:
                 continue
 
-            marginal_cost_calculation = machine.calculate_marginal_cost(self.all_agents, self.travel_times_list, self.sumo_seed, self.kwargs)
-            #print("cost is: ", marginal_cost_calculation, "\n\n\n")
-            #marginal_cost_calculation[machine.id] = cost
-            self.recorder.remember_marginal_costs(marginal_cost_calculation, self.day, self.machine_agents)
+            marginal_cost_calculation = machine.calculate_marginal_cost(self.all_agents, self.travel_times_list, self.sumo_seed, self.marginal_cost_calculation_machine_to_all, self.kwargs)
+            self.recorder.remember_marginal_costs(marginal_cost_calculation, self.day)
 
     def marginal_cost_machine_agents_flag(self) -> None:
         """Enable marginal cost in agent's reward"""
