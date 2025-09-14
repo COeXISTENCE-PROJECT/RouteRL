@@ -16,7 +16,6 @@ class DQN(BaseLearningModel):
                 memory_size=1000,
                 batch_size=32,
                 learning_rate=0.003,
-                num_hidden=2,
                 widths=(32, 64, 32),
                 device=None):
         super().__init__()
@@ -29,18 +28,26 @@ class DQN(BaseLearningModel):
         self.memory = deque(maxlen=memory_size)
         self.batch_size = batch_size
         self.learning_rate = learning_rate
-        self.num_hidden = num_hidden
         self.widths = widths
 
-
-        self.q_network = Network(self.state_size, self.action_space_size, self.num_hidden, self.widths).to(self.device)
+        self.q_network = Network(self.state_size, self.action_space_size, self.widths).to(self.device)
         self.optimizer = optim.Adam(self.q_network.parameters(), lr=self.learning_rate)
         self.loss_fn = nn.MSELoss()
 
         self.loss = list()
 
+    def train(self):
+        """Set the model to training mode"""
+        self.q_network.train()
+        return self
+
+    def eval(self):
+        """Set the model to evaluation mode"""
+        self.q_network.eval()
+        return self
+
     def act(self, state):
-        if np.random.rand() < self.epsilon:
+        if self.q_network.training and np.random.rand() < self.epsilon:
             return np.random.choice(self.action_space_size)
         else:
             state_tensor = torch.FloatTensor(state).unsqueeze(0).to(self.device)
@@ -69,16 +76,14 @@ class DQN(BaseLearningModel):
         self.loss.append(loss.item())
 
     def decay_epsilon(self):
-        self.epsilon = max(self.epsilon * self.epsilon_decay_rate, self.epsilon_min)
-
+        self.epsilon = max(self.epsilon - self.epsilon_decay_rate, self.epsilon_min)
 
 class Network(nn.Module):
-    def __init__(self, state_size, action_space_size, num_hidden, widths):
+    def __init__(self, state_size, action_space_size, widths):
         super(Network, self).__init__()
-        assert len(widths) == (num_hidden + 1), "DQN widths and number of layers mismatch!"
         
         self.input_layer = nn.Linear(state_size, widths[0])
-        self.hidden_layers = nn.ModuleList([nn.Linear(widths[x], widths[x+1]) for x in range(num_hidden)])
+        self.hidden_layers = nn.ModuleList([nn.Linear(widths[x], widths[x+1]) for x in range(len(widths) - 1)])
         self.out_layer = nn.Linear(widths[-1], action_space_size)
 
     def forward(self, x):
