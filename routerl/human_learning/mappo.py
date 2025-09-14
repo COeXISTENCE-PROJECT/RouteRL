@@ -1,4 +1,3 @@
-import numpy as np
 import random
 import torch
 import torch.nn as nn
@@ -23,7 +22,6 @@ class MAPPO(BaseLearningModel):
         critic_nets: list[nn.Module] | None = None,
         critic_arch_kwargs: dict | None = None,
         # --- default architecture parameters ---
-        default_num_hidden: int = 2,
         default_widths: list[int] = [32, 64, 32],
         # --- hyperparameters ---
         gamma: float = 0.99,
@@ -55,7 +53,6 @@ class MAPPO(BaseLearningModel):
         self.last_log_probs = {}
 
         # architecture args
-        nh = default_num_hidden if policy_arch_kwargs is None else policy_arch_kwargs.get('num_hidden', default_num_hidden)
         ws = default_widths if policy_arch_kwargs is None else policy_arch_kwargs.get('widths', default_widths)
 
         # --- Policy networks ---
@@ -66,7 +63,7 @@ class MAPPO(BaseLearningModel):
         else:
             self.policies = []
             for _ in range(num_agents):
-                net = Network(state_size, action_space_size, nh, ws).to(self.device)
+                net = Network(state_size, action_space_size, ws).to(self.device)
                 self.policies.append(net)
             if shared_policy:
                 self.policies = [self.policies[0]] * num_agents
@@ -84,11 +81,10 @@ class MAPPO(BaseLearningModel):
             self.critics = [net.to(self.device) for net in (critic_nets if not share_critic else [critic_nets[0]] * num_agents)]
         else:
             # build critics using generic Network class
-            ch_nh = critic_arch_kwargs.get("num_hidden", default_num_hidden) if critic_arch_kwargs else default_num_hidden
             ch_ws = critic_arch_kwargs.get('widths', default_widths) if critic_arch_kwargs else default_widths
             self.critics = []
             for _ in range(num_agents):
-                net = Network(state_size, 1, ch_nh, ch_ws).to(self.device)
+                net = Network(state_size, 1, ch_ws).to(self.device)
                 self.critics.append(net)
             if share_critic:
                 shared_critic = self.critics[0]
