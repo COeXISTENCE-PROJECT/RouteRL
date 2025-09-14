@@ -1,10 +1,6 @@
 import random
 import numpy as np
 import torch
-import optuna
-from optuna.integration.wandb import WeightsAndBiasesCallback
-from optuna.visualization import plot_optimization_history, plot_param_importances
-import wandb
 import os
 import sys
 
@@ -13,29 +9,30 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'
 from routerl import DQN
 from routerl import TrafficEnvironment
 from routerl import Keychain as kc
+from hyperparameters_tuning import run_gridsearch
 
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-
-ENV_SEEDS = [0, 42, 2137]
-TORCH_SEEDS = [7, 420, 1248]
-TRAINING_EPISODES = 20 #2000
+ENV_SEEDS = [0, 42]
+TORCH_SEEDS = [7, 420]
+TRAINING_EPISODES = 500
 HUMAN_LEARNING_EPISODES = 1
-TESTING_EPISODES = 10 #100
 
 ALL_PARAM_GRIDS = {
-    "learning_rate": [1e-1, 1e-4, 1e-10],
-    "epsilon_decay_rate": [0.8, 0.99],
-    "epsilon_min": [0.01, 0.05, 0.1],
-    "epsilon_start": [0.9, 0.95, 0.99],
-    "batch_size": [16, 32, 64],
-    "memory_size": [500, 1000, 2000],
-}
+    "epsilon": [0.9, 0.95, 0.99],
+    "epsilon_decay_rate": [0.002, 0.003],
+    "epsilon_min": [0.01, 0.1],
+    "memory_size": [200, 500],
+    "batch_size": [32, 64],
+    "learning_rate": [1e-1, 1e-3, 1e-5],
+}    
 
 selected = [
-    "epsilon_decay_rate",
     "batch_size",
-    "memory_size"
+    "learning_rate",
+    "epsilon_decay_rate",
+    "epsilon_min",
+    "memory_size",
 ]
 
 new_machines_after_mutation = 10
@@ -118,8 +115,8 @@ def init_routerl_env(env_seed: int,
     # 2) Initialize the environment
     env = TrafficEnvironment(
         seed=env_seed,
-        create_agents=False,
-        create_paths=False,
+        create_agents=True,
+        create_paths=True,
         marginal_cost_calculation=False,
         **env_params
     )
@@ -166,7 +163,7 @@ def train_dqn(env_seed: int,
     """
     Initializes env + agents, runs TRAINING_EPISODES of learning,
     then TESTING_EPISODES to measure avg travel time.
-    Returns: avg_travel_time (float)
+    Returns: list of travel times during testing phase
     """
 
     # Initialize environment and agents
@@ -177,8 +174,6 @@ def train_dqn(env_seed: int,
         dqn_kwargs=dqn_kwargs,
         human_learning_episodes=HUMAN_LEARNING_EPISODES
     )
-
-    total_reward = 0.0
 
     # Training phase
     for _ in range(TRAINING_EPISODES):
@@ -194,87 +189,40 @@ def train_dqn(env_seed: int,
                 action = mutated_humans[agent].act(observation)
             env.step(action)
 
-    # Testing phase
-    travel_times = []
-    for _ in range(TESTING_EPISODES):
-        env.reset()
-        for agent in env.agent_iter():
-            observation, reward, termination, truncation, info = env.last()
-            if termination or truncation:
-                action = None
-            else:
-                action = mutated_humans[agent].act(observation)
-            env.step(action)
+    #  Testing phase, one episode is enough as seeds are fixed.
+    total_reward = 0.0
+    env.reset()
+
+    for h in mutated_humans.values():
+        h.model.eval()
+
+    for agent in env.agent_iter():
+        observation, reward, termination, truncation, info = env.last()
+        if termination or truncation:
+            action = None
             # The reward is minus the travel time in this case.
             total_reward -= reward
-            travel_times.append(-reward)
-
-    avg_travel_time = np.mean(travel_times)
-    std_travel_time = np.std(travel_times)
+        else:
+            action = mutated_humans[agent].act(observation)
+        env.step(action)
+    travel_times = total_reward / len(env.machine_agents)
 
     # Clean up
     env.stop_simulation()
-
-    return float(avg_travel_time),  float(std_travel_time)
-
-def objective(trial: optuna.Trial) -> float:
-    """
-    Objective function for Optuna optimization.
-    It defines the hyperparameters to tune and returns the average travel time.
-    """
-    dqn_kwargs = {
-        param: trial.suggest_categorical(param, ALL_PARAM_GRIDS[param])
-        for param in selected
-    }
-
-    run = wandb.init(
-        project="DQN_Hyperparameter_Tuning_TEST",
-        name=f"trial-{trial.number}",
-        reinit=True,
-        config=dqn_kwargs
-    )
-
-    wandb.log(dqn_kwargs, commit=False)
-
-    times = []
-    for env_seed in ENV_SEEDS:
-        for torch_seed in TORCH_SEEDS:
-            avg_time, test_std_time = train_dqn(env_seed, torch_seed, env_params, dqn_kwargs)
-            wandb.log({
-                "avg_travel_time": avg_time,
-                "test_std_travel_time": test_std_time,
-                "env_seed": env_seed,
-                "torch_seed": torch_seed
-            })
-            times.append(avg_time)
-
-    mean_time, std_time = float(np.mean(times)), float(np.std(times))
-    wandb.log({"mean_travel_time": mean_time, "std_travel_time": std_time})
-    run.finish()
-    return mean_time
+    return travel_times
 
 def main():
-    # Set up Optuna grid search
-    search_space = {k: ALL_PARAM_GRIDS[k] for k in selected}
-
-    sampler = optuna.samplers.GridSampler(search_space)
-    study = optuna.create_study(direction="minimize", sampler=sampler)
-
-    # Run the optimization
-    study.optimize(objective, n_trials=int(np.prod([len(search_space[k]) for k in search_space])))
-
-    # Log Optuna built-in plots to Weights & Biases
-    wandb.init(
-      project="DQN_Hyperparameter_Tuning",
-      name="optuna_summary",
-      reinit=True
+    run_gridsearch(
+        train_fn=train_dqn,
+        ALL_PARAM_GRIDS=ALL_PARAM_GRIDS,
+        selected=selected,
+        env_params=env_params,
+        project_name="DQN_Hyperparameter_Tuning",
+        ENV_SEEDS=ENV_SEEDS,
+        TORCH_SEEDS=TORCH_SEEDS,
+        TRAINING_EPISODES=TRAINING_EPISODES,
+        HUMAN_LEARNING_EPISODES=HUMAN_LEARNING_EPISODES
     )
-
-    wandb.log({
-        "optuna_history": wandb.Plotly(plot_optimization_history(study)),
-        "param_importances": wandb.Plotly(plot_param_importances(study))
-    })
-    wandb.finish()
-
+ 
 if __name__ == "__main__":
     main()

@@ -1,10 +1,6 @@
 import random
 import numpy as np
 import torch
-import optuna
-import optuna.integration.wandb as WeightsAndBiasesCallback
-from optuna.visualization import plot_optimization_history, plot_param_importances
-import wandb
 import os
 import sys
 
@@ -13,14 +9,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'
 from routerl import MAPPO
 from routerl import TrafficEnvironment
 from routerl import Keychain as kc
+from hyperparameters_tuning import run_gridsearch
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 ENV_SEEDS = [0, 42, 2137]
 TORCH_SEEDS = [7, 420, 1248]
-TRAINING_EPISODES = 20  # 2000
+TRAINING_EPISODES = 2000
 HUMAN_LEARNING_EPISODES = 1
-TESTING_EPISODES = 10  # 100
 
 ALL_PARAM_GRIDS = {
     "lr_actor": [1e-1, 1e-10],
@@ -28,14 +24,14 @@ ALL_PARAM_GRIDS = {
     "clip_ratio": [0.1, 0.2, 0.3],
     "entropy_coef": [0.01, 0.05, 0.1],
     "value_coef": [0.1, 0.5, 1.0],
-    "batch_size": [16, 32, 64],
-    "memory_size": [500, 1000, 2000],
+    "batch_size": [16, 64],
+    "memory_size": [500, 2000],
     "shared_policy": [True, False],
     "share_critic": [True, False],
 }
 
 selected = [
-    "lr_actor",
+    "memory_size",
     "share_critic",
     "batch_size",
 ]
@@ -132,8 +128,8 @@ def init_rouerl_env(env_seed: int,
         state_size=3,
         action_space_size=2,
         num_agents=num_agents,
-        policy_arch_kwargs={'num_hidden': 2, 'widths': [32, 64, 32]},
-        critic_arch_kwargs={'num_hidden': 2, 'widths': [64, 64, 64]},
+        policy_arch_kwargs={'num_hidden': 1, 'widths': [32, 32]},
+        critic_arch_kwargs={'num_hidden': 1, 'widths': [64, 64]},
         **mappo_kwargs
     )
 
@@ -192,100 +188,39 @@ def train_mappo(env_seed: int,
             mappo.learn(states, actions, rewards, logps, next_states, dones, agent_idxs)
 
     # Testing
-    travel_times = []
-    for _ in range(TESTING_EPISODES):
-        env.reset()
-        for agent in env.agent_iter():
-            raw_id = int(agent)
-            idx = id_to_idx[raw_id]
+    total_reward = 0.0
+    env.reset()
+    for agent in env.agent_iter():
+        raw_id = int(agent)
+        idx = id_to_idx[raw_id]
 
-            observation, reward, termination, truncation, info = env.last()
+        observation, reward, termination, truncation, info = env.last()
 
-            if termination or truncation:
-                last_obs = mappo.get_last_observation(idx)
-                last_action = mappo.get_last_action(idx)
-                last_logp = mappo.get_last_log_prob(idx)
-
-                states.append(last_obs)
-                actions.append(last_action)
-                rewards.append(reward)
-                logps.append(last_logp)
-                next_states.append([0, 0, 0])
-                agent_idxs.append(idx)
-                dones.append(1)
-                action = None
-            else:
-                action = mappo.act(observation, idx)
-
-            env.step(action)
-            travel_times.append(-reward)
-
-    avg_travel_time = np.mean(travel_times)
-    std_travel_time = np.std(travel_times)
+        if termination or truncation:
+            action = None
+            # The reward is minus the travel time in this case.
+            total_reward -= reward
+        else:
+            action = mappo.act(observation, idx)
+        env.step(action)
+    travel_time = total_reward / len(env.machine_agents)
 
     # Clean up
     env.stop_simulation()
-
-    return float(avg_travel_time), float(std_travel_time)
-
-def objective(trial: optuna.Trial) -> float:
-    """
-    Objective function for Optuna optimization.
-    It defines the hyperparameters to tune and returns the average travel time.
-    """
-    mappo_kwargs = {
-        param: trial.suggest_categorical(param, ALL_PARAM_GRIDS[param])
-        for param in selected
-    }
-
-    run = wandb.init(
-        project="MAPPO_Hyperparameter_Tuning",
-        name=f"trial-{trial.number}",
-        reinit=True,
-        config=mappo_kwargs
-    )
-
-    wandb.log(mappo_kwargs, commit=False)
-
-    times = []
-    for env_seed in ENV_SEEDS:
-        for torch_seed in TORCH_SEEDS:
-            avg_time, test_std_time = train_mappo(env_seed, torch_seed, env_params, mappo_kwargs)
-            wandb.log({
-                "avg_travel_time": avg_time,
-                "test_std_travel_time": test_std_time,
-                "env_seed": env_seed,
-                "torch_seed": torch_seed
-            })
-            times.append(avg_time)
-
-    mean_time, std_time = float(np.mean(times)), float(np.std(times))
-    wandb.log({"mean_travel_time": mean_time, "std_travel_time": std_time})
-    run.finish()
-    return mean_time
+    return travel_time
 
 def main():
-    # Set up Optuna grid search
-    search_space = {k: ALL_PARAM_GRIDS[k] for k in selected}
-
-    sampler = optuna.samplers.GridSampler(search_space)
-    study = optuna.create_study(direction="minimize", sampler=sampler)
-    n_trials = int(np.prod([len(search_space[k]) for k in search_space]))
-
-    # Run the optimization
-    study.optimize(objective, n_trials=n_trials)
-
-    wandb.init(
-        project="MAPPO_Hyperparameter_Tuning",
-        name="optuna_summary",
-        reinit=True
+    run_gridsearch(
+        train_fn=train_mappo,
+        ALL_PARAM_GRIDS=ALL_PARAM_GRIDS,
+        selected=selected,
+        env_params=env_params,
+        ENV_SEEDS=ENV_SEEDS,
+        TORCH_SEEDS=TORCH_SEEDS,
+        TRAINING_EPISODES=TRAINING_EPISODES, 
+        HUMAN_LEARNING_EPISODES=HUMAN_LEARNING_EPISODES,
+        project_name="MAPPO_Hyperparameter_Tuning"
     )
 
-    wandb.log({
-        "optuna_history": wandb.Plotly(plot_optimization_history(study)),
-        "param_importances": wandb.Plotly(plot_param_importances(study))
-    })
-    wandb.finish()
-
 if __name__ == "__main__":
-    main()    
+    main()
