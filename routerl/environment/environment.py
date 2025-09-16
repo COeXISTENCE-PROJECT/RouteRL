@@ -605,7 +605,7 @@ class TrafficEnvironment(AECEnv):
         start_times = [human.start_time for human in self.human_agents]
         percentile = np.percentile(start_times, mutation_start_percentile)
 
-        filtered_human_agents = [human for human in self.human_agents if human.start_time > percentile]
+        filtered_human_agents = [human for human in self.human_agents if human.start_time >= percentile]
         #filtered_human_agents = [human for human in self.human_agents]
 
         number_of_machines_to_be_added = self.agent_params[kc.NEW_MACHINES_AFTER_MUTATION]
