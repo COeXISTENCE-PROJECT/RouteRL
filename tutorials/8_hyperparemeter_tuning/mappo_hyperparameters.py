@@ -190,6 +190,9 @@ def train_mappo(env_seed: int,
     # Testing
     total_reward = 0.0
     env.reset()
+
+    mappo.eval()
+
     for agent in env.agent_iter():
         raw_id = int(agent)
         idx = id_to_idx[raw_id]
