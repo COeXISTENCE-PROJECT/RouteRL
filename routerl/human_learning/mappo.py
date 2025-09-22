@@ -41,6 +41,9 @@ class MAPPO(BaseLearningModel):
         self.action_space_size = action_space_size
         self.num_agents = num_agents
 
+        # training phase flag
+        self.training = True
+        
         # hyperparameters
         self.gamma = gamma
         self.clip_ratio = clip_ratio
@@ -100,12 +103,30 @@ class MAPPO(BaseLearningModel):
         self.loss_actor = []
         self.loss_critic = []
 
+    def train(self):
+        """Set all models to training mode"""
+        for policy in self.policies:
+            policy.train()
+        for critic in self.critics:
+            critic.train()
+        self.training = True
+        return self
+    
+    def eval(self):
+        """Set all models to evaluation mode"""
+        for policy in self.policies:
+            policy.eval()
+        for critic in self.critics:
+            critic.eval()
+        self.training = False
+        return self
+
     def act(self, state: any, agent_id: int):
         state_tensor = torch.FloatTensor(state).unsqueeze(0).to(self.device)
         with torch.no_grad():
             logits = self.policies[agent_id](state_tensor)
             dist = torch.distributions.Categorical(logits=logits)
-            action = dist.sample().item()
+            action = dist.sample().item() if self.training else torch.argmax(logits).item()
         log_prob = dist.log_prob(torch.tensor(action, device=self.device)).item()
 
         self.last_states[agent_id] = state
