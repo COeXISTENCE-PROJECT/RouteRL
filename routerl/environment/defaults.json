@@ -78,6 +78,7 @@
 
         "origins" : "default",
         "destinations" : "default",
+        "all_origins_to_all_destinations": "True",
 
         "records_folder" : "${plotter_parameters.records_folder}",
         "agents_csv_file_name": "agents.csv"

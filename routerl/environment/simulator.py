@@ -165,7 +165,8 @@ class SumoSimulator():
             "num_samples": path_gen_params[kc.NUM_SAMPLES],
             "beta": path_gen_params[kc.BETA],
             "weight": path_gen_params[kc.WEIGHT],
-            "verbose": False
+            "verbose": False,
+            "all_origins_to_all_destinations": path_gen_params[kc.ALL_ORIGINS_TO_ALL_DESTINATIONS]
         }
         
         if demands is None:

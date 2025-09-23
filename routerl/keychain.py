@@ -81,6 +81,7 @@ class Keychain:
     WEIGHT = "weight"
     NUM_SAMPLES = "num_samples"
     VISUALIZE_PATHS = "visualize_paths"
+    ALL_ORIGINS_TO_ALL_DESTINATIONS = "all_origins_to_all_destinations"
 
     ###########################################################
     
