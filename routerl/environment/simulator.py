@@ -201,7 +201,7 @@ class SumoSimulator():
             
             with ProcessPoolExecutor() as executor:
                 futures = [executor.submit(self._route_vis_process, demands, origin_idx, dest_idx, origin, destination, routes, path_visuals_path) for origin_idx, origin in enumerate(origins) for dest_idx, destination in enumerate(destinations)]
-            """
+            
             for origin_idx, origin in enumerate(origins):
                 for dest_idx, destination in enumerate(destinations):
                     if (demands is not None) and (not (origin_idx, dest_idx) in demands):
@@ -220,7 +220,7 @@ class SumoSimulator():
                                             show=False, save_file_path=fig_save_path, title=title)
                     except:
                         logging.warning(f"Could not visualize routes for {origin} to {destination}.")
-            """
+            
                         
                         
     def _route_gen_process(self, network, demands, origins, destinations, demand_idx, path_gen_kwargs):
