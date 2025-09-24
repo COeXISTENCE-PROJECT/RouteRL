@@ -48,14 +48,21 @@ class DQN(BaseLearningModel):
 
     def act(self, state):
         if self.q_network.training and np.random.rand() < self.epsilon:
-            return np.random.choice(self.action_space_size)
+            action = torch.randint(0, self.action_space_size, (1,)).item()
+            return action
         else:
             state_tensor = torch.FloatTensor(state).unsqueeze(0).to(self.device)
             with torch.no_grad():
                 q_values = self.q_network(state_tensor)
-            return torch.argmax(q_values).item()
+            action = torch.argmax(q_values).item()
+            
+            self.last_state = state
+            self.last_action = action
+
+            return action
 
     def learn(self, state, action, reward):
+        #print("I am inside the learn function\n\n")
         self.memory.append((state, action, reward))
         if len(self.memory) < self.batch_size: return
 
