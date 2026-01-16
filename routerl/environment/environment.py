@@ -339,6 +339,7 @@ class TrafficEnvironment(AECEnv):
         logging.info(f"There are {len(self.human_agents)} human and {len(self.machine_agents)} machine agents.")
 
         self.episode_actions = dict()
+        self.episode_observations = dict()
         
         self.executor = ThreadPoolExecutor(max_workers=1)
         self.pending_futures = []
@@ -406,6 +407,7 @@ class TrafficEnvironment(AECEnv):
         self.travel_times_list = list()
         self.actions_timestep = list()
         self.machine_same_start_time = list()
+        self.episode_observations = dict()
         self.simulator.reset()
         self.agents = copy(self.possible_agents)
         self.terminations = {agent: False for agent in self.possible_agents}
@@ -608,12 +610,16 @@ class TrafficEnvironment(AECEnv):
     def _help_step(self, actions: list[tuple]) -> dict:
 
         for agent, action in actions:
+            observation = kc.NOT_AVAILABLE
+            if agent.kind == kc.TYPE_MACHINE:
+                observation = self.episode_observations.get(agent.id, kc.NOT_AVAILABLE)
             action_dict = {kc.AGENT_ID: agent.id,
                            kc.AGENT_KIND: agent.kind,
                            kc.ACTION: action,
                            kc.AGENT_ORIGIN: agent.origin,
                            kc.AGENT_DESTINATION: agent.destination,
-                           kc.AGENT_START_TIME: agent.start_time}
+                           kc.AGENT_START_TIME: agent.start_time,
+                           kc.AGENT_OBSERVATION: observation}
             self.simulator.add_vehicle(action_dict)
             self.episode_actions[agent.id] = action_dict
         timestep, stopped_vehicles_info, arrivals, teleported = self.simulator.step()
@@ -667,6 +673,7 @@ class TrafficEnvironment(AECEnv):
 
         self.travel_times_list = []
         self.episode_actions = dict()
+        self.episode_observations = dict()
 
     def _assign_rewards(self) -> None:
 
@@ -741,6 +748,8 @@ class TrafficEnvironment(AECEnv):
                         continue
                     else:
                         # Machine acting
+                        observation = self.observe(str(machine.id))
+                        self.episode_observations[machine.id] = self._serialize_observation(observation)
                         machine.last_action = machine_action
                         self.actions_timestep.append((machine, machine_action))
 
@@ -766,6 +775,15 @@ class TrafficEnvironment(AECEnv):
             if agent_action:
                 agent_action = False
                 break
+
+    def _serialize_observation(self, observation: np.ndarray) -> str:
+        if isinstance(observation, np.ndarray):
+            observation = observation.tolist()
+        elif isinstance(observation, tuple):
+            observation = list(observation)
+        if isinstance(observation, list):
+            return ",".join(map(str, observation))
+        return str(observation)
 
     ###########################
     ##### Free flow times #####

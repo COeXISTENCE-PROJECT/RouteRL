@@ -84,6 +84,7 @@ class Keychain:
     AGENT_DESTINATION = "destination"
     AGENT_START_TIME = "start_time"
     AGENT_KIND = "kind"
+    AGENT_OBSERVATION = "observation"
     
     ACTION = "action"
     REWARD = "reward"
