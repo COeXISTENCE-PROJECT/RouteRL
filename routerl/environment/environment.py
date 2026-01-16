@@ -75,7 +75,7 @@ class TrafficEnvironment(AECEnv):
                 
                 - behavior (str, default="selfish"):
                     Route choice behavior.
-                    Options: ``selfish``, ``social``, ``altruistic``, ``malicious``, ``competitive``, ``collaborative``.
+                    Options: ``selfish``, ``social``, ``altruistic``, ``malicious``, ``competitive``, ``collaborative``, ``collectivist``, ``militant``.
                     
                 - observed_span (int, default=300):
                     Time window considered for observations.
