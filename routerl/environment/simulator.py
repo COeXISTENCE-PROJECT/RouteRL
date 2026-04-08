@@ -143,17 +143,22 @@ class SumoSimulator():
             "weight": path_gen_params[kc.WEIGHT],
             "verbose": False
         }
+        path_gen_workers = path_gen_params[kc.PATH_GEN_WORKERS]
+        if path_gen_workers < 1:
+            raise ValueError("path_gen_workers must be at least 1.")
         
         if demands is None:
             routes = jx.basic_generator(network, origins, destinations, as_df=True, calc_free_flow=True, **path_gen_kwargs)
         else:
             routes = pd.DataFrame(columns=["origins", "destinations", "path", "free_flow_time"])
-            with ProcessPoolExecutor() as executor:
-                futures = [executor.submit(self._route_gen_process, network, demands, origins, destinations, idx, path_gen_kwargs) for idx in range(len(demands))]
-                for i, future in enumerate(as_completed(futures), 1):
-                    #print(f"\r{i}/{len(demands)} - {demands[i]}", end="")
-                    routes_df = future.result()
-                    routes = pd.concat([routes, routes_df], ignore_index=True)
+            max_workers = min(path_gen_workers, len(demands))
+            if max_workers > 0:
+                with ProcessPoolExecutor(max_workers=max_workers) as executor:
+                    futures = [executor.submit(self._route_gen_process, network, demands, origins, destinations, idx, path_gen_kwargs) for idx in range(len(demands))]
+                    for i, future in enumerate(as_completed(futures), 1):
+                        #print(f"\r{i}/{len(demands)} - {demands[i]}", end="")
+                        routes_df = future.result()
+                        routes = pd.concat([routes, routes_df], ignore_index=True)
             
         self._save_paths_to_disc(routes, origins, destinations)
         
@@ -161,9 +166,12 @@ class SumoSimulator():
         if path_gen_params[kc.VISUALIZE_PATHS]:
             path_visuals_path = params[kc.PLOTS_FOLDER]
             os.makedirs(path_visuals_path, exist_ok=True)
+            visualization_tasks = len(origins) * len(destinations)
             
-            with ProcessPoolExecutor() as executor:
-                futures = [executor.submit(self._route_vis_process, demands, origin_idx, dest_idx, origin, destination, routes, path_visuals_path) for origin_idx, origin in enumerate(origins) for dest_idx, destination in enumerate(destinations)]
+            max_workers = min(path_gen_workers, visualization_tasks)
+            if max_workers > 0:
+                with ProcessPoolExecutor(max_workers=max_workers) as executor:
+                    futures = [executor.submit(self._route_vis_process, demands, origin_idx, dest_idx, origin, destination, routes, path_visuals_path) for origin_idx, origin in enumerate(origins) for dest_idx, destination in enumerate(destinations)]
             """
             for origin_idx, origin in enumerate(origins):
                 for dest_idx, destination in enumerate(destinations):
@@ -184,8 +192,7 @@ class SumoSimulator():
                     except:
                         logging.warning(f"Could not visualize routes for {origin} to {destination}.")
             """
-                        
-                        
+                                                
     def _route_gen_process(self, network, demands, origins, destinations, demand_idx, path_gen_kwargs):
         origin = origins[demands[demand_idx][0]]
         destination = destinations[demands[demand_idx][1]]

@@ -57,6 +57,7 @@
         "beta" : -3,
         "weight" : "time",
         "num_samples" : 100,
+        "path_gen_workers" : 4,
         "visualize_paths" : true,
 
         "origins" : "default",

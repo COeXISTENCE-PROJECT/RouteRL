@@ -129,7 +129,7 @@ class TrafficEnvironment(AECEnv):
             - stuck_time (int, default=600):
                 Number of seconds to tolerate before `teleporting` a stopped vehicle to resolve gridlocks.
                 
-            - daily_reseed (bool, default=True):
+            - daily_reseed (bool, default=False):
                 Whether to change SUMO seed in each reset. If ``False``, the seed will remain constant throughout the simulation.
 
         - path_generation_parameters (dict, optional):
@@ -146,6 +146,9 @@ class TrafficEnvironment(AECEnv):
                 
             - num_samples (int, default=100):
                 Number of samples for path generation.
+
+            - path_gen_workers (int, default=4):
+                Maximum number of worker processes used for parallel path generation and path visualization.
                 
             - origins (str | list[str], default="default"):
                 Origin points from the network. (e.g., ``["-25166682#0", "-4936412"]``)

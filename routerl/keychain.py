@@ -69,6 +69,7 @@ class Keychain:
     WEIGHT = "weight"
     NUM_SAMPLES = "num_samples"
     VISUALIZE_PATHS = "visualize_paths"
+    PATH_GEN_WORKERS = "path_gen_workers"
 
     ###########################################################
     
