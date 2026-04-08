@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "routerlurb"
-version = "1.0.0"
+version = "1.1.0"
 description = "RouteRL is a multi-agent reinforcement learning framework for urban route choice in different city networks. This subpackage is developed to support its compatibility with URB until the full integration."
 authors = [
     { name = "COeXISTENCE", email = "coexistence@uj.edu.pl" }
@@ -29,10 +29,6 @@ dependencies = [
     "prettytable>=3.12.0",
     "requests>=2.32.0",
     "seaborn>=0.13.2",
-    "tensordict==0.7.0",
-    "torch>=2.6.0",
-    "torchrl==0.7.0",
-    "tqdm>=4.67.1",
     "traci==1.21.0"
 ]
 
