@@ -8,18 +8,18 @@
         {
             "behavior" : "selfish",
             "observed_span" : 300,
-            "observation_type" : "previous_agents_plus_start_time",
+            "observation_type" : "trip_info_eta",
             "group_vicinity": false
         },
 
         "human_parameters" :
         {
             "model" : "gawron",
-            "alpha_j": 0.8,
-            "alpha_zero": 0.2,
-            "beta" : -1.5,
+            "alpha": 0.2,
+            "beta" : 1.5,
             "beta_randomness" : 0.1,
-            "remember" : 3
+            "deterministic" : false,
+            "remember" : 5
         },
 
         "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",
@@ -41,9 +41,10 @@
     {
         "network_name" : "csomor",
         "custom_network_folder" : "NA",
-        "simulation_timesteps" : 180,
+        "simulation_timesteps" : 3600,
         "sumo_type" : "sumo",
         "stuck_time" : 600,
+        "daily_reseed" : false,
 
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "plots_folder": "${plotter_parameters.plots_folder}",
@@ -56,6 +57,7 @@
         "beta" : -3,
         "weight" : "time",
         "num_samples" : 100,
+        "path_gen_workers" : 4,
         "visualize_paths" : true,
 
         "origins" : "default",

@@ -394,4 +394,8 @@ class MachineAgent(BaseAgent):
             a, b, c, d = 0, 0, 0, -1
         elif self.behavior == kc.MALICIOUS:
             a, b, c, d = 0, 0, 1, 0
+        elif self.behavior == kc.COLLECTIVIST:
+            a, b, c, d = -0.1, -0.9, 0, 0
+        elif self.behavior == kc.MILITANT:
+            a, b, c, d = 0, -2, 1, 0
         return a, b, c, d

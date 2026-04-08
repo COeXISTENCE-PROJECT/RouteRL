@@ -25,8 +25,8 @@ class Keychain:
     MODEL = "model"
     BETA = "beta"
     BETA_RANDOMNESS = "beta_randomness"
-    ALPHA_J = "alpha_j"
-    ALPHA_ZERO = "alpha_zero"
+    ALPHA = "alpha"
+    DETERMINISTIC = "deterministic"
     REMEMBER = "remember"
     # Machine
     BEHAVIOR = "behavior"
@@ -35,6 +35,7 @@ class Keychain:
     PREVIOUS_AGENTS = "previous_agents"
     PREVIOUS_AGENTS_PLUS_START_TIME = "previous_agents_plus_start_time"
     PREVIOUS_AGENTS_PLUS_START_TIME_DETECTOR_DATA = "previous_agents_plus_start_time_detector_data"
+    TRIP_INFO_ETA = "trip_info_eta"
     GROUP_VICINITY = "group_vicinity"
 
     ### Environment
@@ -47,6 +48,7 @@ class Keychain:
     SUMO_TYPE = "sumo_type"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
     STUCK_TIME = "stuck_time"
+    DAILY_RESEED = "daily_reseed"
 
     ### Plotter
     RECORDS_FOLDER = "records_folder"
@@ -67,6 +69,7 @@ class Keychain:
     WEIGHT = "weight"
     NUM_SAMPLES = "num_samples"
     VISUALIZE_PATHS = "visualize_paths"
+    PATH_GEN_WORKERS = "path_gen_workers"
 
     ###########################################################
     
@@ -83,6 +86,7 @@ class Keychain:
     AGENT_DESTINATION = "destination"
     AGENT_START_TIME = "start_time"
     AGENT_KIND = "kind"
+    AGENT_OBSERVATION = "observation"
     
     ACTION = "action"
     REWARD = "reward"
@@ -104,7 +108,10 @@ class Keychain:
     SOCIAL = "social"
     ALTRUISTIC = "altruistic"
     MALICIOUS = "malicious"
-    BEHAVIORS = [SELFISH, COMPETITIVE, COLLABORATIVE, COOPERATIVE, SOCIAL, ALTRUISTIC, MALICIOUS]
+    COLLECTIVIST = "collectivist"
+    MILITANT = "militant"
+
+    BEHAVIORS = [SELFISH, COMPETITIVE, COLLABORATIVE, COOPERATIVE, SOCIAL, ALTRUISTIC, MALICIOUS, COLLECTIVIST, MILITANT]
 
     # Model encodings
     AON = "aon"

@@ -20,7 +20,7 @@ import random
 from routerl.environment import generate_agents
 from routerl.environment import SumoSimulator
 from routerl.environment import MachineAgent
-from routerl.environment import PreviousAgentStart, PreviousAgentStartPlusStartTime, PreviousAgentStartPlusStartTimeDetectorData, Observations
+from routerl.environment.observations import *
 from routerl.keychain import Keychain as kc
 from routerl.services import plotter
 from routerl.services import Recorder
@@ -75,62 +75,35 @@ class TrafficEnvironment(AECEnv):
                 
                 - behavior (str, default="selfish"):
                     Route choice behavior.
-                    Options: ``selfish``, ``social``, ``altruistic``, ``malicious``, ``competitive``, ``collaborative``.
+                    Options: ``selfish``, ``competitive``, ``collaborative``, ``cooperative``, ``social``, ``altruistic``, ``malicious``, ``collectivist``, ``militant``.
                     
                 - observed_span (int, default=300):
                     Time window considered for observations.
                     
-                - observation_type (str, default="previous_agents_plus_start_time"):
+                - observation_type (str, default="trip_info_eta"):
                     Type of observation.
-                    Options: ``previous_agents``, ``previous_agents_plus_start_time``.
+                    Options: ``previous_agents``, ``previous_agents_plus_start_time``, ``previous_agents_plus_start_time_detector_data``, ``trip_info_eta``.
 
             - human_parameters (**dict**): 
                 Human agent settings.
                 
                 - model (str, default="gawron"):
-                    Decision-making model (options: ``random``, ``gawron``, ``weighted``).
+                    Decision-making model (options: ``aon``, ``gawron``, ``culo``, ``random``, ``weighted``).
                     
-                - noise_weight_agent (float, default=0.2):
-                    Agent noise weight in the error term composition.
+                - beta (float, default=1.5):
+                    **Positive value**, multiplier of reward (travel time) used in utility, determines sensitivity.
                     
-                - noise_weight_path (float, default=0.6):
-                    Path noise weight in the error term composition.
+                - beta_randomness (float, default=0.1):
+                    Agent-specific randomness in beta.
                     
-                - noise_weight_day (float, default=0.2):
-                    Day noise weight in the error term composition.
+                - alpha (float, default=0.2):
+                    Human learning rate.
+
+                - deterministic (bool, default=False):
+                    Whether ``gawron`` selects the minimum-utility path deterministically instead of sampling stochastically.
                     
-                - beta (float, default=-1.0):
-                    **Negative value**, multiplier of reward (travel time) used in utility, determines sensitivity.
-                    
-                - beta_k_i_variability (float, default=0):
-                    Variance of normal distribution for which ``beta_k_i`` is drawn (computed in utility).
-                    
-                - epsilon_i_variability (float, default=0):
-                    Variance of normal distribution from which error terms are drawn, first term.
-                    
-                - epsilon_k_i_variability (float, default=0):
-                    Variance of normal distribution from which error terms are drawn, second term.
-                    
-                - epsilon_k_i_t_variability (float, default=0):
-                    Variance of normal distribution from which error terms are drawn, third term. These three terms must sum to 1.
-                    
-                - greedy (float, default=1.0):
-                    1 - exploration_rate, probability with which the choice are rational (argmax(U)) and not probabilistic (random).
-                    
-                - gamma_c (float, default=0):
-                    Bounded rationality component. Expressed as relative increase in costs/utilities below which user do not change behaviour (do not notice it).
-                    
-                - gamma_u (float, default=0):
-                    Bounded rationality component. Expressed as relative increase in costs/utilities below which user do not change behaviour (do not notice it).
-                
-                - remember (int, default=1):
-                    Number of days remembered to learn from.
-                    
-                - alpha_zero (float, default=0.2):
-                    Weight with which the recent experience is carried forward in learning.
-                    
-                - alphas (list[float], default=[0.8]):
-                    Vector of weights for historically recorded reward in weighted average, **needs to be size of** ``remember``.
+                - remember (int, default=5):
+                    Number of previous actions to remember for learning, used in ``weighted`` model.
 
         - environment_parameters (dict, optional):
             Environment settings.
@@ -150,7 +123,7 @@ class TrafficEnvironment(AECEnv):
             - custom_network_folder (str, default="NA"):
                 In case of custom network, specify the folder name.
             
-            - simulation_timesteps (int, default=180):
+            - simulation_timesteps (int, default=3600):
                 Total simulation time in seconds.
             
             - sumo_type (str, default="sumo"):
@@ -158,6 +131,9 @@ class TrafficEnvironment(AECEnv):
                 
             - stuck_time (int, default=600):
                 Number of seconds to tolerate before `teleporting` a stopped vehicle to resolve gridlocks.
+                
+            - daily_reseed (bool, default=False):
+                Whether to change SUMO seed in each reset. If ``False``, the seed will remain constant throughout the simulation.
 
         - path_generation_parameters (dict, optional):
             Path generation settings.
@@ -173,6 +149,9 @@ class TrafficEnvironment(AECEnv):
                 
             - num_samples (int, default=100):
                 Number of samples for path generation.
+
+            - path_gen_workers (int, default=4):
+                Maximum number of worker processes used for parallel path generation and path visualization.
                 
             - origins (str | list[str], default="default"):
                 Origin points from the network. (e.g., ``["-25166682#0", "-4936412"]``)
@@ -366,6 +345,7 @@ class TrafficEnvironment(AECEnv):
         logging.info(f"There are {len(self.human_agents)} human and {len(self.machine_agents)} machine agents.")
 
         self.episode_actions = dict()
+        self.episode_observations = dict()
         
         self.executor = ThreadPoolExecutor(max_workers=1)
         self.pending_futures = []
@@ -433,6 +413,7 @@ class TrafficEnvironment(AECEnv):
         self.travel_times_list = list()
         self.actions_timestep = list()
         self.machine_same_start_time = list()
+        self.episode_observations = dict()
         self.simulator.reset()
         self.agents = copy(self.possible_agents)
         self.terminations = {agent: False for agent in self.possible_agents}
@@ -549,11 +530,10 @@ class TrafficEnvironment(AECEnv):
         # If the agent's turn hasn't come and the start time is bigger than the simulator timestep return an "empty observation"
         # The agent hasn't acted yet so only the start time is meaningful
         if agent != self.agent_selection and machine.start_time > self.simulator.timestep:
-            array = np.zeros(self._observation_spaces[agent].shape[0] - 1)
-            observation = np.concatenate((np.array([machine.start_time]), array))
+            observation = self.observation_obj.observations[agent].copy()
             return observation
         
-        return self.observation_obj.agent_observations(agent, self.all_agents, self.agent_selection)
+        return self.observation_obj.agent_observations(agent, self.all_agents, self.agent_selection, self.travel_times_list)
 
     #########################
     ### Mutation function ###
@@ -636,12 +616,16 @@ class TrafficEnvironment(AECEnv):
     def _help_step(self, actions: list[tuple]) -> dict:
 
         for agent, action in actions:
+            observation = kc.NOT_AVAILABLE
+            if agent.kind == kc.TYPE_MACHINE:
+                observation = self.episode_observations.get(agent.id, kc.NOT_AVAILABLE)
             action_dict = {kc.AGENT_ID: agent.id,
                            kc.AGENT_KIND: agent.kind,
                            kc.ACTION: action,
                            kc.AGENT_ORIGIN: agent.origin,
                            kc.AGENT_DESTINATION: agent.destination,
-                           kc.AGENT_START_TIME: agent.start_time}
+                           kc.AGENT_START_TIME: agent.start_time,
+                           kc.AGENT_OBSERVATION: observation}
             self.simulator.add_vehicle(action_dict)
             self.episode_actions[agent.id] = action_dict
         timestep, stopped_vehicles_info, arrivals, teleported = self.simulator.step()
@@ -695,6 +679,7 @@ class TrafficEnvironment(AECEnv):
 
         self.travel_times_list = []
         self.episode_actions = dict()
+        self.episode_observations = dict()
 
     def _assign_rewards(self) -> None:
 
@@ -769,6 +754,8 @@ class TrafficEnvironment(AECEnv):
                         continue
                     else:
                         # Machine acting
+                        observation = self.observe(str(machine.id))
+                        self.episode_observations[machine.id] = self._serialize_observation(observation)
                         machine.last_action = machine_action
                         self.actions_timestep.append((machine, machine_action))
 
@@ -794,6 +781,15 @@ class TrafficEnvironment(AECEnv):
             if agent_action:
                 agent_action = False
                 break
+
+    def _serialize_observation(self, observation: np.ndarray) -> str:
+        if isinstance(observation, np.ndarray):
+            observation = observation.tolist()
+        elif isinstance(observation, tuple):
+            observation = list(observation)
+        if isinstance(observation, list):
+            return ",".join(map(str, observation))
+        return str(observation)
 
     ###########################
     ##### Free flow times #####
@@ -907,5 +903,11 @@ class TrafficEnvironment(AECEnv):
                                       self.plotter_params,
                                       self.agent_params,
                                       self.simulator)
+        elif observation_type == kc.TRIP_INFO_ETA:
+            return TripInfoWithETA(self.machine_agents,
+                                 self.human_agents,
+                                 self.simulation_params,
+                                 self.agent_params,
+                                 self.get_free_flow_times())
         else:
             raise ValueError('[MODEL INVALID] Unrecognized observation type: ' + observation_type)

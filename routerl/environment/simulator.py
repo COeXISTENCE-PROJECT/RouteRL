@@ -50,6 +50,7 @@ class SumoSimulator():
         self.number_of_paths     = params[kc.NUMBER_OF_PATHS]
         self.simulation_length   = params[kc.SIMULATION_TIMESTEPS]
         self.stuck_time          = params[kc.STUCK_TIME]
+        self.daily_reseed        = params[kc.DAILY_RESEED]
 
         if self.network_name in kc.NETWORK_NAMES:
             curr_dir = os.path.dirname(os.path.abspath(__file__))
@@ -82,6 +83,7 @@ class SumoSimulator():
         random.seed(seed)
 
         self.seed = seed
+        self.day_seed = seed
         self.sumo_id = f"{random.randint(0, 1000)}"
         self.sumo_connection = None
         self.save_detectors_info = save_detectors_info
@@ -141,17 +143,22 @@ class SumoSimulator():
             "weight": path_gen_params[kc.WEIGHT],
             "verbose": False
         }
+        path_gen_workers = path_gen_params[kc.PATH_GEN_WORKERS]
+        if path_gen_workers < 1:
+            raise ValueError("path_gen_workers must be at least 1.")
         
         if demands is None:
             routes = jx.basic_generator(network, origins, destinations, as_df=True, calc_free_flow=True, **path_gen_kwargs)
         else:
             routes = pd.DataFrame(columns=["origins", "destinations", "path", "free_flow_time"])
-            with ProcessPoolExecutor() as executor:
-                futures = [executor.submit(self._route_gen_process, network, demands, origins, destinations, idx, path_gen_kwargs) for idx in range(len(demands))]
-                for i, future in enumerate(as_completed(futures), 1):
-                    #print(f"\r{i}/{len(demands)} - {demands[i]}", end="")
-                    routes_df = future.result()
-                    routes = pd.concat([routes, routes_df], ignore_index=True)
+            max_workers = min(path_gen_workers, len(demands))
+            if max_workers > 0:
+                with ProcessPoolExecutor(max_workers=max_workers) as executor:
+                    futures = [executor.submit(self._route_gen_process, network, demands, origins, destinations, idx, path_gen_kwargs) for idx in range(len(demands))]
+                    for i, future in enumerate(as_completed(futures), 1):
+                        #print(f"\r{i}/{len(demands)} - {demands[i]}", end="")
+                        routes_df = future.result()
+                        routes = pd.concat([routes, routes_df], ignore_index=True)
             
         self._save_paths_to_disc(routes, origins, destinations)
         
@@ -159,9 +166,12 @@ class SumoSimulator():
         if path_gen_params[kc.VISUALIZE_PATHS]:
             path_visuals_path = params[kc.PLOTS_FOLDER]
             os.makedirs(path_visuals_path, exist_ok=True)
+            visualization_tasks = len(origins) * len(destinations)
             
-            with ProcessPoolExecutor() as executor:
-                futures = [executor.submit(self._route_vis_process, demands, origin_idx, dest_idx, origin, destination, routes, path_visuals_path) for origin_idx, origin in enumerate(origins) for dest_idx, destination in enumerate(destinations)]
+            max_workers = min(path_gen_workers, visualization_tasks)
+            if max_workers > 0:
+                with ProcessPoolExecutor(max_workers=max_workers) as executor:
+                    futures = [executor.submit(self._route_vis_process, demands, origin_idx, dest_idx, origin, destination, routes, path_visuals_path) for origin_idx, origin in enumerate(origins) for dest_idx, destination in enumerate(destinations)]
             """
             for origin_idx, origin in enumerate(origins):
                 for dest_idx, destination in enumerate(destinations):
@@ -182,8 +192,7 @@ class SumoSimulator():
                     except:
                         logging.warning(f"Could not visualize routes for {origin} to {destination}.")
             """
-                        
-                        
+                                                
     def _route_gen_process(self, network, demands, origins, destinations, demand_idx, path_gen_kwargs):
         origin = origins[demands[demand_idx][0]]
         destination = destinations[demands[demand_idx][1]]
@@ -288,7 +297,7 @@ class SumoSimulator():
         sumo_cmd = [
             self.sumo_type,
             "--seed",
-            str(self.seed),
+            str(self.day_seed),
             "--net-file",
             self.network_file_path,
             "--additional-files",
@@ -336,9 +345,11 @@ class SumoSimulator():
         combined_sumo_stats_file = os.path.join(self.sumo_save_path,
                                                 f"sumo_stats_{self.runs}.xml")
         
+        if self.daily_reseed:   self.day_seed = random.randint(0, 1000)
+        
         sumo_cmd = [
             "--seed",
-            str(self.seed),
+            str(self.day_seed),
             "--net-file",
             self.network_file_path,
             "--additional-files",
