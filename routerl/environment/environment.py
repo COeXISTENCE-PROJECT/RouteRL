@@ -75,29 +75,32 @@ class TrafficEnvironment(AECEnv):
                 
                 - behavior (str, default="selfish"):
                     Route choice behavior.
-                    Options: ``selfish``, ``social``, ``altruistic``, ``malicious``, ``competitive``, ``collaborative``, ``collectivist``, ``militant``.
+                    Options: ``selfish``, ``competitive``, ``collaborative``, ``cooperative``, ``social``, ``altruistic``, ``malicious``, ``collectivist``, ``militant``.
                     
                 - observed_span (int, default=300):
                     Time window considered for observations.
                     
                 - observation_type (str, default="trip_info_eta"):
                     Type of observation.
-                    Options: ``previous_agents``, ``previous_agents_plus_start_time``, ``trip_info_eta``.
+                    Options: ``previous_agents``, ``previous_agents_plus_start_time``, ``previous_agents_plus_start_time_detector_data``, ``trip_info_eta``.
 
             - human_parameters (**dict**): 
                 Human agent settings.
                 
                 - model (str, default="gawron"):
-                    Decision-making model (options: ``random``, ``gawron``, ``weighted``).
+                    Decision-making model (options: ``aon``, ``gawron``, ``culo``, ``random``, ``weighted``).
                     
-                - beta (float, default=1.5:
+                - beta (float, default=1.5):
                     **Positive value**, multiplier of reward (travel time) used in utility, determines sensitivity.
                     
                 - beta_randomness (float, default=0.1):
                     Agent-specific randomness in beta.
                     
-                - alpha (float, default=[0.2]):
+                - alpha (float, default=0.2):
                     Human learning rate.
+
+                - deterministic (bool, default=False):
+                    Whether ``gawron`` selects the minimum-utility path deterministically instead of sampling stochastically.
                     
                 - remember (int, default=5):
                     Number of previous actions to remember for learning, used in ``weighted`` model.
