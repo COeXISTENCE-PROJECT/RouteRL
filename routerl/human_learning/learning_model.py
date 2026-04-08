@@ -63,6 +63,7 @@ class Gawron(BaseLearningModel):
 
         # Learning rate
         self.alpha = params[kc.ALPHA]
+        self.deterministic = params.get(kc.DETERMINISTIC, False)
 
         # Initialize cost array with initial knowledge
         self.cost = np.array(initial_knowledge, dtype=float)
@@ -77,9 +78,12 @@ class Gawron(BaseLearningModel):
         """
 
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
+        if self.deterministic:
+            return utilities.index(min(utilities))
+
         prob_dist = [self.calculate_prob(utilities, idx) for idx in range(len(self.cost))]
-        action = np.random.choice(list(range(len(self.cost))), p=prob_dist) 
-        return action   
+        action = np.random.choice(list(range(len(self.cost))), p=prob_dist)
+        return action
 
     def learn(self, state, action, reward) -> None:
         """Updates the cost associated with the taken action based on the received reward.

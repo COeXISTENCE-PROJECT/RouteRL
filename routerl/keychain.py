@@ -26,6 +26,7 @@ class Keychain:
     BETA = "beta"
     BETA_RANDOMNESS = "beta_randomness"
     ALPHA = "alpha"
+    DETERMINISTIC = "deterministic"
     REMEMBER = "remember"
     # Machine
     BEHAVIOR = "behavior"
