@@ -35,6 +35,8 @@ class SumoSimulator():
             Random seed for reproducibility.
         using_custom_demand (bool):
             Flag to indicate whether user provides custom travel demand data.
+        generate_asgn_data (bool):
+            Generate additional SUMO_output files.
         
     Attributes:
         network_name: Network name.
@@ -44,13 +46,16 @@ class SumoSimulator():
         timestep: Time step being simulated within the day.
     """
 
-    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423, using_custom_demand: bool = False, save_detectors_info : bool = False) -> None:
+    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423, using_custom_demand: bool = False, save_detectors_info : bool = False, generate_asgn_data : bool = False) -> None:
         self.network_name        = params[kc.NETWORK_NAME]
         self.sumo_type           = params[kc.SUMO_TYPE]
         self.number_of_paths     = params[kc.NUMBER_OF_PATHS]
         self.simulation_length   = params[kc.SIMULATION_TIMESTEPS]
         self.stuck_time          = params[kc.STUCK_TIME]
         self.daily_reseed        = params[kc.DAILY_RESEED]
+
+        self.experiment_id = 0 # for generate_asgn_data, overwritten through env.unwrapped.simulator.experiment_id = ... in URB scripts
+        self.generate_asgn_data = generate_asgn_data
 
         if self.network_name in kc.NETWORK_NAMES:
             curr_dir = os.path.dirname(os.path.abspath(__file__))
@@ -102,6 +107,39 @@ class SumoSimulator():
         self.waiting_vehicles = dict()
 
         logging.info("[SUCCESS] Simulator is ready to simulate!")
+
+    ################################
+    ######## ASGN GENERATE #########
+    ################################
+
+    def save_snapshot(self, snapshot_idx, experiment_id=0):
+
+        snapshot_data = []
+        vehicle_ids = self.sumo_connection.vehicle.getIDList()
+        if not vehicle_ids:
+            return
+        for v_id in vehicle_ids:
+            snapshot_data.append({"exp_id": experiment_id,"time": snapshot_idx, "agent_id": v_id, "edge_id": self.sumo_connection.vehicle.getRoadID(v_id)})
+        df = pd.DataFrame(snapshot_data)
+        snapshot_path = os.path.join(
+            self.sumo_save_path, f"all_snapshots.csv"
+        )
+        file_exists = os.path.isfile(snapshot_path)
+        df.to_csv(snapshot_path, mode='a', index=False, header=not file_exists)
+
+    def save_departures(self, snapshot_idx, experiment_id=0):
+
+        departures_data = []
+        vehicle_ids = self.sumo_connection.simulation.getDepartedIDList()
+        if not vehicle_ids:
+            return
+        for v_id in vehicle_ids:
+            departures_data.append({"exp_id": experiment_id, "time": snapshot_idx, "agent_id": v_id, "path": self.sumo_connection.vehicle.getRoute(v_id)})
+        df = pd.DataFrame(departures_data)
+        departures_path = os.path.join(self.sumo_save_path, f"all_departures.csv")
+        file_exists = os.path.isfile(departures_path)
+        df.to_csv(departures_path, mode='a', index=False, header=not file_exists)
+
 
     ################################
     ######## CONFIG CHECKS #########
@@ -424,6 +462,10 @@ class SumoSimulator():
             arrivals (list): List of vehicle IDs that arrived at their destinations during the current timestep.
         """
    
+        if self.generate_asgn_data:
+            self.save_snapshot(snapshot_idx=self.timestep, experiment_id=self.experiment_id)
+            self.save_departures(snapshot_idx=self.timestep, experiment_id=self.experiment_id)
+
         arrivals = list(self.sumo_connection.simulation.getArrivedIDList())
         for arr in arrivals:
             self.waiting_vehicles.pop(arr, None)
