@@ -303,6 +303,8 @@ class TrafficEnvironment(AECEnv):
                  create_agents: bool = True,
                  create_paths: bool = True,
                  save_detectors_info: bool = False,
+                 action_masks: dict = None,
+                 generate_asgn_data: bool = False,
                  **kwargs) -> None:
 
         super().__init__()
@@ -330,10 +332,13 @@ class TrafficEnvironment(AECEnv):
         self.action_space_size = self.environment_params[kc.ACTION_SPACE_SIZE]
         self._set_seed(seed)
 
-        self.recorder = Recorder(self.plotter_params)
-        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents, save_detectors_info)
+        self.action_masks = action_masks
+        self.use_action_masks = self.action_masks is not None
 
-        self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed)
+        self.recorder = Recorder(self.plotter_params)
+        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents, save_detectors_info, generate_asgn_data)
+
+        self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed, self.action_masks)
         self.machine_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_MACHINE]
         self.human_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_HUMAN]
         self.possible_agents = list()
@@ -662,6 +667,9 @@ class TrafficEnvironment(AECEnv):
 
     def _reset_episode(self) -> None:
 
+        # Snapshot travel_times_list before clearing
+        self.last_episode_travel_times = list(self.travel_times_list)
+
         detectors_dict = self.simulator.reset()
 
         if self.possible_agents:
@@ -804,12 +812,29 @@ class TrafficEnvironment(AECEnv):
         """
 
         paths_df = pd.read_csv(self.simulator.paths_csv_file_path)
-        origins = paths_df[kc.ORIGINS].unique()
-        destinations = paths_df[kc.DESTINATIONS].unique()
-        ff_dict = {(o, d): list() for o in origins for d in destinations}
 
-        for _, row in paths_df.iterrows():
-            ff_dict[(row[kc.ORIGINS], row[kc.DESTINATIONS])].append(row[kc.FREE_FLOW_TIME])
+        if not self.use_action_masks:
+            origins = paths_df[kc.ORIGINS].unique()
+            destinations = paths_df[kc.DESTINATIONS].unique()
+            ff_dict = {(o, d): list() for o in origins for d in destinations}
+
+            for _, row in paths_df.iterrows():
+                ff_dict[(row[kc.ORIGINS], row[kc.DESTINATIONS])].append(row[kc.FREE_FLOW_TIME])
+        else:
+            # Pad invalid actions (missing paths) with large values
+            num_paths = self.agent_params[kc.ACTION_SPACE_SIZE]
+
+            cluster_ff_dict = {}
+            for _, row in paths_df.iterrows():
+                key = (int(row[kc.ORIGINS]), int(row[kc.DESTINATIONS]))
+                if key not in cluster_ff_dict:
+                    cluster_ff_dict[key] = {} # dict with cluster: fft mapping
+                cluster = int(row["cluster"]) # add to kc?
+                cluster_ff_dict[key][cluster] = float(row[kc.FREE_FLOW_TIME])
+
+            ff_dict = {}
+            for key, cluster_ff in cluster_ff_dict.items():
+                ff_dict[key] = [cluster_ff.get(i, 1e9) for i in range(num_paths)]
 
         return ff_dict
 
