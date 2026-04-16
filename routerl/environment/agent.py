@@ -130,15 +130,18 @@ class HumanAgent(BaseAgent):
             The parameters for the learning model of the agent as specified in `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_.
         initial_knowledge (float):
             The initial knowledge of the agent.
+        action_mask (np.array, optional):
+            The action mask for the agent.
     """
 
-    def __init__(self, id, start_time, origin, destination, params, initial_knowledge):
+    def __init__(self, id, start_time, origin, destination, params, initial_knowledge, action_mask=None):
         kind = kc.TYPE_HUMAN
         behavior = kc.SELFISH
         super().__init__(id, kind, start_time, origin, destination, behavior)
         self.initial_knowledge = initial_knowledge
         self.model = get_learning_model(params, initial_knowledge)
         self.last_reward = None
+        self.action_mask = action_mask # np.array of 0/1, length = num_actions
 
     def __repr__(self):
         return f"Human {self.id}"
@@ -175,7 +178,22 @@ class HumanAgent(BaseAgent):
         """
         if self.default_action is not None:
             return self.default_action
-        return self.model.act(observation)
+        action = self.model.act(observation)
+
+        # if the chosen action is masked, pick the one with the lowest cost among available ones  
+        if self.action_mask is not None and self.action_mask[action] == 0:
+            
+            # random:
+            # valid_actions = np.where(self.action_mask == 1)[0]
+            # action = np.random.choice(valid_actions)
+
+            masked_cost = [
+                self.model.cost[i] if self.action_mask[i] == 1 else float('inf')
+                for i in range(len(self.model.cost))
+            ]
+            action = int(np.argmin(masked_cost))
+
+        return action
 
     def learn(self, action, observation) -> None:
         """Updates the agent's knowledge based on the action taken and the resulting observations.
