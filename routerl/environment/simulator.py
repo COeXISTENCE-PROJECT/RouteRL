@@ -36,7 +36,7 @@ class SumoSimulator():
         using_custom_demand (bool):
             Flag to indicate whether user provides custom travel demand data.
         generate_asgn_data (bool):
-            Generate additional SUMO_output files.
+            Generate additional SUMO_output files (per-timestep departures and snapshots).
         
     Attributes:
         network_name: Network name.

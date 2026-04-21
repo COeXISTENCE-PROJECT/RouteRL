@@ -54,6 +54,12 @@ class TrafficEnvironment(AECEnv):
             Whether to create agent data. Defaults to ``True``.
         create_paths (bool, optional):
             Whether to generate paths. Defaults to ``True``.
+        action_masks (dict[tuple[int, int], np.ndarray] | None):
+            Optional mapping from (origin, destination) pairs to binary action masks.
+            Each mask is a 1D NumPy array of 0/1 values with length equal to the action space size. 
+            Used only for HumanAgent creation and free flow time retrieval.
+        generate_asgn_data (bool):
+            Generate additional SUMO_output files (per-timestep departures and snapshots).
         **kwargs (dict, optional): 
             User-defined parameter overrides. These override default values 
             from ``defaults.json`` and allow experiment configuration.
