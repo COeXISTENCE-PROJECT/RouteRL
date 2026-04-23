@@ -163,8 +163,11 @@ class SumoSimulator():
     def _get_paths(self, params: dict, path_gen_params: dict, using_custom_demand: bool) -> None:
 
         # Build the network
-        network = jx.build_digraph(self.conn_file_path, self.edge_file_path, self.routes_xml_path, self.use_clustered_routes)
-        
+        if self.use_clustered_routes:
+            network = jx.build_digraph(self.conn_file_path, self.edge_file_path, self.routes_xml_path, self.use_clustered_routes)
+        else:
+            network = jx.build_digraph(self.conn_file_path, self.edge_file_path, self.routes_xml_path)
+
         # Get origins and destinations
         origins = path_gen_params[kc.ORIGINS]
         destinations = path_gen_params[kc.DESTINATIONS]
@@ -247,7 +250,7 @@ class SumoSimulator():
         origin = origins[demands[demand_idx][0]]
         destination = destinations[demands[demand_idx][1]]
 
-        generator = jx.clustering_generator if self.use_clustered_routes else jx.basic_generator
+        generator = jx.clustering_generator if self.use_clustered_routes else jx.extended_generator
 
         return generator(
             network=network,
