@@ -37,6 +37,9 @@ class SumoSimulator():
             Flag to indicate whether user provides custom travel demand data.
         generate_asgn_data (bool):
             Generate additional SUMO_output files (per-timestep departures and snapshots).
+        use_clustered_routes (bool):
+            Flag to indicate whether to use an updated, clustered-routes-compatible version
+            of JanuX for path generation.
         
     Attributes:
         network_name: Network name.
@@ -46,7 +49,7 @@ class SumoSimulator():
         timestep: Time step being simulated within the day.
     """
 
-    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423, using_custom_demand: bool = False, save_detectors_info : bool = False, generate_asgn_data : bool = False) -> None:
+    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423, using_custom_demand: bool = False, save_detectors_info : bool = False, generate_asgn_data : bool = False, use_clustered_routes : bool = False) -> None:
         self.network_name        = params[kc.NETWORK_NAME]
         self.sumo_type           = params[kc.SUMO_TYPE]
         self.number_of_paths     = params[kc.NUMBER_OF_PATHS]
@@ -56,6 +59,7 @@ class SumoSimulator():
 
         self.experiment_id = 0 # for generate_asgn_data, overwritten through env.unwrapped.simulator.experiment_id = ... in URB scripts
         self.generate_asgn_data = generate_asgn_data
+        self.use_clustered_routes = use_clustered_routes
 
         if self.network_name in kc.NETWORK_NAMES:
             curr_dir = os.path.dirname(os.path.abspath(__file__))
@@ -159,7 +163,7 @@ class SumoSimulator():
     def _get_paths(self, params: dict, path_gen_params: dict, using_custom_demand: bool) -> None:
 
         # Build the network
-        network = jx.build_digraph(self.conn_file_path, self.edge_file_path, self.routes_xml_path)
+        network = jx.build_digraph(self.conn_file_path, self.edge_file_path, self.routes_xml_path, self.use_clustered_routes)
         
         # Get origins and destinations
         origins = path_gen_params[kc.ORIGINS]
@@ -186,7 +190,15 @@ class SumoSimulator():
             raise ValueError("path_gen_workers must be at least 1.")
         
         if demands is None:
-            routes = jx.basic_generator(network, origins, destinations, as_df=True, calc_free_flow=True, **path_gen_kwargs)
+            generator = jx.clustering_generator if self.use_clustered_routes else jx.basic_generator
+            routes = generator(
+                network=network,
+                origins=origins,
+                destinations=destinations,
+                as_df=True,
+                calc_free_flow=True,
+                **path_gen_kwargs,
+            )
         else:
             routes = pd.DataFrame(columns=["origins", "destinations", "path", "free_flow_time"])
             max_workers = min(path_gen_workers, len(demands))
@@ -234,7 +246,10 @@ class SumoSimulator():
     def _route_gen_process(self, network, demands, origins, destinations, demand_idx, path_gen_kwargs):
         origin = origins[demands[demand_idx][0]]
         destination = destinations[demands[demand_idx][1]]
-        return jx.extended_generator(
+
+        generator = jx.clustering_generator if self.use_clustered_routes else jx.basic_generator
+
+        return generator(
             network=network,
             origins=[origin],
             destinations=[destination],

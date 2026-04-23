@@ -339,10 +339,11 @@ class TrafficEnvironment(AECEnv):
         self._set_seed(seed)
 
         self.action_masks = action_masks
-        self.use_action_masks = self.action_masks is not None
+        self.use_action_masks = self.action_masks is not None # for the environment
+        self.use_clustered_routes = self.action_masks is not None # for the simulator
 
         self.recorder = Recorder(self.plotter_params)
-        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents, save_detectors_info, generate_asgn_data)
+        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents, save_detectors_info, generate_asgn_data, self.use_clustered_routes)
 
         self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed, self.action_masks)
         self.machine_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_MACHINE]
