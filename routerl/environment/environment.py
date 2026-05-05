@@ -329,6 +329,7 @@ class TrafficEnvironment(AECEnv):
         self.travel_times_list = []
         self.day = 0
         self.human_learning = True
+        self.last_episode_had_teleports = False
         self.machine_same_start_time = []
         self.actions_timestep = []
         self.save_detectors_info = save_detectors_info
@@ -426,6 +427,7 @@ class TrafficEnvironment(AECEnv):
         self.actions_timestep = list()
         self.machine_same_start_time = list()
         self.episode_observations = dict()
+        self.last_episode_had_teleports = False
         self.simulator.reset()
         self.agents = copy(self.possible_agents)
         self.terminations = {agent: False for agent in self.possible_agents}
@@ -657,6 +659,9 @@ class TrafficEnvironment(AECEnv):
             agent_id = int(veh_id)
             travel_times[agent_id] = ({kc.TRAVEL_TIME: self.simulator.simulation_length / 60.0})
             travel_times[agent_id].update(self.episode_actions[agent_id])
+
+        if teleported:
+            self.last_episode_had_teleports = True
 
         return travel_times.values()
     
