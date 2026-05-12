@@ -79,7 +79,7 @@ class Gawron(BaseLearningModel):
 
         utilities = list(map(lambda x: np.exp(x * self.beta), self.cost))
         if self.deterministic:
-            return utilities.index(min(utilities))
+            return utilities.index(max(utilities))
 
         prob_dist = [self.calculate_prob(utilities, idx) for idx in range(len(self.cost))]
         action = np.random.choice(list(range(len(self.cost))), p=prob_dist)
