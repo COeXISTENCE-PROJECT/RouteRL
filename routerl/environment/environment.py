@@ -297,6 +297,8 @@ class TrafficEnvironment(AECEnv):
         all_agents (list): List of all agent objects.
         machine_agents (list): List of all machine agent objects.
         human_agents (list): List of all human agent objects.
+        last_episode_had_teleports (bool): Whether any agents were teleported in the last episode.
+        last_episode_travel_times (list): List of machine agents' travel times in the last episode.
     """
     
     metadata = {
@@ -329,10 +331,11 @@ class TrafficEnvironment(AECEnv):
         self.travel_times_list = []
         self.day = 0
         self.human_learning = True
-        self.last_episode_had_teleports = False
         self.machine_same_start_time = []
         self.actions_timestep = []
         self.save_detectors_info = save_detectors_info
+        self.last_episode_had_teleports = False
+        self.last_episode_travel_times = list(self.travel_times_list)
 
         self.number_of_days = self.environment_params[kc.NUMBER_OF_DAYS]
         self.save_every = self.environment_params[kc.SAVE_EVERY]
