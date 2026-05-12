@@ -8,6 +8,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 
 from routerl.keychain import Keychain as kc
+from routerl.human_learning import Random
 from routerl.human_learning import get_learning_model
 
 
@@ -176,22 +177,34 @@ class HumanAgent(BaseAgent):
         Returns:
             int: The action of the agent.
         """
-        if self.default_action is not None:
+
+        if self.action_mask is not None:
+            if not np.any(self.action_mask):
+                raise ValueError("Action mask must allow at least one route")
+
+            allowed_actions = np.flatnonzero(self.action_mask)
+            original_cost = self.model.cost.copy()
+            masked_cost = original_cost.copy()
+            # Set the cost of the masked actions to a very low number to effectively disable them
+            # With a positive human beta (defaults.json), the probability of the masked action - exp(-inf) - becomes 0
+            masked_cost[np.asarray(self.action_mask) == 0] = -np.inf
+            self.model.cost = masked_cost
+            try:
+                action = self.model.act(observation)
+            finally:
+                self.model.cost = original_cost
+
+            # Random doesn't use cost so the code above doesn't prevent sampling a masked action by this model
+            # If it happens to choose a masked action - randomly pick one that's allowed instead
+            if self.action_mask[action] == 0:
+                if isinstance(self.model, Random):
+                    action = int(np.random.choice(allowed_actions))
+                else:
+                    raise RuntimeError("Masked action returned by non-Random human model")
+        elif self.default_action is not None:
             return self.default_action
-        action = self.model.act(observation)
-
-        # if the chosen action is masked, pick the one with the lowest cost among available ones  
-        if self.action_mask is not None and self.action_mask[action] == 0:
-            
-            # random:
-            # valid_actions = np.where(self.action_mask == 1)[0]
-            # action = np.random.choice(valid_actions)
-
-            masked_cost = [
-                self.model.cost[i] if self.action_mask[i] == 1 else float('inf')
-                for i in range(len(self.model.cost))
-            ]
-            action = int(np.argmin(masked_cost))
+        else:
+            action = self.model.act(observation)
 
         return action
 
