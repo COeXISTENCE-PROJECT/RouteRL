@@ -54,6 +54,12 @@ class TrafficEnvironment(AECEnv):
             Whether to create agent data. Defaults to ``True``.
         create_paths (bool, optional):
             Whether to generate paths. Defaults to ``True``.
+        action_masks (dict[tuple[int, int], np.ndarray] | None):
+            Optional mapping from (origin, destination) pairs to binary action masks.
+            Each mask is a 1D NumPy array of 0/1 values with length equal to the action space size. 
+            Used only for HumanAgent creation and free flow time retrieval.
+        generate_asgn_data (bool):
+            Generate additional SUMO_output files (per-timestep departures and snapshots).
         **kwargs (dict, optional): 
             User-defined parameter overrides. These override default values 
             from ``defaults.json`` and allow experiment configuration.
@@ -291,6 +297,8 @@ class TrafficEnvironment(AECEnv):
         all_agents (list): List of all agent objects.
         machine_agents (list): List of all machine agent objects.
         human_agents (list): List of all human agent objects.
+        last_episode_had_teleports (bool): Whether any agents were teleported in the last episode.
+        last_episode_travel_times (list): List of machine agents' travel times in the last episode.
     """
     
     metadata = {
@@ -303,6 +311,8 @@ class TrafficEnvironment(AECEnv):
                  create_agents: bool = True,
                  create_paths: bool = True,
                  save_detectors_info: bool = False,
+                 action_masks: dict = None,
+                 generate_asgn_data: bool = False,
                  **kwargs) -> None:
 
         super().__init__()
@@ -324,16 +334,22 @@ class TrafficEnvironment(AECEnv):
         self.machine_same_start_time = []
         self.actions_timestep = []
         self.save_detectors_info = save_detectors_info
+        self.last_episode_had_teleports = False
+        self.last_episode_travel_times = list(self.travel_times_list)
 
         self.number_of_days = self.environment_params[kc.NUMBER_OF_DAYS]
         self.save_every = self.environment_params[kc.SAVE_EVERY]
         self.action_space_size = self.environment_params[kc.ACTION_SPACE_SIZE]
         self._set_seed(seed)
 
-        self.recorder = Recorder(self.plotter_params)
-        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents, save_detectors_info)
+        self.action_masks = action_masks
+        self.use_action_masks = self.action_masks is not None # for the environment
+        self.use_clustered_routes = self.action_masks is not None # for the simulator
 
-        self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed)
+        self.recorder = Recorder(self.plotter_params)
+        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents, save_detectors_info, generate_asgn_data, self.use_clustered_routes)
+
+        self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed, self.action_masks)
         self.machine_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_MACHINE]
         self.human_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_HUMAN]
         self.possible_agents = list()
@@ -414,6 +430,7 @@ class TrafficEnvironment(AECEnv):
         self.actions_timestep = list()
         self.machine_same_start_time = list()
         self.episode_observations = dict()
+        self.last_episode_had_teleports = False
         self.simulator.reset()
         self.agents = copy(self.possible_agents)
         self.terminations = {agent: False for agent in self.possible_agents}
@@ -646,6 +663,9 @@ class TrafficEnvironment(AECEnv):
             travel_times[agent_id] = ({kc.TRAVEL_TIME: self.simulator.simulation_length / 60.0})
             travel_times[agent_id].update(self.episode_actions[agent_id])
 
+        if teleported:
+            self.last_episode_had_teleports = True
+
         return travel_times.values()
     
     def _save_detectors_info(self, stopped_vehicles_info):
@@ -661,6 +681,9 @@ class TrafficEnvironment(AECEnv):
         df.to_csv(csv_file_path, index=False)
 
     def _reset_episode(self) -> None:
+
+        # Snapshot travel_times_list before clearing
+        self.last_episode_travel_times = list(self.travel_times_list)
 
         detectors_dict = self.simulator.reset()
 
@@ -804,12 +827,29 @@ class TrafficEnvironment(AECEnv):
         """
 
         paths_df = pd.read_csv(self.simulator.paths_csv_file_path)
-        origins = paths_df[kc.ORIGINS].unique()
-        destinations = paths_df[kc.DESTINATIONS].unique()
-        ff_dict = {(o, d): list() for o in origins for d in destinations}
 
-        for _, row in paths_df.iterrows():
-            ff_dict[(row[kc.ORIGINS], row[kc.DESTINATIONS])].append(row[kc.FREE_FLOW_TIME])
+        if not self.use_action_masks:
+            origins = paths_df[kc.ORIGINS].unique()
+            destinations = paths_df[kc.DESTINATIONS].unique()
+            ff_dict = {(o, d): list() for o in origins for d in destinations}
+
+            for _, row in paths_df.iterrows():
+                ff_dict[(row[kc.ORIGINS], row[kc.DESTINATIONS])].append(row[kc.FREE_FLOW_TIME])
+        else:
+            # Pad invalid actions (missing paths) with large values
+            num_paths = self.agent_params[kc.ACTION_SPACE_SIZE]
+
+            cluster_ff_dict = {}
+            for _, row in paths_df.iterrows():
+                key = (int(row[kc.ORIGINS]), int(row[kc.DESTINATIONS]))
+                if key not in cluster_ff_dict:
+                    cluster_ff_dict[key] = {} # dict with cluster: fft mapping
+                cluster = int(row["cluster"]) # add to kc?
+                cluster_ff_dict[key][cluster] = float(row[kc.FREE_FLOW_TIME])
+
+            ff_dict = {}
+            for key, cluster_ff in cluster_ff_dict.items():
+                ff_dict[key] = [cluster_ff.get(i, 1e9) for i in range(num_paths)]
 
         return ff_dict
 
