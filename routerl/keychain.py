@@ -59,6 +59,7 @@ class Keychain:
     PHASES = "phases"
     PHASE_NAMES = "phase_names"
     SMOOTH_BY = "smooth_by"
+    CLEAR_RECORDS = "clear_records"
 
     ### Agent generation
     NUM_AGENTS = "num_agents"
