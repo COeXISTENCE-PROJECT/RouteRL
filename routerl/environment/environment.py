@@ -6,6 +6,8 @@ PettingZoo environment for optimal route choice using SUMO simulator.
 import glob
 import os
 
+from types import new_class
+from multiprocessing import Manager
 from concurrent.futures import ThreadPoolExecutor
 from copy import copy
 from copy import deepcopy as dc
@@ -60,6 +62,8 @@ class TrafficEnvironment(AECEnv):
             Used only for HumanAgent creation and free flow time retrieval.
         generate_asgn_data (bool):
             Generate additional SUMO_output files (per-timestep departures and snapshots).
+        agents (list | None):
+            Agents used in the environment. If set to ``None`` the agents will be generated or read from files. Defaults to None. 
         **kwargs (dict, optional): 
             User-defined parameter overrides. These override default values 
             from ``defaults.json`` and allow experiment configuration.
@@ -316,9 +320,11 @@ class TrafficEnvironment(AECEnv):
                  save_detectors_info: bool = False,
                  action_masks: dict = None,
                  generate_asgn_data: bool = False,
+                 agents: list = None,
                  **kwargs) -> None:
 
         super().__init__()
+        self.kwargs = kwargs
         self.render_mode = None
 
         # Read default parameters, update with kwargs
@@ -352,7 +358,7 @@ class TrafficEnvironment(AECEnv):
         self.recorder = Recorder(self.plotter_params)
         self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents, save_detectors_info, generate_asgn_data, self.use_clustered_routes)
 
-        self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed, self.action_masks)
+        self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed) if agents == None else agents
         self.machine_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_MACHINE]
         self.human_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_HUMAN]
         self.possible_agents = list()
@@ -954,3 +960,117 @@ class TrafficEnvironment(AECEnv):
                                  self.get_free_flow_times())
         else:
             raise ValueError('[MODEL INVALID] Unrecognized observation type: ' + observation_type)
+
+    ##########################################
+    ### support for MultiSyncDataCollector ###
+    ##########################################
+
+    def multisync_env_factories(self, env_wrapper, count: int = 0) -> list:
+        """ Creates array of factories that create environments identical to this one. Intended to be used with MultiSyncDataCollector from torchrl.
+            
+            Args:
+                env_wrapper (Callable): Callable used for wrapping the environment. Should take ``env`` as an argument and return wrapped ``env``. Put all PettingZoo wrappers inside it.
+                count (int): Number of factories to be returned.
+        """
+        if 0 == count:
+            count = os.cpu_count()-1
+        
+        manager = Manager()
+        shared_ns = manager.Namespace()
+        shared_ns.episode = self.day
+        lock = manager.Lock()
+        counter = MultiSyncTrafficEnvironment._EpisodeCounterDescriptor(shared_ns, lock)
+        counter.inject(self, "day", readonly = False)
+        counter.inject(self.simulator, "runs", readonly = True)
+
+        def make_make_env(i):
+            agents      = dc(self.all_agents)
+            seed        = self.seed
+            params      = dc(self.kwargs)
+            sim_params  = params[kc.SIMULATOR]
+            sim_params[kc.USE_LIBSUMO] = True
+            plotter_params = params[kc.PLOTTER]
+            plotter_params[kc.CLEAR_RECORDS] = False
+
+
+            def make_env():
+                env = MultiSyncTrafficEnvironment(
+                    seed            = seed,
+                    create_agents   = False,
+                    create_paths    = False,
+                    agents          = agents,
+                    **params
+                )
+
+                counter.inject(env, "day", readonly = False)
+                counter.inject(env.simulator, "runs", readonly = True)
+
+                env.start()
+                env.human_learning = False
+                return env_wrapper(env)
+            return make_env
+        return [make_make_env(i) for i in range(count)]
+
+
+
+class MultiSyncTrafficEnvironment(TrafficEnvironment):
+    def close(self) -> None:
+        self.stop_simulation()
+
+
+    class _EpisodeCounterDescriptor:
+        """ Shared (across both classes and processes) episode counter. Intended to make episode data consistent across many workers. 
+
+        Args:
+            manager (multiprocessing.Manager): Manager for episode variable.
+            lock (multiprocessing.Lock): Lock associated with the variable. Note: ``manager.Lock()`` is a good candidate.
+            monotone (bool): If set to ``True`` the counter does not allow the value to be decreased.
+        """
+        def __init__(self, manager, lock, monotone: bool = False):
+            with lock:
+                self.value = manager.episode
+            self.manager = manager
+            self.lock = lock
+            self.monotone = monotone
+            self.ro = set()
+            with lock:
+                self.value = manager.episode
+
+        def __get__(self, obj, objtype=None):
+            return self.value
+
+        def __set__(self, obj, new_value):
+            if obj in self.ro:
+                return
+
+            delta = new_value - self.value
+            if self.monotone and delta < 0:
+                return
+
+            with self.lock:
+                self.manager.episode += delta
+                self.value = self.manager.episode
+
+        def inject(self, obj, field_name, readonly: bool = True) -> None:
+            """ Inject a shared episode counter into object. 
+
+            Args:
+                obj (Object): Object the counter will be injected into.
+                field_name (str): Name of the field to be shadowed by the injected counter.
+                readonly (bool): If set to ``True``, then counter value cannot be changed from ``obj``. 
+            Returns:
+                None
+            """
+
+            old_cls = obj.__class__
+            new_cls = new_class(
+                "_CounterInjected" + old_cls.__name__.replace("_", ""),
+                (old_cls,),
+                kwds=None,
+                exec_body = lambda ns: ns.update ({ field_name: self }),
+            )
+
+            obj.__class__ = new_cls
+            if readonly:
+                self.ro.add(obj)
+

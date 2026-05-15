@@ -79,6 +79,7 @@
         "phase_names" : [
             "Human learning", 
             "Mutation - Machine learning"
-        ]
+        ],
+        "clear_records" : true
     }
 }
