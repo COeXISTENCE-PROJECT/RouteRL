@@ -147,6 +147,8 @@ class TrafficEnvironment(AECEnv):
             
             - use_libsumo (bool, default=False):
                 Whether to use libsumo instead of TraCI. Avoid using both ``libsumo=True`` and ``sumo_type=sumo-gui`` at the same time. Visit https://sumo.dlr.de/docs/Libsumo.html for more insight.
+            - use_sumo_teleport (bool, default=False):
+                If set to ``True`` teleport logic will be handled by SUMO. Otherwise custom python logic will be used.
 
         - path_generation_parameters (dict, optional):
             Path generation settings.

@@ -57,6 +57,7 @@ class SumoSimulator():
         self.stuck_time          = params[kc.STUCK_TIME]
         self.daily_reseed        = params[kc.DAILY_RESEED]
         self.use_libsumo         = params[kc.USE_LIBSUMO]
+        self.use_sumo_teleport   = params[kc.USE_SUMO_TELEPORT]
 
         self.experiment_id = 0 # for generate_asgn_data, overwritten through env.unwrapped.simulator.experiment_id = ... in URB scripts
         self.generate_asgn_data = generate_asgn_data
@@ -351,6 +352,7 @@ class SumoSimulator():
         combined_sumo_stats_file = os.path.join(self.sumo_save_path,
                                                 f"sumo_stats_{self.runs}.xml")
 
+        time_to_teleport = self.stuck_time if self.use_sumo_teleport else -1
         sumo_cmd = [
             self.sumo_type,
             "--seed",
@@ -362,7 +364,7 @@ class SumoSimulator():
             "--no-step-log",
             "true",
             "--time-to-teleport",
-            "-1",
+            f"{time_to_teleport}",
             "--statistic-output",
             combined_sumo_stats_file,
             "--tripinfo-output",
@@ -415,6 +417,7 @@ class SumoSimulator():
         
         if self.daily_reseed:   self.day_seed = random.randint(0, 1000)
         
+        time_to_teleport = self.stuck_time if self.use_sumo_teleport else -1
         sumo_cmd = [
             "--seed",
             str(self.day_seed),
@@ -425,7 +428,7 @@ class SumoSimulator():
             "--no-step-log",
             "true",
             "--time-to-teleport",
-            "-1",
+            f"{time_to_teleport}",
             "--statistic-output",
             combined_sumo_stats_file,
             "--tripinfo-output",
@@ -483,6 +486,30 @@ class SumoSimulator():
                                          typeID=kind)
         self.waiting_vehicles[str(act_dict[kc.AGENT_ID])] = 0
 
+    
+    def _teleportVehicles(self):
+        if self.use_sumo_teleport:
+            teleported = self.sumo_connection.simulation.getStartingTeleportIDList()
+            for veh_id in teleported:
+                self.sumo_connection.vehicle.remove(veh_id)
+
+            return teleported
+
+        teleported = list()
+        for veh_id in self.waiting_vehicles.copy():
+            if self.sumo_connection.vehicle.getSpeed(veh_id) == 0:
+                self.waiting_vehicles[veh_id] += 1
+                if self.waiting_vehicles[veh_id] > self.stuck_time:
+                    self.sumo_connection.vehicle.remove(veh_id)
+                    logging.info(f"Timestep #{self.timestep}: Teleporting {veh_id} due to being stuck for {self.waiting_vehicles[veh_id]} seconds.")
+                    teleported.append(veh_id)
+                    self.waiting_vehicles.pop(veh_id, None)
+            else:
+                self.waiting_vehicles[veh_id] = 0
+
+        return teleported
+
+
     def step(self) -> tuple:
         """Advances the SUMO simulation by one timestep and retrieves information
         about vehicle arrivals and detector data.
@@ -500,18 +527,7 @@ class SumoSimulator():
         for arr in arrivals:
             self.waiting_vehicles.pop(arr, None)
         
-        # Teleport vehicles that are stuck
-        teleported = list()
-        for veh_id in self.waiting_vehicles.copy():
-            if self.sumo_connection.vehicle.getSpeed(veh_id) == 0:
-                self.waiting_vehicles[veh_id] += 1
-                if self.waiting_vehicles[veh_id] > self.stuck_time:
-                    self.sumo_connection.vehicle.remove(veh_id)
-                    logging.info(f"Timestep #{self.timestep}: Teleporting {veh_id} due to being stuck for {self.waiting_vehicles[veh_id]} seconds.")
-                    teleported.append(veh_id)
-                    self.waiting_vehicles.pop(veh_id, None)
-            else:
-                self.waiting_vehicles[veh_id] = 0
+        teleported = self._teleportVehicles()
                 
         # Advance the simulation by one timestep       
         self.sumo_connection.simulationStep()

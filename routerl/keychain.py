@@ -50,6 +50,7 @@ class Keychain:
     STUCK_TIME = "stuck_time"
     DAILY_RESEED = "daily_reseed"    
     USE_LIBSUMO = "use_libsumo"
+    USE_SUMO_TELEPORT = "use_sumo_teleport"
 
 
     ### Plotter
