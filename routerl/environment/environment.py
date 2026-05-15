@@ -140,6 +140,9 @@ class TrafficEnvironment(AECEnv):
                 
             - daily_reseed (bool, default=False):
                 Whether to change SUMO seed in each reset. If ``False``, the seed will remain constant throughout the simulation.
+            
+            - use_libsumo (bool, default=False):
+                Whether to use libsumo instead of TraCI. Avoid using both ``libsumo=True`` and ``sumo_type=sumo-gui`` at the same time. Visit https://sumo.dlr.de/docs/Libsumo.html for more insight.
 
         - path_generation_parameters (dict, optional):
             Path generation settings.

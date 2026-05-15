@@ -48,7 +48,9 @@ class Keychain:
     SUMO_TYPE = "sumo_type"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
     STUCK_TIME = "stuck_time"
-    DAILY_RESEED = "daily_reseed"
+    DAILY_RESEED = "daily_reseed"    
+    USE_LIBSUMO = "use_libsumo"
+
 
     ### Plotter
     RECORDS_FOLDER = "records_folder"

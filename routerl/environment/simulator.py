@@ -8,7 +8,7 @@ import janux as jx
 import logging
 import random
 import pandas as pd
-import traci
+#import traci
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
@@ -56,6 +56,7 @@ class SumoSimulator():
         self.simulation_length   = params[kc.SIMULATION_TIMESTEPS]
         self.stuck_time          = params[kc.STUCK_TIME]
         self.daily_reseed        = params[kc.DAILY_RESEED]
+        self.use_libsumo         = params[kc.USE_LIBSUMO]
 
         self.experiment_id = 0 # for generate_asgn_data, overwritten through env.unwrapped.simulator.experiment_id = ... in URB scripts
         self.generate_asgn_data = generate_asgn_data
@@ -367,8 +368,19 @@ class SumoSimulator():
             "--tripinfo-output",
             individual_sumo_stats_file
             ]
-        traci.start(sumo_cmd, label=self.sumo_id)
-        self.sumo_connection = traci.getConnection(self.sumo_id)
+
+        
+        # import libsumo while using traci semantics
+        if self.use_libsumo:
+            import libsumo as traci
+            traci.start(sumo_cmd, label=self.sumo_id)
+            self.sumo_connection = traci
+
+        else:
+            import traci
+            traci.start(sumo_cmd, label=self.sumo_id)
+            self.sumo_connection = traci.getConnection(self.sumo_id)
+
 
     def stop(self) -> None:
         """Stops and closes the SUMO simulation.

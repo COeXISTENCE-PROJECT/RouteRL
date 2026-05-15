@@ -45,6 +45,8 @@
         "sumo_type" : "sumo",
         "stuck_time" : 600,
         "daily_reseed" : false,
+        "use_libsumo": false,
+
 
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "plots_folder": "${plotter_parameters.plots_folder}",
