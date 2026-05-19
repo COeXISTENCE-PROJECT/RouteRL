@@ -48,7 +48,10 @@ class Keychain:
     SUMO_TYPE = "sumo_type"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
     STUCK_TIME = "stuck_time"
-    DAILY_RESEED = "daily_reseed"
+    DAILY_RESEED = "daily_reseed"    
+    USE_LIBSUMO = "use_libsumo"
+    USE_SUMO_TELEPORT = "use_sumo_teleport"
+
 
     ### Plotter
     RECORDS_FOLDER = "records_folder"
@@ -57,6 +60,7 @@ class Keychain:
     PHASES = "phases"
     PHASE_NAMES = "phase_names"
     SMOOTH_BY = "smooth_by"
+    CLEAR_RECORDS = "clear_records"
 
     ### Agent generation
     NUM_AGENTS = "num_agents"
