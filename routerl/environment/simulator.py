@@ -8,7 +8,6 @@ import janux as jx
 import logging
 import random
 import pandas as pd
-#import traci
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 

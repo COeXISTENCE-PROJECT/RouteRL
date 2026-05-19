@@ -360,7 +360,7 @@ class TrafficEnvironment(AECEnv):
         self.recorder = Recorder(self.plotter_params)
         self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents, save_detectors_info, generate_asgn_data, self.use_clustered_routes)
 
-        self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed) if agents == None else agents
+        self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed, self.action_masks) if agents == None else agents
         self.machine_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_MACHINE]
         self.human_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_HUMAN]
         self.possible_agents = list()
