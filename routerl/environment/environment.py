@@ -968,7 +968,7 @@ class TrafficEnvironment(AECEnv):
     ##########################################
 
     def multisync_env_factories(self, env_wrapper, count: int = 0) -> list:
-        """ Creates array of factories that create environments identical to this one. Intended to be used with MultiSyncDataCollector from torchrl.
+        """ Creates array of factories that create environments identical to this one. Intended to be used with MultiSyncDataCollector from torchrl. It is assumed that each episode is one day long and human do not learn.
             
             Args:
                 env_wrapper (Callable): Callable used for wrapping the environment. Should take ``env`` as an argument and return wrapped ``env``. Put all PettingZoo wrappers inside it.
