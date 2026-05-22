@@ -1,8 +1,11 @@
-<img src="docs/_static/logo.png" align="right" width="20%"/>
+<img src="https://raw.githubusercontent.com/aonurakman/assets/refs/heads/main/icons/routerl_modern_cropped.png" align="right" width="20%"/>
 
-# RouteRL
+# Welcome to the future of urban routing
 
-> Multi-Agent Reinforcement Learning framework for modeling and simulating the collective route choices of humans and autonomous vehicles.
+> [!IMPORTANT]  
+> This is a [RouteRL](https://github.com/COeXISTENCE-PROJECT/RouteRL) subpackage for supporting its compatibility with [URB](https://github.com/COeXISTENCE-PROJECT/URB). Beware that its PyPI release is under the name [`routerlurb`](https://pypi.org/project/routerlurb/).
+
+Multi-Agent Reinforcement Learning framework for modeling and simulating the collective route choices of humans and autonomous vehicles.
 
 [![Tutorial Tests](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml/badge.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml)
 [![Online Documentation](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/documentation.yml/badge.svg)](https://coexistence-project.github.io/RouteRL/)
@@ -115,10 +118,10 @@ We have an experiment script encapsulated in a **CodeOcean** capsule. This capsu
 ---
 ### Credits
 
-`RouteRL` is part of [COeXISTENCE](https://www.rafalkucharskilab.pl/research/coexistence/) (ERC Starting Grant, grant agreement No 101075838) and is a team work at Jagiellonian University in Kraków, Poland by: [Ahmet Onur Akman](https://github.com/aonurakman) and [Anastasia Psarou](https://github.com/AnastasiaPsarou) (main contributors) supported by [Grzegorz Jamroz](https://github.com/GrzegorzJamroz), [Zoltán Varga](https://github.com/kistref), [Łukasz Gorczyca](https://github.com/Limexcyan), [Michał Hoffmann](https://github.com/Crackhoff) and others, within the research group of [Rafał Kucharski](https://www.rafalkucharskilab.pl).
+`RouteRL` is part of [COeXISTENCE](https://www.rafalkucharskilab.pl/research/coexistence/) (ERC Starting Grant, grant agreement No 101075838) and is a team work at Jagiellonian University in Kraków, Poland by: [Ahmet Onur Akman](https://github.com/aonurakman) and [Anastasia Psarou](https://github.com/AnastasiaPsarou) (main contributors) supported by [Grzegorz Jamroz](https://github.com/GrzegorzJamroz), [Zoltán Varga](https://github.com/kistref), [Łukasz Gorczyca](https://github.com/Limexcyan), [Michał Hoffmann](https://github.com/Crackhoff), [Błażej Torbus](https://github.com/Blato122), [Mikołaj Rams](https://github.com/mikolajRams) and others, within the research group of [Rafał Kucharski](https://www.rafalkucharskilab.pl).
 
 <p align="center">
-  <img src="docs/_static/credits.png" width="50%"/>
+  <img src="https://raw.githubusercontent.com/aonurakman/assets/refs/heads/main/icons/credits.png" width="50%"/>
 </p>
 
 
