@@ -54,6 +54,7 @@ class Plotter:
         self.default_num_columns = 3
         self.multimode_width = 3
         self.multimode_height = 3
+        self.font_family = "Charter"
         self.linestyles = ['-']
         self.colors = []
 
