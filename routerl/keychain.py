@@ -55,7 +55,6 @@ class Keychain:
     DAILY_RESEED = "daily_reseed"    
     USE_LIBSUMO = "use_libsumo"
     USE_SUMO_TELEPORT = "use_sumo_teleport"
-    HUMAN_AUTO_ROUTING = "human_auto_routing"
 
 
     ### Plotter

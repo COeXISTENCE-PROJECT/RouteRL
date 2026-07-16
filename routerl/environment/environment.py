@@ -382,7 +382,7 @@ class TrafficEnvironment(AECEnv):
 
         if len(self.machine_agents):
             self._initialize_machine_agents()
-        if not self.human_agents or self.simulator.human_auto_routing:
+        if not self.human_agents:
             self.human_learning = False
         logging.info(f"There are {len(self.human_agents)} human and {len(self.machine_agents)} machine agents.")
 
@@ -818,8 +818,7 @@ class TrafficEnvironment(AECEnv):
             if not self.actions_timestep:
                 for human in self.human_agents:
                     if human.start_time == self.simulator.timestep:
-                        # Human auto-routing ignores this action; SUMO computes the route from OD.
-                        action = 0 if self.simulator.human_auto_routing else human.act(0)
+                        action = human.act(0)
                         human.last_action = action
                         self.actions_timestep.append((human, action))
 

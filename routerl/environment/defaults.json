@@ -47,7 +47,6 @@
         "daily_reseed" : false,
         "use_libsumo": false,
         "use_sumo_teleport": false,
-        "human_auto_routing": false,
 
 
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
