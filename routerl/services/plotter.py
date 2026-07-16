@@ -22,6 +22,21 @@ logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
 
 
+def running_nanmean(values, last_n=0):
+    # Same window semantics as running_average, but missing pre-mutation values
+    # do not delay the relative-progress curves after mutation.
+    if last_n < 0:
+        return values
+
+    running_averages = list()
+    for idx, _ in enumerate(values):
+        start_from = max(0, idx - last_n) if last_n > 0 else 0
+        window = np.asarray(values[start_from:idx + 1], dtype=float)
+        window = window[np.isfinite(window)]
+        running_averages.append(float(window.mean()) if len(window) else np.nan)
+    return running_averages
+
+
 class Plotter:
     """Plot the results of the training
 
@@ -94,6 +109,8 @@ class Plotter:
         if self.plot_choices == kc.PLOT_ALL:
             self.visualize_mean_rewards()
             self.visualize_mean_travel_times()
+            self.visualize_relative_progress()
+            self.visualize_agent_relative_progress()
             self.visualize_tt_distributions()
             self.visualize_actions()
             self.visualize_action_shifts()
@@ -102,6 +119,8 @@ class Plotter:
         elif self.plot_choices == kc.PLOT_BASIC:
             self.visualize_mean_rewards()
             self.visualize_mean_travel_times()
+            self.visualize_relative_progress()
+            self.visualize_agent_relative_progress()
         elif self.plot_choices != kc.PLOT_NONE:
             logging.warning(f"Plot choice mode {self.plot_choices} is not recognised. Options: {kc.PLOT_ALL}, {kc.PLOT_BASIC}, {kc.PLOT_NONE}")
 
@@ -164,6 +183,144 @@ class Plotter:
         plt.savefig(save_to)
         plt.close()
         logging.info(f"[SUCCESS] Rewards are saved to {save_to}")
+
+    ################################
+    ###### RELATIVE PROGRESS #######
+    ################################
+
+    def visualize_relative_progress(self) -> None:
+        """Visualise the mean relative progress.
+
+        Returns:
+            None
+        """
+
+        if not self.saved_episodes:
+            return
+
+        first_episode_path = os.path.join(
+            self.episodes_folder,
+            f"ep{self.saved_episodes[0]}.csv",
+        )
+        if not os.path.isfile(first_episode_path):
+            return
+        first_episode_columns = pd.read_csv(first_episode_path, nrows=1).columns
+        explicit_columns = {
+            "All": "relative_progress_all",
+            "Human": "relative_progress_remaining_human",
+            "AV": "relative_progress_future_av",
+        }
+        has_explicit_progress = all(
+            column in first_episode_columns for column in explicit_columns.values()
+        )
+        if not has_explicit_progress and "relative_progress" not in first_episode_columns:
+            logging.info("Skipping relative progress plot because saved episodes do not contain relative_progress.")
+            return
+
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], "relative_progress.png")
+        if has_explicit_progress:
+            all_mean_progress = self._retrieve_explicit_relative_progress(explicit_columns)
+        else:
+            all_mean_progress = self._retrieve_data_per_kind("relative_progress", transform="mean")
+
+        plt.figure(figsize=(self.default_width, self.default_height), layout='tight')
+
+        for idx, (kind, ep_reward_dict) in enumerate(all_mean_progress.items()):
+            episodes = list(ep_reward_dict.keys())
+            progress = list(ep_reward_dict.values())
+            smoothed_progress = running_nanmean(progress, last_n=self.smooth_by)
+            plt.plot(episodes, smoothed_progress, color=self.colors[idx], label=kind, linewidth=self.line_width)
+
+        for phase_idx, phase in enumerate(self.phases):
+            color = self.phase_colors[phase_idx % len(self.phase_colors)]
+            plt.axvline(x=phase,
+                        label=self.phase_names[phase_idx],
+                        linestyle='--',
+                        color=color,
+                        linewidth=self.line_width)
+
+        plt.xticks(fontsize=self.tick_label_size)
+        plt.yticks(fontsize=self.tick_label_size)
+        plt.xlabel('Episode', fontsize=self.label_size)
+        plt.ylabel('Mean Relative Progress', fontsize=self.label_size)
+        plt.grid(True, axis='y')
+        plt.title('Relative Progress vs Best Pre-Mutation Baseline', fontsize=self.title_size, fontweight='bold')
+        plt.legend(fontsize=self.legend_font_size)
+
+        plt.savefig(save_to)
+        plt.close()
+        logging.info(f"[SUCCESS] Relative progress is saved to {save_to}")
+
+    def _retrieve_explicit_relative_progress(self, progress_columns) -> dict[str, dict]:
+        all_values_dict = {label: dict() for label in progress_columns}
+        for episode in self.saved_episodes:
+            data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
+            data = pd.read_csv(data_path)
+            for label, column in progress_columns.items():
+                values = pd.to_numeric(data[column], errors="coerce").to_numpy(dtype=float)
+                values = values[np.isfinite(values)]
+                all_values_dict[label][episode] = float(values[0]) if len(values) else np.nan
+        return all_values_dict
+
+    def visualize_agent_relative_progress(self) -> None:
+        """Visualise the mean of per-agent relative progress values."""
+
+        if not self.saved_episodes:
+            return
+
+        first_episode_path = os.path.join(
+            self.episodes_folder,
+            f"ep{self.saved_episodes[0]}.csv",
+        )
+        if not os.path.isfile(first_episode_path):
+            return
+
+        first_episode_columns = pd.read_csv(first_episode_path, nrows=1).columns
+        explicit_columns = {
+            "All": "relative_progress_agent_mean_all",
+            "Human": "relative_progress_agent_mean_remaining_human",
+            "AV": "relative_progress_agent_mean_future_av",
+        }
+        has_explicit_progress = all(
+            column in first_episode_columns for column in explicit_columns.values()
+        )
+        if not has_explicit_progress and "relative_progress_agent" not in first_episode_columns:
+            logging.info("Skipping agent relative progress plot because saved episodes do not contain relative_progress_agent.")
+            return
+
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], "relative_progress_agent_mean.png")
+        if has_explicit_progress:
+            all_mean_progress = self._retrieve_explicit_relative_progress(explicit_columns)
+        else:
+            all_mean_progress = self._retrieve_data_per_kind("relative_progress_agent", transform="mean")
+
+        plt.figure(figsize=(self.default_width, self.default_height), layout='tight')
+
+        for idx, (kind, ep_reward_dict) in enumerate(all_mean_progress.items()):
+            episodes = list(ep_reward_dict.keys())
+            progress = list(ep_reward_dict.values())
+            smoothed_progress = running_nanmean(progress, last_n=self.smooth_by)
+            plt.plot(episodes, smoothed_progress, color=self.colors[idx], label=kind, linewidth=self.line_width)
+
+        for phase_idx, phase in enumerate(self.phases):
+            color = self.phase_colors[phase_idx % len(self.phase_colors)]
+            plt.axvline(x=phase,
+                        label=self.phase_names[phase_idx],
+                        linestyle='--',
+                        color=color,
+                        linewidth=self.line_width)
+
+        plt.xticks(fontsize=self.tick_label_size)
+        plt.yticks(fontsize=self.tick_label_size)
+        plt.xlabel('Episode', fontsize=self.label_size)
+        plt.ylabel('Mean Agent Relative Progress', fontsize=self.label_size)
+        plt.grid(True, axis='y')
+        plt.title('Mean Agent Relative Progress vs Best Pre-Mutation Baseline', fontsize=self.title_size, fontweight='bold')
+        plt.legend(fontsize=self.legend_font_size)
+
+        plt.savefig(save_to)
+        plt.close()
+        logging.info(f"[SUCCESS] Agent relative progress is saved to {save_to}")
 
     ################################
     ######### TRAVEL TIMES #########
