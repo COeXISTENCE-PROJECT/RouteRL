@@ -1017,7 +1017,7 @@ class TrafficEnvironment(AECEnv):
                 self.human_agents,
                 self.simulation_params,
                 self.agent_params,
-                self.get_free_flow_times()
+                self.get_free_flow_times(invalid_pad=1e9)
             )
         elif observation_type == kc.TRIP_INFO_ETA_MASK_NORM:
             return TripInfoWithETAMaskNorm(
