@@ -36,6 +36,10 @@ class Keychain:
     PREVIOUS_AGENTS_PLUS_START_TIME = "previous_agents_plus_start_time"
     PREVIOUS_AGENTS_PLUS_START_TIME_DETECTOR_DATA = "previous_agents_plus_start_time_detector_data"
     TRIP_INFO_ETA = "trip_info_eta"
+    TRIP_INFO_ETA_MASK_NORM = "trip_info_eta_mask_norm"
+    TRIP_INFO_ETA_ROUTE_CONGESTION = "trip_info_eta_route_congestion"
+    ROUTE_CONGESTION = "route_congestion"
+    TRIP_INFO_ETA_SUMO = "trip_info_eta_sumo"
     GROUP_VICINITY = "group_vicinity"
 
     ### Environment

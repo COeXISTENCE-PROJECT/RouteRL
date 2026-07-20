@@ -358,9 +358,24 @@ class TrafficEnvironment(AECEnv):
         self.use_clustered_routes = self.action_masks is not None # for the simulator
 
         self.recorder = Recorder(self.plotter_params)
-        self.simulator = SumoSimulator(self.simulation_params, self.path_gen_params, seed, not create_agents, save_detectors_info, generate_asgn_data, self.use_clustered_routes)
+        observation_type = self.agent_params[kc.MACHINE_PARAMETERS][kc.OBSERVATION_TYPE]
+        use_edge_subscriptions = observation_type in {
+            kc.TRIP_INFO_ETA_SUMO,
+            kc.TRIP_INFO_ETA_ROUTE_CONGESTION,
+            kc.ROUTE_CONGESTION,
+        }
+        self.simulator = SumoSimulator(
+            self.simulation_params,
+            self.path_gen_params,
+            seed,
+            not create_agents,
+            save_detectors_info,
+            generate_asgn_data,
+            self.use_clustered_routes,
+            use_edge_subscriptions=use_edge_subscriptions,
+        )
 
-        self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(), create_agents, seed, self.action_masks) if agents == None else agents
+        self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(invalid_pad=1e9), create_agents, seed, self.action_masks) if agents == None else agents
         self.machine_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_MACHINE]
         self.human_agents = [agent for agent in self.all_agents if agent.kind == kc.TYPE_HUMAN]
         self.possible_agents = list()
@@ -376,6 +391,8 @@ class TrafficEnvironment(AECEnv):
         
         self.executor = ThreadPoolExecutor(max_workers=1)
         self.pending_futures = []
+
+        self._last_edge_state_timestep = None # edge state refreshing
 
     def __str__(self):
         message = f"TrafficEnvironment with {len(self.all_agents)} agents.\
@@ -443,6 +460,8 @@ class TrafficEnvironment(AECEnv):
         self.episode_observations = dict()
         self.last_episode_had_teleports = False
         self.simulator.reset()
+        self._last_edge_state_timestep = None
+        self._refresh_edge_state_if_needed(force=True)
         self.agents = copy(self.possible_agents)
         self.terminations = {agent: False for agent in self.possible_agents}
         self.truncations = {agent: False for agent in self.possible_agents}
@@ -450,6 +469,14 @@ class TrafficEnvironment(AECEnv):
         self.infos = {agent: {} for agent in self.possible_agents}
         self.rewards = {agent: 0 for agent in self.possible_agents}
         self.rewards_humans = {agent.id: 0 for agent in self.human_agents}
+
+        # Full SUMO observations need their shape refreshed after SUMO has loaded,
+        # because edge IDs are discovered from the simulator. No need to extra call it 
+        # in reset_episode() because the network edge list doesn't change between episodes.
+        observation_obj = getattr(self, "observation_obj", None)
+        if observation_obj is not None and hasattr(observation_obj, "refresh_edge_metadata"):
+            observation_obj.refresh_edge_metadata()
+            self._observation_spaces = observation_obj.observation_space()
 
         if len(self.machine_agents) > 0:
             self._agent_selector = agent_selector(self.possible_agents)
@@ -493,6 +520,9 @@ class TrafficEnvironment(AECEnv):
             self._cumulative_rewards[agent] = 0
             self.simulation_loop(machine_action, agent)
 
+            # Collect per-edge subscription results (one snapshot per env step) only for observations that use it
+            self._refresh_edge_state_if_needed()
+
             # Collect rewards if it is the last agent to act
             if self._agent_selector.is_last():
                 # Increase day number
@@ -521,6 +551,20 @@ class TrafficEnvironment(AECEnv):
             self.day = self.day + 1
             self._assign_rewards()
             self._reset_episode()
+
+    def _refresh_edge_state_if_needed(self, force=False):
+        """
+        Refresh edge state only when the SUMO timestep changes.
+        Useful when multiple AVs have the same departure time and receive the same observation.
+        """
+        if not getattr(self.simulator, "use_edge_subscriptions", False):
+            self.latest_edge_state = {}
+            return
+
+        if force or self.simulator.timestep != self._last_edge_state_timestep:
+            self.simulator.refresh_edge_state()
+            self.latest_edge_state = self.simulator.latest_edge_state
+            self._last_edge_state_timestep = self.simulator.timestep
 
     def close(self) -> None:
         """Not implemented.
@@ -697,6 +741,11 @@ class TrafficEnvironment(AECEnv):
         self.last_episode_travel_times = list(self.travel_times_list)
 
         detectors_dict = self.simulator.reset()
+        
+        # Make sure the first SUMO observation after _reset_episode() is valid
+        # and doesn't contain stale data from the previous episode
+        self._last_edge_state_timestep = None
+        self._refresh_edge_state_if_needed(force=True)
 
         if self.possible_agents:
             self._agent_selector = agent_selector(self.possible_agents)
@@ -829,7 +878,7 @@ class TrafficEnvironment(AECEnv):
     ##### Free flow times #####
     ###########################
 
-    def get_free_flow_times(self) -> dict:
+    def get_free_flow_times(self, invalid_pad: float = 1e9) -> dict:
         """Retrieve free flow times for all origin-destination pairs from the simulator paths data.
 
         Returns:
@@ -860,7 +909,9 @@ class TrafficEnvironment(AECEnv):
 
             ff_dict = {}
             for key, cluster_ff in cluster_ff_dict.items():
-                ff_dict[key] = [cluster_ff.get(i, 1e9) for i in range(num_paths)]
+                # 1e9 is a very high value which might "break" the encoder and these actions get masked anyway
+                # Leave it configurable and only use in some places
+                ff_dict[key] = [cluster_ff.get(i, invalid_pad) for i in range(num_paths)]
 
         return ff_dict
 
@@ -935,31 +986,82 @@ class TrafficEnvironment(AECEnv):
         params = self.agent_params[kc.MACHINE_PARAMETERS]
         observation_type = params[kc.OBSERVATION_TYPE]
         if observation_type == kc.PREVIOUS_AGENTS_PLUS_START_TIME:
-            return PreviousAgentStartPlusStartTime(self.machine_agents,
-                                                   self.human_agents,
-                                                   self.simulation_params,
-                                                   self.agent_params)
+            return PreviousAgentStartPlusStartTime(
+                self.machine_agents,
+                self.human_agents,
+                self.simulation_params,
+                self.agent_params
+            )
         elif observation_type == kc.PREVIOUS_AGENTS:
-            return PreviousAgentStart(self.machine_agents,
-                                      self.human_agents,
-                                      self.simulation_params,
-                                      self.agent_params)
+            return PreviousAgentStart(
+                self.machine_agents,
+                self.human_agents,
+                self.simulation_params,
+                self.agent_params
+            )
         elif observation_type == kc.PREVIOUS_AGENTS_PLUS_START_TIME_DETECTOR_DATA:
             if self.save_detectors_info == False:
                 raise Exception("Detector info saving is disabled. Please set 'self.save_detectors_info = True' to proceed or change the observation type.")
             
-            return PreviousAgentStartPlusStartTimeDetectorData(self.machine_agents,
-                                      self.human_agents,
-                                      self.simulation_params,
-                                      self.plotter_params,
-                                      self.agent_params,
-                                      self.simulator)
+            return PreviousAgentStartPlusStartTimeDetectorData(
+                self.machine_agents,
+                self.human_agents,
+                self.simulation_params,
+                self.plotter_params,
+                self.agent_params,
+                self.simulator
+            )
         elif observation_type == kc.TRIP_INFO_ETA:
-            return TripInfoWithETA(self.machine_agents,
-                                 self.human_agents,
-                                 self.simulation_params,
-                                 self.agent_params,
-                                 self.get_free_flow_times())
+            return TripInfoWithETA(
+                self.machine_agents,
+                self.human_agents,
+                self.simulation_params,
+                self.agent_params,
+                self.get_free_flow_times(invalid_pad=1e9)
+            )
+        elif observation_type == kc.TRIP_INFO_ETA_MASK_NORM:
+            return TripInfoWithETAMaskNorm(
+                self.machine_agents,
+                self.human_agents,
+                self.simulation_params,
+                self.agent_params,
+                self.get_free_flow_times(invalid_pad=1e9),
+                action_masks=self.action_masks,
+                include_action_mask_in_obs=self.use_action_masks
+            )
+        elif observation_type == kc.TRIP_INFO_ETA_ROUTE_CONGESTION:
+            return TripInfoWithETARouteCongestion(
+                self.machine_agents,
+                self.human_agents,
+                self.simulation_params,
+                self.agent_params,
+                self.get_free_flow_times(invalid_pad=1e9),
+                self.simulator,
+                action_masks=self.action_masks,
+                include_action_mask_in_obs=self.use_action_masks
+            )
+        elif observation_type == kc.ROUTE_CONGESTION:
+            return RouteCongestion(
+                self.machine_agents,
+                self.human_agents,
+                self.simulation_params,
+                self.agent_params,
+                self.get_free_flow_times(invalid_pad=1e9),
+                self.simulator,
+                action_masks=self.action_masks,
+                include_action_mask_in_obs=self.use_action_masks
+            )
+        elif observation_type == kc.TRIP_INFO_ETA_SUMO:
+            return TripInfoWithETASumo(
+                self.machine_agents,
+                self.human_agents,
+                self.simulation_params,
+                self.agent_params,
+                self.get_free_flow_times(invalid_pad=1e9),
+                self.simulator,
+                action_masks=self.action_masks,
+                include_action_mask_in_obs=self.use_action_masks
+            )
         else:
             raise ValueError('[MODEL INVALID] Unrecognized observation type: ' + observation_type)
 

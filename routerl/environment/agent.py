@@ -178,6 +178,18 @@ class HumanAgent(BaseAgent):
             int: The action of the agent.
         """
 
+        if self.default_action is not None:
+            action = int(self.default_action)
+
+            if self.action_mask is not None:
+                action_mask = np.asarray(self.action_mask)
+                if action < 0 or action >= len(action_mask) or action_mask[action] == 0:
+                    raise RuntimeError(
+                        f"default_action {action} is invalid for agent {self.id}"
+                    )
+
+            return action
+
         if self.action_mask is not None:
             if not np.any(self.action_mask):
                 raise ValueError("Action mask must allow at least one route")
@@ -201,8 +213,6 @@ class HumanAgent(BaseAgent):
                     action = int(np.random.choice(allowed_actions))
                 else:
                     raise RuntimeError("Masked action returned by non-Random human model")
-        elif self.default_action is not None:
-            return self.default_action
         else:
             action = self.model.act(observation)
 

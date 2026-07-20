@@ -8,6 +8,7 @@ import janux as jx
 import logging
 import random
 import pandas as pd
+import traci.constants as tc
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
@@ -39,6 +40,8 @@ class SumoSimulator():
         use_clustered_routes (bool):
             Flag to indicate whether to use an updated, clustered-routes-compatible version
             of JanuX for path generation.
+        use_edge_subscriptions (bool):
+            Subscribe to dynamic per-edge SUMO variables required by congestion observations.
         
     Attributes:
         network_name: Network name.
@@ -48,7 +51,17 @@ class SumoSimulator():
         timestep: Time step being simulated within the day.
     """
 
-    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423, using_custom_demand: bool = False, save_detectors_info : bool = False, generate_asgn_data : bool = False, use_clustered_routes : bool = False) -> None:
+    def __init__(
+        self,
+        params: dict,
+        path_gen_params: dict,
+        seed: int = 23423,
+        using_custom_demand: bool = False,
+        save_detectors_info: bool = False,
+        generate_asgn_data: bool = False,
+        use_clustered_routes: bool = False,
+        use_edge_subscriptions: bool = False,
+    ) -> None:
         self.network_name        = params[kc.NETWORK_NAME]
         self.sumo_type           = params[kc.SUMO_TYPE]
         self.number_of_paths     = params[kc.NUMBER_OF_PATHS]
@@ -61,6 +74,7 @@ class SumoSimulator():
         self.experiment_id = 0 # for generate_asgn_data, overwritten through env.unwrapped.simulator.experiment_id = ... in URB scripts
         self.generate_asgn_data = generate_asgn_data
         self.use_clustered_routes = use_clustered_routes
+        self.use_edge_subscriptions = bool(use_edge_subscriptions)
 
         if self.network_name in kc.NETWORK_NAMES:
             curr_dir = os.path.dirname(os.path.abspath(__file__))
@@ -110,6 +124,19 @@ class SumoSimulator():
         self.runs = 0
         self.route_id_cache = dict()
         self.waiting_vehicles = dict()
+
+        # Edge variable subscriptions for the enriched observation
+        self.edge_ids = []
+        self.edge_subscription_vars = (
+            tc.LAST_STEP_VEHICLE_NUMBER,
+            tc.LAST_STEP_MEAN_SPEED,
+            tc.LAST_STEP_OCCUPANCY,
+            tc.LAST_STEP_VEHICLE_HALTING_NUMBER,
+            # tc.VAR_WAITING_TIME,
+            # tc.VAR_CURRENT_TRAVELTIME,
+        )
+        self.latest_edge_state = {} # edge_id -> subscription results
+        self._edge_subscription_fallback_reported = False
 
         logging.info("[SUCCESS] Simulator is ready to simulate!")
 
@@ -370,7 +397,6 @@ class SumoSimulator():
             individual_sumo_stats_file
             ]
 
-        
         # import libsumo while using traci semantics
         if self.use_libsumo:
             import libsumo as traci
@@ -382,6 +408,8 @@ class SumoSimulator():
             traci.start(sumo_cmd, label=self.sumo_id)
             self.sumo_connection = traci.getConnection(self.sumo_id)
 
+        if self.use_edge_subscriptions:
+            self._initialize_edge_subscriptions()
 
     def stop(self) -> None:
         """Stops and closes the SUMO simulation.
@@ -433,9 +461,11 @@ class SumoSimulator():
             "--tripinfo-output",
             individual_sumo_stats_file
             ]
-        
+
         self.sumo_connection.load(sumo_cmd)
-        
+
+        if self.use_edge_subscriptions:
+            self._initialize_edge_subscriptions()
 
         self.timestep = 0
         self.waiting_vehicles = dict()
@@ -451,10 +481,10 @@ class SumoSimulator():
 
         for det_name in self.detectors_name:
             det_id = f"{det_name}_det"
-            veh_ids = traci.lanearea.getLastStepVehicleIDs(det_id)
+            veh_ids = self.sumo_connection.lanearea.getLastStepVehicleIDs(det_id)
 
             for veh_id in veh_ids:
-                speed = traci.vehicle.getSpeed(veh_id)
+                speed = self.sumo_connection.vehicle.getSpeed(veh_id)
                 if speed < 0.1:
                     self.stopped_vehicles_info.append({
                     "time": self.timestep,
@@ -540,3 +570,36 @@ class SumoSimulator():
         self.timestep += 1
         
         return self.timestep, self.stopped_vehicles_info, arrivals, teleported
+
+    def _initialize_edge_subscriptions(self) -> None:
+        """Subscribe to the edge-level variables we want to collect each timestep."""
+
+        edge_ids = [edge_id for edge_id in self.sumo_connection.edge.getIDList() if not edge_id.startswith(":")]
+        self.edge_ids = sorted(edge_ids)
+
+        for edge_id in self.edge_ids:
+            self.sumo_connection.edge.subscribe(edge_id, list(self.edge_subscription_vars))
+
+    def _collect_edge_state(self) -> dict:
+        """Return the latest per-edge state from TraCI subscriptions."""
+
+        edge_state = {}
+        try:
+            sub_results = self.sumo_connection.edge.getAllSubscriptionResults()
+            for edge_id in self.edge_ids:
+                edge_state[edge_id] = sub_results.get(edge_id, {}) or {}
+        except AttributeError:
+            if not self._edge_subscription_fallback_reported:
+                print("[SUMO edge subscriptions] traci.edge.getAllSubscriptionResults() is unavailable; falling back to per-edge getSubscriptionResults().")
+                self._edge_subscription_fallback_reported = True
+            for edge_id in self.edge_ids:
+                edge_state[edge_id] = self.sumo_connection.edge.getSubscriptionResults(edge_id) or {}
+
+        return edge_state
+
+    def refresh_edge_state(self) -> None:
+        """Refresh subscribed edge state when required by the observation."""
+        if self.use_edge_subscriptions:
+            self.latest_edge_state = self._collect_edge_state()
+        else:
+            self.latest_edge_state = {}
