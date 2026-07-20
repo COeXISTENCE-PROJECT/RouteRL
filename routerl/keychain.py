@@ -52,7 +52,8 @@ class Keychain:
     SUMO_TYPE = "sumo_type"
     SIMULATION_TIMESTEPS = "simulation_timesteps"
     STUCK_TIME = "stuck_time"
-    DAILY_RESEED = "daily_reseed"    
+    DAILY_RESEED = "daily_reseed"
+    
     USE_LIBSUMO = "use_libsumo"
     USE_SUMO_TELEPORT = "use_sumo_teleport"
 
@@ -118,6 +119,7 @@ class Keychain:
     MALICIOUS = "malicious"
     COLLECTIVIST = "collectivist"
     MILITANT = "militant"
+    CUSTOM = "custom"
 
     BEHAVIORS = [SELFISH, COMPETITIVE, COLLABORATIVE, COOPERATIVE, SOCIAL, ALTRUISTIC, MALICIOUS, COLLECTIVIST, MILITANT]
 
