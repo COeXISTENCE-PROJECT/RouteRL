@@ -420,23 +420,30 @@ class MachineAgent(BaseAgent):
         return agent_reward
 
     def _get_reward_coefs(self) -> tuple:
-        a, b, c, d = 0, 0, 0, 0
-        if self.behavior == kc.SELFISH:
-            a, b, c, d = -1, 0, 0, 0 
+        if isinstance(self.behavior, (list, tuple)) and len(self.behavior) == 4:
+            coeffs = tuple(self.behavior)
+            self.behavior = kc.CUSTOM
+            return coeffs
+        elif self.behavior == kc.SELFISH:
+            return -1.0, 0, 0, 0 
         elif self.behavior == kc.COMPETITIVE:
-            a, b, c, d = -2, 0, 1, 0
+            return -2.0, 0, 1.0, 0
         elif self.behavior == kc.COLLABORATIVE:
-            a, b, c, d = -0.5, -0.5, 0, 0
+            return -0.5, -0.5, 0, 0
         elif self.behavior == kc.COOPERATIVE:
-            a, b, c, d = 0, -1, 0, 0
+            return 0, -1.0, 0, 0
         elif self.behavior == kc.SOCIAL:
-            a, b, c, d = -0.5, 0, 0, -0.5
+            return -0.5, 0, 0, -0.5
         elif self.behavior == kc.ALTRUISTIC:
-            a, b, c, d = 0, 0, 0, -1
+            return 0, 0, 0, -1.0
         elif self.behavior == kc.MALICIOUS:
-            a, b, c, d = 0, 0, 1, 0
+            return 0, 0, 1.0, 0
         elif self.behavior == kc.COLLECTIVIST:
-            a, b, c, d = -0.1, -0.9, 0, 0
+            return -0.1, -0.9, 0, 0
         elif self.behavior == kc.MILITANT:
-            a, b, c, d = 0, -2, 1, 0
-        return a, b, c, d
+            return 0, -2.0, 1.0, 0
+        else:
+            raise ValueError(f"Unknown behavior: {self.behavior}")
+        
+        
+        

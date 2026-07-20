@@ -2,9 +2,6 @@
 
 # Welcome to the future of urban routing
 
-> [!IMPORTANT]  
-> This is a [RouteRL](https://github.com/COeXISTENCE-PROJECT/RouteRL) subpackage for supporting its compatibility with [URB](https://github.com/COeXISTENCE-PROJECT/URB). Beware that its PyPI release is under the name [`routerlurb`](https://pypi.org/project/routerlurb/).
-
 Multi-Agent Reinforcement Learning framework for modeling and simulating the collective route choices of humans and autonomous vehicles.
 
 [![Tutorial Tests](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml/badge.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml)
@@ -116,11 +113,30 @@ We have an experiment script encapsulated in a **CodeOcean** capsule. This capsu
 <!-- end installation -->
 
 ---
+
+## Citation
+
+If you use RouteRL in your research, please cite the following paper:
+
+```bibtex
+@article{routerl,
+  title = {RouteRL: Multi-agent reinforcement learning framework for urban route choice with autonomous vehicles},
+  journal = {SoftwareX},
+  volume = {31},
+  pages = {102279},
+  year = {2025},
+  issn = {2352-7110},
+  doi = {https://doi.org/10.1016/j.softx.2025.102279},
+  url = {https://www.sciencedirect.com/science/article/pii/S2352711025002468},
+  author = {Ahmet Onur Akman and Anastasia Psarou and Łukasz Gorczyca and Zoltán György Varga and Grzegorz Jamróz and Rafał Kucharski}
+}
+```
+
+
 ### Credits
 
 `RouteRL` is part of [COeXISTENCE](https://www.rafalkucharskilab.pl/research/coexistence/) (ERC Starting Grant, grant agreement No 101075838) and is a team work at Jagiellonian University in Kraków, Poland by: [Ahmet Onur Akman](https://github.com/aonurakman) and [Anastasia Psarou](https://github.com/AnastasiaPsarou) (main contributors) supported by [Grzegorz Jamroz](https://github.com/GrzegorzJamroz), [Zoltán Varga](https://github.com/kistref), [Łukasz Gorczyca](https://github.com/Limexcyan), [Michał Hoffmann](https://github.com/Crackhoff), [Błażej Torbus](https://github.com/Blato122), [Mikołaj Rams](https://github.com/mikolajRams) and others, within the research group of [Rafał Kucharski](https://www.rafalkucharskilab.pl).
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/aonurakman/assets/refs/heads/main/icons/credits.png" width="50%"/>
+  <img src="https://raw.githubusercontent.com/aonurakman/assets/refs/heads/main/icons/credits.png" width="80%"/>
 </p>
-
