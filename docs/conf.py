@@ -18,11 +18,11 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'RouteRL'
-copyright = '2024, Anastasia Psarou, Ahmet Onur Akman, Łukasz Gorczyca'
+copyright = '2024-2026, Anastasia Psarou, Ahmet Onur Akman, Łukasz Gorczyca'
 author = 'Anastasia Psarou, Ahmet Onur Akman, Łukasz Gorczyca'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.1'
+release = '2.0.0'
 
 
 # -- General configuration ---------------------------------------------------
