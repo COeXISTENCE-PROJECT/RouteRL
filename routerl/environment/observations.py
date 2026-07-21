@@ -7,7 +7,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 import os
 import pandas as pd
-from typing import List, Dict, Any
+from typing import Any, Dict, List, Optional
 import traci.constants as tc
 
 from routerl.keychain import Keychain as kc
@@ -16,7 +16,7 @@ from .simulator import SumoSimulator
 
 def pad_invalid_freeflows_for_observation(
     freeflows: Dict[tuple, list[float]],
-    action_masks: Dict[tuple, np.ndarray] | None
+    action_masks: Optional[Dict[tuple, np.ndarray]]
 ) -> Dict[tuple, np.ndarray]:
     """
     Replace masked free-flow slots with a neutral value for observations.
