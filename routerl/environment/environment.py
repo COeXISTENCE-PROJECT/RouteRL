@@ -7,6 +7,7 @@ import glob
 import os
 
 from types import new_class
+from typing import Union
 from multiprocessing import Manager
 from concurrent.futures import ThreadPoolExecutor
 from copy import copy
@@ -46,7 +47,8 @@ class TrafficEnvironment(AECEnv):
     
     .. note::
         Users can configure the experiment with keyword arguments, see the structure below. 
-        Moreover, users can provide custom demand data in ``training_records/agents.csv``.
+        Moreover, users can provide custom demand data in ``agents.csv`` inside the
+        configured records folder (``training_records`` by default).
         You can refer to the structure of such a file `here <https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/docs/_static/agents_example.csv>`_.
 
     Args:
@@ -56,14 +58,19 @@ class TrafficEnvironment(AECEnv):
             Whether to create agent data. Defaults to ``True``.
         create_paths (bool, optional):
             Whether to generate paths. Defaults to ``True``.
-        action_masks (dict[tuple[int, int], np.ndarray] | None):
+        save_detectors_info (bool, optional):
+            Whether to collect and save detector data. Defaults to ``False``.
+        action_masks (dict[tuple[int, int], np.ndarray] | None, optional):
             Optional mapping from (origin, destination) pairs to binary action masks.
-            Each mask is a 1D NumPy array of 0/1 values with length equal to the action space size. 
-            Used only for HumanAgent creation and free flow time retrieval.
-        generate_asgn_data (bool):
-            Generate additional SUMO_output files (per-timestep departures and snapshots).
-        agents (list | None):
-            Agents used in the environment. If set to ``None`` the agents will be generated or read from files. Defaults to None. 
+            Each mask is a 1D NumPy array of 0/1 values with length equal to the action
+            space size. Masks are used for route handling, human-agent actions, free-flow
+            times, and compatible observations. Defaults to ``None``.
+        generate_asgn_data (bool, optional):
+            Whether to generate per-timestep departure and snapshot files in
+            ``SUMO_output/``. Defaults to ``False``.
+        agents (list | None, optional):
+            Agents used in the environment. When ``None``, agents are generated or read
+            from ``agents.csv`` according to ``create_agents``. Defaults to ``None``.
         **kwargs (dict, optional): 
             User-defined parameter overrides. These override default values 
             from ``defaults.json`` and allow experiment configuration.
@@ -93,7 +100,16 @@ class TrafficEnvironment(AECEnv):
                     
                 - observation_type (str, default="trip_info_eta"):
                     Type of observation.
-                    Options: ``previous_agents``, ``previous_agents_plus_start_time``, ``trip_info_eta``, ``trip_info_eta``, ``trip_info_eta_mask_norm``, ``trip_info_eta_route_congestion``, ``route_congestion``, ``trip_info_eta_sumo``.
+                    Options: ``previous_agents``, ``previous_agents_plus_start_time``,
+                    ``previous_agents_plus_start_time_detector_data``, ``trip_info_eta``,
+                    ``trip_info_eta_mask_norm``, ``trip_info_eta_route_congestion``,
+                    ``route_congestion``, ``trip_info_eta_sumo``.
+                    ``previous_agents_plus_start_time_detector_data`` requires
+                    ``save_detectors_info=True``.
+
+                - group_vicinity (bool, default=False):
+                    Whether group-based machine rewards only consider agents departing
+                    within ``observed_span`` of the machine agent.
 
             - human_parameters (**dict**): 
                 Human agent settings.
@@ -111,7 +127,8 @@ class TrafficEnvironment(AECEnv):
                     Human learning rate.
 
                 - deterministic (bool, default=False):
-                    Whether ``gawron`` selects the minimum-utility path deterministically instead of sampling stochastically.
+                    Whether ``gawron`` selects the highest-utility path deterministically
+                    instead of sampling stochastically.
                     
                 - remember (int, default=5):
                     Number of previous actions to remember for learning, used in ``weighted`` model.
@@ -132,7 +149,7 @@ class TrafficEnvironment(AECEnv):
                 Network name (e.g., ``arterial``, ``cologne``, ``grid``)
                 
             - custom_network_folder (str, default="NA"):
-                In case of custom network, specify the folder name.
+                Path to the folder containing a custom network.
             
             - simulation_timesteps (int, default=3600):
                 Total simulation time in seconds.
@@ -147,7 +164,9 @@ class TrafficEnvironment(AECEnv):
                 Whether to change SUMO seed in each reset. If ``False``, the seed will remain constant throughout the simulation.
             
             - use_libsumo (bool, default=False):
-                Whether to use libsumo instead of TraCI. Avoid using both ``libsumo=True`` and ``sumo_type=sumo-gui`` at the same time. Visit https://sumo.dlr.de/docs/Libsumo.html for more insight.
+                Whether to use libsumo instead of TraCI. Avoid using both
+                ``use_libsumo=True`` and ``sumo_type=sumo-gui`` at the same time. Visit
+                https://sumo.dlr.de/docs/Libsumo.html for more insight.
             - use_sumo_teleport (bool, default=False):
                 If set to ``True`` teleport logic will be handled by SUMO. Otherwise custom python logic will be used.
 
@@ -198,6 +217,10 @@ class TrafficEnvironment(AECEnv):
                 
             - phase_names (list[str], default=["Human learning", "Mutation - Machine learning"]):
                 Phase names for labeling phase markers.
+
+            - clear_records (bool, default=True):
+                Whether to clear existing episode, detector, and SUMO output records
+                during initialization.
     
     Usage:
         
@@ -216,9 +239,9 @@ class TrafficEnvironment(AECEnv):
             ...     seed=42,
             ...     agent_parameters={
             ...         "num_agents": 5, 
-            ...         "new_machines_after_mutation": 1, 
+            ...         "new_machines_after_mutation": 1,
             ...         "machine_parameters": {
-            ...             "behavior": "selfish"
+            ...             "behavior": "selfish",
             ...             }},
             ...     simulator_parameters={"sumo_type": "sumo-gui"},
             ...     path_generation_parameters={"number_of_paths": 2}
@@ -231,7 +254,8 @@ class TrafficEnvironment(AECEnv):
             |-- your_script.py
             |-- training_records/
             |   |-- agents.csv
-            |   |-- paths.csv
+            |   |-- routes.csv
+            |   |-- route.rou.xml
             |   |-- detector/
             |   |   |--             % to be populated during simulation
             |   |-- episodes/
@@ -264,9 +288,9 @@ class TrafficEnvironment(AECEnv):
             >>> env = TrafficEnvironment(
             ...     create_agents=False, # Environment will use your agent data
             ...     agent_parameters={
-            ...         "new_machines_after_mutation": 10, 
+            ...         "new_machines_after_mutation": 10,
             ...         "machine_parameters": {
-            ...             "behavior": "selfish"
+            ...             "behavior": "selfish",
             ...             }},
             ...     simulator_parameters={"network_name": "arterial"},
             ...     path_generation_parameters={"number_of_paths": 3}
@@ -279,7 +303,8 @@ class TrafficEnvironment(AECEnv):
             |-- your_script.py
             |-- training_records/
             |   |-- agents.csv      % stays the same, used for agent generation
-            |   |-- paths.csv
+            |   |-- routes.csv
+            |   |-- route.rou.xml
             |   |-- detector/
             |   |   |--             % to be populated during simulation
             |   |-- episodes/
@@ -290,12 +315,10 @@ class TrafficEnvironment(AECEnv):
             |   |-- ...             % to be populated after the experiment
             
         .. warning::
-            Same approach does not translate to path generation.\n
-            ``paths.csv`` is mainly used for visualization purposes. 
-            For SUMO to operate correctly, a ``route.rou.xml`` 
-            should be generated inside the ``routerl/networks/<net_name>/`` folder.\n
-            It is advised to generate paths in each experiment providing a random seed,
-            or set ``create_paths=False`` only when above criteria is met.
+            Setting ``create_paths=False`` requires an existing ``routes.csv`` and
+            ``route.rou.xml`` in the configured records folder. ``routes.csv`` supplies
+            route and free-flow metadata, while ``route.rou.xml`` supplies the routes to
+            SUMO. It is otherwise advised to generate paths for each experiment.
 
     Attributes:
         day (int): Current day index in the simulation.
@@ -308,7 +331,7 @@ class TrafficEnvironment(AECEnv):
         machine_agents (list): List of all machine agent objects.
         human_agents (list): List of all human agent objects.
         last_episode_had_teleports (bool): Whether any agents were teleported in the last episode.
-        last_episode_travel_times (list): List of machine agents' travel times in the last episode.
+        last_episode_travel_times (list): List of all agents' travel-time records from the last episode.
     """
     
     metadata = {
@@ -447,8 +470,8 @@ class TrafficEnvironment(AECEnv):
         """Resets the environment.
         
         Args:
-            seed (int, optional): Seed for random number generation. Defaults to None.
-            options (dict, optional): Additional options for resetting the environment. Defaults to None.
+            seed (int, optional): Reserved for PettingZoo API compatibility; currently unused. Defaults to ``None``.
+            options (dict, optional): Reserved for PettingZoo API compatibility; currently unused. Defaults to ``None``.
             
         Returns:
             observations (dict): observations.
@@ -499,7 +522,8 @@ class TrafficEnvironment(AECEnv):
 
         Args:
             machine_action (int, optional):
-                The action to be taken by the machine agent. Defaults to None.
+                Route index selected for the current machine agent. ``None`` is used for
+                human-only simulations and PettingZoo dead steps. Defaults to ``None``.
             
         Returns:
             None
@@ -594,7 +618,7 @@ class TrafficEnvironment(AECEnv):
             agent (str): The identifier for the agent whose observations are to be retrieved.
             
         Returns:
-            self.observation_obj.agent_observations(agent) (np.ndarray): The observations for the specified agent.
+            np.ndarray: The current observation for the specified agent.
         """
         for machine in self.machine_agents:
             if str(machine.id) == agent:
@@ -615,11 +639,11 @@ class TrafficEnvironment(AECEnv):
     def mutation(self, disable_human_learning: bool = True, mutation_start_percentile: int = 25) -> None:
         """Perform mutation by converting selected human agents into machine agents.
 
-        This method identifies a subset of human agents that start after the 25th percentile of start times of
-        other vehicles, removes a specified number of these agents, and replaces them with machine agents.
+        This method identifies human agents whose start times are above the configured
+        percentile, removes a specified number of them, and replaces them with machine agents.
 
         Args:
-            disable_human_learning (bool, default=True): Boolean flag to disable human agents.
+            disable_human_learning (bool, default=True): Whether to disable further learning by human agents.
             mutation_start_percentile (int, default=25): The percentile threshold for selecting human agents for mutation. Set to -1 to disable this filter.
             
         Returns:
@@ -792,7 +816,7 @@ class TrafficEnvironment(AECEnv):
     ##### Simulation loop #####
     ###########################
 
-    def simulation_loop(self, machine_action: int, machine_id: int) -> None:
+    def simulation_loop(self, machine_action: int, machine_id: Union[int, str]) -> None:
         """This function contains the integration of the agent's actions to SUMO.
 
         We iterate through all the time steps of the simulation.
@@ -801,8 +825,9 @@ class TrafficEnvironment(AECEnv):
         we need to take the agent's action from the STEP function.
 
         Args:
-            machine_action (int): The id of the machine agent whose action is to be performed.
-            machine_id (int): The id of the machine agent whose action is to be performed.
+            machine_action (int): Route index selected by the machine agent.
+            machine_id (int | str): Identifier of the machine agent whose action is to be
+                performed. Human-only simulations use ``0``.
             
         Returns:
             None
@@ -882,6 +907,10 @@ class TrafficEnvironment(AECEnv):
     def get_free_flow_times(self, invalid_pad: float = 1e9) -> dict:
         """Retrieve free flow times for all origin-destination pairs from the simulator paths data.
 
+        Args:
+            invalid_pad (float, optional): Value used for missing clustered-route slots.
+                Defaults to ``1e9``.
+
         Returns:
             ff_dict (dict): A dictionary where keys are tuples of origin and destination,
                             and values are lists of free flow times.
@@ -932,7 +961,7 @@ class TrafficEnvironment(AECEnv):
         self.recorder.record(episode, ep_observations, cost_tables, detectors_dict)
 
     def plot_results(self) -> None:
-        """Method that plot the results of the simulation.
+        """Plot the recorded simulation results.
 
         Returns:
             None
@@ -981,7 +1010,7 @@ class TrafficEnvironment(AECEnv):
         Returns:
             Observations: An observation object.
         Raises:
-            ValueError: If model is unknown.
+            ValueError: If the configured observation type is unknown.
         """
 
         params = self.agent_params[kc.MACHINE_PARAMETERS]
@@ -1071,11 +1100,19 @@ class TrafficEnvironment(AECEnv):
     ##########################################
 
     def multisync_env_factories(self, env_wrapper, count: int = 0) -> list:
-        """ Creates array of factories that create environments identical to this one. Intended to be used with MultiSyncDataCollector from torchrl. It is assumed that each episode is one day long and human do not learn.
-            
-            Args:
-                env_wrapper (Callable): Callable used for wrapping the environment. Should take ``env`` as an argument and return wrapped ``env``. Put all PettingZoo wrappers inside it.
-                count (int): Number of factories to be returned.
+        """Create factories for environments used by TorchRL's ``MultiSyncDataCollector``.
+
+        Each episode is assumed to be one day long, and human agents are assumed not
+        to learn.
+
+        Args:
+            env_wrapper (Callable): Callable used for wrapping the environment. Should
+                take ``env`` as an argument and return the wrapped environment.
+            count (int, optional): Number of factories to return. ``0`` uses one fewer
+                than the available CPU count. Defaults to ``0``.
+
+        Returns:
+            list: Environment factory callables.
         """
         if 0 == count:
             count = os.cpu_count()-1
