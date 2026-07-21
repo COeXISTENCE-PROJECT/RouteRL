@@ -21,12 +21,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y sumo sumo-tools sumo-doc
           echo "SUMO_HOME=/usr/share/sumo" >> $GITHUB_ENV
-          echo "/usr/share/sumo/bin" >> $GITHUB_PATH
 
       - name: Verify SUMO installation
         run: |
           echo "SUMO_HOME is set to $SUMO_HOME"
           sumo --version
+          command -v python
+          python --version
 
       - name: Install dependencies
         run: |
