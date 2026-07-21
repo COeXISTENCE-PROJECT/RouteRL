@@ -52,13 +52,16 @@ if __name__ == "__main__":
 
     # Human learning phase
     human_learning_episodes = 100
+    new_machines_after_mutation = 10
+
+    training_episodes = (frames_per_batch / new_machines_after_mutation) * n_iters
 
     env_params = {
         "agent_parameters": {
             "num_agents": 100,
-            "new_machines_after_mutation": 10,
+            "new_machines_after_mutation": new_machines_after_mutation,
             "human_parameters": {
-                "model": "w_avg"
+                "model": "gawron"
             },
             "machine_parameters":
                 {
@@ -69,7 +72,8 @@ if __name__ == "__main__":
             "network_name": "two_route_yield"
         },
         "plotter_parameters": {
-            "phases": [0, human_learning_episodes],
+            "phases": [0, human_learning_episodes, int(training_episodes) + human_learning_episodes],
+            "phase_names": ["Human learning", "Mutation", "Testing"],
             "smooth_by": 50,
         },
         "path_generation_parameters":
@@ -94,7 +98,7 @@ if __name__ == "__main__":
 
     # In our setup, road networks initially consist of human agents, with AVs introduced later. However, RouteRL is flexible and can operate with only AV agents, only human agents, or a mix of both.
 
-    env = TrafficEnvironment(seed=42, **env_params)
+    env = TrafficEnvironment(seed=42, save_detectors_info=False, **env_params)
 
     print("Number of total agents is: ", len(env.all_agents), "\n")
     print("Number of human agents is: ", len(env.human_agents), "\n")

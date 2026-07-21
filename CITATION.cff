@@ -1,25 +1,48 @@
-cff-version: 1.0.0
+cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 authors:
-- family-names: "Akman"
-  given-names: "Ahmet Onur"
-  orcid: "https://orcid.org/0009-0006-4461-5025"
-- family-names: "Psarou"
-  given-names: "Anastasia"
-  orcid: "https://orcid.org/0009-0008-3314-4429"
-- family-names: "Gorczyca"
-  given-names: "Łukasz"
-  orcid: "https://orcid.org/0009-0009-7381-0251"
-- family-names: Zoltán György
-  given-names: Varga
-  orcid: "https://orcid.org/0009-0005-9917-1284"
-- family-names: Jamróz
-  given-names: Grzegorz
-  orcid: "https://orcid.org/0009-0004-7451-1484"
-- family-names: Kucharski
-  given-names: Rafał
-  orcid: "https://orcid.org/0000-0002-9767-8883"
+  - family-names: "Akman"
+    given-names: "Ahmet Onur"
+    orcid: "https://orcid.org/0009-0006-4461-5025"
+  - family-names: "Psarou"
+    given-names: "Anastasia"
+    orcid: "https://orcid.org/0009-0008-3314-4429"
+  - family-names: "Gorczyca"
+    given-names: "Łukasz"
+    orcid: "https://orcid.org/0009-0009-7381-0251"
+  - family-names: "Varga"
+    given-names: "Zoltán György"
+    orcid: "https://orcid.org/0009-0005-9917-1284"
+  - family-names: "Jamróz"
+    given-names: "Grzegorz"
+    orcid: "https://orcid.org/0009-0004-7451-1484"
+  - family-names: "Kucharski"
+    given-names: "Rafał"
+    orcid: "https://orcid.org/0000-0002-9767-8883"
 title: "RouteRL"
-version: 1.0.0
+version: 2.0.0
 date-released: 2025-02-21
 url: "https://github.com/COeXISTENCE-PROJECT/RouteRL"
+preferred-citation:
+  type: article
+  title: "RouteRL: Multi-agent reinforcement learning framework for urban route choice with autonomous vehicles"
+  authors:
+    - family-names: "Akman"
+      given-names: "Ahmet Onur"
+    - family-names: "Psarou"
+      given-names: "Anastasia"
+    - family-names: "Gorczyca"
+      given-names: "Łukasz"
+    - family-names: "Varga"
+      given-names: "Zoltán György"
+    - family-names: "Jamróz"
+      given-names: "Grzegorz"
+    - family-names: "Kucharski"
+      given-names: "Rafał"
+  journal: "SoftwareX"
+  volume: 31
+  pages: "102279"
+  year: 2025
+  issn: "2352-7110"
+  doi: "10.1016/j.softx.2025.102279"
+  url: "https://www.sciencedirect.com/science/article/pii/S2352711025002468"

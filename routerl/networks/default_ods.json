@@ -28,7 +28,10 @@
         "origins" : ["E0"],
         "destinations" : ["E2"]
     },
-
+    "two_route_trafficlight": {
+        "origins" : ["E0"],
+        "destinations" : ["E2"]
+    },
     "ortuzar": {
         "origins" : ["AB", "BE"],
         "destinations" : ["JL", "JM"]

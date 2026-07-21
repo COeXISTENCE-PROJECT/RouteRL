@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-02-05 13:39:29 by Eclipse SUMO netconvert Version 1.19.0
+<!-- generated on 2025-02-26 11:16:10 by Eclipse SUMO netconvert Version 1.19.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
-        <sumo-net-file value="two_route_yield.net.xml"/>
+        <sumo-net-file value="network_without_second_lane.net.xml"/>
     </input>
 
     <output>
@@ -34,14 +34,16 @@
 
 <connections version="1.16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/connections_file.xsd">
     <connection from="E0" to="E3" fromLane="0" toLane="0"/>
-    <connection from="E0" to="E1" fromLane="0" toLane="0"/>
+    <connection from="E0" to="E1" fromLane="1" toLane="0"/>
 
-    <connection from="E1" to="E2" fromLane="0" toLane="0"/>
+    <connection from="E1" to="E7" fromLane="0" toLane="0"/>
 
     <connection from="E3" to="E4" fromLane="0" toLane="0"/>
 
     <connection from="E4" to="E5" fromLane="0" toLane="0"/>
 
     <connection from="E5" to="E2" fromLane="0" toLane="0"/>
+
+    <connection from="E7" to="E2" fromLane="0" toLane="0"/>
 
 </connections>

@@ -10,5 +10,11 @@ from .simulator import SumoSimulator
 from .observations import Observations
 from .observations import PreviousAgentStart
 from .observations import PreviousAgentStartPlusStartTime
+from .observations import PreviousAgentStartPlusStartTimeDetectorData
+from .observations import TripInfoWithETA
+from .observations import TripInfoWithETAMaskNorm
+from .observations import TripInfoWithETASumo
+from .observations import TripInfoWithETARouteCongestion
+from .observations import RouteCongestion
 
 from .environment import TrafficEnvironment

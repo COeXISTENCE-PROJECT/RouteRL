@@ -22,6 +22,21 @@ logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
 
 
+def running_nanmean(values, last_n=0):
+    # Same window semantics as running_average, but missing pre-mutation values
+    # do not delay the relative-progress curves after mutation.
+    if last_n < 0:
+        return values
+
+    running_averages = list()
+    for idx, _ in enumerate(values):
+        start_from = max(0, idx - last_n) if last_n > 0 else 0
+        window = np.asarray(values[start_from:idx + 1], dtype=float)
+        window = window[np.isfinite(window)]
+        running_averages.append(float(window.mean()) if len(window) else np.nan)
+    return running_averages
+
+
 class Plotter:
     """Plot the results of the training
 
@@ -54,10 +69,12 @@ class Plotter:
         self.default_num_columns = 3
         self.multimode_width = 3
         self.multimode_height = 3
+        self.font_family = "Charter"
         self.linestyles = ['-']
         self.colors = []
 
         self.params = params
+        self.plot_choices = params[kc.PLOT_CHOICES]
         self.phases = params[kc.PHASES]
         self.phase_names = params[kc.PHASE_NAMES]
         self.smooth_by = params[kc.SMOOTH_BY]
@@ -88,13 +105,24 @@ class Plotter:
         """
 
         self.saved_episodes = self._get_episodes()
-        self.visualize_mean_rewards()
-        self.visualize_mean_travel_times()
-        self.visualize_tt_distributions()
-        self.visualize_actions()
-        self.visualize_action_shifts()
-        self.visualize_sim_length()
-        self.visualize_losses()
+        
+        if self.plot_choices == kc.PLOT_ALL:
+            self.visualize_mean_rewards()
+            self.visualize_mean_travel_times()
+            self.visualize_relative_progress()
+            self.visualize_agent_relative_progress()
+            self.visualize_tt_distributions()
+            self.visualize_actions()
+            self.visualize_action_shifts()
+            self.visualize_sim_length()
+            self.visualize_losses()
+        elif self.plot_choices == kc.PLOT_BASIC:
+            self.visualize_mean_rewards()
+            self.visualize_mean_travel_times()
+            self.visualize_relative_progress()
+            self.visualize_agent_relative_progress()
+        elif self.plot_choices != kc.PLOT_NONE:
+            logging.warning(f"Plot choice mode {self.plot_choices} is not recognised. Options: {kc.PLOT_ALL}, {kc.PLOT_BASIC}, {kc.PLOT_NONE}")
 
     def _get_episodes(self) -> list[int]:
         """Get the episodes data
@@ -155,6 +183,144 @@ class Plotter:
         plt.savefig(save_to)
         plt.close()
         logging.info(f"[SUCCESS] Rewards are saved to {save_to}")
+
+    ################################
+    ###### RELATIVE PROGRESS #######
+    ################################
+
+    def visualize_relative_progress(self) -> None:
+        """Visualise the mean relative progress.
+
+        Returns:
+            None
+        """
+
+        if not self.saved_episodes:
+            return
+
+        first_episode_path = os.path.join(
+            self.episodes_folder,
+            f"ep{self.saved_episodes[0]}.csv",
+        )
+        if not os.path.isfile(first_episode_path):
+            return
+        first_episode_columns = pd.read_csv(first_episode_path, nrows=1).columns
+        explicit_columns = {
+            "All": "relative_progress_all",
+            "Human": "relative_progress_remaining_human",
+            "AV": "relative_progress_future_av",
+        }
+        has_explicit_progress = all(
+            column in first_episode_columns for column in explicit_columns.values()
+        )
+        if not has_explicit_progress and "relative_progress" not in first_episode_columns:
+            logging.info("Skipping relative progress plot because saved episodes do not contain relative_progress.")
+            return
+
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], "relative_progress.png")
+        if has_explicit_progress:
+            all_mean_progress = self._retrieve_explicit_relative_progress(explicit_columns)
+        else:
+            all_mean_progress = self._retrieve_data_per_kind("relative_progress", transform="mean")
+
+        plt.figure(figsize=(self.default_width, self.default_height), layout='tight')
+
+        for idx, (kind, ep_reward_dict) in enumerate(all_mean_progress.items()):
+            episodes = list(ep_reward_dict.keys())
+            progress = list(ep_reward_dict.values())
+            smoothed_progress = running_nanmean(progress, last_n=self.smooth_by)
+            plt.plot(episodes, smoothed_progress, color=self.colors[idx], label=kind, linewidth=self.line_width)
+
+        for phase_idx, phase in enumerate(self.phases):
+            color = self.phase_colors[phase_idx % len(self.phase_colors)]
+            plt.axvline(x=phase,
+                        label=self.phase_names[phase_idx],
+                        linestyle='--',
+                        color=color,
+                        linewidth=self.line_width)
+
+        plt.xticks(fontsize=self.tick_label_size)
+        plt.yticks(fontsize=self.tick_label_size)
+        plt.xlabel('Episode', fontsize=self.label_size)
+        plt.ylabel('Mean Relative Progress', fontsize=self.label_size)
+        plt.grid(True, axis='y')
+        plt.title('Relative Progress vs Best Pre-Mutation Baseline', fontsize=self.title_size, fontweight='bold')
+        plt.legend(fontsize=self.legend_font_size)
+
+        plt.savefig(save_to)
+        plt.close()
+        logging.info(f"[SUCCESS] Relative progress is saved to {save_to}")
+
+    def _retrieve_explicit_relative_progress(self, progress_columns) -> dict[str, dict]:
+        all_values_dict = {label: dict() for label in progress_columns}
+        for episode in self.saved_episodes:
+            data_path = os.path.join(self.episodes_folder, f"ep{episode}.csv")
+            data = pd.read_csv(data_path)
+            for label, column in progress_columns.items():
+                values = pd.to_numeric(data[column], errors="coerce").to_numpy(dtype=float)
+                values = values[np.isfinite(values)]
+                all_values_dict[label][episode] = float(values[0]) if len(values) else np.nan
+        return all_values_dict
+
+    def visualize_agent_relative_progress(self) -> None:
+        """Visualise the mean of per-agent relative progress values."""
+
+        if not self.saved_episodes:
+            return
+
+        first_episode_path = os.path.join(
+            self.episodes_folder,
+            f"ep{self.saved_episodes[0]}.csv",
+        )
+        if not os.path.isfile(first_episode_path):
+            return
+
+        first_episode_columns = pd.read_csv(first_episode_path, nrows=1).columns
+        explicit_columns = {
+            "All": "relative_progress_agent_mean_all",
+            "Human": "relative_progress_agent_mean_remaining_human",
+            "AV": "relative_progress_agent_mean_future_av",
+        }
+        has_explicit_progress = all(
+            column in first_episode_columns for column in explicit_columns.values()
+        )
+        if not has_explicit_progress and "relative_progress_agent" not in first_episode_columns:
+            logging.info("Skipping agent relative progress plot because saved episodes do not contain relative_progress_agent.")
+            return
+
+        save_to = make_dir(self.params[kc.PLOTS_FOLDER], "relative_progress_agent_mean.png")
+        if has_explicit_progress:
+            all_mean_progress = self._retrieve_explicit_relative_progress(explicit_columns)
+        else:
+            all_mean_progress = self._retrieve_data_per_kind("relative_progress_agent", transform="mean")
+
+        plt.figure(figsize=(self.default_width, self.default_height), layout='tight')
+
+        for idx, (kind, ep_reward_dict) in enumerate(all_mean_progress.items()):
+            episodes = list(ep_reward_dict.keys())
+            progress = list(ep_reward_dict.values())
+            smoothed_progress = running_nanmean(progress, last_n=self.smooth_by)
+            plt.plot(episodes, smoothed_progress, color=self.colors[idx], label=kind, linewidth=self.line_width)
+
+        for phase_idx, phase in enumerate(self.phases):
+            color = self.phase_colors[phase_idx % len(self.phase_colors)]
+            plt.axvline(x=phase,
+                        label=self.phase_names[phase_idx],
+                        linestyle='--',
+                        color=color,
+                        linewidth=self.line_width)
+
+        plt.xticks(fontsize=self.tick_label_size)
+        plt.yticks(fontsize=self.tick_label_size)
+        plt.xlabel('Episode', fontsize=self.label_size)
+        plt.ylabel('Mean Agent Relative Progress', fontsize=self.label_size)
+        plt.grid(True, axis='y')
+        plt.title('Mean Agent Relative Progress vs Best Pre-Mutation Baseline', fontsize=self.title_size, fontweight='bold')
+        plt.legend(fontsize=self.legend_font_size)
+
+        plt.savefig(save_to)
+        plt.close()
+        logging.info(f"[SUCCESS] Agent relative progress is saved to {save_to}")
 
     ################################
     ######### TRAVEL TIMES #########
@@ -270,60 +436,66 @@ class Plotter:
         axes[1].set_title('Variance Travel Times', fontsize=self.title_size, fontweight='bold')
         axes[1].legend()
 
-        # Plot boxplot and violin plot for rewards
-        all_travel_times = self._retrieve_data_per_kind(kc.TRAVEL_TIME)
-        eps_to_plot = [ep-1 for ep in self.phases[1:]] + [self.saved_episodes[-1]]
-        data_to_plot = [all_travel_times[kc.TYPE_HUMAN][ep] for ep in eps_to_plot]
-        labels = [f'Humans\n({ph})' for ph in self.phase_names]
+        if len(self.phases) > 1:
+            # Plot boxplot and violin plot for rewards
+            all_travel_times = self._retrieve_data_per_kind(kc.TRAVEL_TIME)
+            eps_to_plot = list()
+            for phase in self.phases[1:]:
+                eps_before = [ep for ep in self.saved_episodes if ep < phase]
+                eps_to_plot.append(max(eps_before))
+            eps_to_plot.append(self.saved_episodes[-1])
+            data_to_plot = [all_travel_times[kc.TYPE_HUMAN][ep] for ep in eps_to_plot]
+            
+            if data_to_plot:
+                labels = [f'Humans\n({ph})' for ph in self.phase_names]
+                bplot = axes[2].boxplot(data_to_plot, labels=labels, patch_artist=True)
+                for idx, (patch, med) in enumerate(zip(bplot['boxes'], bplot['medians'])):
+                    color = self.colors[idx]
+                    patch.set_facecolor(color)
+                    med.set_color('black')
+                    med.set_linewidth(2)
+                axes[2].tick_params(axis='both', which='major', labelsize=self.tick_label_size)
+                axes[2].grid(axis = 'y')
+                axes[2].set_ylabel('Travel Times', fontsize=self.label_size)
+                axes[2].set_title(f'Human T.T. Distributions (End of Phases)', fontsize=self.title_size, fontweight='bold')
 
-        bplot = axes[2].boxplot(data_to_plot, labels=labels, patch_artist=True)
-        for idx, (patch, med) in enumerate(zip(bplot['boxes'], bplot['medians'])):
-            color = self.colors[idx]
-            patch.set_facecolor(color)
-            med.set_color('black')
-            med.set_linewidth(2)
-        axes[2].tick_params(axis='both', which='major', labelsize=self.tick_label_size)
-        axes[2].grid(axis = 'y')
-        axes[2].set_ylabel('Travel Times', fontsize=self.label_size)
-        axes[2].set_title(f'Human T.T. Distributions (End of Phases)', fontsize=self.title_size, fontweight='bold')
+            dark_gray = '#333333'
+            axes[3].set_facecolor(dark_gray)
+            for idx, (label, data) in enumerate(zip(labels, data_to_plot)):
+                data = np.array(data)
+                data[np.isinf(data)] = np.nan  # Convert inf to NaN
 
-        dark_gray = '#333333'
-        axes[3].set_facecolor(dark_gray)
-        for idx, (label, data) in enumerate(zip(labels, data_to_plot)):
-            data = np.array(data)
-            data[np.isinf(data)] = np.nan  # Convert inf to NaN
-
-            sns.kdeplot(data,
-                        ax=axes[3],
-                        label=label,
-                        alpha=0.8,
-                        fill=True,
-                        linewidth=3,
-                        color=self.colors[idx],
-                        clip=(0, None))
-            median_val, mean_val = np.nanmedian(data), np.nanmean(data)
-            # Plot a vertical line from top to mid-plot for median
-            axes[3].axvline(median_val,
+                sns.kdeplot(data,
+                            ax=axes[3],
+                            label=label,
+                            alpha=0.8,
+                            fill=True,
+                            linewidth=3,
                             color=self.colors[idx],
-                            linestyle='-',
-                            linewidth=2,
-                            ymin=0.5,
-                            ymax=1,
-                            label=f'Median {label}')
-            # Plot a vertical line from bottom to mid-plot for mean
-            axes[3].axvline(mean_val,
-                            color=self.colors[idx],
-                            linestyle='--',
-                            linewidth=2,
-                            ymin=0,
-                            ymax=0.5,
-                            label=f'Mean {label}')
-        axes[3].tick_params(axis='both', which='major', labelsize=self.tick_label_size)
-        axes[3].set_xlim(0, None)
-        axes[3].set_xlabel('Travel Times', fontsize=self.label_size)
-        axes[3].set_ylabel('Probability Density', fontsize=self.label_size)
-        axes[3].set_title(f'Human T.T. Distributions (End of Phases)', fontsize=self.title_size, fontweight='bold')
-        axes[3].legend()
+                            clip=(0, None))
+                median_val, mean_val = np.nanmedian(data), np.nanmean(data)
+                # Plot a vertical line from top to mid-plot for median
+                axes[3].axvline(median_val,
+                                color=self.colors[idx],
+                                linestyle='-',
+                                linewidth=2,
+                                ymin=0.5,
+                                ymax=1,
+                                label=f'Median {label}')
+                # Plot a vertical line from bottom to mid-plot for mean
+                axes[3].axvline(mean_val,
+                                color=self.colors[idx],
+                                linestyle='--',
+                                linewidth=2,
+                                ymin=0,
+                                ymax=0.5,
+                                label=f'Mean {label}')
+            axes[3].tick_params(axis='both', which='major', labelsize=self.tick_label_size)
+            axes[3].set_xlim(0, None)
+            axes[3].set_xlabel('Travel Times', fontsize=self.label_size)
+            axes[3].set_ylabel('Probability Density', fontsize=self.label_size)
+            axes[3].set_title(f'Human T.T. Distributions (End of Phases)', fontsize=self.title_size, fontweight='bold')
+            axes[3].legend()
 
         plt.savefig(save_to)
         plt.close()
@@ -709,7 +881,7 @@ def plotter(params = None):
         logging.warning(f"No parameters provided for plotter, "
                         f"using default parameters. This may result in incorrect plots.")
         curr_dir = os.path.dirname(os.path.realpath(__file__))
-        params_path = os.path.join(curr_dir, f'../environment/{kc.PARAMS_FILE}')
+        params_path = os.path.join(curr_dir, f'../environment/{kc.DEFAULTS_FILE}')
         params = get_params(params_path)
         params = params[kc.PLOTTER]
 

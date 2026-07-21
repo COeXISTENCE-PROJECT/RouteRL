@@ -8,6 +8,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 
 from routerl.keychain import Keychain as kc
+from routerl.human_learning import Random
 from routerl.human_learning import get_learning_model
 
 
@@ -37,6 +38,7 @@ class BaseAgent(ABC):
         self.destination = destination
         self.behavior = behavior
         self.last_action = 0
+        self.default_action = None
 
     @property
     @abstractmethod
@@ -129,14 +131,18 @@ class HumanAgent(BaseAgent):
             The parameters for the learning model of the agent as specified in `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_.
         initial_knowledge (float):
             The initial knowledge of the agent.
+        action_mask (np.array, optional):
+            The action mask for the agent.
     """
 
-    def __init__(self, id, start_time, origin, destination, params, initial_knowledge):
+    def __init__(self, id, start_time, origin, destination, params, initial_knowledge, action_mask=None):
         kind = kc.TYPE_HUMAN
         behavior = kc.SELFISH
         super().__init__(id, kind, start_time, origin, destination, behavior)
+        self.initial_knowledge = initial_knowledge
         self.model = get_learning_model(params, initial_knowledge)
         self.last_reward = None
+        self.action_mask = action_mask # np.array of 0/1, length = num_actions
 
     def __repr__(self):
         return f"Human {self.id}"
@@ -172,7 +178,45 @@ class HumanAgent(BaseAgent):
             int: The action of the agent.
         """
 
-        return self.model.act(observation)
+        if self.default_action is not None:
+            action = int(self.default_action)
+
+            if self.action_mask is not None:
+                action_mask = np.asarray(self.action_mask)
+                if action < 0 or action >= len(action_mask) or action_mask[action] == 0:
+                    raise RuntimeError(
+                        f"default_action {action} is invalid for agent {self.id}"
+                    )
+
+            return action
+
+        if self.action_mask is not None:
+            if not np.any(self.action_mask):
+                raise ValueError("Action mask must allow at least one route")
+
+            allowed_actions = np.flatnonzero(self.action_mask)
+            original_cost = self.model.cost.copy()
+            masked_cost = original_cost.copy()
+            # Set the cost of the masked actions to a very low number to effectively disable them
+            # With a positive human beta (defaults.json), the probability of the masked action - exp(-inf) - becomes 0
+            masked_cost[np.asarray(self.action_mask) == 0] = -np.inf
+            self.model.cost = masked_cost
+            try:
+                action = self.model.act(observation)
+            finally:
+                self.model.cost = original_cost
+
+            # Random doesn't use cost so the code above doesn't prevent sampling a masked action by this model
+            # If it happens to choose a masked action - randomly pick one that's allowed instead
+            if self.action_mask[action] == 0:
+                if isinstance(self.model, Random):
+                    action = int(np.random.choice(allowed_actions))
+                else:
+                    raise RuntimeError("Masked action returned by non-Random human model")
+        else:
+            action = self.model.act(observation)
+
+        return action
 
     def learn(self, action, observation) -> None:
         """Updates the agent's knowledge based on the action taken and the resulting observations.
@@ -334,7 +378,7 @@ class MachineAgent(BaseAgent):
         warmth_agents = warmth_human + warmth_machine
         return warmth_agents
 
-    def get_reward(self, observation: list[dict]) -> float:
+    def get_reward(self, observation: list[dict], group_vicinity: bool = False) -> float:
         """This method calculated the reward of each individual agent, based on the travel time of the agent,
         the group of agents, the other agents, and all agents, weighted according to the agent's behavior.
 
@@ -344,14 +388,18 @@ class MachineAgent(BaseAgent):
         Returns:
             float: The reward of the agent.
         """
-
-        min_start_time, max_start_time = self.start_time - self.observed_span, self.start_time + self.observed_span
-        
         vicinity_obs = list()
-        for obs in observation:
-            if (obs[kc.AGENT_ORIGIN], obs[kc.AGENT_DESTINATION]) == (self.origin, self.destination):
-                if min_start_time <= obs[kc.AGENT_START_TIME] <= max_start_time:
-                    vicinity_obs.append(obs)
+        if group_vicinity == True:
+
+            min_start_time, max_start_time = self.start_time - self.observed_span, self.start_time + self.observed_span
+
+            for obs in observation:
+                if (obs[kc.AGENT_ORIGIN], obs[kc.AGENT_DESTINATION]) == (self.origin, self.destination):
+                    if min_start_time <= obs[kc.AGENT_START_TIME] <= max_start_time:
+                        vicinity_obs.append(obs)
+        else:        
+            for obs in observation:
+                vicinity_obs.append(obs)
 
         group_obs, others_obs, all_obs, own_tt = list(), list(), list(), None
         for obs in vicinity_obs:
@@ -372,17 +420,30 @@ class MachineAgent(BaseAgent):
         return agent_reward
 
     def _get_reward_coefs(self) -> tuple:
-        a, b, c, d = 0, 0, 0, 0
-        if self.behavior == kc.SELFISH:
-            a, b, c, d = -1, 0, 0, 0 
+        if isinstance(self.behavior, (list, tuple)) and len(self.behavior) == 4:
+            coeffs = tuple(self.behavior)
+            self.behavior = kc.CUSTOM
+            return coeffs
+        elif self.behavior == kc.SELFISH:
+            return -1.0, 0, 0, 0 
         elif self.behavior == kc.COMPETITIVE:
-            a, b, c, d = -2, 0, 1, 0
+            return -2.0, 0, 1.0, 0
         elif self.behavior == kc.COLLABORATIVE:
-            a, b, c, d = -0.5, -0.5, 0, 0
+            return -0.5, -0.5, 0, 0
+        elif self.behavior == kc.COOPERATIVE:
+            return 0, -1.0, 0, 0
         elif self.behavior == kc.SOCIAL:
-            a, b, c, d = -0.5, 0, 0, -0.5
+            return -0.5, 0, 0, -0.5
         elif self.behavior == kc.ALTRUISTIC:
-            a, b, c, d = 0, 0, 0, -1
+            return 0, 0, 0, -1.0
         elif self.behavior == kc.MALICIOUS:
-            a, b, c, d = 0, 0, 1, 0
-        return a, b, c, d
+            return 0, 0, 1.0, 0
+        elif self.behavior == kc.COLLECTIVIST:
+            return -0.1, -0.9, 0, 0
+        elif self.behavior == kc.MILITANT:
+            return 0, -2.0, 1.0, 0
+        else:
+            raise ValueError(f"Unknown behavior: {self.behavior}")
+        
+        
+        

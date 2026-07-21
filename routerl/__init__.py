@@ -14,7 +14,7 @@ Some example imports:
     from routerl.environment import PreviousAgentStart
 """
 
-__version__ = "1.0.1"
+__version__ = "1.3.0"
 
 from .keychain import Keychain
 
@@ -22,7 +22,8 @@ from .environment import (
     generate_agents,
     generate_agent_data,
     SumoSimulator,
-    TrafficEnvironment
+    TrafficEnvironment,
+    MachineAgent
 )
 
 from .human_learning import (
@@ -34,5 +35,3 @@ from .services import (
     Plotter,
     Recorder
 )
-
-#TODO create_agents

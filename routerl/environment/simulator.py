@@ -8,7 +8,9 @@ import janux as jx
 import logging
 import random
 import pandas as pd
-import traci
+import traci.constants as tc
+
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from routerl.keychain import Keychain as kc
 from routerl.utilities import confirm_env_variable
@@ -31,6 +33,15 @@ class SumoSimulator():
             Dictionary of parameters for the SUMO environment. specified `here <https://coexistence-project.github.io/RouteRL/documentation/pz_env.html#>`_.
         seed (int): 
             Random seed for reproducibility.
+        using_custom_demand (bool):
+            Flag to indicate whether user provides custom travel demand data.
+        generate_asgn_data (bool):
+            Generate additional SUMO_output files (per-timestep departures and snapshots).
+        use_clustered_routes (bool):
+            Flag to indicate whether to use an updated, clustered-routes-compatible version
+            of JanuX for path generation.
+        use_edge_subscriptions (bool):
+            Subscribe to dynamic per-edge SUMO variables required by congestion observations.
         
     Attributes:
         network_name: Network name.
@@ -40,56 +51,127 @@ class SumoSimulator():
         timestep: Time step being simulated within the day.
     """
 
-    def __init__(self, params: dict, path_gen_params: dict, seed: int = 23423):
+    def __init__(
+        self,
+        params: dict,
+        path_gen_params: dict,
+        seed: int = 23423,
+        using_custom_demand: bool = False,
+        save_detectors_info: bool = False,
+        generate_asgn_data: bool = False,
+        use_clustered_routes: bool = False,
+        use_edge_subscriptions: bool = False,
+    ) -> None:
         self.network_name        = params[kc.NETWORK_NAME]
         self.sumo_type           = params[kc.SUMO_TYPE]
         self.number_of_paths     = params[kc.NUMBER_OF_PATHS]
         self.simulation_length   = params[kc.SIMULATION_TIMESTEPS]
+        self.stuck_time          = params[kc.STUCK_TIME]
+        self.daily_reseed        = params[kc.DAILY_RESEED]
+        self.use_libsumo         = params[kc.USE_LIBSUMO]
+        self.use_sumo_teleport   = params[kc.USE_SUMO_TELEPORT]
 
-        curr_dir = os.path.dirname(os.path.abspath(__file__))
+        self.experiment_id = 0 # for generate_asgn_data, overwritten through env.unwrapped.simulator.experiment_id = ... in URB scripts
+        self.generate_asgn_data = generate_asgn_data
+        self.use_clustered_routes = use_clustered_routes
+        self.use_edge_subscriptions = bool(use_edge_subscriptions)
 
-        self.network_folder      = os.path.join(curr_dir,
-                                                kc.NETWORK_FOLDER).replace("$net$", self.network_name)
-        self.sumo_config_path    = os.path.join(curr_dir,
-                                                kc.SUMO_CONFIG_PATH).replace("$net$", self.network_name)
-        self.routes_xml_path     = os.path.join(curr_dir,
-                                                kc.ROU_FILE_PATH).replace("$net$", self.network_name)
-        self.sumo_fcd            = os.path.join(curr_dir,
-                                                kc.SUMO_FCD).replace("$net$", self.network_name)
-        self.detector_save_path  = os.path.join(curr_dir,
-                                                kc.DETECTORS_CSV_PATH).replace("$net$", self.network_name)
-        self.conn_file_path      = os.path.join(curr_dir,
-                                                kc.CONNECTION_FILE_PATH).replace("$net$", self.network_name)
-        self.edge_file_path      = os.path.join(curr_dir,
-                                                kc.EDGE_FILE_PATH).replace("$net$", self.network_name)
-        self.nod_file_path       = os.path.join(curr_dir,
-                                                kc.NOD_FILE_PATH).replace("$net$", self.network_name)
-        self.rou_xml_save_path   = os.path.join(curr_dir,
-                                                kc.ROUTE_XML_PATH).replace("$net$", self.network_name)
-        self.det_xml_save_path   = os.path.join(curr_dir,
-                                                kc.DETECTORS_XML_PATH).replace("$net$", self.network_name)
-        self.default_od_path     = os.path.join(curr_dir,
-                                                kc.DEFAULT_ODS_PATH)
+        if self.network_name in kc.NETWORK_NAMES:
+            curr_dir = os.path.dirname(os.path.abspath(__file__))
+
+            self.network_folder      = os.path.join(curr_dir,
+                                                    kc.NETWORK_FOLDER).replace("$net$", self.network_name)
+            self.network_file_path   = os.path.join(curr_dir,
+                                                    kc.NETWORK_FILE_PATH).replace("$net$", self.network_name)
+            self.routes_xml_path     = os.path.join(curr_dir,
+                                                    kc.ROU_FILE_PATH).replace("$net$", self.network_name)
+            self.conn_file_path      = os.path.join(curr_dir,
+                                                    kc.CONNECTION_FILE_PATH).replace("$net$", self.network_name)
+            self.edge_file_path      = os.path.join(curr_dir,
+                                                    kc.EDGE_FILE_PATH).replace("$net$", self.network_name)
+            self.nod_file_path       = os.path.join(curr_dir,
+                                                    kc.NOD_FILE_PATH).replace("$net$", self.network_name)
+        else:
+            self.network_folder      = params[kc.CUSTOM_NETWORK_FOLDER] if params[kc.CUSTOM_NETWORK_FOLDER] != "NA" else self.network_name
+            self.network_file_path   = os.path.join(self.network_folder, self.network_name + ".net.xml")
+            self.routes_xml_path     = os.path.join(self.network_folder, self.network_name + ".rou.xml")
+            self.conn_file_path      = os.path.join(self.network_folder, self.network_name + ".con.xml")
+            self.edge_file_path      = os.path.join(self.network_folder, self.network_name + ".edg.xml")
+            self.nod_file_path       = os.path.join(self.network_folder, self.network_name + ".nod.xml")
+          
+        self.det_xml_save_path       = os.path.join(params[kc.RECORDS_FOLDER], kc.DETECTORS_XML_FILE_NAME)
+        self.paths_csv_file_path     = os.path.join(params[kc.RECORDS_FOLDER], kc.PATHS_CSV_FILE_NAME)
+        self.rou_xml_save_path       = os.path.join(params[kc.RECORDS_FOLDER], kc.ROUTE_XML_FILE_NAME)
+        self.sumo_save_path          = os.path.join(params[kc.RECORDS_FOLDER], kc.SUMO_LOGS_FOLDER)
         
-        self.paths_csv_file_path = os.path.join(params[kc.RECORDS_FOLDER], kc.PATHS_CSV_FILE_NAME)
-
         random.seed(seed)
 
         self.seed = seed
+        self.day_seed = seed
         self.sumo_id = f"{random.randint(0, 1000)}"
         self.sumo_connection = None
+        self.save_detectors_info = save_detectors_info
 
         confirm_env_variable(kc.ENV_VAR, append="tools")
 
         if path_gen_params is not None:
-            self._get_paths(params, path_gen_params)
+            self._get_paths(params, path_gen_params, using_custom_demand)
             logging.info("[SUCCESS] Path generation completed.")
         self._check_paths_ready()
         self.detectors_name = self._get_detectors()
+        
         self.timestep = 0
+        self.runs = 0
         self.route_id_cache = dict()
+        self.waiting_vehicles = dict()
+
+        # Edge variable subscriptions for the enriched observation
+        self.edge_ids = []
+        self.edge_subscription_vars = (
+            tc.LAST_STEP_VEHICLE_NUMBER,
+            tc.LAST_STEP_MEAN_SPEED,
+            tc.LAST_STEP_OCCUPANCY,
+            tc.LAST_STEP_VEHICLE_HALTING_NUMBER,
+            # tc.VAR_WAITING_TIME,
+            # tc.VAR_CURRENT_TRAVELTIME,
+        )
+        self.latest_edge_state = {} # edge_id -> subscription results
+        self._edge_subscription_fallback_reported = False
 
         logging.info("[SUCCESS] Simulator is ready to simulate!")
+
+    ################################
+    ######## ASGN GENERATE #########
+    ################################
+
+    def save_snapshot(self, snapshot_idx, experiment_id=0):
+
+        snapshot_data = []
+        vehicle_ids = self.sumo_connection.vehicle.getIDList()
+        if not vehicle_ids:
+            return
+        for v_id in vehicle_ids:
+            snapshot_data.append({"exp_id": experiment_id,"time": snapshot_idx, "agent_id": v_id, "edge_id": self.sumo_connection.vehicle.getRoadID(v_id)})
+        df = pd.DataFrame(snapshot_data)
+        snapshot_path = os.path.join(
+            self.sumo_save_path, f"all_snapshots.csv"
+        )
+        file_exists = os.path.isfile(snapshot_path)
+        df.to_csv(snapshot_path, mode='a', index=False, header=not file_exists)
+
+    def save_departures(self, snapshot_idx, experiment_id=0):
+
+        departures_data = []
+        vehicle_ids = self.sumo_connection.simulation.getDepartedIDList()
+        if not vehicle_ids:
+            return
+        for v_id in vehicle_ids:
+            departures_data.append({"exp_id": experiment_id, "time": snapshot_idx, "agent_id": v_id, "path": self.sumo_connection.vehicle.getRoute(v_id)})
+        df = pd.DataFrame(departures_data)
+        departures_path = os.path.join(self.sumo_save_path, f"all_departures.csv")
+        file_exists = os.path.isfile(departures_path)
+        df.to_csv(departures_path, mode='a', index=False, header=not file_exists)
+
 
     ################################
     ######## CONFIG CHECKS #########
@@ -106,16 +188,26 @@ class SumoSimulator():
                 "to the environment under path_generation_parameters"
             )
             
-    def _get_paths(self, params: dict, path_gen_params: dict) -> None:
+    def _get_paths(self, params: dict, path_gen_params: dict, using_custom_demand: bool) -> None:
 
         # Build the network
-        network = jx.build_digraph(self.conn_file_path, self.edge_file_path, self.routes_xml_path)
-        
+        if self.use_clustered_routes:
+            network = jx.build_digraph(self.conn_file_path, self.edge_file_path, self.routes_xml_path, self.use_clustered_routes)
+        else:
+            network = jx.build_digraph(self.conn_file_path, self.edge_file_path, self.routes_xml_path)
+
         # Get origins and destinations
         origins = path_gen_params[kc.ORIGINS]
         destinations = path_gen_params[kc.DESTINATIONS]
         
-        # Generate paths
+        # Get demand, if using custom demand
+        if using_custom_demand:
+            demand_df = pd.read_csv(os.path.join(params[kc.RECORDS_FOLDER], kc.AGENTS_CSV_FILE_NAME))
+            demands = list(zip(demand_df[kc.AGENT_ORIGIN], demand_df[kc.AGENT_DESTINATION]))
+            demands = list(set(demands))
+        else:
+            demands = None
+        
         path_gen_kwargs = {
             "number_of_paths": path_gen_params[kc.NUMBER_OF_PATHS],
             "random_seed": self.seed,
@@ -124,26 +216,96 @@ class SumoSimulator():
             "weight": path_gen_params[kc.WEIGHT],
             "verbose": False
         }
-        routes = jx.basic_generator(network, origins, destinations, as_df=True, calc_free_flow=True, **path_gen_kwargs)
+        path_gen_workers = path_gen_params[kc.PATH_GEN_WORKERS]
+        if path_gen_workers < 1:
+            raise ValueError("path_gen_workers must be at least 1.")
+        
+        if demands is None:
+            generator = jx.clustering_generator if self.use_clustered_routes else jx.basic_generator
+            routes = generator(
+                network=network,
+                origins=origins,
+                destinations=destinations,
+                as_df=True,
+                calc_free_flow=True,
+                **path_gen_kwargs,
+            )
+        else:
+            routes = pd.DataFrame(columns=["origins", "destinations", "path", "free_flow_time"])
+            max_workers = min(path_gen_workers, len(demands))
+            if max_workers > 0:
+                with ProcessPoolExecutor(max_workers=max_workers) as executor:
+                    futures = [executor.submit(self._route_gen_process, network, demands, origins, destinations, idx, path_gen_kwargs) for idx in range(len(demands))]
+                    for i, future in enumerate(as_completed(futures), 1):
+                        #print(f"\r{i}/{len(demands)} - {demands[i]}", end="")
+                        routes_df = future.result()
+                        routes = pd.concat([routes, routes_df], ignore_index=True)
+            
         self._save_paths_to_disc(routes, origins, destinations)
         
-        # Save paths visualizations
-        path_visuals_path = params[kc.PLOTS_FOLDER]
-        os.makedirs(path_visuals_path, exist_ok=True)
         # Visualize paths and save figures
-        for origin_idx, origin in enumerate(origins):
-            for dest_idx, destination in enumerate(destinations):
-                # Filter routes for the current origin-destination pair
-                routes_to_show = (routes[(routes["origins"] == origin_idx)
-                                         & (routes["destinations"] == dest_idx)]['path'])
-                routes_to_show = [route.split(" ") for route in routes_to_show]
-                # Specify the save path and title for the figure
-                fig_save_path = os.path.join(path_visuals_path, f"{origin_idx}_{dest_idx}.png")
-                title=f"Origin: {origin_idx} ({origin}), Destination: {dest_idx} ({destination})"
-                # Show the routes
-                jx.show_multi_routes(self.nod_file_path, self.edge_file_path,
-                                    routes_to_show, origin, destination, 
-                                    show=False, save_file_path=fig_save_path, title=title)
+        if path_gen_params[kc.VISUALIZE_PATHS]:
+            path_visuals_path = params[kc.PLOTS_FOLDER]
+            os.makedirs(path_visuals_path, exist_ok=True)
+            visualization_tasks = len(origins) * len(destinations)
+            
+            max_workers = min(path_gen_workers, visualization_tasks)
+            if max_workers > 0:
+                with ProcessPoolExecutor(max_workers=max_workers) as executor:
+                    futures = [executor.submit(self._route_vis_process, demands, origin_idx, dest_idx, origin, destination, routes, path_visuals_path) for origin_idx, origin in enumerate(origins) for dest_idx, destination in enumerate(destinations)]
+            """
+            for origin_idx, origin in enumerate(origins):
+                for dest_idx, destination in enumerate(destinations):
+                    if (demands is not None) and (not (origin_idx, dest_idx) in demands):
+                        continue
+                    # Filter routes for the current origin-destination pair
+                    routes_to_show = (routes[(routes["origins"] == origin_idx)
+                                            & (routes["destinations"] == dest_idx)]['path'])
+                    routes_to_show = [route.split(" ") for route in routes_to_show]
+                    # Specify the save path and title for the figure
+                    fig_save_path = os.path.join(path_visuals_path, f"{origin_idx}_{dest_idx}.png")
+                    title=f"Origin: {origin_idx} ({origin}), Destination: {dest_idx} ({destination})"
+                    # Show the routes
+                    try:
+                        jx.show_multi_routes(self.nod_file_path, self.edge_file_path,
+                                            routes_to_show, origin, destination, 
+                                            show=False, save_file_path=fig_save_path, title=title)
+                    except:
+                        logging.warning(f"Could not visualize routes for {origin} to {destination}.")
+            """
+                                                
+    def _route_gen_process(self, network, demands, origins, destinations, demand_idx, path_gen_kwargs):
+        origin = origins[demands[demand_idx][0]]
+        destination = destinations[demands[demand_idx][1]]
+
+        generator = jx.clustering_generator if self.use_clustered_routes else jx.extended_generator
+
+        return generator(
+            network=network,
+            origins=[origin],
+            destinations=[destination],
+            as_df=True,
+            calc_free_flow=True,
+            **path_gen_kwargs
+        )
+        
+    def _route_vis_process(self, demands, origin_idx, dest_idx, origin, destination, routes, path_visuals_path):
+        if (demands is not None) and (not (origin_idx, dest_idx) in demands):
+            return
+        # Filter routes for the current origin-destination pair
+        routes_to_show = (routes[(routes["origins"] == origin_idx)
+                                & (routes["destinations"] == dest_idx)]['path'])
+        routes_to_show = [route.split(" ") for route in routes_to_show]
+        # Specify the save path and title for the figure
+        fig_save_path = os.path.join(path_visuals_path, f"{origin_idx}_{dest_idx}.png")
+        title=f"Origin: {origin_idx} ({origin}), Destination: {dest_idx} ({destination})"
+        # Show the routes
+        try:
+            jx.show_multi_routes(self.nod_file_path, self.edge_file_path,
+                                routes_to_show, origin, destination, 
+                                show=False, save_file_path=fig_save_path, title=title)
+        except:
+            logging.warning(f"Could not visualize routes for {origin} to {destination}.")
 
     def _save_paths_to_disc(self, routes_df: pd.DataFrame, origins: list, destinations: list) -> None:
 
@@ -189,14 +351,10 @@ class SumoSimulator():
         paths_list = [path.split(" ") for path in paths_df["path"].values]
         detectors_name = sorted(list(set([node for path in paths_list for node in path])))
         
-        detectors_df = pd.DataFrame({"name": detectors_name})
-        detectors_df.to_csv(self.detector_save_path, index=False)
-        
         with open(self.det_xml_save_path, "w") as det:
             print("""<additional>""", file=det)
             for det_id in detectors_name:
-                print(f"<inductionLoop id=\"{det_id}_det\" lane=\"{det_id}_0\" pos=\"-5\" file=\"NUL\" friendlyPos=\"True\"/>",
-                      file=det)
+                print(f"<inductionLoop id=\"{det_id}_det\" lane=\"{det_id}_0\" pos=\"-5\" file=\"NUL\" friendlyPos=\"True\"/>", file=det)
             print("</additional>", file=det)
             
         return detectors_name
@@ -211,14 +369,47 @@ class SumoSimulator():
         Returns:
             None
         """
+        
+        self.runs += 1
 
-        sumo_cmd = [self.sumo_type,"--seed",
-                    str(self.seed),
-                    "--fcd-output",
-                    self.sumo_fcd,
-                    "-c", self.sumo_config_path]
-        traci.start(sumo_cmd, label=self.sumo_id)
-        self.sumo_connection = traci.getConnection(self.sumo_id)
+        individual_sumo_stats_file = os.path.join(self.sumo_save_path,
+                                                  f"detailed_sumo_stats_{self.runs}.xml")
+        
+        combined_sumo_stats_file = os.path.join(self.sumo_save_path,
+                                                f"sumo_stats_{self.runs}.xml")
+
+        time_to_teleport = self.stuck_time if self.use_sumo_teleport else -1
+        sumo_cmd = [
+            self.sumo_type,
+            "--seed",
+            str(self.day_seed),
+            "--net-file",
+            self.network_file_path,
+            "--additional-files",
+            f"{self.det_xml_save_path},{self.rou_xml_save_path}",
+            "--no-step-log",
+            "true",
+            "--time-to-teleport",
+            f"{time_to_teleport}",
+            "--statistic-output",
+            combined_sumo_stats_file,
+            "--tripinfo-output",
+            individual_sumo_stats_file
+            ]
+
+        # import libsumo while using traci semantics
+        if self.use_libsumo:
+            import libsumo as traci
+            traci.start(sumo_cmd, label=self.sumo_id)
+            self.sumo_connection = traci
+
+        else:
+            import traci
+            traci.start(sumo_cmd, label=self.sumo_id)
+            self.sumo_connection = traci.getConnection(self.sumo_id)
+
+        if self.use_edge_subscriptions:
+            self._initialize_edge_subscriptions()
 
     def stop(self) -> None:
         """Stops and closes the SUMO simulation.
@@ -238,23 +429,69 @@ class SumoSimulator():
             det_dict (dict[str, float]): dictionary with detector data.
         """
 
-        det_dict = {name: None for name in self.detectors_name}
-        for det_name in self.detectors_name:
-            det_dict[det_name]  = self.sumo_connection.inductionloop.getIntervalVehicleNumber(f"{det_name}_det")
+        det_dict = {name: 0 for name in self.detectors_name}
+        if self.save_detectors_info:
+            for det_name in self.detectors_name:
+                det_dict[det_name]  = self.sumo_connection.lanearea.getIntervalVehicleNumber(f"{det_name}_det")
 
-        self.sumo_connection.load(["--seed",
-                                   str(self.seed),
-                                   "--fcd-output",
-                                   self.sumo_fcd,
-                                   '-c',
-                                   self.sumo_config_path])
+        self.runs += 1
+
+        individual_sumo_stats_file = os.path.join(self.sumo_save_path,
+                                                  f"detailed_sumo_stats_{self.runs}.xml")
+        
+        combined_sumo_stats_file = os.path.join(self.sumo_save_path,
+                                                f"sumo_stats_{self.runs}.xml")
+        
+        if self.daily_reseed:   self.day_seed = random.randint(0, 1000)
+        
+        time_to_teleport = self.stuck_time if self.use_sumo_teleport else -1
+        sumo_cmd = [
+            "--seed",
+            str(self.day_seed),
+            "--net-file",
+            self.network_file_path,
+            "--additional-files",
+            f"{self.det_xml_save_path},{self.rou_xml_save_path}",
+            "--no-step-log",
+            "true",
+            "--time-to-teleport",
+            f"{time_to_teleport}",
+            "--statistic-output",
+            combined_sumo_stats_file,
+            "--tripinfo-output",
+            individual_sumo_stats_file
+            ]
+
+        self.sumo_connection.load(sumo_cmd)
+
+        if self.use_edge_subscriptions:
+            self._initialize_edge_subscriptions()
 
         self.timestep = 0
+        self.waiting_vehicles = dict()
         return det_dict
 
     ################################
     ######### SIMULATION ###########
     ################################
+
+    def retrieve_detector_data(self) -> None:
+        """Return information about whether an a vehicle stopped in a detector."""
+        self.stopped_vehicles_info = []
+
+        for det_name in self.detectors_name:
+            det_id = f"{det_name}_det"
+            veh_ids = self.sumo_connection.lanearea.getLastStepVehicleIDs(det_id)
+
+            for veh_id in veh_ids:
+                speed = self.sumo_connection.vehicle.getSpeed(veh_id)
+                if speed < 0.1:
+                    self.stopped_vehicles_info.append({
+                    "time": self.timestep,
+                    "detector": det_id,
+                    "vehicle_id": veh_id
+                })
+                    
 
     def add_vehicle(self, act_dict: dict) -> None:
         """Adds a vehicle to the SUMO simulation environment with the specified route and parameters.
@@ -276,6 +513,31 @@ class SumoSimulator():
                                          routeID=route_id,
                                          depart=str(act_dict[kc.AGENT_START_TIME]),
                                          typeID=kind)
+        self.waiting_vehicles[str(act_dict[kc.AGENT_ID])] = 0
+
+    
+    def _teleportVehicles(self):
+        if self.use_sumo_teleport:
+            teleported = self.sumo_connection.simulation.getStartingTeleportIDList()
+            for veh_id in teleported:
+                self.sumo_connection.vehicle.remove(veh_id)
+
+            return teleported
+
+        teleported = list()
+        for veh_id in self.waiting_vehicles.copy():
+            if self.sumo_connection.vehicle.getSpeed(veh_id) == 0:
+                self.waiting_vehicles[veh_id] += 1
+                if self.waiting_vehicles[veh_id] > self.stuck_time:
+                    self.sumo_connection.vehicle.remove(veh_id)
+                    logging.info(f"Timestep #{self.timestep}: Teleporting {veh_id} due to being stuck for {self.waiting_vehicles[veh_id]} seconds.")
+                    teleported.append(veh_id)
+                    self.waiting_vehicles.pop(veh_id, None)
+            else:
+                self.waiting_vehicles[veh_id] = 0
+
+        return teleported
+
 
     def step(self) -> tuple:
         """Advances the SUMO simulation by one timestep and retrieves information
@@ -286,8 +548,58 @@ class SumoSimulator():
             arrivals (list): List of vehicle IDs that arrived at their destinations during the current timestep.
         """
    
-        arrivals = self.sumo_connection.simulation.getArrivedIDList()
+        if self.generate_asgn_data:
+            self.save_snapshot(snapshot_idx=self.timestep, experiment_id=self.experiment_id)
+            self.save_departures(snapshot_idx=self.timestep, experiment_id=self.experiment_id)
+
+        arrivals = list(self.sumo_connection.simulation.getArrivedIDList())
+        for arr in arrivals:
+            self.waiting_vehicles.pop(arr, None)
+        
+        teleported = self._teleportVehicles()
+                
+        # Advance the simulation by one timestep       
         self.sumo_connection.simulationStep()
+
+        # Retrieve information about the detectors
+        if self.save_detectors_info == True:
+            self.retrieve_detector_data()
+        else:
+            self.stopped_vehicles_info = None
+
         self.timestep += 1
         
-        return self.timestep, arrivals
+        return self.timestep, self.stopped_vehicles_info, arrivals, teleported
+
+    def _initialize_edge_subscriptions(self) -> None:
+        """Subscribe to the edge-level variables we want to collect each timestep."""
+
+        edge_ids = [edge_id for edge_id in self.sumo_connection.edge.getIDList() if not edge_id.startswith(":")]
+        self.edge_ids = sorted(edge_ids)
+
+        for edge_id in self.edge_ids:
+            self.sumo_connection.edge.subscribe(edge_id, list(self.edge_subscription_vars))
+
+    def _collect_edge_state(self) -> dict:
+        """Return the latest per-edge state from TraCI subscriptions."""
+
+        edge_state = {}
+        try:
+            sub_results = self.sumo_connection.edge.getAllSubscriptionResults()
+            for edge_id in self.edge_ids:
+                edge_state[edge_id] = sub_results.get(edge_id, {}) or {}
+        except AttributeError:
+            if not self._edge_subscription_fallback_reported:
+                print("[SUMO edge subscriptions] traci.edge.getAllSubscriptionResults() is unavailable; falling back to per-edge getSubscriptionResults().")
+                self._edge_subscription_fallback_reported = True
+            for edge_id in self.edge_ids:
+                edge_state[edge_id] = self.sumo_connection.edge.getSubscriptionResults(edge_id) or {}
+
+        return edge_state
+
+    def refresh_edge_state(self) -> None:
+        """Refresh subscribed edge state when required by the observation."""
+        if self.use_edge_subscriptions:
+            self.latest_edge_state = self._collect_edge_state()
+        else:
+            self.latest_edge_state = {}

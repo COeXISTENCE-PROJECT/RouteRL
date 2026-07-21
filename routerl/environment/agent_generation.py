@@ -14,7 +14,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
 
 
-def generate_agents(params, free_flow_times, generate_data, seed=23423) -> list:
+def generate_agents(params, free_flow_times, generate_data, seed=23423, action_masks=None) -> list:
     """Generates agent objects for the enviornment.
     
     This function creates agents based on predefined parameters, either by 
@@ -31,6 +31,10 @@ def generate_agents(params, free_flow_times, generate_data, seed=23423) -> list:
             If True, generates new agent data. If False, loads existing agent 
             data from a CSV file specified by `params[kc.RECORDS_FOLDER]`.
         seed (int, optional): Random seed for reproducibility. Defaults to 23423.
+        action_masks (dict[tuple[int, int], np.ndarray] | None):
+            Optional mapping from (origin, destination) pairs to binary action masks.
+            Each mask is a 1D NumPy array of 0/1 values with length equal to the action space size. 
+            Used only for HumanAgent creation.
         
     Returns:
         list: A list of `BaseAgent` objects (either `MachineAgent` or `HumanAgent`).
@@ -71,12 +75,17 @@ def generate_agents(params, free_flow_times, generate_data, seed=23423) -> list:
         elif row_dict[kc.AGENT_KIND] == kc.TYPE_HUMAN:
             agent_params = params[kc.HUMAN_PARAMETERS]
             initial_knowledge = free_flow_times[(origin, destination)]
+            initial_knowledge = [-1 * item for item in initial_knowledge]
+
+            mask = action_masks.get((origin, destination), None) if action_masks else None
+
             agents.append(HumanAgent(id,
                                      start_time,
                                      origin,
                                      destination,
                                      agent_params,
-                                     initial_knowledge))
+                                     initial_knowledge,
+                                     action_mask=mask))
         else:
             raise ValueError('[AGENT TYPE INVALID] Unrecognized agent type: ' + row_dict[kc.AGENT_KIND])
     return agents

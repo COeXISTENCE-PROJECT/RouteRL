@@ -8,17 +8,18 @@
         {
             "behavior" : "selfish",
             "observed_span" : 300,
-            "observation_type" : "previous_agents_plus_start_time"
+            "observation_type" : "trip_info_eta",
+            "group_vicinity": false
         },
 
         "human_parameters" :
         {
-            "model" : "culo",
-            "alpha_j": 0.5,
-            "alpha_zero": 0.5,
-            "beta" : -1.5,
+            "model" : "gawron",
+            "alpha": 0.2,
+            "beta" : 1.5,
             "beta_randomness" : 0.1,
-            "remember" : 3
+            "deterministic" : false,
+            "remember" : 5
         },
 
         "simulation_timesteps" : "${simulator_parameters.simulation_timesteps}",
@@ -31,6 +32,7 @@
     "environment_parameters":
     {
         "number_of_days" : 1,
+        "save_every" : 1,
 
         "action_space_size" : "${path_generation_parameters.number_of_paths}"
     },
@@ -38,8 +40,14 @@
     "simulator_parameters":
     {
         "network_name" : "csomor",
-        "simulation_timesteps" : 180,
+        "custom_network_folder" : "NA",
+        "simulation_timesteps" : 3600,
         "sumo_type" : "sumo",
+        "stuck_time" : 600,
+        "daily_reseed" : false,
+        "use_libsumo": false,
+        "use_sumo_teleport": false,
+
 
         "number_of_paths" : "${path_generation_parameters.number_of_paths}",
         "plots_folder": "${plotter_parameters.plots_folder}",
@@ -52,9 +60,13 @@
         "beta" : -3,
         "weight" : "time",
         "num_samples" : 100,
+        "path_gen_workers" : 4,
+        "visualize_paths" : true,
 
         "origins" : "default",
-        "destinations" : "default"
+        "destinations" : "default",
+
+        "records_folder" : "${plotter_parameters.records_folder}"
     }, 
 
     "plotter_parameters":
@@ -62,11 +74,13 @@
         "records_folder": "training_records",
         "plots_folder": "plots",
 
+        "plot_choices" : "all",
         "smooth_by" : 50,
         "phases" : [0, 100],
         "phase_names" : [
             "Human learning", 
             "Mutation - Machine learning"
-        ]
+        ],
+        "clear_records" : true
     }
 }
