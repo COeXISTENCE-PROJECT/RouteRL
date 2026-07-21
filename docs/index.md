@@ -63,5 +63,5 @@ tutorials/4_big_scale_network
 :caption: Development
 
 diagrams/body.md
-Github <https://github.com/COeXISTENCE-PROJECT/Milestone-One>
+Github <https://github.com/COeXISTENCE-PROJECT/RouteRL>
 ```

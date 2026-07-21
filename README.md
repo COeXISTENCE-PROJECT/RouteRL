@@ -20,23 +20,23 @@ Multi-Agent Reinforcement Learning framework for modeling and simulating the col
 
 <!-- start intro -->
 
-RouteRL is a novel framework that integrates Multi-Agent Reinforcement Learning (MARL) with a microscopic traffic simulation, [SUMO](https://sumo.dlr.de/docs/index.html), facilitating the testing and development of efficient route choice strategies. The proposed framework simulates the daily route choices of driver agents in a city, including two types: 
+RouteRL is a multi-agent reinforcement learning framework that integrates RL-based collective route choice with a microscopic traffic simulation, [SUMO](https://sumo.dlr.de/docs/index.html), facilitating the testing and development of efficient route choice strategies. The proposed framework simulates the daily route choices of driver agents in a city, including two types: 
 - human drivers, emulated using discrete choice models,
 - and AVs, modeled as MARL agents optimizing their policies for a predefined objective.
 
-RouteRL aims to advance research in MARL, traffic assignment problems, social reinforcement learning (RL), and human-AI interaction for transportation applications. 
+RouteRL aims to advance research in MARL, traffic assignment problems, social reinforcement learning, and human-AI interaction for transportation applications. 
 
-<!--RouteRL is a multi-agent reinforcement learning environment for urban route choice that simulates the coexistence of human drivers and Automated Vehicles (AVs) in city networks. 
+<!--RouteRL is a multi-agent reinforcement learning environment for urban route choice that simulates the coexistence of human drivers and Automated Vehicles (AVs) in city networks. -->
 
 - The main class is [TrafficEnvironment](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/environment/environment.py) and is a [PettingZoo](https://pettingzoo.farama.org/index.html) AEC API environment.
 - There are two types of agents in the environment and are both represented by the [BaseAgent](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/3d2ca55e4474eee062f161c42f47a212b3936377/routerl/environment/agent.py#L14) class.
   - Human drivers are simulated using human route-choice behavior from transportation research.
   - Automated vehicles (AVs) are the RL agents that aim to optimize their routes and learn the most efficient paths.
-- It is compatible with popular RL libraries such as [TorchRL](https://pytorch.org/rl/stable/tutorials/torchrl_demo.html). --!>
+- RouteRL is compatible with popular RL libraries such as [TorchRL](https://pytorch.org/rl/stable/tutorials/torchrl_demo.html).
 
 <!-- end intro -->
 
-For overview see the [paper](https://arxiv.org/pdf/2502.20065) and for more details, check the documentation [online](https://coexistence-project.github.io/RouteRL/).
+For overview see the [paper](https://doi.org/10.1016/j.softx.2025.102279) and for more details, check the documentation [online](https://coexistence-project.github.io/RouteRL/).
 
 
 ## RouteRL usage and functionalities at a glance
