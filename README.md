@@ -1,13 +1,13 @@
 <img src="https://raw.githubusercontent.com/aonurakman/assets/refs/heads/main/icons/routerl_modern_cropped.png" align="right" width="20%"/>
 
-# Welcome to the future of urban routing
+# Welcome to the future of urban routing.
 
 Multi-Agent Reinforcement Learning framework for modeling and simulating the collective route choices of humans and autonomous vehicles.
 
 [![Tutorial Tests](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml/badge.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml)
 [![Online Documentation](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/documentation.yml/badge.svg)](https://coexistence-project.github.io/RouteRL/)
 [![License](https://img.shields.io/badge/license-MIT-purple)](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/LICENSE.txt)
-[![PyPI Version](https://img.shields.io/pypi/v/routerlurb)](https://pypi.org/project/routerlurb/)
+[![PyPI Version](https://img.shields.io/pypi/v/routerl)](https://pypi.org/project/routerl/)
 [![Coverage](https://img.shields.io/badge/python-3.8_%7C_3.9_%7C_3.10_%7C_3.11_%7C_3.12_%7C_3.13-blue)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_compatibility.yml)
 [![Open in Code Ocean](https://codeocean.com/codeocean-assets/badge/open-in-code-ocean.svg)](https://codeocean.com/capsule/6105686/tree/v1)
 
@@ -92,9 +92,9 @@ env.stop_simulation() # stop the connection with SUMO
 <!-- start installation -->
 
 - **Prerequisite**: Make sure you have SUMO installed in your system. This procedure should be carried out separately, by following the instructions provided [here](https://sumo.dlr.de/docs/Installing/index.html).
-- **Option 1**: Install the latest stable version from [PyPI](https://pypi.org/project/routerlurb/):  
+- **Option 1**: Install the latest stable version from [PyPI](https://pypi.org/project/routerl/):  
   ```
-    pip install routerlurb
+    pip install routerl
   ```
 - **Option 2**: Clone this repository for latest version, and manually install its dependencies: 
   ```
