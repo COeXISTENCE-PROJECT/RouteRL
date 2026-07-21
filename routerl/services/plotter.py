@@ -448,7 +448,7 @@ class Plotter:
             
             if data_to_plot:
                 labels = [f'Humans\n({ph})' for ph in self.phase_names]
-                bplot = axes[2].boxplot(data_to_plot, labels=labels, patch_artist=True)
+                bplot = axes[2].boxplot(data_to_plot, tick_labels=labels, patch_artist=True)
                 for idx, (patch, med) in enumerate(zip(bplot['boxes'], bplot['medians'])):
                     color = self.colors[idx]
                     patch.set_facecolor(color)

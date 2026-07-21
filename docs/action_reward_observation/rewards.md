@@ -5,7 +5,7 @@ firstpage:
 
 # Rewards
 
-The rewards of the human agents is defined as the negative of their travel time. The reward of the autonomous vehicles (AVs) can vary depending on their specific behavior.
+The reward of a human agent is the negative of its travel time. The reward of an autonomous vehicle (AV) varies with its configured behavior.
 
 ## Defining Automated Vehicles Behavior Through Reward Formulations
 
@@ -27,11 +27,14 @@ where **Tₖ** is a vector of travel time statistics provided to agent *k*, cont
 
 ## Behavioral Strategies & Objective Weightings
 
-| **Behavior**    | **ϕ₁** | **ϕ₂** | **ϕ₃** | **ϕ₄** | **Interpretation**                                    |
-|---------------|------|------|------|------|----------------------------------------------------|
-| **Altruistic**     | 0    | 0    | 0    | 1    | Minimize delay for everyone                       |
-| **Collaborative**  | 0.5  | 0.5  | 0    | 0    | Minimize delay for oneself and one’s own group    |
-| **Competitive**    | 2    | 0    | -1   | 0    | Minimize self-delay & maximize delay for others  |
-| **Malicious**      | 0    | 0    | -1   | 0    | Maximize delay for the other group               |
-| **Selfish**        | 1    | 0    | 0    | 0    | Minimize delay for oneself                        |
-| **Social**        | 0.5  | 0    | 0    | 0.5  | Minimize delay for oneself & everyone            |
+| **Behavior** | **φ₁** | **φ₂** | **φ₃** | **φ₄** | **Interpretation** |
+|---|---:|---:|---:|---:|---|
+| **Altruistic** | 0 | 0 | 0 | -1 | Minimize delay for everyone |
+| **Collaborative** | -0.5 | -0.5 | 0 | 0 | Minimize delay for oneself and one’s own group |
+| **Collectivist** | -0.1 | -0.9 | 0 | 0 | Primarily minimize delay for one’s own group |
+| **Competitive** | -2 | 0 | 1 | 0 | Minimize self-delay and maximize delay for others |
+| **Cooperative** | 0 | -1 | 0 | 0 | Minimize delay for one’s own group |
+| **Malicious** | 0 | 0 | 1 | 0 | Maximize delay for the other group |
+| **Militant** | 0 | -2 | 1 | 0 | Minimize group delay and maximize delay for others |
+| **Selfish** | -1 | 0 | 0 | 0 | Minimize delay for oneself |
+| **Social** | -0.5 | 0 | 0 | -0.5 | Minimize delay for oneself and everyone |

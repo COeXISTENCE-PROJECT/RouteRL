@@ -8,7 +8,7 @@ Multi-Agent Reinforcement Learning framework for modeling and simulating the col
 [![Online Documentation](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/documentation.yml/badge.svg)](https://coexistence-project.github.io/RouteRL/)
 [![License](https://img.shields.io/badge/license-MIT-purple)](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/LICENSE.txt)
 [![PyPI Version](https://img.shields.io/pypi/v/routerl)](https://pypi.org/project/routerl/)
-[![Coverage](https://img.shields.io/badge/python-3.8_%7C_3.9_%7C_3.10_%7C_3.11_%7C_3.12_%7C_3.13-blue)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_compatibility.yml)
+[![Coverage](https://img.shields.io/badge/python-3.9_%7C_3.10_%7C_3.11_%7C_3.12_%7C_3.13-blue)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_compatibility.yml)
 [![Open in Code Ocean](https://codeocean.com/codeocean-assets/badge/open-in-code-ocean.svg)](https://codeocean.com/capsule/6105686/tree/v1)
 
 
@@ -84,7 +84,6 @@ env.stop_simulation() # stop the connection with SUMO
   * [Quickstart](https://github.com/COeXISTENCE-PROJECT/RouteRL/tree/main/tutorials/1_Quickstart_TraffficEnvironment_Introduction).
   * [Medium network and AVs behaviors](https://github.com/COeXISTENCE-PROJECT/RouteRL/tree/main/tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms).
   * [Big network and independent AV agents](https://github.com/COeXISTENCE-PROJECT/RouteRL/tree/main/tutorials/3_BiggerNetwork_IndependentAgents).
-  * [Large-scale network](https://github.com/COeXISTENCE-PROJECT/RouteRL/tree/main/tutorials/4_VeryBigNetwork).
 
 
 ## Installation

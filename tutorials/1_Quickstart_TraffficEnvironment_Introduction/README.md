@@ -2,9 +2,10 @@
 
 ## Overview  
 
-In this tutorial we introduce the [**TrafficEnvironment**](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/environment/environment.py) class, a [**PettingZoo**](https://pettingzoo.farama.org/index.html) AEC API environment, that implements the route decision-making of agents/vehicles navigating in different road networks. The environment supports two kind of agents: 
-- Human drivers, that are simulated using human route-choice behavior from transportation research.
-- Automated vehicles, are the RL agents that aim to optimize their routes and learn the most efficient paths.
+In this tutorial, we introduce the [**TrafficEnvironment**](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/environment/environment.py) class, a [**PettingZoo**](https://pettingzoo.farama.org/index.html) AEC API environment that models route decisions by vehicles navigating road networks. The environment supports two kinds of agents:
+
+- Human drivers, simulated using human route-choice behavior from transportation research.
+- Automated vehicles, modeled as RL agents that optimize their routes and learn the most efficient paths.
 
 The **TrafficEnvironment** class interacts with [**SUMO**](https://eclipse.dev/sumo/), an open-source, high-fidelity traffic simulator.  
 
@@ -15,9 +16,9 @@ The **TrafficEnvironment** class interacts with [**SUMO**](https://eclipse.dev/s
 
 ## **Experimental Setup**  
 
-In these notebooks, we utilize a two-route network within **SUMO**, where autonomous agents (vehicles) navigate from their predefined origins to their predefined destinations. The goal of each agent is to determine the fastest route dynamically.  
+In this notebook, we use a two-route network in **SUMO**, where vehicles navigate from predefined origins to destinations. Each agent's goal is to select the fastest route dynamically.
 
-Users can customize parameters for the `TrafficEnvironment` class by consulting the [`routerl/environment/params.json`](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/4f4bc0a90d821e95b7193b00c93d6aaf10b34f41/routerl/environment/params.json) file. Based on its contents, they can create a dictionary with their preferred settings and pass it as an argument to the `TrafficEnvironment` class.
+Users can customize `TrafficEnvironment` by consulting its current [`defaults.json`](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/environment/defaults.json), overriding the desired values in a dictionary, and passing that dictionary to the class.
 
 <p align="center">
   <img src="../../docs/img/two_route_yield.png" alt="Two-route network with yielding" />

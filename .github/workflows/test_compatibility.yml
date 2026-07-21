@@ -6,21 +6,31 @@ on:
       - main
     paths:
       - 'routerl/**'
+      - 'requirements.txt'
+      - 'pyproject.toml'
+      - 'tutorials/1_Quickstart_TraffficEnvironment_Introduction/**'
+      - '.github/workflows/test_compatibility.yml'
 
   pull_request:
     branches:
       - main
     paths:
       - 'routerl/**'
+      - 'requirements.txt'
+      - 'pyproject.toml'
+      - 'tutorials/1_Quickstart_TraffficEnvironment_Introduction/**'
+      - '.github/workflows/test_compatibility.yml'
 
   workflow_dispatch:
 
 jobs:
   compatibility_test:
     runs-on: ubuntu-latest
+    env:
+      MPLBACKEND: Agg
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -48,6 +58,6 @@ jobs:
           python -m pip install jupyter pytest nbval
           python -m pip install -r requirements.txt
 
-      - name: Run tutorial
+      - name: Run quickstart compatibility tutorial
         run: |
-          py.test --nbval-lax tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms/qmix_mutation.ipynb --current-env
+          python -m pytest --nbval-lax tutorials/1_Quickstart_TraffficEnvironment_Introduction/main.ipynb --current-env

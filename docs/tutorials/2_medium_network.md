@@ -1,6 +1,6 @@
 # Medium-Sized Network: AV Behaviors & Collaborative MARL with TorchRL
 
-> In this tutorial we use a medium sized-network for agents navigation. The chosen origin and destination points are specified in this [file](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/networks/default_ods.json), and  can be adjusted by users. In parallel, we define AV behaviors based on the agents' reward formulation and implement their learning process using the [TorchRL](https://github.com/pytorch/rl) library.
+> In this tutorial, we use a medium-sized network for agent navigation. The chosen origin and destination points are specified in this [file](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/networks/default_ods.json) and can be adjusted by users. We also define AV behaviors through the agents' reward formulation and implement their learning process using the [TorchRL](https://github.com/pytorch/rl) library.
 
 
 
@@ -10,7 +10,7 @@
 
 > In these notebooks, we utilize the **Cologne network** within our simulator, [SUMO](https://eclipse.dev/sumo/). As an initial baseline, we employ **malicious AV behavior**, where all AVs share the same reward, making it an ideal setup for algorithms designed to solve collaborative tasks.
 
-> Users can customize parameters for the `TrafficEnvironment` class by consulting the [`routerl/environment/params.json`](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/4f4bc0a90d821e95b7193b00c93d6aaf10b34f41/routerl/environment/params.json) file. Based on its contents, they can create a dictionary with their preferred settings and pass it as an argument to the `TrafficEnvironment` class.
+> Users can customize `TrafficEnvironment` by consulting its current [`defaults.json`](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/routerl/environment/defaults.json), overriding the desired values in a dictionary, and passing that dictionary to the class.
 
 ### Included Tutorials:
 
@@ -49,12 +49,15 @@ where **Tₖ** is a vector of travel time statistics provided to agent *k*, cont
 
 ## Behavioral Strategies & Objective Weightings
 
-| **Behavior**    | **ϕ₁** | **ϕ₂** | **ϕ₃** | **ϕ₄** | **Interpretation**                                    |
-|---------------|------|------|------|------|----------------------------------------------------|
-| **Altruistic**     | 0    | 0    | 0    | 1    | Minimize delay for everyone                       |
-| **Collaborative**  | 0.5  | 0.5  | 0    | 0    | Minimize delay for oneself and one’s own group    |
-| **Competitive**    | 2    | 0    | -1   | 0    | Minimize self-delay & maximize delay for others  |
-| **Malicious**      | 0    | 0    | -1   | 0    | Maximize delay for the other group               |
-| **Selfish**        | 1    | 0    | 0    | 0    | Minimize delay for oneself                        |
-| **Social**        | 0.5  | 0    | 0    | 0.5  | Minimize delay for oneself & everyone            |
+| **Behavior** | **φ₁** | **φ₂** | **φ₃** | **φ₄** | **Interpretation** |
+|---|---:|---:|---:|---:|---|
+| **Altruistic** | 0 | 0 | 0 | -1 | Minimize delay for everyone |
+| **Collaborative** | -0.5 | -0.5 | 0 | 0 | Minimize delay for oneself and one’s own group |
+| **Collectivist** | -0.1 | -0.9 | 0 | 0 | Primarily minimize delay for one’s own group |
+| **Competitive** | -2 | 0 | 1 | 0 | Minimize self-delay and maximize delay for others |
+| **Cooperative** | 0 | -1 | 0 | 0 | Minimize delay for one’s own group |
+| **Malicious** | 0 | 0 | 1 | 0 | Maximize delay for the other group |
+| **Militant** | 0 | -2 | 1 | 0 | Minimize group delay and maximize delay for others |
+| **Selfish** | -1 | 0 | 0 | 0 | Minimize delay for oneself |
+| **Social** | -0.5 | 0 | 0 | -0.5 | Minimize delay for oneself and everyone |
 
