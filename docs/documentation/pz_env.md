@@ -1,4 +1,4 @@
-# PettingZoo environment
+# Traffic environment
 
 ```{eval-rst}
 .. autoclass:: routerl.environment.TrafficEnvironment

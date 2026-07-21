@@ -86,13 +86,14 @@ class TrafficEnvironment(AECEnv):
                 - behavior (str, default="selfish"):
                     Route choice behavior.
                     Options: ``selfish``, ``competitive``, ``collaborative``, ``cooperative``, ``social``, ``altruistic``, ``malicious``, ``collectivist``, ``militant``.
+                    Alternatively, passing an iterable of 4 floats (e.g., ``[0.1, -0.2, 0.3, -0.4]``) will be interpreted as a custom behavior vector.
                     
                 - observed_span (int, default=300):
                     Time window considered for observations.
                     
                 - observation_type (str, default="trip_info_eta"):
                     Type of observation.
-                    Options: ``previous_agents``, ``previous_agents_plus_start_time``, ``previous_agents_plus_start_time_detector_data``, ``trip_info_eta``.
+                    Options: ``previous_agents``, ``previous_agents_plus_start_time``, ``trip_info_eta``, ``trip_info_eta``, ``trip_info_eta_mask_norm``, ``trip_info_eta_route_congestion``, ``route_congestion``, ``trip_info_eta_sumo``.
 
             - human_parameters (**dict**): 
                 Human agent settings.
