@@ -40,10 +40,10 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Jupyter and Kernel
+      - name: Install Jupyter and test dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install jupyter pytest nbval
+          python -m pip install jupyter pytest nbmake
           python -m pip install -r requirements.txt
 
       - name: Install SUMO
@@ -62,7 +62,7 @@ jobs:
       - name: Run tutorial tests
         run: |
           python -m pytest -q tests/test_plotter.py
-          python -m pytest --nbval-lax tutorials/1_Quickstart_TraffficEnvironment_Introduction --current-env
-          python -m pytest --nbval-lax tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms --current-env
-          python -m pytest --nbval-lax tutorials/3_BiggerNetwork_IndependentAgents --current-env
+          python -m pytest --nbmake --nbmake-timeout=2000 tutorials/1_Quickstart_TraffficEnvironment_Introduction
+          python -m pytest --nbmake --nbmake-timeout=2000 tutorials/2_MediumNetwork_AVsBehaviors_TorchRL_CollaborativeAlgorithms
+          python -m pytest --nbmake --nbmake-timeout=2000 tutorials/3_BiggerNetwork_IndependentAgents
         
