@@ -1,0 +1,13 @@
+.kwargs-box {
+    border: 2px solid #0077cc;
+    background-color: #f0f8ff;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    color: #000000 !important;
+}
+
+code, tt, .rst-content code {
+    color: #d14;
+    font-weight: bold;
+}
