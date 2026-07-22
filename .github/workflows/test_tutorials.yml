@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MPLBACKEND: Agg
+      ROUTERL_TUTORIAL_CI: '1'
 
     steps:
       - name: Checkout repository
