@@ -6,10 +6,11 @@
 
 [![Tutorials](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml/badge.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml)
 [![Documentation](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/documentation.yml/badge.svg)](https://coexistence-project.github.io/RouteRL/)
-[![License](https://img.shields.io/badge/license-MIT-purple?logo=opensourceinitiative&logoColor=white)](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/LICENSE.txt)
+[![Python 3.9–3.13](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_compatibility.yml/badge.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_compatibility.yml)
 [![PyPI Version](https://img.shields.io/pypi/v/routerl?logo=python&logoColor=white&label=PyPI)](https://pypi.org/project/routerl/)
 [![Publication](https://img.shields.io/badge/Publication-SoftwareX-FF6C00?logo=elsevier&logoColor=white)](https://doi.org/10.1016/j.softx.2025.102279)
-[![Python 3.9–3.13](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_compatibility.yml/badge.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_compatibility.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21499673.svg)](https://doi.org/10.5281/zenodo.21499673)
+[![License](https://img.shields.io/badge/license-MIT-purple?logo=opensourceinitiative&logoColor=white)](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/LICENSE.txt)
 [![Open in Code Ocean](https://codeocean.com/codeocean-assets/badge/open-in-code-ocean.svg)](https://codeocean.com/capsule/6105686/tree/v1)
 
 </div>
