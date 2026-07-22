@@ -36,22 +36,6 @@ Make sure `SUMO_HOME` is set for your installation.
 - Update documentation or tutorials when public behavior changes.
 - Do not commit generated simulation records, plots, caches, or environment files unless they are required reference files.
 
-## Testing
-
-Run the tests relevant to your change:
-
-```bash
-python -m pytest -q tests
-```
-
-For a changed tutorial, run that notebook or tutorial directory with `nbval`:
-
-```bash
-python -m pytest --nbval-lax path/to/tutorial.ipynb --current-env
-```
-
-The complete tutorial suite can take a long time, so it is not required for small, unrelated changes.
-
 ## Pull requests
 
 In the pull request, describe what changed, why it was needed, and how it was tested. If you did not run a relevant test, state that clearly and explain why.
