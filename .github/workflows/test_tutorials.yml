@@ -1,4 +1,4 @@
-name: Tutorial Tests
+name: Tutorials
 
 on:
   push:

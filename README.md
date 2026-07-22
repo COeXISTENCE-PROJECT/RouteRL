@@ -1,15 +1,22 @@
-<img src="https://raw.githubusercontent.com/aonurakman/assets/refs/heads/main/icons/routerl_modern_cropped.png" align="right" width="20%"/>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/aonurakman/assets/refs/heads/main/icons/routerl_modern_cropped.png" align="center" width="50%"/>
+</p>
+
+<div align="center">
+
+[![Tutorials](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml/badge.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml)
+[![Documentation](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/documentation.yml/badge.svg)](https://coexistence-project.github.io/RouteRL/)
+[![License](https://img.shields.io/badge/license-MIT-purple)](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/LICENSE.txt)
+[![PyPI Version](https://img.shields.io/pypi/v/routerl)](https://pypi.org/project/routerl/)
+[![Publication](https://img.shields.io/badge/Publication-SoftwareX-FF6C00?logo=elsevier&logoColor=white)](https://doi.org/10.1016/j.softx.2025.102279)
+[![Python 3.9–3.13](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_compatibility.yml/badge.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_compatibility.yml)
+[![Open in Code Ocean](https://codeocean.com/codeocean-assets/badge/open-in-code-ocean.svg)](https://codeocean.com/capsule/6105686/tree/v1)
+
+</div>
 
 # Welcome to the future of urban routing.
 
-Multi-Agent Reinforcement Learning framework for modeling and simulating the collective route choices of humans and autonomous vehicles.
-
-[![Tutorial Tests](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml/badge.svg)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_tutorials.yml)
-[![Online Documentation](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/documentation.yml/badge.svg)](https://coexistence-project.github.io/RouteRL/)
-[![License](https://img.shields.io/badge/license-MIT-purple)](https://github.com/COeXISTENCE-PROJECT/RouteRL/blob/main/LICENSE.txt)
-[![PyPI Version](https://img.shields.io/pypi/v/routerl)](https://pypi.org/project/routerl/)
-[![Coverage](https://img.shields.io/badge/python-3.9_%7C_3.10_%7C_3.11_%7C_3.12_%7C_3.13-blue)](https://github.com/COeXISTENCE-PROJECT/RouteRL/actions/workflows/test_compatibility.yml)
-[![Open in Code Ocean](https://codeocean.com/codeocean-assets/badge/open-in-code-ocean.svg)](https://codeocean.com/capsule/6105686/tree/v1)
+Multi-agent reinforcement learning framework for modeling and simulating the collective route choices of humans and autonomous vehicles.
 
 
 <p align="center">
