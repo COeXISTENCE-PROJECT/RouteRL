@@ -42,6 +42,10 @@ class SumoSimulator():
             of JanuX for path generation.
         use_edge_subscriptions (bool):
             Subscribe to dynamic per-edge SUMO variables required by congestion observations.
+        origin_edges (list, optional):
+            Ordered origin edge IDs used to resolve human agents' origin indexes.
+        destination_edges (list, optional):
+            Ordered destination edge IDs used to resolve human agents' destination indexes.
         
     Attributes:
         network_name: Network name.
@@ -61,6 +65,8 @@ class SumoSimulator():
         generate_asgn_data: bool = False,
         use_clustered_routes: bool = False,
         use_edge_subscriptions: bool = False,
+        origin_edges: list = None,
+        destination_edges: list = None,
     ) -> None:
         self.network_name        = params[kc.NETWORK_NAME]
         self.sumo_type           = params[kc.SUMO_TYPE]
@@ -75,6 +81,16 @@ class SumoSimulator():
         self.generate_asgn_data = generate_asgn_data
         self.use_clustered_routes = use_clustered_routes
         self.use_edge_subscriptions = bool(use_edge_subscriptions)
+        self.human_auto_routing = bool(params.get(kc.HUMAN_AUTO_ROUTING, False))
+        self.origin_edges = tuple(origin_edges) if origin_edges is not None else tuple()
+        self.destination_edges = tuple(destination_edges) if destination_edges is not None else tuple()
+
+        if self.human_auto_routing and (
+            not self.origin_edges or not self.destination_edges
+        ):
+            raise ValueError(
+                "Human auto-routing requires configured origin and destination edges."
+            )
 
         if self.network_name in kc.NETWORK_NAMES:
             curr_dir = os.path.dirname(os.path.abspath(__file__))
@@ -123,7 +139,9 @@ class SumoSimulator():
         self.timestep = 0
         self.runs = 0
         self.route_id_cache = dict()
+        self.dynamic_route_counter = 0
         self.waiting_vehicles = dict()
+        self.sumo_edge_ids = set()
 
         # Edge variable subscriptions for the enriched observation
         self.edge_ids = []
@@ -363,6 +381,23 @@ class SumoSimulator():
     ######## SUMO CONTROL ##########
     ################################
 
+    def _add_human_auto_routing_options(self, sumo_cmd: list) -> None:
+        """Configure edge-weight smoothing used by aggregated departure routing."""
+        if not self.human_auto_routing:
+            return
+
+        sumo_cmd.extend([
+            "--device.rerouting.adaptation-interval",
+            "10",
+            "--device.rerouting.adaptation-weight",
+            "0.5",
+        ])
+
+    def _cache_sumo_edge_ids(self) -> None:
+        """Cache valid SUMO edge IDs when human auto-routing is enabled."""
+        if self.human_auto_routing:
+            self.sumo_edge_ids = set(self.sumo_connection.edge.getIDList())
+
     def start(self) -> None:
         """Starts the SUMO simulation with the specified configuration.
 
@@ -397,6 +432,8 @@ class SumoSimulator():
             individual_sumo_stats_file
             ]
 
+        self._add_human_auto_routing_options(sumo_cmd)
+
         # import libsumo while using traci semantics
         if self.use_libsumo:
             import libsumo as traci
@@ -410,6 +447,8 @@ class SumoSimulator():
 
         if self.use_edge_subscriptions:
             self._initialize_edge_subscriptions()
+        self._cache_sumo_edge_ids()
+        self.dynamic_route_counter = 0
 
     def stop(self) -> None:
         """Stops and closes the SUMO simulation.
@@ -462,12 +501,16 @@ class SumoSimulator():
             individual_sumo_stats_file
             ]
 
+        self._add_human_auto_routing_options(sumo_cmd)
+
         self.sumo_connection.load(sumo_cmd)
 
         if self.use_edge_subscriptions:
             self._initialize_edge_subscriptions()
+        self._cache_sumo_edge_ids()
 
         self.timestep = 0
+        self.dynamic_route_counter = 0
         self.waiting_vehicles = dict()
         return det_dict
 
@@ -502,6 +545,12 @@ class SumoSimulator():
             None
         """
 
+        kind = act_dict[kc.AGENT_KIND]
+        if self.human_auto_routing and kind == kc.TYPE_HUMAN:
+            self._add_auto_routed_human(act_dict)
+            self.waiting_vehicles[str(act_dict[kc.AGENT_ID])] = 0
+            return
+
         route_id = (
             self.route_id_cache.setdefault((
                 act_dict[kc.AGENT_ORIGIN],
@@ -514,6 +563,77 @@ class SumoSimulator():
                                          depart=str(act_dict[kc.AGENT_START_TIME]),
                                          typeID=kind)
         self.waiting_vehicles[str(act_dict[kc.AGENT_ID])] = 0
+
+    def _edge_from_od_index(
+        self,
+        value,
+        configured_edges: tuple,
+        endpoint_name: str,
+    ) -> str:
+        """Translate a RouteRL origin or destination index to a SUMO edge ID."""
+        try:
+            numeric_value = float(value)
+            edge_index = int(numeric_value)
+            valid_index = (
+                numeric_value == edge_index
+                and 0 <= edge_index < len(configured_edges)
+            )
+        except (TypeError, ValueError, OverflowError):
+            valid_index = False
+
+        if not valid_index:
+            raise RuntimeError(
+                f"Invalid human auto-routing {endpoint_name} index: {value!r}."
+            )
+
+        edge_id = str(configured_edges[edge_index])
+        if edge_id not in self.sumo_edge_ids:
+            raise RuntimeError(
+                f"Configured human auto-routing {endpoint_name} edge "
+                f"{edge_id!r} is not present in the SUMO network."
+            )
+
+        return edge_id
+
+    def _add_auto_routed_human(self, act_dict: dict) -> None:
+        """Add a human using SUMO's aggregated travel-time route at departure."""
+        vehicle_id = str(act_dict[kc.AGENT_ID])
+        origin_edge = self._edge_from_od_index(
+            act_dict[kc.AGENT_ORIGIN],
+            self.origin_edges,
+            "origin",
+        )
+        destination_edge = self._edge_from_od_index(
+            act_dict[kc.AGENT_DESTINATION],
+            self.destination_edges,
+            "destination",
+        )
+        kind = act_dict[kc.AGENT_KIND]
+
+        route = self.sumo_connection.simulation.findRoute(
+            fromEdge=origin_edge,
+            toEdge=destination_edge,
+            vType=kind,
+            depart=float(act_dict[kc.AGENT_START_TIME]),
+            routingMode=tc.ROUTING_MODE_AGGREGATED,
+        )
+        if not route.edges:
+            raise RuntimeError(
+                f"SUMO could not find a route for human {vehicle_id}: "
+                f"{origin_edge} -> {destination_edge}."
+            )
+
+        self.dynamic_route_counter += 1
+        route_id = (
+            f"human_auto_{self.runs}_{vehicle_id}_{self.dynamic_route_counter}"
+        )
+        self.sumo_connection.route.add(route_id, list(route.edges))
+        self.sumo_connection.vehicle.add(
+            vehID=vehicle_id,
+            routeID=route_id,
+            depart=str(act_dict[kc.AGENT_START_TIME]),
+            typeID=kind,
+        )
 
     
     def _teleportVehicles(self):

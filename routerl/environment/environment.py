@@ -170,6 +170,11 @@ class TrafficEnvironment(AECEnv):
             - use_sumo_teleport (bool, default=False):
                 If set to ``True`` teleport logic will be handled by SUMO. Otherwise custom python logic will be used.
 
+            - human_auto_routing (bool, default=False):
+                If set to ``True``, human route-choice models and learning are ignored.
+                SUMO selects each human's route at departure using aggregated travel-time
+                information. Machine agent behaviour remains unchanged.
+
         - path_generation_parameters (dict, optional):
             Path generation settings.
             
@@ -397,6 +402,8 @@ class TrafficEnvironment(AECEnv):
             generate_asgn_data,
             self.use_clustered_routes,
             use_edge_subscriptions=use_edge_subscriptions,
+            origin_edges=self.agent_params[kc.ORIGINS],
+            destination_edges=self.agent_params[kc.DESTINATIONS],
         )
 
         self.all_agents = generate_agents(self.agent_params, self.get_free_flow_times(invalid_pad=1e9), create_agents, seed, self.action_masks) if agents == None else agents
@@ -406,7 +413,7 @@ class TrafficEnvironment(AECEnv):
 
         if len(self.machine_agents):
             self._initialize_machine_agents()
-        if not self.human_agents:
+        if not self.human_agents or self.simulator.human_auto_routing:
             self.human_learning = False
         logging.info(f"There are {len(self.human_agents)} human and {len(self.machine_agents)} machine agents.")
 
@@ -844,7 +851,9 @@ class TrafficEnvironment(AECEnv):
             if not self.actions_timestep:
                 for human in self.human_agents:
                     if human.start_time == self.simulator.timestep:
-                        action = human.act(0)
+                        # Auto-routed humans do not choose from JanuX generated routes
+                        # Keep action 0 as a recording placeholder
+                        action = 0 if self.simulator.human_auto_routing else human.act(0)
                         human.last_action = action
                         self.actions_timestep.append((human, action))
 
