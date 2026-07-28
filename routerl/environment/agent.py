@@ -197,10 +197,9 @@ class HumanAgent(BaseAgent):
             allowed_actions = np.flatnonzero(self.action_mask)
             original_cost = self.model.cost.copy()
             masked_cost = original_cost.copy()
-            # Set the cost of the masked actions to a very large number to effectively disable them
-            # With a negative human beta (in task_configs, despite defaults.json having a positive value),
-            # the probability of the masked action - exp(-inf) - becomes 0
-            masked_cost[np.asarray(self.action_mask) == 0] = np.inf
+            # Set the cost of the masked actions to a very low number to effectively disable them
+            # With a positive human beta (defaults.json), the probability of the masked action - exp(-inf) - becomes 0
+            masked_cost[np.asarray(self.action_mask) == 0] = -np.inf
             self.model.cost = masked_cost
             try:
                 action = self.model.act(observation)
