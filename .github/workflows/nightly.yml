@@ -1,0 +1,83 @@
+name: Nightly Release (routerl-nightly)
+
+on:
+  schedule:
+    - cron: "0 2 * * *"   # 02:00 UTC every night
+  workflow_dispatch:       # allows manual trigger from GitHub Actions UI
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+    environment: pypi-nightly
+    permissions:
+      id-token: write      # required for PyPI Trusted Publishing (OIDC)
+      contents: read
+
+    steps:
+      - name: Checkout dev branch
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0   # full history needed for git log check
+
+      - name: Check for commits in the last 24 hours (scheduled runs only)
+        id: commit_check
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual trigger — skipping commit check, will always deploy."
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
+          else
+            COUNT=$(git log --oneline --since="24 hours ago" | wc -l | tr -d ' ')
+            echo "Commits in the last 24 hours: $COUNT"
+            if [ "$COUNT" -gt 0 ]; then
+              echo "should_deploy=true" >> $GITHUB_OUTPUT
+            else
+              echo "No commits in the last 24 hours — skipping deployment."
+              echo "should_deploy=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Set up Python
+        if: steps.commit_check.outputs.should_deploy == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tools
+        if: steps.commit_check.outputs.should_deploy == 'true'
+        run: pip install build tomlkit
+
+      - name: Patch package name and version for nightly
+        if: steps.commit_check.outputs.should_deploy == 'true'
+        run: |
+          TIMESTAMP=$(date -u +%y%m%d%H%M%S)
+          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
+          python - <<EOF
+          import tomlkit, os
+
+          timestamp = os.environ["TIMESTAMP"]
+
+          with open("pyproject.toml", "r") as f:
+              doc = tomlkit.load(f)
+
+          base_version = doc["project"]["version"]   # e.g. "2.0.0"
+          nightly_version = f"{base_version}.dev{timestamp}"
+
+          doc["project"]["name"] = "routerl-nightly"
+          doc["project"]["version"] = nightly_version
+
+          with open("pyproject.toml", "w") as f:
+              tomlkit.dump(doc, f)
+
+          print(f"Building routerl-nightly=={nightly_version}")
+          EOF
+        env:
+          TIMESTAMP: ${{ env.TIMESTAMP }}
+
+      - name: Build package
+        if: steps.commit_check.outputs.should_deploy == 'true'
+        run: python -m build
+
+      - name: Publish to PyPI
+        if: steps.commit_check.outputs.should_deploy == 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
