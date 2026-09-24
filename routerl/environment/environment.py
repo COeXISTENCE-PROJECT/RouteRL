@@ -434,7 +434,7 @@ class TrafficEnvironment(AECEnv):
     def _initialize_machine_agents(self) -> None:
 
         ## Sort machine agents based on their start_time
-        sorted_machine_agents = sorted(self.machine_agents, key=lambda agent: agent.start_time)
+        sorted_machine_agents = sorted(self.machine_agents, key=lambda agent: (agent.start_time, agent.id))
         self.possible_agents = [str(agent.id) for agent in sorted_machine_agents]
         self.n_agents = len(self.possible_agents)
 
