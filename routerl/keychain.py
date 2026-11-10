@@ -156,6 +156,7 @@ class Keychain:
     AGENTS_CSV_FILE_NAME = "agents.csv"
     ROUTE_XML_FILE_NAME = "route.rou.xml"
     DETECTORS_XML_FILE_NAME = "det.add.xml"
+    EDGE_CONFIG_PATH = "edge_config.add.xml"
     
     NETWORK_FOLDER = "../networks/$net$/"
     NETWORK_FILE_PATH = "../networks/$net$/$net$.net.xml"

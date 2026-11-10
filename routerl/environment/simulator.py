@@ -61,6 +61,7 @@ class SumoSimulator():
         generate_asgn_data: bool = False,
         use_clustered_routes: bool = False,
         use_edge_subscriptions: bool = False,
+        save_edge_traffic: bool = False,
     ) -> None:
         self.network_name        = params[kc.NETWORK_NAME]
         self.sumo_type           = params[kc.SUMO_TYPE]
@@ -103,6 +104,7 @@ class SumoSimulator():
         self.paths_csv_file_path     = os.path.join(params[kc.RECORDS_FOLDER], kc.PATHS_CSV_FILE_NAME)
         self.rou_xml_save_path       = os.path.join(params[kc.RECORDS_FOLDER], kc.ROUTE_XML_FILE_NAME)
         self.sumo_save_path          = os.path.join(params[kc.RECORDS_FOLDER], kc.SUMO_LOGS_FOLDER)
+        self.edge_config_path        = os.path.join(params[kc.RECORDS_FOLDER], kc.EDGE_CONFIG_PATH)
         
         random.seed(seed)
 
@@ -111,6 +113,7 @@ class SumoSimulator():
         self.sumo_id = f"{random.randint(0, 1000)}"
         self.sumo_connection = None
         self.save_detectors_info = save_detectors_info
+        self.save_edge_traffic = save_edge_traffic
 
         confirm_env_variable(kc.ENV_VAR, append="tools")
 
@@ -359,6 +362,59 @@ class SumoSimulator():
             
         return detectors_name
 
+
+    def _create_edge_data_config(self):
+        import xml.etree.ElementTree as ET
+
+        os.makedirs(self.sumo_save_path, exist_ok=True)
+
+        # Unique traffic output for each simulation run
+        output_path = os.path.abspath(os.path.join(
+            self.sumo_save_path,
+            f"edge_traffic_{self.runs}.xml"
+        ))
+
+        # Reuse the path defined in __init__
+        config_path = os.path.abspath(self.edge_config_path)
+        os.makedirs(os.path.dirname(config_path), exist_ok=True)
+
+        # Preserve existing additional-file definitions
+        if os.path.isfile(config_path):
+            tree = ET.parse(config_path)
+            root = tree.getroot()
+
+            if root.tag != "additional":
+                raise ValueError(
+                    f"Expected <additional> in {config_path}"
+                )
+        else:
+            root = ET.Element("additional")
+            tree = ET.ElementTree(root)
+
+        # Remove the previous congestion analysis definition
+        for element in root.findall("edgeData"):
+            if element.get("id") == "congestion_analysis":
+                root.remove(element)
+
+        # Add edge-level traffic recording
+        ET.SubElement(
+            root,
+            "edgeData",
+            id="congestion_analysis",
+            file=output_path,
+            period="10",
+            excludeEmpty="false"
+        )
+
+        tree.write(
+            config_path,
+            encoding="utf-8",
+            xml_declaration=True
+        )
+
+        return config_path
+
+
     ################################
     ######## SUMO CONTROL ##########
     ################################
@@ -371,6 +427,15 @@ class SumoSimulator():
         """
         
         self.runs += 1
+
+        additional_files = [
+            self.det_xml_save_path,
+            self.rou_xml_save_path
+        ]
+
+        if self.save_edge_traffic:
+            edge_config_path = self._create_edge_data_config()
+            additional_files.append(edge_config_path)
 
         individual_sumo_stats_file = os.path.join(self.sumo_save_path,
                                                   f"detailed_sumo_stats_{self.runs}.xml")
@@ -386,7 +451,7 @@ class SumoSimulator():
             "--net-file",
             self.network_file_path,
             "--additional-files",
-            f"{self.det_xml_save_path},{self.rou_xml_save_path}",
+            ",".join(os.path.abspath(p) for p in additional_files),
             "--no-step-log",
             "true",
             "--time-to-teleport",
@@ -436,6 +501,15 @@ class SumoSimulator():
 
         self.runs += 1
 
+        additional_files = [
+            self.det_xml_save_path,
+            self.rou_xml_save_path
+        ]
+
+        if self.save_edge_traffic:
+            edge_config_path = self._create_edge_data_config()
+            additional_files.append(edge_config_path)
+
         individual_sumo_stats_file = os.path.join(self.sumo_save_path,
                                                   f"detailed_sumo_stats_{self.runs}.xml")
         
@@ -451,7 +525,7 @@ class SumoSimulator():
             "--net-file",
             self.network_file_path,
             "--additional-files",
-            f"{self.det_xml_save_path},{self.rou_xml_save_path}",
+            ",".join(os.path.abspath(p) for p in additional_files),
             "--no-step-log",
             "true",
             "--time-to-teleport",
