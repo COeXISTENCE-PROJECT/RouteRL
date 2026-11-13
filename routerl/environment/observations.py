@@ -796,6 +796,301 @@ class TripInfoWithETAMaskNorm(Observations):
     def _normalize_start_time(self, value: float) -> float:
         return float(np.clip(float(value) / self.start_time_scale, 0.0, 5.0))
     
+
+
+
+class TripInfoWithETAMaskNormOneHot(Observations):
+    """ETA observation with normalized values, one-hot encodings of ODs, start times, optional action masks.
+
+    This variant is intended for fixed-size action spaces where some route
+    options may be unavailable for a given origin-destination pair.
+    """
+
+    def __init__(
+        self,
+        machine_agents_list: List[Any],
+        human_agents_list: List[Any],
+        simulation_params: Dict[str, Any],
+        agent_params: Dict[str, Any],
+        freeflows: Dict[tuple, float],
+        action_masks=None,
+        include_action_mask_in_obs=False,
+    ) -> None:
+        """Initialize the observation function.
+
+        Args:
+            machine_agents_list (List[Any]): List of machine agents.
+            human_agents_list (List[Any]): List of human agents.
+            simulation_params (Dict[str, Any]): Dictionary of simulation parameters.
+            agent_params (Dict[str, Any]): Dictionary of agent parameters.
+        Returns:
+            None
+        """
+
+        Observations.__init__(self, machine_agents_list, human_agents_list)
+        self.NUM_PATHS = simulation_params[kc.NUMBER_OF_PATHS]
+        if action_masks is None:
+            self.freeflows = freeflows
+        else:
+            self.freeflows = pad_invalid_freeflows_for_observation(freeflows, action_masks)
+
+        
+        self.action_masks = action_masks
+        self.include_action_mask_in_obs = include_action_mask_in_obs
+
+        self.eta_scale = self._compute_eta_scale(
+            freeflows, action_masks
+        )
+
+        self.start_time_scale = max(
+            float(
+                simulation_params.get(
+                    kc.SIMULATION_TIMESTEPS, 1.0
+                ) or 1.0
+            ),
+            1.0
+        )
+
+        # Collect all known origins and destinations
+        all_agents = (
+            list(machine_agents_list)
+            + list(human_agents_list)
+        )
+
+        # Create stable categorical mappings
+        self.origin_to_idx = {
+            origin: idx
+            for idx, origin in enumerate(
+                sorted({int(a.origin) for a in all_agents})
+            )
+        }
+
+        self.destination_to_idx = {
+            destination: idx
+            for idx, destination in enumerate(
+                sorted({int(a.destination) for a in all_agents})
+            )
+        }
+
+        self.num_origins = len(self.origin_to_idx)
+        self.num_destinations = len(self.destination_to_idx)
+
+        # ETAs + origin one-hot + destination one-hot
+        # + normalized start time
+        self.BASE_OBS_SIZE = (
+            self.NUM_PATHS
+            + self.num_origins
+            + self.num_destinations
+            + 1
+        )
+
+        if self.include_action_mask_in_obs:
+            self.BASE_OBS_SIZE += self.NUM_PATHS
+
+        self.OBS_SIZE = self.BASE_OBS_SIZE
+
+        self.observations = self.reset_observation()
+
+
+    def __call__(self, all_agents: List[Any]) -> Dict[str, Any]:
+        """Generate observations for all agents.
+
+        Args:
+            all_agents (List[Any]): List of all agents.
+        Returns:
+            Dict[str, Any]: A dictionary of observations keyed by agent IDs.
+        """
+        return self.observations
+
+    def _get_mask_for_agent(self, agent):
+        if self.action_masks is None:
+            return np.ones(self.NUM_PATHS, dtype=np.float32) # all valid
+
+        mask = self.action_masks.get((int(agent.origin), int(agent.destination)))
+
+        if mask is None:
+            raise RuntimeError(
+                f"Missing action mask for agent {agent.id}: "
+                f"OD=({agent.origin}, {agent.destination})"
+            )
+
+        return np.asarray(mask, dtype=np.float32)
+
+    
+    def _one_hot_od(self, agent):
+        origin_vec = np.zeros(
+            self.num_origins, dtype=np.float32
+        )
+        destination_vec = np.zeros(
+            self.num_destinations, dtype=np.float32
+        )
+
+        origin_idx = self.origin_to_idx[int(agent.origin)]
+        destination_idx = self.destination_to_idx[
+            int(agent.destination)
+        ]
+
+        origin_vec[origin_idx] = 1.0
+        destination_vec[destination_idx] = 1.0
+
+        return origin_vec, destination_vec
+
+
+    
+    def reset_observation(self) -> Dict[str, np.ndarray]:
+        """Reset observations with one-hot OD representations."""
+
+        obs = {}
+
+        for agent in self.machine_agents_list:
+
+            # Normalized ETA values
+            eta = self._normalize_eta_values(
+                self.freeflows[
+                    (int(agent.origin), int(agent.destination))
+                ]
+            )
+
+            # One-hot origin and destination
+            origin_vec, destination_vec = self._one_hot_od(
+                agent
+            )
+
+            # Normalized departure time
+            start_time = np.array(
+                [
+                    self._normalize_start_time(
+                        agent.start_time
+                    )
+                ],
+                dtype=np.float32,
+            )
+
+            if self.include_action_mask_in_obs:
+                mask = self._get_mask_for_agent(agent)
+
+                obs_vec = np.concatenate([
+                    eta,
+                    mask,
+                    origin_vec,
+                    destination_vec,
+                    start_time,
+                ])
+            else:
+                obs_vec = np.concatenate([
+                    eta,
+                    origin_vec,
+                    destination_vec,
+                    start_time,
+                ])
+
+            obs[str(agent.id)] = obs_vec.astype(
+                np.float32
+            )
+
+        self.observations = obs
+        return obs
+
+
+    def observation_space(self) -> Dict[str, Box]:
+        """
+        Define the observation space for each machine agent.
+
+        Returns:
+            Dict[str, Box]: A dictionary where keys are agent IDs and values are Gym spaces.
+        """
+        return {
+            str(agent.id): Box(
+                low=-1,
+                high=np.inf,
+                shape=(self.OBS_SIZE,),
+                dtype=np.float32
+            )
+            for agent in self.machine_agents_list
+        }
+    
+    def agent_observations(self, agent_id: str, all_agents: List[Any], agent_selection: str, travel_times: List[Any]) -> np.ndarray:
+        """Retrieve the observation for a specific agent.
+
+        Args:
+            agent_id (str): The ID of the agent.
+        Returns:
+            np.ndarray: The observation array for the specified agent.
+        """
+        machine = next((m for m in self.machine_agents_list if m.id == int(agent_id)), None)
+        assert machine is not None, f"Observing machine with ID {agent_id} not found."
+            
+        # observation = self.observations[str(machine.id)].copy()
+        observation = self.observations[str(machine.id)][:self.BASE_OBS_SIZE].copy()
+            
+        agent_dicts = list()
+        for entry in travel_times:
+            not_agent_itself = entry[kc.AGENT_ID] != machine.id
+            same_origin = entry[kc.AGENT_ORIGIN] == machine.origin
+            same_destination = entry[kc.AGENT_DESTINATION] == machine.destination
+            earlier_departure = entry[kc.AGENT_START_TIME] <= machine.start_time
+            if all((not_agent_itself, same_origin, same_destination, earlier_departure)):
+                agent_dicts.append(entry.copy())
+                
+        # Sort by arrival time, later arrival more impact
+        agent_dicts.sort(key=lambda x: (x[kc.AGENT_START_TIME]+ (x[kc.TRAVEL_TIME] * 60.0)))
+        
+        tt_lists = {idx: list() for idx in range(self.NUM_PATHS)}
+        for entry in agent_dicts:
+            path_idx = int(entry[kc.ACTION])
+            travel_time = entry[kc.TRAVEL_TIME]
+            tt_lists[path_idx].append(travel_time)
+        for i in range(self.NUM_PATHS):
+            ff_time = self.freeflows[(int(machine.origin), int(machine.destination))][i]
+            previous_tts = tt_lists[i][:]
+            observation[i] = self._normalize_eta_value(get_ema(ff_time, previous_tts))
+
+        # Action masks are initialized once in reset_observation and don't change throughout the experiment.
+        # Past observations are copied and modified so the action masks persist.
+         
+        # Every other entry in the obs is already set at reset   
+        observation = np.array(observation, dtype=np.float32) # Ensure dtype
+        self.observations[str(machine.id)] = observation.copy()
+        return observation
+
+    def _compute_eta_scale(self, freeflows, action_masks) -> float:
+        valid_values = []
+        for od, ff_values in freeflows.items():
+            ff = np.asarray(ff_values, dtype=np.float32).reshape(-1)
+            if action_masks is not None:
+                if od not in action_masks:
+                    raise ValueError(f"Missing action mask for OD {od}")
+                mask = np.asarray(action_masks[od], dtype=bool).reshape(-1)
+                if ff.shape[0] != mask.shape[0]:
+                    raise ValueError(
+                        f"Free-flow length {ff.shape[0]} does not match mask length {mask.shape[0]} for OD {od}"
+                    )
+                values = ff[mask]
+            else:
+                values = ff[np.isfinite(ff) & (ff > 0.0) & (ff < 1e8)]
+
+            if values.size:
+                valid_values.append(values)
+
+        if not valid_values:
+            return 1.0
+
+        scale = float(np.percentile(np.concatenate(valid_values), 95))
+        return max(scale, 1.0)
+
+    def _normalize_eta_value(self, value: float) -> float:
+        return float(np.clip(float(value) / self.eta_scale, 0.0, 5.0))
+
+    def _normalize_eta_values(self, values: np.ndarray) -> np.ndarray:
+        values = np.asarray(values, dtype=np.float32)
+        return np.clip(values / self.eta_scale, 0.0, 5.0).astype(np.float32, copy=False)
+
+    def _normalize_start_time(self, value: float) -> float:
+        return float(np.clip(float(value) / self.start_time_scale, 0.0, 5.0))
+
+
+
+
 class TripInfoWithETARouteCongestion(TripInfoWithETAMaskNorm):
     """
     Extends TripInfoWithETA by appending per-route congestion summaries.

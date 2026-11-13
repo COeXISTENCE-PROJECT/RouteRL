@@ -1059,6 +1059,16 @@ class TrafficEnvironment(AECEnv):
                 action_masks=self.action_masks,
                 include_action_mask_in_obs=self.use_action_masks
             )
+        elif observation_type == kc.TRIP_INFO_ETA_MASK_NORM_ONE_HOT:
+            return TripInfoWithETAMaskNormOneHot(
+                self.machine_agents,
+                self.human_agents,
+                self.simulation_params,
+                self.agent_params,
+                self.get_free_flow_times(invalid_pad=1e9),
+                action_masks=self.action_masks,
+                include_action_mask_in_obs=self.use_action_masks
+            )
         elif observation_type == kc.TRIP_INFO_ETA_ROUTE_CONGESTION:
             return TripInfoWithETARouteCongestion(
                 self.machine_agents,
