@@ -506,6 +506,7 @@ class TrafficEnvironment(AECEnv):
             self._agent_selector = agent_selector(self.possible_agents)
             self.agent_selection = self._agent_selector.next()
             self.observations = self.observation_obj.reset_observation()
+            self._prepare_agent()
         else:
             self.observations = {}
 
@@ -566,6 +567,7 @@ class TrafficEnvironment(AECEnv):
                 # no rewards are allocated until all players give an action
                 self._clear_rewards()
                 self.agent_selection = self._agent_selector.next()
+                self._prepare_agent()
 
             # Adds .rewards to ._cumulative_rewards
             self._accumulate_rewards()
@@ -576,6 +578,16 @@ class TrafficEnvironment(AECEnv):
             self.day = self.day + 1
             self._assign_rewards()
             self._reset_episode()
+
+    def _prepare_agent(self) -> None:
+        machine = next(m for m in self.machine_agents if str(m.id) == self.agent_selection)
+        self.simulation_loop(None, None, stop_time=machine.start_time)
+        self._refresh_edge_state_if_needed()
+        observation = self.observation_obj.agent_observations(
+            self.agent_selection, self.all_agents, self.agent_selection, self.travel_times_list
+        )
+        self.observations[self.agent_selection] = observation.copy()
+        self.episode_observations[machine.id] = self._serialize_observation(observation)
 
     def _refresh_edge_state_if_needed(self, force=False):
         """
@@ -620,6 +632,9 @@ class TrafficEnvironment(AECEnv):
         Returns:
             np.ndarray: The current observation for the specified agent.
         """
+        if agent == self.agent_selection:
+            return self.observations[agent].copy()
+
         for machine in self.machine_agents:
             if str(machine.id) == agent:
                 break
@@ -789,6 +804,9 @@ class TrafficEnvironment(AECEnv):
         self.episode_actions = dict()
         self.episode_observations = dict()
 
+        if self.possible_agents and self.day % self.number_of_days:
+            self._prepare_agent()
+
     def _assign_rewards(self) -> None:
 
         for agent in self.all_agents:
@@ -816,7 +834,7 @@ class TrafficEnvironment(AECEnv):
     ##### Simulation loop #####
     ###########################
 
-    def simulation_loop(self, machine_action: int, machine_id: Union[int, str]) -> None:
+    def simulation_loop(self, machine_action: int, machine_id: Union[int, str], stop_time=None) -> None:
         """This function contains the integration of the agent's actions to SUMO.
 
         We iterate through all the time steps of the simulation.
@@ -828,6 +846,7 @@ class TrafficEnvironment(AECEnv):
             machine_action (int): Route index selected by the machine agent.
             machine_id (int | str): Identifier of the machine agent whose action is to be
                 performed. Human-only simulations use ``0``.
+            stop_time (int, optional): Stop before dispatching travelers at this time.
             
         Returns:
             None
@@ -838,6 +857,8 @@ class TrafficEnvironment(AECEnv):
                 self.simulator.timestep < self.simulation_params[kc.SIMULATION_TIMESTEPS]
                 or len(self.travel_times_list) < len(self.all_agents)
         ):
+            if stop_time is not None and self.simulator.timestep >= stop_time:
+                break
 
             # If there are more than one machines with the same start time
             # the humans should act once
@@ -863,8 +884,6 @@ class TrafficEnvironment(AECEnv):
                         continue
                     else:
                         # Machine acting
-                        observation = self.observe(str(machine.id))
-                        self.episode_observations[machine.id] = self._serialize_observation(observation)
                         machine.last_action = machine_action
                         self.actions_timestep.append((machine, machine_action))
 

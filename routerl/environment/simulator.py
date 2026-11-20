@@ -626,23 +626,22 @@ class SumoSimulator():
             self.save_snapshot(snapshot_idx=self.timestep, experiment_id=self.experiment_id)
             self.save_departures(snapshot_idx=self.timestep, experiment_id=self.experiment_id)
 
+        # Advance first so arrivals and observations refer to the same SUMO tick.
+        self.sumo_connection.simulationStep()
+        self.timestep += 1
+
         arrivals = list(self.sumo_connection.simulation.getArrivedIDList())
         for arr in arrivals:
             self.waiting_vehicles.pop(arr, None)
         
         teleported = self._teleportVehicles()
                 
-        # Advance the simulation by one timestep       
-        self.sumo_connection.simulationStep()
-
         # Retrieve information about the detectors
         if self.save_detectors_info == True:
             self.retrieve_detector_data()
         else:
             self.stopped_vehicles_info = None
 
-        self.timestep += 1
-        
         return self.timestep, self.stopped_vehicles_info, arrivals, teleported
 
     def _initialize_edge_subscriptions(self) -> None:
